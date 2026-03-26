@@ -1,0 +1,9 @@
+{
+  "name": "lingualife-monorepo",
+  "private": true,
+  "workspaces": ["apps/*"],
+  "dependencies": {
+    "pdf-parse": "^2.4.5",
+    "pdfjs-dist": "^2.16.105"
+  }
+}

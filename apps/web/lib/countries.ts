@@ -1,0 +1,22 @@
+export const COUNTRIES = [
+  { name: 'Colombia', code: '+57', timezone: 'America/Bogota' },
+  { name: 'Venezuela', code: '+58', timezone: 'America/Caracas' },
+  { name: 'Estados Unidos', code: '+1', timezone: 'America/New_York' },
+  { name: 'España', code: '+34', timezone: 'Europe/Madrid' },
+  { name: 'Ecuador', code: '+593', timezone: 'America/Guayaquil' },
+  { name: 'Panamá', code: '+507', timezone: 'America/Panama' },
+  { name: 'Canadá', code: '+1', timezone: 'America/Toronto' },
+  { name: 'Chile', code: '+56', timezone: 'America/Santiago' },
+  { name: 'Argentina', code: '+54', timezone: 'America/Buenos_Aires' },
+  { name: 'Perú', code: '+51', timezone: 'America/Lima' },
+  { name: 'Reino Unido', code: '+44', timezone: 'Europe/London' },
+  { name: 'Australia', code: '+61', timezone: 'Australia/Sydney' },
+  { name: 'México', code: '+52', timezone: 'America/Mexico_City' },
+  { name: 'Francia', code: '+33', timezone: 'Europe/Paris' },
+  { name: 'Alemania', code: '+49', timezone: 'Europe/Berlin' },
+  { name: 'Italia', code: '+39', timezone: 'Europe/Rome' },
+  { name: 'Suiza', code: '+41', timezone: 'Europe/Zurich' },
+  { name: 'Brasil', code: '+55', timezone: 'America/Sao_Paulo' },
+  { name: 'Costa Rica', code: '+506', timezone: 'America/Costa_Rica' },
+  { name: 'Países Bajos', code: '+31', timezone: 'Europe/Amsterdam' }
+]
