@@ -40,6 +40,7 @@ export default function StudentRegistration() {
     ageRange: '',
     goalId: '',
     interests: [] as string[],
+    openToGroups: false,
   })
 
   // Calendar State
@@ -322,68 +323,120 @@ export default function StudentRegistration() {
             <h1 className={styles.title}>Disponibilidad Ideal</h1>
             <p className={styles.subtitle}>Haz clic y arrastra sobre los bloques donde te gustaría tener clase.</p>
 
-              {globalAvail && (
-                <div style={{ background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem', fontSize: '0.85rem', color: 'var(--text-secondary)', border: '1px solid var(--border-glass)' }}>
-                  💡 <strong style={{ color: '#10b981' }}>Sugerencia:</strong> Los bloques con borde verde indican horarios donde ya tenemos profesores disponibles. Si eliges estos, tu inicio será más inmediato.
-                </div>
-              )}
+            {globalAvail && (
+              <div style={{ background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem', fontSize: '0.85rem', color: 'var(--text-secondary)', border: '1px solid var(--border-glass)' }}>
+                💡 <strong style={{ color: '#10b981' }}>Sugerencia:</strong> Los bloques con borde verde indican horarios donde ya tenemos profesores disponibles. Si eliges estos, tu inicio será más inmediato.
+              </div>
+            )}
 
-              <div className={styles.availGrid} style={{ userSelect: 'none' }}>
-                <div className={styles.availDayRow}>
-                  <div className={styles.availHourLabel} />
-                  {DAYS.map(d => (
-                    <div key={d} className={styles.availDayLabel}>{d}</div>
-                  ))}
-                </div>
-                {HOURS.map((hour, row) => (
-                  <div key={hour} className={styles.availDayRow}>
-                    <div className={styles.availHourLabel}>{hour}</div>
-                    {DAYS.map((_, col) => {
-                      const isSelected = availability[row]?.[col]
-                      const isTeacherAvailable = globalAvail?.[row]?.[col]
-                      return (
-                        <div
-                          key={col}
-                          className={`${styles.availCell} ${isSelected ? styles.availCellSelected : ''} ${isTeacherAvailable ? styles.availCellGlobal : ''}`}
-                          onMouseDown={() => handleMouseDown(row, col)}
-                          onMouseEnter={() => handleMouseEnter(row, col)}
-                          title={isTeacherAvailable ? "Profesor disponible en este horario" : "Horario solicitado bajo demanda"}
-                        />
-                      )
-                    })}
-                  </div>
+            <div className={styles.availGrid} style={{ userSelect: 'none' }}>
+              <div className={styles.availDayRow}>
+                <div className={styles.availHourLabel} />
+                {DAYS.map(d => (
+                  <div key={d} className={styles.availDayLabel}>{d}</div>
                 ))}
               </div>
+              {HOURS.map((hour, row) => (
+                <div key={hour} className={styles.availDayRow}>
+                  <div className={styles.availHourLabel}>{hour}</div>
+                  {DAYS.map((_, col) => {
+                    const isSelected = availability[row]?.[col]
+                    const isTeacherAvailable = globalAvail?.[row]?.[col]
+                    return (
+                      <div
+                        key={col}
+                        className={`${styles.availCell} ${isSelected ? styles.availCellSelected : ''} ${isTeacherAvailable ? styles.availCellGlobal : ''}`}
+                        onMouseDown={() => handleMouseDown(row, col)}
+                        onMouseEnter={() => handleMouseEnter(row, col)}
+                        title={isTeacherAvailable ? "Profesor disponible en este horario" : "Horario solicitado bajo demanda"}
+                      />
+                    )
+                  })}
+                </div>
+              ))}
+            </div>
 
-              {(() => {
-                const selectedOnes = []
-                for(let r=0; r<HOURS.length; r++) {
-                  for(let c=0; c<DAYS.length; c++) {
-                    if (availability[r][c]) selectedOnes.push({r,c})
-                  }
-                }
-                const onlyUnavailable = selectedOnes.length > 0 && selectedOnes.every(s => !globalAvail?.[s.r]?.[s.c])
-                
-                if (onlyUnavailable) {
-                  return (
-                    <div style={{ marginTop: '1.5rem', padding: '1rem', background: 'rgba(245, 158, 11, 0.1)', border: '1px solid rgba(245, 158, 11, 0.3)', borderRadius: '8px', fontSize: '0.85rem', color: '#fbbf24' }}>
-                      ⚠️ <strong>Nota:</strong> Los horarios que seleccionaste no cuentan con disponibilidad inmediata actualmente. Puedes continuar con el registro, pero deberás esperar a que busquemos un profesor que se ajuste a tu tiempo. Te avisaremos apenas lo consigamos.
-                    </div>
-                  )
-                }
-                return null
-              })()}
-
-              <div className={styles.footer}>
-                <button className={`${styles.btn} ${styles.btnSecondary}`} onClick={handleBack}>Atrás</button>
-                <button 
-                  className={`${styles.btn} ${styles.btnPrimary}`} 
-                  onClick={handleSubmit}
-                  disabled={loading || availability.flat().every(v => !v)}
-                >
-                  {loading ? 'Enviando...' : 'Finalizar Registro'}
-                </button>
+            <div style={{ marginTop: '1rem' }}>
+              <div 
+                style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '0.75rem', 
+                  cursor: 'pointer',
+                  padding: '0.5rem 0'
+                }} 
+                onClick={() => setFormData({...formData, openToGroups: !formData.openToGroups})}
+              >
+                <div style={{ 
+                  position: 'relative', 
+                  width: '36px', 
+                  height: '20px', 
+                  background: formData.openToGroups ? '#10b981' : '#4b5563', 
+                  borderRadius: '100px', 
+                  transition: 'all 0.3s ease', 
+                  flexShrink: 0 
+                }}>
+                  <div style={{ 
+                    position: 'absolute', 
+                    top: '2px', 
+                    left: formData.openToGroups ? '18px' : '2px', 
+                    width: '16px', 
+                    height: '16px', 
+                    background: '#fff', 
+                    borderRadius: '50%', 
+                    transition: 'all 0.3s ease' 
+                  }} />
+                </div>
+                <span style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--text-primary)' }}>
+                  Voy a tomar clases grupales con personas de todo el país
+                </span>
               </div>
+
+              {formData.openToGroups && (
+                <div style={{ 
+                  marginTop: '0.75rem', 
+                  padding: '1rem', 
+                  background: 'rgba(16, 185, 129, 0.05)', 
+                  border: '1px solid rgba(16, 185, 129, 0.2)', 
+                  borderRadius: '10px', 
+                  fontSize: '0.8rem', 
+                  color: 'var(--text-secondary)',
+                  lineHeight: '1.4'
+                }}>
+                  ✨ <strong>Modalidad Grupal:</strong> Activa esta opción solo si deseas compartir tus sesiones con otros estudiantes en Colombia. Buscaremos compañeros con **intereses similares** para enriquecer tu aprendizaje y ofrecerte mayor flexibilidad horaria.
+                </div>
+              )}
+            </div>
+
+            {(() => {
+              const selectedOnes = []
+              for(let r=0; r<HOURS.length; r++) {
+                for(let c=0; c<DAYS.length; c++) {
+                  if (availability[r][c]) selectedOnes.push({r,c})
+                }
+              }
+              const onlyUnavailable = selectedOnes.length > 0 && selectedOnes.every(s => !globalAvail?.[s.r]?.[s.c])
+              
+              if (onlyUnavailable) {
+                return (
+                  <div style={{ marginTop: '1.5rem', padding: '1rem', background: 'rgba(245, 158, 11, 0.1)', border: '1px solid rgba(245, 158, 11, 0.3)', borderRadius: '8px', fontSize: '0.85rem', color: '#fbbf24' }}>
+                    ⚠️ <strong>Nota:</strong> Los horarios que seleccionaste no cuentan con disponibilidad inmediata actualmente. Puedes continuar con el registro, pero deberás esperar a que busquemos un profesor que se ajuste a tu tiempo. Te avisaremos apenas lo consigamos.
+                  </div>
+                )
+              }
+              return null
+            })()}
+
+            <div className={styles.footer}>
+              <button className={`${styles.btn} ${styles.btnSecondary}`} onClick={handleBack}>Atrás</button>
+              <button 
+                className={`${styles.btn} ${styles.btnPrimary}`} 
+                onClick={handleSubmit}
+                disabled={loading || availability.flat().every(v => !v)}
+              >
+                {loading ? 'Enviando...' : 'Finalizar Registro'}
+              </button>
+            </div>
           </div>
         )}
 

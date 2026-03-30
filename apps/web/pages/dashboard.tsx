@@ -75,6 +75,20 @@ export default function DashboardPage() {
     }
   }
 
+  async function handleConfirmHoliday(s: Session) {
+    try {
+      const res = await fetch('/api/confirm-holiday', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId: s.id, role: 'teacher' }),
+      })
+      if (!res.ok) throw new Error('Error')
+      loadSessions()
+    } catch {
+      alert('Error al confirmar clase en festivo')
+    }
+  }
+
   async function loadStudio() {
     setStudioLoading(true)
     try {
@@ -269,6 +283,8 @@ export default function DashboardPage() {
                       }} 
                       onClick={handleSessionClick} 
                       onReschedule={handleReschedule} 
+                      onConfirmHoliday={handleConfirmHoliday}
+                      role="teacher"
                     />
                   </div>
                 ))

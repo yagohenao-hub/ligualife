@@ -5,21 +5,49 @@ interface Props {
   session: Session
   onClick: (session: Session) => void
   onReschedule?: (session: Session) => void
+  onConfirmHoliday?: (session: Session) => void
+  role?: 'teacher' | 'student'
 }
 
-export function SessionCard({ session, onClick, onReschedule }: Props) {
+export function SessionCard({ session, onClick, onReschedule, onConfirmHoliday, role }: Props) {
+  const isConfirmedByMe = role === 'teacher' ? session.holidayConfirmedTeacher : session.holidayConfirmedStudent
+  const isHoliday = session.isHoliday
+  const isGhost = isHoliday && session.status === 'Canceled'
+
   return (
-    <div className={`glass ${styles.card}`} onClick={() => onClick(session)} role="button">
+    <div className={`glass ${styles.card} ${isGhost ? styles.ghost : ''}`} onClick={() => !isGhost && onClick(session)} role="button">
       <div className={styles.info}>
-        <h4 className={styles.name}>{session.sessionName || 'Sesión'}</h4>
+        <div className={styles.headerRow}>
+          <h4 className={styles.name}>{session.sessionName || 'Sesión'}</h4>
+          {isHoliday && <span className={styles.holidayBadge}>Festivo 🇨🇴</span>}
+        </div>
         <div className={styles.meta}>
           <span className={styles.time}>{session.time}</span>
           {session.topicName && <span className={styles.topic}>— {session.topicName}</span>}
         </div>
+        {isGhost && (
+          <div className={styles.holidayWarning}>
+            <div className={styles.ghostStatus}>✧ Sesión en espera de confirmación</div>
+            <p className={styles.ghostText}>Esta clase solo se activará si tú y el {role === 'teacher' ? 'alumno' : 'profesor'} confirman interés.</p>
+            {onConfirmHoliday && (
+              <button 
+                className={styles.confirmBtn} 
+                onClick={(e) => { e.stopPropagation(); onConfirmHoliday(session); }}
+                disabled={isConfirmedByMe}
+              >
+                {isConfirmedByMe ? '✓ Esperando al otro...' : 'Confirmar asistencia'}
+              </button>
+            )}
+            <div className={styles.statusConfirm}>
+              Participantes: {session.holidayConfirmedTeacher ? '✅ Prof' : '⏳ Prof'} | {session.holidayConfirmedStudent ? '✅ Alum' : '⏳ Alum'}
+            </div>
+          </div>
+        )}
       </div>
       <div className={styles.actions}>
-        {session.status === 'Scheduled' && onReschedule && (
+        {!isGhost && session.status === 'Scheduled' && onReschedule && (
           <button 
+// ... (rest of buttons)
             className={styles.rescheduleBtn}
             onClick={(e) => {
               e.stopPropagation()

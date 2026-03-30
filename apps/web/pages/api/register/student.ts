@@ -7,7 +7,7 @@ const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' })
   
-  const { fullName, email, phone, ageRange, goalId, interests, availability } = req.body
+  const { fullName, email, phone, ageRange, goalId, interests, availability, openToGroups } = req.body
 
   if (!fullName || !email) {
     return res.status(400).json({ error: 'Missing required fields' })
@@ -32,7 +32,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               "fldTfNhYtykGeDx1x": interests,
               "fldmPdharKvZzqsMq": availability,
               "fldXUKKO28Wr1dN76": "Pending",
-              "fldHBsqpAjtOv9sBk": `Registration Goal ID: ${goalId}`
+              "fldHBsqpAjtOv9sBk": `Registration Goal ID: ${goalId}`,
+              "flddBUJK1K42KKsJv": openToGroups
             }
           }
         ],

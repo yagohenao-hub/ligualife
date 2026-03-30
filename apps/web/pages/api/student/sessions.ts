@@ -37,11 +37,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const idsFilter = `OR(${sessionIds.map((id: string) => `RECORD_ID()='${id}'`).join(',')})`
     const now = new Date().toISOString()
     
-    const upcomingFilter = encodeURIComponent(`AND(${idsFilter}, {Status} = 'Scheduled', IS_AFTER({Scheduled Date/Time}, '${now}'))`)
+    const upcomingFilter = encodeURIComponent(`AND(${idsFilter}, OR({Status} = 'Scheduled', AND({Status} = 'Canceled', {Is Holiday})), IS_AFTER({Scheduled Date/Time}, '${now}'))`)
     const seenFilter = encodeURIComponent(`AND(${idsFilter}, {Status} = 'Seen')`)
 
     const [upcoming, completed] = await Promise.all([
-      fetchFromAirtable('Sessions', `filterByFormula=${upcomingFilter}&sort[0][field]=Scheduled%20Date%2FTime&sort[0][direction]=asc&maxRecords=4`),
+      fetchFromAirtable('Sessions', `filterByFormula=${upcomingFilter}&sort[0][field]=Scheduled%20Date%2FTime&sort[0][direction]=asc&maxRecords=10`),
       fetchFromAirtable('Sessions', `filterByFormula=${seenFilter}&sort[0][field]=Scheduled%20Date%2FTime&sort[0][direction]=asc&maxRecords=50`)
     ])
 
@@ -75,6 +75,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           topicOrder: topicOrder,
           topicName: isUpcoming ? null : topicName,
           cachedSlides: cachedSlides,
+          isHoliday: !!r.fields['Is Holiday'],
+          holidayConfirmedTeacher: !!r.fields['Holiday Confirmed (Teacher)'],
+          holidayConfirmedStudent: !!r.fields['Holiday Confirmed (Student)']
         }
       }))
     }

@@ -21,6 +21,9 @@ export interface Session {
   status: string
   sessionName: string
   topicName?: string | null
+  isHoliday?: boolean
+  holidayConfirmedTeacher?: boolean
+  holidayConfirmedStudent?: boolean
 }
 
 export interface Student {

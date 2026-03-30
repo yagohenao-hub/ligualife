@@ -30,8 +30,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         timezone: (r.fields['Timezone'] ?? '') as string,
         tokens: (r.fields['Tokens de Reposición'] ?? 0) as number,
         pin: (r.fields['PIN'] ?? '') as string,
-        status: (r.fields['Pocket Coach Status'] ?? 'Active') as string,
+        status: (r.fields['Status'] ?? 'Active') as string,
         notes: (r.fields['Notes'] ?? '') as string,
+        interests: (r.fields['Interests'] ?? []) as string[],
+        availability: (r.fields['Availability'] ?? '') as string,
       }))
 
       return res.status(200).json({ students })

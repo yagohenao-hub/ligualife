@@ -20,23 +20,37 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    // 1. Verify student has tokens
+    // 1. Fetch student data and check for group partners
     const student = await fetchAirtableRecord('Students', studentId)
     const tokens = (student?.fields?.['Tokens de Reposición'] as number) ?? 0
     if (tokens <= 0) return res.status(400).json({ error: 'No tienes tokens de reposición disponibles' })
 
+    // Check if student belongs to a "Conocidos" group (Student-Teacher table with multiple students)
+    const stFilter = encodeURIComponent(`FIND('${studentId}', ARRAYJOIN({Student}, ',')) > 0`)
+    const stRes = await fetchFromAirtable('Student-Teacher', `filterByFormula=${stFilter}`)
+    const stRecord = stRes.records?.[0]
+    const allStudentIds = (stRecord?.fields?.['Student'] as string[]) || [studentId]
+    const isGroup = allStudentIds.length > 1
+
+    // If group, verify ALL have tokens (per User: "se les cobra a ambos")
+    if (isGroup) {
+      for (const sid of allStudentIds) {
+        const s = await fetchAirtableRecord('Students', sid)
+        if (((s?.fields?.['Tokens de Reposición'] as number) || 0) <= 0) {
+          return res.status(400).json({ error: `El compañero ${s?.fields?.['Full Name']} no tiene tokens suficientes` })
+        }
+      }
+    }
+
     // 2. Calculate session datetime
     let sessionDate: Date
     if (exactDate) {
-      // Use the exact date selected in the calendar
       sessionDate = new Date(exactDate)
-      // Enforce 24h minimum from now
       const minTime = new Date(Date.now() + 24 * 60 * 60 * 1000)
       if (sessionDate < minTime) {
         return res.status(400).json({ error: 'La clase debe agendarse con al menos 24 horas de anticipación' })
       }
     } else {
-      // Legacy: Calculate next occurrence of the weekday
       const now = new Date()
       const jsDay = dayIndex === 6 ? 0 : dayIndex + 1
       let daysAhead = jsDay - now.getDay()
@@ -46,7 +60,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       sessionDate.setHours(HOURS_START + hourIndex, 0, 0, 0)
     }
 
-    // 3. Verify slot is available (check the teacher availability grid)
+    // 3. Verify slot is available
     const teacher = await fetchAirtableRecord('Teachers', teacherId)
     const rawAvail = teacher?.fields?.['Availability'] as string | null
     let availability: boolean[][] = []
@@ -55,8 +69,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ error: 'Ese horario no está disponible' })
     }
 
-    // 4. Determine topic to assign (cascade: find next scheduled session topic, assign next one)
-    // Find the student's future scheduled sessions to cascade the topic
+    // 4. Determine topic
     const futureFilter = encodeURIComponent(
       `AND(FIND('${studentId}', ARRAYJOIN({Participants (link)}, ',')) > 0, {Status}='Scheduled')`
     )
@@ -68,7 +81,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     let topicId: string | null = null
     const lastFuture = futureSessions.records?.[futureSessions.records.length - 1]
     if (lastFuture) {
-      // Get the topic AFTER the last scheduled session's topic
       const lastTopicId = ((lastFuture.fields['Curriculum Topic'] as string[]) ?? [])[0]
       if (lastTopicId) {
         const lastTopic = await fetchAirtableRecord('Curriculum Topics', lastTopicId)
@@ -84,25 +96,30 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     }
 
-    // 5. Create new session in Airtable
+    // 5. Create new session
     const newSession = await createAirtableRecord('Sessions', {
       'Teacher': [teacherId],
       'Scheduled Date/Time': sessionDate.toISOString(),
       'Status': 'Scheduled',
       'Extraordinary Session (Token)': true,
       ...(topicId ? { 'Curriculum Topic': [topicId] } : {}),
+      ...(isGroup ? { 'Student-Teacher': [stRecord.id] } : {}) // Link to the enrollment unit
     })
 
-    // 6. Create Session Participant junction
-    await createAirtableRecord('Session Participants', {
-      'Session': [newSession.id],
-      'Student': [studentId],
-    })
+    // 6. Create Session Participant junctions for ALL students
+    for (const sid of allStudentIds) {
+      await createAirtableRecord('Session Participants', {
+        'Session': [newSession.id],
+        'Student': [sid],
+      })
 
-    // 7. Deduct 1 token from student
-    await patchAirtableRecord('Students', studentId, {
-      'Tokens de Reposición': tokens - 1,
-    })
+      // 7. Deduct token from each student
+      const s = await fetchAirtableRecord('Students', sid)
+      const current = (s?.fields?.['Tokens de Reposición'] as number) || 0
+      await patchAirtableRecord('Students', sid, {
+        'Tokens de Reposición': current - 1,
+      })
+    }
 
     return res.status(200).json({
       ok: true,

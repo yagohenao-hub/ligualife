@@ -1,10 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
+import { isColombianHoliday } from '@/lib/holidays'
 
 const BASE_ID = 'app9ZtojlxX5FoZ7y'
 const STUDENTS_TABLE = 'tblqzaBBn18txOyLu'
 const TEACHERS_TABLE = 'tblqGY8vCmsFeld7G'
 const SESSIONS_TABLE = 'tbliWEtFm3aJf8NQp'
 const SESSION_PARTICIPANTS_TABLE = 'tblnSKiIdbb3gZxCu'
+const STUDY_GROUPS_TABLE = 'tbloyDVuP8kDiPykS'
 const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY
 
 const DAYS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom']
@@ -13,41 +15,61 @@ const HOURS = ['6am', '7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm',
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' })
   
-  const { studentId, teacherId, weeksToGenerate = 4 } = req.body
+  const { studentId, groupId, teacherId, weeksToGenerate = 4, customAvailability } = req.body
 
-  if (!studentId || !teacherId) {
-    return res.status(400).json({ error: 'Faltan parámetros requeridos: studentId, teacherId' })
+  if (!studentId && !groupId) {
+    return res.status(400).json({ error: 'Faltan parámetros requeridos: studentId o groupId' })
   }
 
   try {
-    // 1. Fetch Student & Teacher info
     const reqOpts = { headers: { 'Authorization': `Bearer ${AIRTABLE_API_KEY}` } }
-    const [studentRes, teacherRes] = await Promise.all([
-      fetch(`https://api.airtable.com/v0/${BASE_ID}/${STUDENTS_TABLE}/${studentId}`, reqOpts),
-      fetch(`https://api.airtable.com/v0/${BASE_ID}/${TEACHERS_TABLE}/${teacherId}`, reqOpts)
-    ])
+    
+    let targetTeacherId = teacherId;
+    let studentIds = studentId ? [studentId] : [];
+    let availabilityGrid: boolean[][] | null = customAvailability || null;
 
-    const student = await studentRes.json()
+    // 1. Fetch Group Info (if applicable)
+    if (groupId) {
+      const groupRes = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${STUDY_GROUPS_TABLE}/${groupId}`, reqOpts)
+      const group = await groupRes.json()
+      if (!group.fields) throw new Error('Grupo no encontrado')
+      
+      studentIds = group.fields['Students'] || []
+      if (!targetTeacherId && group.fields['Primary Teacher']) {
+        targetTeacherId = group.fields['Primary Teacher'][0]
+      }
+    }
+
+    if (!targetTeacherId) {
+      return res.status(400).json({ error: 'No se definió teacherId ni en la solicitud ni en el grupo.' })
+    }
+
+    // 2. Fetch Teacher info
+    const teacherRes = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${TEACHERS_TABLE}/${targetTeacherId}`, reqOpts)
     const teacher = await teacherRes.json()
+    if (!teacher.fields) throw new Error('Profesor no encontrado en Airtable')
 
-    if (!student.fields || !teacher.fields) {
-      throw new Error('Estudiante o Profesor no encontrado en Airtable')
+    // 3. Fallback to first student's availability if none provided
+    if (!availabilityGrid && studentIds.length > 0) {
+      const firstStudentRes = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${STUDENTS_TABLE}/${studentIds[0]}`, reqOpts)
+      const firstStudent = await firstStudentRes.json()
+      let availabilityStr = firstStudent.fields['Availability']
+      
+      if (!availabilityStr) {
+        return res.status(400).json({ error: 'El estudiante principal no tiene horarios de Availability configurados.' })
+      }
+      try {
+        availabilityGrid = JSON.parse(availabilityStr)
+      } catch {
+        return res.status(400).json({ error: 'El formato de Availability del estudiante es inválido.' })
+      }
     }
 
-    // Attempt to parse student availability
-    let availabilityStr = student.fields['Availability']
-    if (!availabilityStr) {
-      return res.status(400).json({ error: 'El estudiante no tiene horarios de Availability configurados.' })
+    if (!availabilityGrid) {
+      return res.status(400).json({ error: 'No se pudo resolver la disponibilidad.' })
     }
 
-    let availabilityGrid: boolean[][]
-    try {
-      availabilityGrid = JSON.parse(availabilityStr)
-    } catch {
-      return res.status(400).json({ error: 'El formato de Availability del estudiante es inválido.' })
-    }
-
-    // 2. Identify selected day/hour indices
+    // 4. Identify selected day/hour indices
     // days array corresponds to values 1(Mon) to 7(Sun), which in JS Date is 1..6, 0
     const scheduledSlots: { currDayOffset: number, hour: number }[] = []
     
@@ -62,50 +84,60 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     if (scheduledSlots.length === 0) {
-      return res.status(400).json({ error: 'El calendario del estudiante está vacío.' })
+      return res.status(400).json({ error: 'El calendario solicitado está vacío.' })
     }
 
-    // 3. Generate schedule dates for next N weeks
+    // 5. Generate schedule dates for next N weeks
     const today = new Date()
     today.setHours(0,0,0,0) // Normalize
 
-    const generatedDates: Date[] = []
+    const generatedDates: { date: Date, isHoliday: boolean }[] = []
+    
+    // Fetch group type for special holiday handling
+    let groupType: string | null = null
+    if (groupId) {
+      const groupRes = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${STUDY_GROUPS_TABLE}/${groupId}`, reqOpts)
+      const groupData = await groupRes.json()
+      groupType = groupData?.fields?.['Group Type']
+    }
 
     for (let w = 0; w < weeksToGenerate; w++) {
       for (const slot of scheduledSlots) {
         const d = new Date(today)
-        // Jump weeks
         d.setDate(today.getDate() + (w * 7)) 
         
-        // Find the next correct day of the week (JavaScript getDay: 0=Sun, 1=Mon... 6=Sat)
-        // slot.currDayOffset is 1..6 (Mon..Sat) or 0 (Sun)
         let diff = slot.currDayOffset - d.getDay()
-        if (diff < 0) diff += 7 // Always look forward in the current week window
+        if (diff < 0) diff += 7
         
         d.setDate(d.getDate() + diff)
-        
-        // Build timestamp
         d.setHours(slot.hour, 0, 0, 0)
         
-        // Prevent scheduling classes in the past if generating for week 0
         if (d.getTime() > new Date().getTime()) {
-          generatedDates.push(d)
+          const isHoliday = isColombianHoliday(d)
+          // "Comunidad" (Desconocidos) skips holidays entirely per User instruction
+          if (isHoliday && groupType === 'Community Group') {
+            continue
+          }
+          generatedDates.push({ date: d, isHoliday })
         }
       }
     }
 
-    // 4. Insert into 'Sessions'
-    const newSessions = generatedDates.map(date => ({
-      fields: {
-        "Teacher": [teacherId],
-        "Scheduled Date/Time": date.toISOString(),
+    // 6. Insert into 'Sessions'
+    const newSessions = generatedDates.map(item => {
+      const fields: any = {
+        "Teacher": [targetTeacherId],
+        "Scheduled Date/Time": item.date.toISOString(),
         "Duration (minutes)": 45,
-        "Status": "Scheduled",
-        "Location/Link": teacher.fields['Meeting Link'] || "Link Pendiente"
+        "Status": item.isHoliday ? "Canceled" : "Scheduled",
+        "Location/Link": teacher.fields['Meeting Link'] || "Link Pendiente",
+        "Is Holiday": item.isHoliday
       }
-    }))
+      if (groupId) fields["Study Group"] = [groupId]
+      return { fields }
+    })
 
-    // Batch insert sessions (10 at a time max per Airtable API limits)
+    // Batch insert sessions (10 at a time max)
     let createdSessions: any[] = []
     for (let i = 0; i < newSessions.length; i += 10) {
       const batch = newSessions.slice(i, i + 10)
@@ -122,14 +154,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       createdSessions = [...createdSessions, ...batchData.records]
     }
 
-    // 5. Insert into 'Session Participants' mapping Students <-> Sessions
-    const participantRecords = createdSessions.map(session => ({
-      fields: {
-        "Session": [session.id],
-        "Student": [studentId],
-        "Attendance": "Scheduled"
-      }
-    }))
+    // 7. Insert into 'Session Participants' mapping Students <-> Sessions
+    const participantRecords: any[] = []
+    
+    // For each session created, create a participant record FOR EACH student in the group
+    createdSessions.forEach(session => {
+      studentIds.forEach(sId => {
+        participantRecords.push({
+          fields: {
+            "Session": [session.id],
+            "Student": [sId],
+            "Attendance": "Scheduled"
+          }
+        })
+      })
+    })
 
     for (let i = 0; i < participantRecords.length; i += 10) {
       const batch = participantRecords.slice(i, i + 10)
@@ -144,24 +183,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if (!batchRes.ok) throw new Error(JSON.stringify(await batchRes.json()))
     }
 
-    // Optional: Update Student Status to Active if not already
-    await fetch(`https://api.airtable.com/v0/${BASE_ID}/${STUDENTS_TABLE}/${studentId}`, {
-      method: 'PATCH',
-      headers: {
-        'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        fields: {
-          "Status": "Active"
-        }
+    // 8. Update Student Status to Active if not already (for all involved students)
+    for (const sId of studentIds) {
+      await fetch(`https://api.airtable.com/v0/${BASE_ID}/${STUDENTS_TABLE}/${sId}`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ fields: { "Status": "Active" } })
       })
-    })
+    }
 
     return res.status(200).json({ 
       success: true, 
-      generated: createdSessions.length,
-      message: `Se generaron ${createdSessions.length} clases exitosamente para las próximas ${weeksToGenerate} semanas.`
+      sessionsGenerated: createdSessions.length,
+      participantsGenerated: participantRecords.length,
+      message: `Se generaron ${createdSessions.length} clases y ${participantRecords.length} participaciones exitosamente.`
     })
 
   } catch (error: any) {
