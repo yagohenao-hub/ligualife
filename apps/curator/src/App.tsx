@@ -48,15 +48,13 @@ export default function App() {
     }
   }, [currentIndex, queue.length, loading])
 
-  async function handleDiscover(append = false) {
+  async function handleDiscover(append = false, retryCount = 0) {
     if (isFetchingRef.current && append) return
     isFetchingRef.current = true
     setLoading(true)
     
-    if (!append) {
+    if (!append && retryCount === 0) {
       setError(null)
-      setQueue([])
-      setCurrentIndex(0)
       hasFailedOnceRef.current = false
     }
     
@@ -75,11 +73,10 @@ export default function App() {
       const currentDiscards = discardedIdsRef.current
       const incoming = (data.videos || []).filter((v: any) => !currentDiscards.has(v.id))
       
-      if (incoming.length === 0 && !query.trim()) {
-        // Auto-retry if empty and using random seed
+      // Auto-retry if empty and using random seed, up to 3 times
+      if (incoming.length === 0 && !query.trim() && retryCount < 3) {
         isFetchingRef.current = false 
-        handleDiscover(append)
-        return
+        return handleDiscover(append, retryCount + 1)
       }
 
       if (append) {
@@ -97,7 +94,7 @@ export default function App() {
         setCurrentIndex(0)
         if (incoming.length === 0) {
             hasFailedOnceRef.current = true
-            setError(query.trim() ? `No encontramos videos nuevos para "${query}".` : 'No logramos cargar el feed aleatorio. YouTube responde lento, intenta de nuevo en un momento.')
+            setError(query.trim() ? `No encontramos videos nuevos para "${query}".` : 'No logramos cargar videos nuevos en este momento. Intenta con una búsqueda manual.')
         }
       }
     } catch (err: any) {

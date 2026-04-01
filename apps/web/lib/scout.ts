@@ -32,7 +32,7 @@ export async function discoverVideos(query: string = '', organic = false, attemp
 
   try {
     const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 6000) // 6s per burst
+    const timeoutId = setTimeout(() => controller.abort(), 10000) // 10s per burst (increased for reliability)
 
     const res = await fetch(searchUrl, {
       headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36' },
@@ -128,7 +128,16 @@ function getRandomNativeTopic() {
     'funny branding fails marketing shorts',
     'nyc fashion street interview native',
     'working in nyc office vlog shorts',
-    'crazy nyc subway moments viral shorts'
+    'crazy nyc subway moments viral shorts',
+    'street photography nyc shorts native',
+    'unboxing weird products shorts native',
+    'life hack fails native reaction shorts',
+    'minimalist apartment tour nyc shorts',
+    'honest product review native shorts',
+    'morning routine nyc vlog shorts',
+    'crazy gym fails native shorts',
+    'blind taste test native speaker shorts',
+    'how it feels nyc winter shorts'
   ]
   return topics[Math.floor(Math.random() * topics.length)]
 }

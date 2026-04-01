@@ -485,3 +485,100 @@
   border-bottom: none;
 }
 
+/* ── Mobile & Tablet Responsiveness ── */
+@media (max-width: 992px) {
+  .statsRow {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1.25rem 1rem;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+  }
+
+  .statsRow {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .midRow {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .tabs {
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+
+  .tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tab {
+    white-space: nowrap;
+    padding: 0.75rem 1rem;
+  }
+
+  .searchInputWrapMinimal.expanded {
+    width: 100%;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 0.5rem;
+    z-index: 100;
+  }
+
+  .agendaHeaderMinimal {
+    position: relative;
+    width: 100%;
+  }
+
+  .availCard {
+    padding: 1rem;
+  }
+
+  .availHeader {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .saveBtn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .greeting {
+    font-size: 1.25rem;
+  }
+
+  .statValue {
+    font-size: 1.75rem;
+  }
+
+  .availCell {
+    min-width: 28px;
+    height: 20px;
+  }
+
+  .availHourLabel {
+    width: 32px;
+    font-size: 0.65rem;
+  }
+
+  .availDayLabel {
+    min-width: 28px;
+    font-size: 0.65rem;
+  }
+}
+

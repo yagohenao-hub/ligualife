@@ -420,3 +420,131 @@
 .chatInput { flex: 1; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 0.6rem; color: white; font-size: 0.88rem; outline: none; }
 .chatSendBtn { background: #fbbf24; color: #1e293b; border: none; border-radius: 8px; padding: 0 0.8rem; cursor: pointer; font-weight: 700; }
 .chatSendBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── Mobile & Tablet Responsiveness ── */
+@media (max-width: 992px) {
+  .classroomGrid {
+    grid-template-columns: 1fr;
+    overflow-y: auto;
+  }
+  .sidebar {
+    border-right: none;
+    border-bottom: 1px solid var(--border-glass);
+    max-height: 400px;
+  }
+  .sidebarCollapsed {
+    display: none;
+  }
+  .classroomGridCollapsed {
+    grid-template-columns: 1fr;
+  }
+  .sidebarToggle {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
+  }
+  
+  .header > div {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: flex-start !important;
+  }
+
+  .phaseTabs {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .phaseTab {
+    padding: 1rem;
+  }
+
+  .phaseInstruction {
+    text-align: left;
+    padding: 0;
+  }
+
+  .spanglishGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .slideControls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .slideCounter {
+    text-align: left;
+    order: -1;
+  }
+
+  .slideNavGroup {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .slideNavArrow {
+    flex: 1;
+  }
+
+  .slideControlsRight {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .pdfBtn, .iterateBtn {
+    flex: 1;
+  }
+
+  .notesPanel {
+    width: calc(100vw - 40px);
+    right: 20px;
+    bottom: 80px;
+  }
+
+  .chatPanel {
+    width: calc(100vw - 40px);
+    right: 20px;
+    bottom: 80px;
+    height: 60vh;
+  }
+
+  .chatFab {
+    right: 80px;
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 1rem;
+  }
+  
+  .phaseContent {
+    padding: 1rem;
+  }
+
+  .bridgePhrase {
+    font-size: 1.2rem;
+  }
+
+  .warmupQuestion {
+    font-size: 1rem;
+  }
+
+  .slideContent {
+    padding: 1rem;
+    font-size: 0.88rem;
+  }
+
+  .videoBankGrid {
+    grid-template-columns: 1fr;
+  }
+}

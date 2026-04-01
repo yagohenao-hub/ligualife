@@ -297,3 +297,72 @@
 .addBtn:hover {
   background: var(--accent-hover);
 }
+
+/* Mobile Responsiveness Improvements */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+    padding: 1rem 0;
+  }
+
+  .controlsGroup {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 0.75rem;
+  }
+
+  .searchBar {
+    max-width: none;
+    width: 100%;
+  }
+
+  .toggleBtn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .videoCard {
+    padding: 1rem;
+    border-radius: 16px;
+    gap: 1rem;
+  }
+
+  .title {
+    font-size: 1.25rem;
+  }
+
+  .metadataSelection {
+    gap: 0.5rem;
+    padding: 0.75rem;
+  }
+
+  .actionGrid {
+    gap: 0.5rem;
+  }
+
+  .discardBtn, .addBtn {
+    padding: 0.6rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .videoCard {
+    padding: 0.75rem;
+    border: none;
+    background: transparent;
+    backdrop-filter: none;
+  }
+
+  .playerWrapper {
+    border-radius: 16px;
+  }
+
+  .videoTitle {
+    font-size: 1rem;
+  }
+}
