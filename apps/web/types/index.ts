@@ -52,5 +52,6 @@ export interface Exercise {
   id: string
   studentId: string
   generatedExample: string
+  solutionArchetype?: string
   date: string       // ISO 8601
 }

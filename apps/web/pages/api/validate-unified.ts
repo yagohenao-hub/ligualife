@@ -8,7 +8,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (!pin) return res.status(400).json({ error: 'PIN es requerido' })
 
   try {
-    const pinStr = pin.trim()
+    const pinStr = pin.trim().replace(/'/g, "\\'")
 
     // 1. Try Teachers
     const teacherData = await fetchFromAirtable('Teachers', `filterByFormula=${encodeURIComponent(`{PIN} = '${pinStr}'`)}`)
@@ -39,7 +39,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           if (tId) {
             const teacher = await fetchAirtableRecord('Teachers', tId)
             teacherId = tId
-            teacherName = teacher?.fields?.['Name'] as string ?? null
+            teacherName = (teacher?.fields?.['Name'] ?? teacher?.fields?.['Full Name']) as string ?? null
             teacherPhone = teacher?.fields?.['Phone'] as string ?? null
             break
           }

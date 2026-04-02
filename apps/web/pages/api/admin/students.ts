@@ -69,7 +69,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         'Email': email,
         'PIN': pin,
         'Tokens de Reposición': tokens ?? 0,
-        'Pocket Coach Status': 'Active',
+        'Status': 'Active',
       }
       if (phone) fields['Phone'] = phone
       if (timezone) fields['Timezone'] = timezone
@@ -94,7 +94,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if (!id) return res.status(400).json({ error: 'id es requerido' })
 
       const fields: Record<string, any> = {}
-      if (status !== undefined) fields['Pocket Coach Status'] = status
+      if (status !== undefined) fields['Status'] = status
       if (tokens !== undefined) fields['Tokens de Reposición'] = tokens
       if (notes !== undefined) fields['Notes'] = notes
 

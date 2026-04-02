@@ -12,9 +12,15 @@ const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY
 const DAYS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom']
 const HOURS = ['6am', '7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', '3pm', '4pm', '5pm', '6pm', '7pm', '8pm']
 
+const ADMIN_TOKEN = process.env.ADMIN_TOKEN ?? 'LinguaAdmin2025'
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' })
-  
+
+  if (req.headers['x-admin-token'] !== ADMIN_TOKEN) {
+    return res.status(401).json({ error: 'No autorizado' })
+  }
+
   const { studentId, groupId, teacherId, weeksToGenerate = 4, customAvailability } = req.body
 
   if (!studentId && !groupId) {
@@ -87,9 +93,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ error: 'El calendario solicitado está vacío.' })
     }
 
-    // 5. Generate schedule dates for next N weeks
-    const today = new Date()
-    today.setHours(0,0,0,0) // Normalize
+    // 5. Generate schedule dates for next N weeks (Colombia time = UTC-5)
+    const COL_OFFSET = -5
+    const nowUtc = new Date()
+    const today = new Date(nowUtc.getTime() + COL_OFFSET * 60 * 60 * 1000)
+    today.setHours(0, 0, 0, 0)
 
     const generatedDates: { date: Date, isHoliday: boolean }[] = []
     
@@ -112,7 +120,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         d.setDate(d.getDate() + diff)
         d.setHours(slot.hour, 0, 0, 0)
         
-        if (d.getTime() > new Date().getTime()) {
+        if (d.getTime() > today.getTime()) {
           const isHoliday = isColombianHoliday(d)
           // "Comunidad" (Desconocidos) skips holidays entirely per User instruction
           if (isHoliday && groupType === 'Community Group') {

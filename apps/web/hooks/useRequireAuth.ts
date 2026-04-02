@@ -16,7 +16,12 @@ export function useRequireAuth(): AuthSession | null {
       router.replace('/')
       return
     }
-    setSession(JSON.parse(raw) as AuthSession)
+    try {
+      setSession(JSON.parse(raw) as AuthSession)
+    } catch {
+      sessionStorage.removeItem('lingualife_session')
+      router.replace('/')
+    }
   }, [])
 
   return session

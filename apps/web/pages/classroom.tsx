@@ -355,8 +355,8 @@ export default function ClassroomPage() {
         console.error(e)
       }
     }
-    
-    router.push('/dashboard')
+
+    await router.push('/dashboard')
   }
 
   async function handleReschedule() {
@@ -646,7 +646,7 @@ export default function ClassroomPage() {
                         Traduce estas frases. El objetivo es identificar y usar correctamente el concepto destacado.
                       </p>
                       <div className={styles.spanglishGrid}>
-                        {warmupData.spanglishPhrases.map((phrase: string, idx: number) => (
+                        {(Array.isArray(warmupData.spanglishPhrases) ? warmupData.spanglishPhrases : []).map((phrase: string, idx: number) => (
                           <div key={idx} className={styles.spanglishCard}>
                             <p>{phrase}</p>
                           </div>
@@ -787,7 +787,7 @@ export default function ClassroomPage() {
                           Cultural Byte — Idioms
                         </div>
                         <ul className={styles.idiomList}>
-                          {cooldownData.idioms.map((idiom: string, i: number) => (
+                          {(Array.isArray(cooldownData.idioms) ? cooldownData.idioms : []).map((idiom: string, i: number) => (
                             <li key={i}>{idiom}</li>
                           ))}
                         </ul>

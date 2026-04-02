@@ -57,7 +57,14 @@ export default function StudentDashboardPage() {
   useEffect(() => {
     const raw = sessionStorage.getItem('ll_student')
     if (!raw) { router.replace('/'); return }
-    const p: StudentProfile = JSON.parse(raw)
+    let p: StudentProfile
+    try {
+      p = JSON.parse(raw)
+    } catch {
+      sessionStorage.removeItem('ll_student')
+      router.replace('/')
+      return
+    }
     setProfile(p)
     loadSessions(p.id)
   }, [])

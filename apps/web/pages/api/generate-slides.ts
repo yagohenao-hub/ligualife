@@ -127,7 +127,9 @@ function parseSlides(text: string): Slide[] {
 function parseJsonSection(text: string, marker: string): any {
   const parts = text.split(`[[${marker}]]`)
   if (parts.length < 2) return null
-  const rawJson = parts[1].split('[[')[0].trim()
+  let rawJson = parts[1].split('[[')[0].trim()
+  // Strip markdown code fences that Gemini sometimes wraps JSON in
+  rawJson = rawJson.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '')
   try {
     return JSON.parse(rawJson)
   } catch (e) {
