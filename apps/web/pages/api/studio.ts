@@ -63,15 +63,41 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const monthRecords = monthData.records || []
     const weekRecords = weekData.records || []
 
-    const completedCount = monthRecords.filter((r: any) => r.fields['Status'] === 'Seen').length
-    const scheduledCount = monthRecords.filter((r: any) => r.fields['Status'] === 'Scheduled').length
+    let earnedCOP = 0
+    let projectedCOP = 0
+    let completedCount = 0
+    let scheduledCount = 0
+
+    for (const r of monthRecords) {
+      const status = r.fields['Status']
+      if (status !== 'Seen' && status !== 'Scheduled') continue
+
+      const pIds = r.fields['Session Participants'] as string[] || []
+      const participantCount = Math.max(1, pIds.length) 
+      const extraParticipants = participantCount - 1
+
+      // Base rate: 30,000 COP. Extra per additional student: 3,000 COP (40% of 60,000 / 8)
+      const classValue = RATE_PER_CLASS + (extraParticipants * 3000)
+
+      if (status === 'Seen') {
+        completedCount++
+        earnedCOP += classValue
+        projectedCOP += classValue
+      } else if (status === 'Scheduled') {
+        scheduledCount++
+        projectedCOP += classValue
+      }
+    }
 
     // Format week sessions for the calendar
     const sessionDetails = weekRecords.map((r: any) => ({
       id: r.id,
       date: r.fields['Scheduled Date/Time'],
       isExtra: !!r.fields['Extraordinary Session (Token)'],
-      status: r.fields['Status']
+      status: r.fields['Status'],
+      isHoliday: !!r.fields['Is Holiday'],
+      holidayConfirmedTeacher: !!r.fields['Holiday Confirmed (Teacher)'],
+      holidayConfirmedStudent: !!r.fields['Holiday Confirmed (Student)']
     }))
 
     // Unique participant junction IDs for Mis Alumnos
@@ -81,11 +107,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       ),
     ]
 
-    // ... (keep student resolution logic)
     const studentIds = new Set<string>()
     await Promise.all(
       participantIds.map(async (pid) => {
-        const p = await fetchAirtableRecord('Session Participants', pid)
+        const p = await fetchAirtableRecord('Session Participants', pid as string)
         const sId = (p?.fields?.['Student'] as string[])?.[0]
         if (sId) studentIds.add(sId)
       })
@@ -110,8 +135,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const studioData: any = {
       completedCount,
       scheduledCount,
-      earnedCOP: completedCount * RATE_PER_CLASS,
-      projectedCOP: (completedCount + scheduledCount) * RATE_PER_CLASS,
+      earnedCOP,
+      projectedCOP,
       students,
       sessions: sessionDetails,
       availability: teacherRec?.fields?.['Availability'] ?? null

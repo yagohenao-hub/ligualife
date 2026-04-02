@@ -1,9 +1,11 @@
 import { useEffect, useState, useCallback } from 'react'
 import Head from 'next/head'
+import { useRouter } from 'next/router'
 import styles from '@/styles/Admin.module.css'
+import GroupMatchmaker from '@/components/dashboard/GroupMatchmaker'
 
 // ─── Types ──────────────────────────────────────────────────────────────────
-type Tab = 'overview' | 'students' | 'teachers'
+type Tab = 'overview' | 'students' | 'teachers' | 'matchmaker' | 'groups'
 
 interface Metrics {
   totalStudents: number
@@ -24,6 +26,8 @@ interface Student {
   pin: string
   status: string
   notes: string
+  interests: string[]
+  availability: string // JSON array of "Day-Hour"
 }
 
 interface Teacher {
@@ -36,6 +40,8 @@ interface Teacher {
   bio: string
   meetingLink: string
   studentCount: number
+  specialty: string[]
+  availability: string // JSON array of "Day-Hour"
 }
 
 const ADMIN_TOKEN = 'LinguaAdmin2025'
@@ -66,6 +72,7 @@ const blankTeacher = { name: '', email: '', phone: '', timezone: 'America/Bogota
 
 // ─── Component ───────────────────────────────────────────────────────────────
 export default function AdminPage() {
+  const router = useRouter()
   const [authed, setAuthed] = useState(false)
   const [pinInput, setPinInput] = useState('')
   const [pinError, setPinError] = useState('')
@@ -93,6 +100,16 @@ export default function AdminPage() {
   const [editTeacher, setEditTeacher] = useState<Teacher | null>(null)
   const [teacherForm, setTeacherForm] = useState({ ...blankTeacher })
   const [teacherFormLoading, setTeacherFormLoading] = useState(false)
+
+  // Link Group state
+  const [showLinkModal, setShowLinkModal] = useState(false)
+  const [linkForm, setLinkForm] = useState({ studentIds: [] as string[], teacherId: '', notes: '' })
+  const [linkFormLoading, setLinkFormLoading] = useState(false)
+
+  // Groups management state
+  const [acquaintanceGroups, setAcquaintanceGroups] = useState<any[]>([])
+  const [matchmakerGroups, setMatchmakerGroups] = useState<any[]>([])
+  const [groupsLoading, setGroupsLoading] = useState(false)
 
   // ── Auth ────────────────────────────────────────────────────────────────────
   function handleAdminLogin() {
@@ -146,7 +163,33 @@ export default function AdminPage() {
     loadMetrics()
     loadStudents()
     loadTeachers()
+    loadGroups()
   }, [authed])
+
+  const loadGroups = useCallback(async () => {
+    setGroupsLoading(true)
+    try {
+      const res = await fetch('/api/admin/groups', { headers: adminHeaders() })
+      if (res.ok) {
+          const data = await res.json()
+          setAcquaintanceGroups(data.acquaintanceGroups || [])
+          setMatchmakerGroups(data.matchmakerGroups || [])
+      }
+    } finally {
+      setGroupsLoading(false)
+    }
+  }, [])
+
+  async function deleteGroup(id: string, type: string, studentId?: string) {
+    if (!confirm(studentId ? '¿Desvincular a este alumno del grupo?' : '¿Eliminar este grupo definitivamente?')) return
+    const url = `/api/admin/groups?id=${id}&type=${type}${studentId ? `&studentId=${studentId}` : ''}`
+    const res = await fetch(url, { method: 'DELETE', headers: adminHeaders() })
+    if (res.ok) {
+        alert('Operación exitosa')
+        loadGroups()
+        loadStudents()
+    }
+  }
 
   // ── Student CRUD ─────────────────────────────────────────────────────────────
   function openCreateStudent() {
@@ -258,7 +301,96 @@ export default function AdminPage() {
     }
   }
 
-  // ── Filtered data ─────────────────────────────────────────────────────────────
+  async function submitLinkForm() {
+    if (linkForm.studentIds.length === 0 || !linkForm.teacherId) return
+    
+    // Assign random schedule from available common slots
+    const selectedStudentsData = students.filter(s => linkForm.studentIds.includes(s.id))
+    const teacher = teachers.find(t => t.id === linkForm.teacherId)
+    if (!teacher) return
+
+    const matchingSlots = getMatchingSlots(selectedStudentsData, teacher)
+    const days = Array.from(new Set(matchingSlots.map(s => s.split('-')[0])))
+    
+    let chosenDays: string[] = []
+    let chosenTime: string = ''
+
+    if (days.length >= 2) {
+        chosenDays = [days[0], days[1]]
+        chosenTime = matchingSlots.find(s => s.startsWith(days[0]))?.split('-')[1] || ''
+    } else if (days.length === 1) {
+        chosenDays = [days[0]]
+        chosenTime = matchingSlots[0].split('-')[1]
+    }
+
+    setLinkFormLoading(true)
+    try {
+      const res = await fetch('/api/admin/link-group', {
+        method: 'POST',
+        headers: adminHeaders(),
+        body: JSON.stringify({
+            ...linkForm,
+            days: chosenDays,
+            time: chosenTime
+        }),
+      })
+      if (res.ok) {
+        setShowLinkModal(false)
+        setLinkForm({ studentIds: [], teacherId: '', notes: '' })
+        alert('✅ Grupo vinculado exitosamente con horario asignado')
+        loadMetrics()
+        loadStudents()
+        loadGroups()
+      } else {
+        const data = await res.json()
+        alert(data.error || 'Error al vincular')
+      }
+    } finally {
+      setLinkFormLoading(false)
+    }
+  }
+
+  function getMatchingSlots(selectedStudents: Student[], teacher: Teacher) {
+    try {
+        const studentAvails = selectedStudents.map(s => {
+            try { return JSON.parse(s.availability || '[]') as string[] } catch { return [] }
+        })
+        const teacherAvail = JSON.parse(teacher.availability || '[]') as string[]
+        const intersection = studentAvails.reduce((acc, curr) => acc.filter(x => curr.includes(x)), studentAvails[0] || [])
+        return intersection.filter(x => teacherAvail.includes(x))
+    } catch { return [] }
+  }
+
+  function getSortedTeachers() {
+    const selectedStudentsData = students.filter(s => linkForm.studentIds.includes(s.id))
+    if (selectedStudentsData.length === 0) return []
+
+    const candidates = teachers.filter(t => {
+        const match = getMatchingSlots(selectedStudentsData, t)
+        return match.length > 0
+    })
+
+    const studentInterests = Array.from(new Set(selectedStudentsData.flatMap(s => s.interests || [])))
+    
+    return candidates.sort((a, b) => {
+        const aMatch = (a.specialty || []).filter(x => studentInterests.includes(x)).length
+        const bMatch = (b.specialty || []).filter(x => studentInterests.includes(x)).length
+        return bMatch - aMatch
+    })
+  }
+
+  const toggleStudentInLink = (id: string) => {
+    setLinkForm(prev => {
+      const exists = prev.studentIds.includes(id)
+      if (exists) return { ...prev, studentIds: prev.studentIds.filter(x => x !== id) }
+      if (prev.studentIds.length >= 3) {
+        alert('Límite de 3 personas para grupos vinculados')
+        return prev
+      }
+      return { ...prev, studentIds: [...prev.studentIds, id] }
+    })
+  }
+
   const filteredStudents = students.filter(s => {
     const matchSearch = !studentSearch || s.name.toLowerCase().includes(studentSearch.toLowerCase()) || s.email.toLowerCase().includes(studentSearch.toLowerCase())
     const matchStatus = studentStatusFilter === 'all' || s.status === studentStatusFilter
@@ -269,8 +401,8 @@ export default function AdminPage() {
     !teacherSearch || t.name.toLowerCase().includes(teacherSearch.toLowerCase()) || t.email.toLowerCase().includes(teacherSearch.toLowerCase())
   )
 
-  // ── Login screen ───────────────────────────────────────────────────────────
   if (!authed) {
+
     return (
       <>
         <Head>
@@ -319,11 +451,19 @@ export default function AdminPage() {
               { key: 'overview', icon: '📊', label: 'General' },
               { key: 'students', icon: '👩‍🎓', label: 'Alumnos' },
               { key: 'teachers', icon: '👩‍🏫', label: 'Profesores' },
-            ] as { key: Tab; icon: string; label: string }[]).map(item => (
+              { key: 'matchmaker', icon: '🎲', label: 'Matchmaker' },
+              { key: 'groups', icon: '👥', label: 'Gestión Grupos' },
+              { key: 'series', icon: '🎬', label: 'Series Master' },
+              { key: 'stories', icon: '📖', label: 'Story Studio' },
+            ] as { key: any; icon: string; label: string }[]).map(item => (
               <button
                 key={item.key}
                 className={`${styles.navItem} ${tab === item.key ? styles.navItemActive : ''}`}
-                onClick={() => setTab(item.key)}
+                onClick={() => {
+                  if (item.key === 'series') router.push('/series-companion')
+                  else if (item.key === 'stories') router.push('/admin/story-studio')
+                  else setTab(item.key)
+                }}
               >
                 <span className={styles.navIcon}>{item.icon}</span>
                 <span>{item.label}</span>
@@ -395,6 +535,9 @@ export default function AdminPage() {
                       <button className={styles.quickBtn} onClick={() => setTab('students')}>
                         <span>👁️</span> Ver Alumnos
                       </button>
+                      <button className={styles.quickBtn} onClick={() => router.push('/series-companion')}>
+                        <span>🎬</span> Series Activity Master
+                      </button>
                       <button className={styles.quickBtn} onClick={() => setTab('teachers')}>
                         <span>👁️</span> Ver Profesores
                       </button>
@@ -410,7 +553,9 @@ export default function AdminPage() {
             <div className={styles.tabContent}>
               <div className={styles.pageHeader}>
                 <h1 className={styles.pageTitle}>Alumnos <span className={styles.countBadge}>{students.length}</span></h1>
-                <button className={styles.addBtn} onClick={openCreateStudent}>+ Vincular Alumno</button>
+                <div style={{ display: 'flex', gap: '0.75rem' }}>
+                  <button className={styles.addBtnSecondary} onClick={() => setShowLinkModal(true)}>🔗 Vincular Grupo</button>
+                </div>
               </div>
 
               {/* Filters */}
@@ -568,6 +713,122 @@ export default function AdminPage() {
               )}
             </div>
           )}
+
+          {/* ═══ GROUPS TAB ═══ */}
+          {tab === 'groups' && (
+            <div className={styles.tabContent}>
+              <div className={styles.pageHeader}>
+                <h1 className={styles.pageTitle}>Gestión de Grupos <span className={styles.countBadge}>{acquaintanceGroups.length + matchmakerGroups.length}</span></h1>
+              </div>
+
+              {groupsLoading && <div className="spinner" />}
+
+              {!groupsLoading && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                  
+                  {/* Conocidos Section */}
+                  <section>
+                    <h2 className={styles.sectionTitle}>Grupos de Conocidos (Directos)</h2>
+                    <div className={styles.tableWrap}>
+                      <table className={styles.dataTable}>
+                        <thead>
+                          <tr>
+                            <th>Alumnos</th>
+                            <th>Profesor</th>
+                            <th>Horario</th>
+                            <th>Notas</th>
+                            <th>Acciones</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {acquaintanceGroups.length === 0 && <tr><td colSpan={5} className={styles.emptyRow}>No hay grupos de conocidos vinculados.</td></tr>}
+                          {acquaintanceGroups.map(g => (
+                            <tr key={g.id} className={styles.tableRow}>
+                              <td>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                                  {g.studentIds.map((sid: string) => {
+                                      const s = students.find(x => x.id === sid)
+                                      return (
+                                        <div key={sid} style={{ fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255,255,255,0.03)', padding: '0.2rem 0.6rem', borderRadius: '4px' }}>
+                                          👤 {s?.name || 'Cargando...'}
+                                          <button 
+                                            onClick={() => deleteGroup(g.id, 'conocidos', sid)} 
+                                            style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                                            title="Desvincular del grupo"
+                                          >✕</button>
+                                        </div>
+                                      )
+                                  })}
+                                </div>
+                              </td>
+                              <td>{teachers.find(t => t.id === g.teacherId)?.name || '—'}</td>
+                              <td>
+                                <div style={{ fontSize: '0.8rem' }}>
+                                    <div>📅 {g.days.join(', ')}</div>
+                                    <div style={{ opacity: 0.7 }}>⏰ {g.time}</div>
+                                </div>
+                              </td>
+                              <td style={{ maxWidth: '150px', whiteSpace: 'normal', fontSize: '0.75rem', opacity: 0.7 }}>{g.notes || '—'}</td>
+                              <td>
+                                <button className={styles.editBtn} style={{ color: '#ef4444', borderColor: 'rgba(239, 68, 68, 0.2)' }} onClick={() => deleteGroup(g.id, 'conocidos')}>🗑️ Eliminar</button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </section>
+
+                  {/* Matchmaker Groups Section */}
+                  <section>
+                    <h2 className={styles.sectionTitle}>Grupos Matchmaker (Propuestos)</h2>
+                    <div className={styles.tableWrap}>
+                      <table className={styles.dataTable}>
+                        <thead>
+                          <tr>
+                            <th>Nombre / Tema</th>
+                            <th>Alumnos</th>
+                            <th>Profesor</th>
+                            <th>Nivel</th>
+                            <th>Acciones</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {matchmakerGroups.length === 0 && <tr><td colSpan={5} className={styles.emptyRow}>No hay grupos de matchmaker activos.</td></tr>}
+                          {matchmakerGroups.map(g => (
+                            <tr key={g.id} className={styles.tableRow}>
+                              <td>
+                                <div style={{ fontWeight: 600 }}>{g.name}</div>
+                                <div style={{ fontSize: '0.75rem', opacity: 0.6 }}>{g.topic}</div>
+                              </td>
+                              <td>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem' }}>
+                                  {g.studentIds.map((sid: string) => {
+                                      const s = students.find(x => x.id === sid)
+                                      return (
+                                        <div key={sid} style={{ fontSize: '0.75rem', background: 'rgba(255,255,255,0.05)', padding: '0.1rem 0.4rem', borderRadius: '4px' }}>
+                                          {s?.name?.split(' ')[0] || '...'}
+                                          <button onClick={() => deleteGroup(g.id, 'matchmaker', sid)} style={{ marginLeft: '4px', color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer' }}>×</button>
+                                        </div>
+                                      )
+                                  })}
+                                </div>
+                              </td>
+                              <td>{teachers.find(t => t.id === g.teacherId)?.name || '—'}</td>
+                              <td><span className={styles.pinBadge} style={{ fontSize: '0.75rem' }}>{g.level}</span></td>
+                              <td>
+                                <button className={styles.editBtn} style={{ color: '#ef4444', borderColor: 'rgba(239, 68, 68, 0.2)' }} onClick={() => deleteGroup(g.id, 'matchmaker')}>🗑️ Eliminar</button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </section>
+                </div>
+              )}
+            </div>
+          )}
         </main>
       </div>
 
@@ -663,6 +924,83 @@ export default function AdminPage() {
             <div className={styles.pinDisplay}>{newPinAlert.pin}</div>
             <p className={styles.pinModalSub}>Guarda y comparte este PIN con el usuario. Necesitará recordarlo para acceder a la plataforma.</p>
             <button className={styles.submitBtn} onClick={() => setNewPinAlert(null)}>Entendido ✓</button>
+          </div>
+        </div>
+      )}
+
+      {/* ═══ LINK GROUP MODAL ═══ */}
+      {showLinkModal && (
+        <div className={styles.modalOverlay} onClick={() => setShowLinkModal(false)}>
+          <div className={styles.modal} onClick={e => e.stopPropagation()}>
+            <div className={styles.modalHeader}>
+              <span>🔗 Vincular Conocidos (Grupo Directo)</span>
+              <button className={styles.modalClose} onClick={() => setShowLinkModal(false)}>✕</button>
+            </div>
+            <div className={styles.modalBody}>
+              <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
+                Selecciona hasta 3 alumnos **Pendientes** para crear su primer vínculo grupal. 
+              </p>
+              
+              <label className={styles.fieldLabel}>Alumnos Pendientes (Máx 3)</label>
+              <div style={{ 
+                maxHeight: '180px', 
+                overflowY: 'auto', 
+                background: 'rgba(0,0,0,0.2)', 
+                borderRadius: '10px', 
+                border: '1px solid rgba(255,255,255,0.05)',
+                padding: '0.5rem'
+              }}>
+                {students.filter(s => s.status === 'Pending').map(s => (
+                  <label key={s.id} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.5rem', cursor: 'pointer', borderRadius: '6px', borderBottom: '1px solid rgba(255,255,255,0.02)' }}>
+                    <input 
+                      type="checkbox" 
+                      checked={linkForm.studentIds.includes(s.id)}
+                      onChange={() => toggleStudentInLink(s.id)}
+                    />
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <span style={{ fontSize: '0.85rem' }}>{s.name}</span>
+                        <span style={{ fontSize: '0.7rem', opacity: 0.5 }}>{s.interests?.join(' · ')}</span>
+                    </div>
+                  </label>
+                ))}
+                {students.filter(s => s.status === 'Pending').length === 0 && <div style={{ opacity: 0.5, fontSize: '0.8rem', textAlign: 'center', padding: '1rem' }}>No hay alumnos pendientes.</div>}
+              </div>
+
+              <label className={styles.fieldLabel} style={{ marginTop: '0.5rem' }}>Profesor Compatible (Ordenados por afinidad)</label>
+              <select 
+                className={styles.fieldInput} 
+                value={linkForm.teacherId} 
+                onChange={e => setLinkForm({ ...linkForm, teacherId: e.target.value })}
+                disabled={linkForm.studentIds.length === 0}
+              >
+                <option value="">{linkForm.studentIds.length === 0 ? 'Selecciona alumnos primero...' : 'Selecciona un profesor compatible...'}</option>
+                {getSortedTeachers().map(t => (
+                  <option key={t.id} value={t.id}>{t.name} — Coincide disponibilidad</option>
+                ))}
+              </select>
+              {linkForm.studentIds.length > 0 && getSortedTeachers().length === 0 && (
+                  <p style={{ fontSize: '0.7rem', color: '#ef4444' }}>⚠️ No hay profesores con disponibilidad coincidente para este grupo.</p>
+              )}
+
+              <label className={styles.fieldLabel}>Notas (Opcional)</label>
+              <textarea 
+                className={styles.fieldTextarea} 
+                value={linkForm.notes} 
+                onChange={e => setLinkForm({ ...linkForm, notes: e.target.value })} 
+                placeholder="Ej: Grupo de primos, nivel intermedio..." 
+                rows={2} 
+              />
+            </div>
+            <div className={styles.modalFooter}>
+              <button className={styles.cancelBtn} onClick={() => { setShowLinkModal(false); setLinkForm({ studentIds: [], teacherId: '', notes: '' }) }}>Cancelar</button>
+              <button 
+                className={styles.submitBtn} 
+                onClick={submitLinkForm} 
+                disabled={linkFormLoading || linkForm.studentIds.length === 0 || !linkForm.teacherId}
+              >
+                {linkFormLoading ? 'Vinculando...' : 'Crear Vínculo'}
+              </button>
+            </div>
           </div>
         </div>
       )}

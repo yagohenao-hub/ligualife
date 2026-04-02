@@ -15,6 +15,9 @@ interface StudentSession {
   topicName: string | null
   cachedSlides?: any[] | null
   topicOrder: number | null
+  isHoliday?: boolean
+  holidayConfirmedTeacher?: boolean
+  holidayConfirmedStudent?: boolean
 }
 
 interface StudentProfile {
@@ -45,6 +48,11 @@ export default function StudentDashboardPage() {
   const [teacherRating, setTeacherRating] = useState(0)
   const [teacherComment, setTeacherComment] = useState('')
   const [ratingLoading, setRatingLoading] = useState(false)
+
+  // Series Request state
+  const [seriesName, setSeriesName] = useState('')
+  const [seriesLoading, setSeriesLoading] = useState(false)
+  const [seriesMsg, setSeriesMsg] = useState<{ text: string; type: 'success' | 'error' } | null>(null)
 
   useEffect(() => {
     const raw = sessionStorage.getItem('ll_student')
@@ -82,6 +90,20 @@ export default function StudentDashboardPage() {
     sessionStorage.setItem('ll_student', JSON.stringify(updated))
     loadSessions(profile!.id)
     setRescheduling(null)
+  }
+
+  async function handleConfirmHoliday(session: StudentSession) {
+    try {
+      const res = await fetch('/api/confirm-holiday', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId: session.id, role: 'student' }),
+      })
+      if (!res.ok) throw new Error('Error')
+      loadSessions(profile!.id)
+    } catch {
+      alert('Error al confirmar clase en festivo')
+    }
   }
 
   async function openTokenModal() {
@@ -155,6 +177,30 @@ export default function StudentDashboardPage() {
         alert('Gracias por tu feedback.')
     } else {
         alert('Error al enviar la calificación.')
+    }
+  }
+
+  async function handleSeriesRequest() {
+    if (!profile || !seriesName.trim()) return
+    setSeriesLoading(true)
+    setSeriesMsg(null)
+    try {
+      const res = await fetch('/api/student/series-request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ studentId: profile.id, seriesName: seriesName.trim() })
+      })
+      const data = await res.json()
+      if (res.ok) {
+        setSeriesMsg({ text: '✅ Solicitud enviada. ¡Te avisaremos cuando esté lista!', type: 'success' })
+        setSeriesName('')
+      } else {
+        setSeriesMsg({ text: data.error || 'Error al enviar solicitud', type: 'error' })
+      }
+    } catch {
+      setSeriesMsg({ text: 'Error de conexión', type: 'error' })
+    } finally {
+      setSeriesLoading(false)
     }
   }
 
@@ -274,31 +320,54 @@ export default function StudentDashboardPage() {
             {!loading && upcoming.length === 0 && (
               <p className={styles.empty}>No tienes clases programadas próximamente.</p>
             )}
-            {!loading && upcoming.map(s => (
-              <div key={s.id} className={styles.sessionRow}>
-                <div className={styles.sessionDot} />
-                <div className={styles.sessionInfo}>
-                  <div className={styles.sessionDate}>{formatDate(s.date)}</div>
-                  {s.topicName && <div className={styles.sessionTopic}>{s.topicName}</div>}
-                </div>
-                <div className={styles.rescheduleWrap}>
-                  <div className={styles.infoTooltipWrap}>
-                    <span className={styles.infoIcon}>i</span>
-                    <div className={styles.tooltipText}>
-                      Si reagendas, la sesión se moverá para usar 1 token y el temario avanzará. Solo permitido hasta 24h antes.
+            {!loading && upcoming.map(s => {
+              const isSkipped = s.isHoliday && s.status === 'Canceled'
+              return (
+                <div key={s.id} className={`${styles.sessionRow} ${isSkipped ? styles.skipped : ''}`}>
+                  <div className={styles.sessionDot} />
+                  <div className={styles.sessionInfo}>
+                    <div className={styles.sessionDateRow}>
+                      <div className={styles.sessionDate}>{formatDate(s.date)}</div>
+                      {s.isHoliday && <span className={styles.holidayBadge}>Festivo</span>}
                     </div>
+                    {s.topicName && <div className={styles.sessionTopic}>{s.topicName}</div>}
+                    {isSkipped && (
+                      <div className={styles.holidayAlert}>
+                        ⚠️ Clase cancelada por festivo.
+                        <button 
+                          className={styles.holidayConfirmBtn}
+                          onClick={() => handleConfirmHoliday(s)}
+                          disabled={s.holidayConfirmedStudent}
+                        >
+                          {s.holidayConfirmedStudent ? '✓ Confirmado por ti' : 'Ver clase de todos modos'}
+                        </button>
+                        <div className={styles.holidayStatusText}>
+                          Estado: {s.holidayConfirmedTeacher ? '✅ Profesor confirmó' : '⏳ Profesor pendiente'}
+                        </div>
+                      </div>
+                    )}
                   </div>
-                  <button
-                    className={styles.rescheduleBtn}
-                    onClick={() => handleReschedule(s)}
-                    disabled={rescheduling === s.id}
-                    title="Reagendar esta clase"
-                  >
-                    {rescheduling === s.id ? '...' : '↺'}
-                  </button>
+                  {!isSkipped && (
+                    <div className={styles.rescheduleWrap}>
+                      <div className={styles.infoTooltipWrap}>
+                        <span className={styles.infoIcon}>i</span>
+                        <div className={styles.tooltipText}>
+                          Si reagendas, la sesión se moverá para usar 1 token y el temario avanzará. Solo permitido hasta 24h antes.
+                        </div>
+                      </div>
+                      <button
+                        className={styles.rescheduleBtn}
+                        onClick={() => handleReschedule(s)}
+                        disabled={rescheduling === s.id}
+                        title="Reagendar esta clase"
+                      >
+                        {rescheduling === s.id ? '...' : '↺'}
+                      </button>
+                    </div>
+                  )}
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </section>
 
           {/* Tokens */}
@@ -314,6 +383,33 @@ export default function StudentDashboardPage() {
               </button>
             ) : (
               <p className={styles.empty}>Cuando reagendes una clase, tu token aparecerá aquí y podrás usarlo para agendar una sesión de reposición.</p>
+            )}
+          </section>
+
+          {/* Series Request Section */}
+          <section className={styles.card}>
+            <h2 className={styles.sectionTitle}>🎬 Actividad de Serie</h2>
+            <p className={styles.empty}>¿Viendo una serie nueva? Pídenos una actividad pedagógica (1 por semana).</p>
+            <div className={styles.seriesRequestBox}>
+              <input
+                className={styles.seriesInput}
+                placeholder="Nombre de la serie..."
+                value={seriesName}
+                onChange={e => setSeriesName(e.target.value)}
+                disabled={seriesLoading}
+              />
+              <button 
+                className={styles.seriesBtn} 
+                onClick={handleSeriesRequest}
+                disabled={seriesLoading || !seriesName.trim()}
+              >
+                {seriesLoading ? '...' : 'Solicitar'}
+              </button>
+            </div>
+            {seriesMsg && (
+              <div className={`${styles.seriesMsg} ${seriesMsg.type === 'error' ? styles.seriesError : styles.seriesSuccess}`}>
+                {seriesMsg.text}
+              </div>
             )}
           </section>
         </div>

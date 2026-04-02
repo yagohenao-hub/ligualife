@@ -23,8 +23,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         ? `FIND('${teacherId}', ARRAYJOIN({Teacher}, ',')) > 0`
         : ''
     const formula = teacherFilter
-      ? `AND(${teacherFilter}, {Status} = 'Scheduled')`
-      : `{Status} = 'Scheduled'`
+      ? `AND(${teacherFilter}, OR({Status} = 'Scheduled', AND({Status} = 'Canceled', {Is Holiday})))`
+      : `OR({Status} = 'Scheduled', AND({Status} = 'Canceled', {Is Holiday}))`
     const params = [
       `filterByFormula=${encodeURIComponent(formula)}`,
       `sort[0][field]=Scheduled Date/Time`,
@@ -83,6 +83,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           status: r.fields['Status'] as string,
           sessionName: studentName || (r.fields['Session Name'] as string) || 'Sesión',
           topicName: topicName || null,
+          isHoliday: !!r.fields['Is Holiday'],
+          holidayConfirmedTeacher: !!r.fields['Holiday Confirmed (Teacher)'],
+          holidayConfirmedStudent: !!r.fields['Holiday Confirmed (Student)']
         } satisfies Session
       })
     )

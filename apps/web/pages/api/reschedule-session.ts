@@ -15,14 +15,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const currentTopicIds = currentSession.fields['Curriculum Topic'] as string[]
     const currentTopicId = currentTopicIds?.[0]
 
-    const participantIds = currentSession.fields['Session Participants'] as string[]
+    const participantIds = currentSession.fields['Session Participants'] as string[] || []
+    const groupIds = currentSession.fields['Study Group'] as string[]
+    const groupId = groupIds?.[0]
+
+    // Determine group type
+    let groupType: string | null = null
+    if (groupId) {
+      const groupRecord = await fetchAirtableRecord('Study Groups', groupId)
+      groupType = groupRecord?.fields['Group Type'] as string
+    }
+
+    // Determine the target for future cascading
+    // If there is a group, we filter future sessions for that group.
+    // If not, we filter future sessions for the primary student.
     let studentId = ''
-    if (participantIds && participantIds[0]) {
+    if (!groupId && participantIds.length > 0) {
       const participant = await fetchAirtableRecord('Session Participants', participantIds[0])
       studentId = (participant?.fields['Student'] as string[])?.[0] ?? ''
     }
 
-    if (!studentId) return res.status(400).json({ error: 'Student not found in session' })
+    if (!groupId && !studentId) {
+      return res.status(400).json({ error: 'No se encontraron alumnos ni grupos en esta sesión' })
+    }
 
     // 2. Fetch all future scheduled sessions for cascading
     const futureSessionsRes = await fetchFromAirtable(
@@ -30,39 +45,42 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       `filterByFormula=AND({Status}='Scheduled', RECORD_ID() != '${sessionId}')&sort[0][field]=Scheduled Date/Time&sort[0][direction]=asc`
     )
 
-    const futureSessionsForStudent = []
+    const futureSessionsToCascade = []
     for (const record of futureSessionsRes.records || []) {
-      const pIds = record.fields['Session Participants'] as string[]
-      if (!pIds) continue
-
-      let isMatch = false
-      for (const pId of pIds) {
-        const pt = await fetchAirtableRecord('Session Participants', pId)
-        if ((pt?.fields['Student'] as string[])?.[0] === studentId) {
-          isMatch = true
-          break
+      if (groupId) {
+        // Cascade for the group
+        const recGroup = (record.fields['Study Group'] as string[])?.[0]
+        if (recGroup === groupId) {
+          futureSessionsToCascade.push(record)
         }
+      } else {
+        // Cascade for the individual student
+        const pIds = record.fields['Session Participants'] as string[]
+        if (!pIds) continue
+
+        let isMatch = false
+        for (const pId of pIds) {
+          const pt = await fetchAirtableRecord('Session Participants', pId)
+          if ((pt?.fields['Student'] as string[])?.[0] === studentId) {
+            isMatch = true
+            break
+          }
+        }
+        if (isMatch) futureSessionsToCascade.push(record)
       }
-      if (isMatch) futureSessionsForStudent.push(record)
     }
 
     // 3. Cascade the topics down
-    // The immediate next session gets the current session's topic (if any)
-    // The next-next session gets the next session's original topic, etc.
     let rollingTopicId = currentTopicId
 
-    // Only cascade if there was a topic assigned to the cancelled session
     if (rollingTopicId) {
-      for (const futureSession of futureSessionsForStudent) {
+      for (const futureSession of futureSessionsToCascade) {
         const originalFutureTopicId = (futureSession.fields['Curriculum Topic'] as string[])?.[0]
         
-        // Update future session with the rolling topic
         await patchAirtableRecord('Sessions', futureSession.id, {
           'Curriculum Topic': [rollingTopicId]
         })
 
-        // Prepare rolling topic for the next iteration (if original future topic existed)
-        // If the future session had no topic, the cascade stops.
         if (!originalFutureTopicId) break
         rollingTopicId = originalFutureTopicId
       }
@@ -73,14 +91,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       'Status': 'Canceled'
     })
 
-    // 5. Add +1 token to Student
-    const student = await fetchAirtableRecord('Students', studentId)
-    const currentTokens = (student?.fields['Tokens de Reposición'] as number) || 0
-    await patchAirtableRecord('Students', studentId, {
-      'Tokens de Reposición': currentTokens + 1
-    })
+    // 5. Refund Tokens (Private Groups or Individuals)
+    const shouldRefundTokens = groupType !== 'Community'
 
-    return res.status(200).json({ ok: true })
+    if (shouldRefundTokens) {
+      // Keep track of who received a refund to avoid double charging
+      const refundedStudents = new Set<string>()
+
+      for (const pId of participantIds) {
+        const participant = await fetchAirtableRecord('Session Participants', pId)
+        const sId = (participant?.fields['Student'] as string[])?.[0]
+        
+        if (sId && !refundedStudents.has(sId)) {
+          refundedStudents.add(sId)
+          const student = await fetchAirtableRecord('Students', sId)
+          const currentTokens = (student?.fields['Tokens de Reposición'] as number) || 0
+          await patchAirtableRecord('Students', sId, {
+            'Tokens de Reposición': currentTokens + 1
+          })
+        }
+      }
+    }
+
+    return res.status(200).json({ ok: true, msg: shouldRefundTokens ? 'Cancelado y tokens reembolsados' : 'Cancelado (Comunidad sin reembolso)' })
   } catch (err: any) {
     return res.status(500).json({ error: 'Error', detail: err.message })
   }

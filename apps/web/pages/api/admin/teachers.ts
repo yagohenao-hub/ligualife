@@ -30,6 +30,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         pin: (r.fields['PIN'] ?? '') as string,
         bio: (r.fields['Bio'] ?? '') as string,
         meetingLink: (r.fields['Meeting Link'] ?? '') as string,
+        specialty: (r.fields['Academic Interests'] ?? []) as string[],
+        availability: (r.fields['Availability'] ?? '') as string,
         // Count linked students
         studentCount: ((r.fields['Student-Teacher'] as string[]) ?? []).length,
       }))

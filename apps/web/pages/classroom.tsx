@@ -81,6 +81,16 @@ export default function ClassroomPage() {
   const [previousNotes, setPreviousNotes] = useState<{ date: string, notes: string, sessionName: string } | null>(null)
   const [showPrevNotes, setShowPrevNotes] = useState(false)
 
+  // AI Chat and Video Bank state
+  const [chatOpen, setChatOpen] = useState(false)
+  const [chatMessages, setChatMessages] = useState<{ role: 'user' | 'assistant', content: string }[]>([
+    { role: 'assistant', content: '¡Hola! Soy tu Copilot de LinguaLife. ¿En qué puedo ayudarte con la clase de hoy?' }
+  ])
+  const [chatInput, setChatInput] = useState('')
+  const [sendingChat, setSendingChat] = useState(false)
+  const [videoBank, setVideoBank] = useState<any[]>([])
+  const [loadingVideoBank, setLoadingVideoBank] = useState(false)
+
   const [currentTopicId, setCurrentTopicId] = useState<string | null>(null)
   const [participantId, setParticipantId] = useState<string | null>(null)
 
@@ -164,6 +174,10 @@ export default function ClassroomPage() {
         const progressRes = await fetch(`/api/student-progress?ids=${studentData.progressIds.join(',')}`)
         if (progressRes.ok) setProgress(await progressRes.json())
       }
+
+      // Fetch Video Bank for Warmup
+      fetchVideoBank(studentData?.level)
+
     } catch (err: any) {
       setError(err.message || 'Error al cargar datos')
     } finally {
@@ -223,6 +237,53 @@ export default function ClassroomPage() {
     if (p === 'core' && slides.length === 0) generateSlides()
   }
 
+  async function fetchVideoBank(level?: string) {
+    setLoadingVideoBank(true)
+    try {
+      const res = await fetch(`/api/video-bank-random?level=${level || ''}&limit=4`)
+      if (res.ok) {
+        const data = await res.json()
+        setVideoBank(data.videos || [])
+      }
+    } catch (e) {
+      console.error('Error fetching video bank:', e)
+    } finally {
+      setLoadingVideoBank(false)
+    }
+  }
+
+  async function handleSendChatMessage() {
+    if (!chatInput.trim() || sendingChat) return
+    const userMsg = chatInput.trim()
+    setChatMessages(prev => [...prev, { role: 'user', content: userMsg }])
+    setChatInput('')
+    setSendingChat(true)
+
+    try {
+      const res = await fetch('/api/ai-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [...chatMessages, { role: 'user', content: userMsg }],
+          context: {
+            studentName: student?.name,
+            level: student?.level,
+            topic: topic?.title,
+          }
+        })
+      })
+      const data = await res.json()
+      if (data.message) {
+        setChatMessages(prev => [...prev, { role: 'assistant', content: data.message }])
+      }
+    } catch (e) {
+      console.error('AI Chat Error:', e)
+      setChatMessages(prev => [...prev, { role: 'assistant', content: 'Lo siento, tuve un error al procesar tu consulta. Intenta de nuevo.' }])
+    } finally {
+      setSendingChat(false)
+    }
+  }
+
   function getInitials(name: string) {
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
   }
@@ -263,6 +324,14 @@ export default function ClassroomPage() {
       handleFinalizeClass()
     }
   }, [elapsed, classStarted, classFinished])
+
+  const chatEndRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: 'smooth' })
+    }
+  }, [chatMessages])
 
   if (!mounted || !session) return null
 
@@ -596,6 +665,48 @@ export default function ClassroomPage() {
                         <p className={styles.bridgeInstruction}>Mira esta frase cuidadosamente. <strong>¿Qué notas aquí?</strong> ¿Qué estructura te llama la atención?</p>
                       </div>
                     </div>
+
+                    {/* Video Bank Random Links */}
+                    <div className={styles.videoBankSection}>
+                      <div className={styles.cardLabel}>
+                        <span style={{ fontSize: '1.2rem', marginRight: '8px' }}>📺</span>
+                        Video Bank — Recomendados para hoy
+                      </div>
+                      <p className={styles.textSecondary}>
+                        Contenido nativo corto para practicar listening y vocabulario real.
+                      </p>
+                      
+                      {loadingVideoBank && <div style={{marginTop: '1rem', opacity: 0.6}}>Cargando videos...</div>}
+                      
+                      <div className={styles.videoBankGrid}>
+                        {videoBank.map((vid) => (
+                          <a 
+                            key={vid.id} 
+                            href={vid.url} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className={styles.videoMiniCard}
+                          >
+                            <div 
+                              className={styles.videoThumb} 
+                              style={{ backgroundImage: `url(https://img.youtube.com/vi/${vid.url.split('v=')[1]?.split('&')[0] || vid.url.split('be/')[1]}/hqdefault.jpg)` }}
+                            >
+                              <div className={styles.videoThumbOverlay}>
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                              </div>
+                            </div>
+                            <div className={styles.videoInfo}>
+                              <div className={styles.videoMiniTitle}>{vid.title || 'Video Nativo'}</div>
+                              <div className={styles.videoMiniMeta}>{vid.level || student?.level}</div>
+                            </div>
+                          </a>
+                        ))}
+                      </div>
+                      
+                      {videoBank.length === 0 && !loadingVideoBank && (
+                        <p style={{marginTop: '1rem', fontSize: '0.8rem', opacity: 0.5}}>No hay videos guardados aún.</p>
+                      )}
+                    </div>
                   </>
                 )}
               </div>
@@ -719,10 +830,29 @@ export default function ClassroomPage() {
         </div>
       )}
 
+      {/* ── Floating Buttons Row ── */}
+      <button
+        className={`${styles.chatFab} ${chatOpen ? styles.chatFabActive : ''}`}
+        onClick={() => {
+          setChatOpen(o => !o)
+          if (notesOpen) setNotesOpen(false)
+        }}
+        title="AI Copilot Chat"
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          <path d="M12 7v6"></path>
+          <path d="M9 10h6"></path>
+        </svg>
+      </button>
+
       {/* ── Floating Notes Bubble ── */}
       <button
         className={`${styles.notesFab} ${notesOpen ? styles.notesFabActive : ''}`}
-        onClick={() => setNotesOpen(o => !o)}
+        onClick={() => {
+          setNotesOpen(o => !o)
+          if (chatOpen) setChatOpen(false)
+        }}
         title="Notas del profesor"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="M2 2l1.5 14.5L13 18l5-5-1.5-7.5L2 2z"></path><line x1="2" y1="2" x2="11" y2="11"></line></svg>
@@ -731,25 +861,59 @@ export default function ClassroomPage() {
       {notesOpen && (
         <div className={styles.notesPanel}>
           <div className={styles.notesPanelHeader}>
-            <span>📋 Notas · Errores del alumno</span>
+            <span style={{color: '#60a5fa'}}>📋 Notas del Alumno</span>
             <button className={styles.notesPanelClose} onClick={() => setNotesOpen(false)}>✕</button>
           </div>
           <textarea
             className={styles.notesTextarea}
-            placeholder={`Ej: ${studentName} confundió "since" con "for". Usa el tiempo continuo en lugar del simple...`}
+            placeholder={`Ej: ${studentName} confundió "since" con "for"...`}
             value={notes}
             onChange={e => setNotes(e.target.value)}
           />
-          <div className={styles.notesPanelFooter} style={{ justifyContent: 'flex-start' }}>
-            <button
-              className={styles.notesClear}
-              onClick={() => setNotes('')}
+          <div className={styles.notesPanelFooter}>
+            <button className={styles.notesClear} onClick={() => setNotes('')}>Limpiar</button>
+            <span className={styles.textSecondary} style={{ fontSize: '0.7rem', alignSelf: 'center', opacity: 0.6 }}> (Se guardan al finalizar) </span>
+          </div>
+        </div>
+      )}
+
+      {chatOpen && (
+        <div className={styles.chatPanel}>
+          <div className={styles.chatHeader}>
+            <div className={styles.chatTitle}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+              AI Copilot
+            </div>
+            <button className={styles.chatClose} onClick={() => setChatOpen(false)}>✕</button>
+          </div>
+          
+          <div className={styles.chatMessages}>
+            {chatMessages.map((m, i) => (
+              <div key={i} className={`${styles.chatMessage} ${m.role === 'assistant' ? styles.aiMessage : styles.userMessage}`}>
+                {m.content}
+              </div>
+            ))}
+            {sendingChat && (
+              <div className={`${styles.chatMessage} ${styles.aiMessage}`} style={{opacity: 0.5}}>...</div>
+            )}
+            <div ref={chatEndRef} />
+          </div>
+
+          <div className={styles.chatInputArea}>
+            <input 
+              className={styles.chatInput}
+              placeholder="Pregunta algo (ejemplos, vocabulario...)"
+              value={chatInput}
+              onChange={e => setChatInput(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleSendChatMessage()}
+            />
+            <button 
+              className={styles.chatSendBtn} 
+              onClick={handleSendChatMessage}
+              disabled={sendingChat || !chatInput.trim()}
             >
-              Limpiar
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
             </button>
-            <span className={styles.textSecondary} style={{ fontSize: '0.7rem', alignSelf: 'center', opacity: 0.6 }}>
-              (Se guardarán al finalizar la clase)
-            </span>
           </div>
         </div>
       )}
