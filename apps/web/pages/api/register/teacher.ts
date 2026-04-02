@@ -35,7 +35,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               "fld7vSUdd69zdl6yQ": availability,
               "fld9QkYJhY4df17Bb": bankDetails,
               "fldwAF9uwhjDUXoZj": interests, // array of names works with typecast: true
-              "fldsCFNKymtmEbVDe": generatedPin
+              "fldsCFNKymtmEbVDe": generatedPin,
+              "Status": "Pending"
             }
           }
         ],
