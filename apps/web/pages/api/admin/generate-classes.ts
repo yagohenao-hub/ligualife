@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { isColombianHoliday } from '@/lib/holidays'
+import { fetchFromAirtable } from '@/lib/airtable'
 
 const BASE_ID = 'app9ZtojlxX5FoZ7y'
 const STUDENTS_TABLE = 'tblqzaBBn18txOyLu'
@@ -94,9 +95,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // 5. Generate schedule dates for next N weeks (Colombia time = UTC-5)
-    const COL_OFFSET = -5
     const nowUtc = new Date()
-    const today = new Date(nowUtc.getTime() + COL_OFFSET * 60 * 60 * 1000)
+    const today = new Date(nowUtc.toLocaleString('en-US', { timeZone: 'America/Bogota' }))
     today.setHours(0, 0, 0, 0)
 
     const generatedDates: { date: Date, isHoliday: boolean }[] = []
@@ -119,14 +119,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         
         d.setDate(d.getDate() + diff)
         d.setHours(slot.hour, 0, 0, 0)
-        
+
+        // Convert Colombia local time to UTC for storage (Colombia = UTC-5)
+        const utcDate = new Date(d)
+        utcDate.setHours(utcDate.getHours() + 5)
+
         if (d.getTime() > today.getTime()) {
           const isHoliday = isColombianHoliday(d)
           // "Comunidad" (Desconocidos) skips holidays entirely per User instruction
           if (isHoliday && groupType === 'Community Group') {
             continue
           }
-          generatedDates.push({ date: d, isHoliday })
+          generatedDates.push({ date: utcDate, isHoliday })
         }
       }
     }
@@ -160,6 +164,42 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const batchData = await batchRes.json()
       if (!batchRes.ok) throw new Error(JSON.stringify(batchData))
       createdSessions = [...createdSessions, ...batchData.records]
+    }
+
+    // 6b. Assign Curriculum Topics to sessions sequentially
+    const topicsData = await fetchFromAirtable('Curriculum Topics', 'sort[0][field]=Order&sort[0][direction]=asc')
+    const topics: { id: string }[] = topicsData.records || []
+
+    if (topics.length > 0) {
+      // Sort sessions chronologically by scheduled date
+      const sortedSessions = [...createdSessions].sort((a, b) => {
+        const dateA = new Date(a.fields['Scheduled Date/Time']).getTime()
+        const dateB = new Date(b.fields['Scheduled Date/Time']).getTime()
+        return dateA - dateB
+      })
+
+      // Assign topics in order; stop if we run out of topics
+      const updates: { id: string; fields: { 'Curriculum Topic': string[] } }[] = []
+      for (let i = 0; i < sortedSessions.length && i < topics.length; i++) {
+        updates.push({
+          id: sortedSessions[i].id,
+          fields: { 'Curriculum Topic': [topics[i].id] }
+        })
+      }
+
+      // Batch-update in groups of 10
+      for (let i = 0; i < updates.length; i += 10) {
+        const batch = updates.slice(i, i + 10)
+        const patchRes = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${SESSIONS_TABLE}`, {
+          method: 'PATCH',
+          headers: {
+            'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ records: batch, typecast: true })
+        })
+        if (!patchRes.ok) throw new Error(JSON.stringify(await patchRes.json()))
+      }
     }
 
     // 7. Insert into 'Session Participants' mapping Students <-> Sessions

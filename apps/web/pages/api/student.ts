@@ -13,8 +13,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!record) return res.status(404).json({ error: 'Estudiante no encontrado' })
 
     const notes = record.fields['Notes'] as string | undefined
-    // Parse interests from Notes field (format: "INTERESTS: val1, val2, ...")
-    let interests = ((record.fields['Interests'] as string[]) ?? []).join(', ') || undefined
+
+    // Interests is a linked-record field — Airtable returns record IDs.
+    // Resolve them to readable names from the Interests table.
+    const rawInterests = (record.fields['Interests'] as string[]) ?? []
+    let interestNames: string[] = []
+    if (rawInterests.length > 0 && rawInterests[0].startsWith('rec')) {
+      const resolved = await Promise.all(
+        rawInterests.map(async (recId) => {
+          try {
+            const linked = await fetchAirtableRecord('Interests', recId)
+            return (linked?.fields['Name'] as string) ?? recId
+          } catch {
+            return recId
+          }
+        })
+      )
+      interestNames = resolved
+    } else {
+      interestNames = rawInterests
+    }
+    let interests = interestNames.join(', ') || undefined
+
+    // Fallback: parse interests from Notes field (format: "INTERESTS: val1, val2, ...")
     if (!interests && notes) {
       const match = notes.match(/INTERESTS:\s*(.+)/i)
       if (match) interests = match[1].trim()

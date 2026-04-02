@@ -4,9 +4,35 @@ const BASE_ID = 'app9ZtojlxX5FoZ7y'
 const STUDENTS_TABLE = 'tblqzaBBn18txOyLu'
 const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY
 
+const GOAL_LEVEL_MAP: Record<string, string> = {
+  'rectE12LwYtTeBoKV': 'B1',  // General (English for Everyday Life)
+  'recVYlMlMhHK9XGxo': 'B2',  // Business (English for Career & Work)
+  'recqioqL5XXSvMi4F': 'C1',  // B2 to C1 (Advanced Mastery)
+  'recG8y2MTbh8w1irB': 'A2',  // Travel & Culture
+  'recIiDTxgYE0NCkmW': 'B2',  // Marketing & Digital World
+}
+
+function generatePin(fullName: string): string {
+  const letters = fullName.replace(/\s+/g, '').toUpperCase().slice(0, 2).padEnd(2, 'X')
+  const numbers = Math.floor(1000 + Math.random() * 9000).toString()
+  const pos = Math.floor(Math.random() * 3)
+  const digits = numbers.split('')
+  digits.splice(pos, 0, ...letters.split(''))
+  return digits.slice(0, 6).join('')
+}
+
+async function fetchTable(table: string, params: string) {
+  const url = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(table)}?${params}`
+  const res = await fetch(url, {
+    headers: { Authorization: `Bearer ${AIRTABLE_API_KEY}` },
+  })
+  if (!res.ok) throw new Error(`Airtable error: ${res.status}`)
+  return res.json()
+}
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' })
-  
+
   const { fullName, email, phone, ageRange, goalId, interests, availability, openToGroups } = req.body
 
   if (!fullName || !email) {
@@ -14,6 +40,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
+    // Generate unique PIN (check against Students and Teachers, retry up to 5 times)
+    let pin = ''
+    for (let i = 0; i < 5; i++) {
+      const candidate = generatePin(fullName)
+      const checkStudents = await fetchTable('Students', `filterByFormula=${encodeURIComponent(`{PIN} = '${candidate}'`)}`)
+      if (!checkStudents.records?.length) {
+        const checkTeachers = await fetchTable('Teachers', `filterByFormula=${encodeURIComponent(`{PIN} = '${candidate}'`)}`)
+        if (!checkTeachers.records?.length) { pin = candidate; break }
+      }
+    }
+    if (!pin) {
+      return res.status(500).json({ error: 'No se pudo generar un PIN único. Intenta de nuevo.' })
+    }
+
+    // Map goal to CEFR level
+    const level = GOAL_LEVEL_MAP[goalId] || 'B2'
+
     const response = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${STUDENTS_TABLE}`, {
       method: 'POST',
       headers: {
@@ -33,7 +76,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               "fldmPdharKvZzqsMq": availability,
               "fldXUKKO28Wr1dN76": "Pending",
               "fldHBsqpAjtOv9sBk": `Registration Goal ID: ${goalId}`,
-              "flddBUJK1K42KKsJv": openToGroups
+              "flddBUJK1K42KKsJv": openToGroups,
+              "PIN": pin,
+              "Level": level
             }
           }
         ],
@@ -47,7 +92,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(500).json({ error: 'No se pudo guardar la información en la base de datos', details: data })
     }
 
-    return res.status(200).json({ success: true, record: data.records[0] })
+    return res.status(200).json({ success: true, pin, record: data.records[0] })
   } catch (error: any) {
     console.error('API Error:', error)
     return res.status(500).json({ error: 'Error del servidor' })

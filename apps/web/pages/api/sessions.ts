@@ -17,14 +17,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
+    const sanitizedDate = date.replace(/[^0-9-]/g, '')
+    const dateFilter = `IS_SAME({Scheduled Date/Time}, '${sanitizedDate}', 'day')`
+
     const teacherFilter = teacherName
       ? `FIND('${teacherName}', ARRAYJOIN({Teacher}, ',')) > 0`
       : teacherId
         ? `FIND('${teacherId}', ARRAYJOIN({Teacher}, ',')) > 0`
         : ''
+    const statusFilter = `OR({Status} = 'Scheduled', AND({Status} = 'Canceled', {Is Holiday}))`
     const formula = teacherFilter
-      ? `AND(${teacherFilter}, OR({Status} = 'Scheduled', AND({Status} = 'Canceled', {Is Holiday})))`
-      : `OR({Status} = 'Scheduled', AND({Status} = 'Canceled', {Is Holiday}))`
+      ? `AND(${teacherFilter}, ${dateFilter}, ${statusFilter})`
+      : `AND(${dateFilter}, ${statusFilter})`
     const params = [
       `filterByFormula=${encodeURIComponent(formula)}`,
       `sort[0][field]=Scheduled Date/Time`,
@@ -56,7 +60,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         const scheduledDT = r.fields['Scheduled Date/Time']
         const timeStr = scheduledDT
-          ? new Date(scheduledDT).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          ? new Date(scheduledDT).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', timeZone: 'America/Bogota' })
           : ''
 
         let topicName = ''

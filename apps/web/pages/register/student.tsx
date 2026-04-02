@@ -29,6 +29,7 @@ export default function StudentRegistration() {
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [generatedPin, setGeneratedPin] = useState<string | null>(null)
 
   // Form state
   const [formData, setFormData] = useState({
@@ -120,7 +121,8 @@ export default function StudentRegistration() {
       
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Error en el registro')
-      
+
+      if (data.pin) setGeneratedPin(data.pin)
       setStep(5) // Success step
     } catch (err: any) {
       setError(err.message)
@@ -444,6 +446,35 @@ export default function StudentRegistration() {
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🎉</div>
             <h1 className={styles.title}>¡Registro Exitoso!</h1>
+
+            {generatedPin && (
+              <div style={{
+                margin: '1.5rem auto',
+                padding: '1.25rem 2rem',
+                background: 'rgba(16, 185, 129, 0.08)',
+                border: '2px solid rgba(16, 185, 129, 0.4)',
+                borderRadius: '12px',
+                maxWidth: '320px'
+              }}>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: '0 0 0.5rem' }}>
+                  Tu PIN de acceso es:
+                </p>
+                <p style={{
+                  fontSize: '2rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.25em',
+                  color: '#10b981',
+                  margin: 0,
+                  fontFamily: 'monospace'
+                }}>
+                  {generatedPin}
+                </p>
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', margin: '0.5rem 0 0' }}>
+                  Guárdalo en un lugar seguro. Lo necesitarás para iniciar sesión.
+                </p>
+              </div>
+            )}
+
             <p className={styles.subtitle}>
               Hemos recibido tu información. Estás a un paso de comenzar tu aventura con LinguaLife.<br /><br />
               Por favor, envía el comprobante de pago a tu asesor asignado para activar tu cuenta y agendar tus primeras clases.
