@@ -95,9 +95,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // 5. Generate schedule dates for next N weeks (Colombia time = UTC-5)
-    const nowUtc = new Date()
-    const today = new Date(nowUtc.toLocaleString('en-US', { timeZone: 'America/Bogota' }))
-    today.setHours(0, 0, 0, 0)
+    // Use UTC throughout and only apply offset when storing
+    const COL_OFFSET_MS = 5 * 60 * 60 * 1000
+    const nowInColombia = new Date(Date.now() - COL_OFFSET_MS) // "fake UTC" = Colombia time
+    const today = new Date(nowInColombia)
+    today.setUTCHours(0, 0, 0, 0)
 
     const generatedDates: { date: Date, isHoliday: boolean }[] = []
     
@@ -111,21 +113,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     for (let w = 0; w < weeksToGenerate; w++) {
       for (const slot of scheduledSlots) {
+        // d operates in "fake UTC" where UTC values represent Colombia time
         const d = new Date(today)
-        d.setDate(today.getDate() + (w * 7)) 
-        
-        let diff = slot.currDayOffset - d.getDay()
+        d.setUTCDate(today.getUTCDate() + (w * 7))
+
+        let diff = slot.currDayOffset - d.getUTCDay()
         if (diff < 0) diff += 7
-        
-        d.setDate(d.getDate() + diff)
-        d.setHours(slot.hour, 0, 0, 0)
 
-        // Convert Colombia local time to UTC for storage (Colombia = UTC-5)
-        const utcDate = new Date(d)
-        utcDate.setHours(utcDate.getHours() + 5)
+        d.setUTCDate(d.getUTCDate() + diff)
+        d.setUTCHours(slot.hour, 0, 0, 0) // slot.hour is Colombia time (e.g., 14 = 2pm COT)
 
-        if (d.getTime() > today.getTime()) {
-          const isHoliday = isColombianHoliday(d)
+        // Convert to real UTC for storage: add 5h (Colombia = UTC-5)
+        const utcDate = new Date(d.getTime() + COL_OFFSET_MS)
+
+        if (d.getTime() > nowInColombia.getTime()) {
+          // Use d (Colombia time) for holiday check
+          const colDateStr = d.toISOString().slice(0, 10)
+          const isHoliday = isColombianHoliday(colDateStr)
           // "Comunidad" (Desconocidos) skips holidays entirely per User instruction
           if (isHoliday && groupType === 'Community Group') {
             continue
