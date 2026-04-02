@@ -75,10 +75,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               "fldTfNhYtykGeDx1x": interests,
               "fldmPdharKvZzqsMq": availability,
               "fldXUKKO28Wr1dN76": "Pending",
-              "fldHBsqpAjtOv9sBk": `Registration Goal ID: ${goalId}`,
+              "fldHBsqpAjtOv9sBk": `Level: ${level} | Goal ID: ${goalId}`,
               "flddBUJK1K42KKsJv": openToGroups,
-              "PIN": pin,
-              "Level": level
+              "PIN": pin
             }
           }
         ],
