@@ -227,11 +227,81 @@ Documento exhaustivo de todos los bugs, features faltantes, e inconsistencias en
 
 ---
 
+## CRITICOS ADICIONALES (encontrados en segunda auditoria)
+
+### 23. sessions.ts NUNCA filtra por fecha — retorna TODAS las sesiones del profesor
+
+**Archivo**: `pages/api/sessions.ts`
+
+**Impacto**: El dashboard del profesor muestra TODAS las sesiones (pasadas y futuras) en vez de solo las del dia. Con muchos alumnos y semanas de clases, la lista crece indefinidamente.
+
+**Causa**: El parametro `date` se recibe y valida, pero NUNCA se usa en la query de Airtable. El filtro solo busca por `teacherId`.
+
+**Fix requerido**: Agregar filtro de fecha en la formula de Airtable: `AND({Teacher}='recXXX', IS_SAME({Scheduled Date/Time}, '2026-04-02', 'day'))`.
+
+---
+
+### 24. Nivel del alumno nunca se asigna en ningun punto del flujo
+
+**Archivos**: Registro, admin, classroom
+
+**Impacto**: El classroom pasa `level || 'B2'` a Gemini para generar slides. Todos los alumnos reciben contenido de nivel B2 por defecto, sin importar su nivel real. El Video Bank tambien filtra por nivel pero no tiene dato real.
+
+**Fix requerido**: Agregar campo Level al formulario de registro de alumno (o que el admin lo asigne). Propagarlo al classroom via el student record.
+
+---
+
+### 25. Timezone del alumno se envia pero nunca se almacena
+
+**Archivo**: `pages/api/register/student.ts`
+
+**Impacto**: El frontend envia `timezone: "America/Bogota"` pero el API no lo guarda. No hay campo de timezone en el record del alumno en Airtable.
+
+**Fix requerido**: Agregar el campo timezone al mapping de fields del API de registro.
+
+---
+
+## ALTOS ADICIONALES
+
+### 26. sessions.ts y session.ts muestran horarios diferentes
+
+**Archivos**: `pages/api/sessions.ts`, `pages/api/session.ts`
+
+**Impacto**: `session.ts` (ya arreglado) usa `timeZone: 'America/Bogota'`, pero `sessions.ts` (lista del dashboard) no. El profesor ve una hora en la lista y otra diferente al entrar a la sesion.
+
+---
+
+### 27. Admin token hardcodeado en el JavaScript del cliente
+
+**Archivo**: `pages/admin.tsx`
+
+**Impacto**: El token `LinguaAdmin2025` esta en el JS del frontend, visible en el bundle de produccion. Cualquiera que inspeccione el codigo puede acceder al admin.
+
+---
+
+### 28. Sesiones grupales solo muestran el primer participante
+
+**Archivo**: `pages/api/sessions.ts`
+
+**Impacto**: En clases grupales, el profesor solo ve el nombre del primer alumno del grupo. No puede ver quienes mas estan en la sesion.
+
+---
+
+### 29. PIN de profesor es solo 4 digitos sin verificacion de unicidad contra Students
+
+**Archivo**: `pages/api/register/teacher.ts:17`
+
+**Impacto**: `Math.floor(1000 + Math.random() * 9000)` genera un PIN de 4 digitos. No verifica unicidad contra la tabla Students, asi que podria colisionar con un PIN de alumno. Tambien es brute-forceable (solo 9000 combinaciones).
+
+---
+
 ## Resumen de Prioridades
 
 | Prioridad | Issues | Accion |
 |-----------|--------|--------|
-| CRITICO (bloquea) | #1 Timezone, #2 PIN alumno, #3 Interests IDs, #4 Topics no asignados | Arreglar antes de primer alumno real |
-| ALTO (degrada) | #5-#10 | Arreglar en la primera semana |
+| CRITICO (bloquea) | #1 Timezone, #2 PIN alumno, #3 Interests IDs, #4 Topics no asignados, #23 Sessions sin filtro fecha, #24 Nivel nunca asignado | Arreglar antes de primer alumno real |
+| ALTO (degrada) | #5-#10, #25-#29 | Arreglar en la primera semana |
 | MEDIO (funciona mal) | #11-#18 | Arreglar iterativamente |
 | BAJO (cosmetico) | #19-#22 | Backlog |
+
+**Total: 29 issues** (6 criticos, 11 altos, 8 medios, 4 bajos)
