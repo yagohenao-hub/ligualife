@@ -36,10 +36,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       participantId: participantId ?? '',
       topicId: (record.fields['Curriculum Topic'] as string[])?.[0] ?? null,
       date: record.fields['Scheduled Date/Time']
-        ? new Date(record.fields['Scheduled Date/Time']).toISOString().slice(0, 10)
+        ? new Date(record.fields['Scheduled Date/Time']).toLocaleDateString('en-CA', { timeZone: 'America/Bogota' })
         : '',
       time: record.fields['Scheduled Date/Time']
-        ? new Date(record.fields['Scheduled Date/Time']).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        ? new Date(record.fields['Scheduled Date/Time']).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Bogota' })
         : '',
       status: record.fields['Status'] as string,
       sessionName: record.fields['Session Name'] as string ?? '',

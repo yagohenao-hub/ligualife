@@ -11,9 +11,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const record = await fetchAirtableRecord('Curriculum Topics', topicId)
       if (!record) return res.status(404).json({ error: 'Tópico no encontrado' })
 
-      const slides = record.fields['Cached Slides'] ? JSON.parse(record.fields['Cached Slides'] as string) : null
-      const warmup = record.fields['Cached Warmup'] ? JSON.parse(record.fields['Cached Warmup'] as string) : null
-      const cooldown = record.fields['Cached Cooldown'] ? JSON.parse(record.fields['Cached Cooldown'] as string) : null
+      let slides = null, warmup = null, cooldown = null
+      try { slides = record.fields['Cached Slides'] ? JSON.parse(record.fields['Cached Slides'] as string) : null } catch {}
+      try { warmup = record.fields['Cached Warmup'] ? JSON.parse(record.fields['Cached Warmup'] as string) : null } catch {}
+      try { cooldown = record.fields['Cached Cooldown'] ? JSON.parse(record.fields['Cached Cooldown'] as string) : null } catch {}
 
       return res.status(200).json({ slides, warmup, cooldown })
     } catch (err: any) {

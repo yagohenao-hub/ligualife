@@ -272,10 +272,9 @@ export default function ClassroomPage() {
           }
         })
       })
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
       const data = await res.json()
-      if (data.message) {
-        setChatMessages(prev => [...prev, { role: 'assistant', content: data.message }])
-      }
+      setChatMessages(prev => [...prev, { role: 'assistant', content: data.message || 'Sin respuesta de la IA.' }])
     } catch (e) {
       console.error('AI Chat Error:', e)
       setChatMessages(prev => [...prev, { role: 'assistant', content: 'Lo siento, tuve un error al procesar tu consulta. Intenta de nuevo.' }])
