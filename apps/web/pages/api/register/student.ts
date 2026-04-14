@@ -4,14 +4,6 @@ const BASE_ID = 'app9ZtojlxX5FoZ7y'
 const STUDENTS_TABLE = 'tblqzaBBn18txOyLu'
 const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY
 
-const GOAL_LEVEL_MAP: Record<string, string> = {
-  'rectE12LwYtTeBoKV': 'B1',  // General (English for Everyday Life)
-  'recVYlMlMhHK9XGxo': 'B2',  // Business (English for Career & Work)
-  'recqioqL5XXSvMi4F': 'C1',  // B2 to C1 (Advanced Mastery)
-  'recG8y2MTbh8w1irB': 'A2',  // Travel & Culture
-  'recIiDTxgYE0NCkmW': 'B2',  // Marketing & Digital World
-}
-
 function generatePin(fullName: string): string {
   const letters = fullName.replace(/\s+/g, '').toUpperCase().slice(0, 2).padEnd(2, 'X')
   const numbers = Math.floor(1000 + Math.random() * 9000).toString()
@@ -33,16 +25,22 @@ async function fetchTable(table: string, params: string) {
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' })
 
-  const { fullName, email, phone, ageRange, goalId, interests, availability, openToGroups } = req.body
+  const { fullName, email, phone, ageRange, goalId, interests, availability, openToGroups, timezone } = req.body
 
   if (!fullName || !email) {
     return res.status(400).json({ error: 'Missing required fields' })
   }
 
+  // Validate email format
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({ error: 'Formato de email inválido' })
+  }
+
   try {
-    // Generate unique PIN (check against Students and Teachers, retry up to 5 times)
+    // Generate unique PIN (checked against Students AND Teachers, retry up to 10 times)
     let pin = ''
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 10; i++) {
       const candidate = generatePin(fullName)
       const checkStudents = await fetchTable('Students', `filterByFormula=${encodeURIComponent(`{PIN} = '${candidate}'`)}`)
       if (!checkStudents.records?.length) {
@@ -53,9 +51,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!pin) {
       return res.status(500).json({ error: 'No se pudo generar un PIN único. Intenta de nuevo.' })
     }
-
-    // Map goal to CEFR level
-    const level = GOAL_LEVEL_MAP[goalId] || 'B2'
 
     const response = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${STUDENTS_TABLE}`, {
       method: 'POST',
@@ -75,8 +70,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               "fldTfNhYtykGeDx1x": interests,
               "fldmPdharKvZzqsMq": availability,
               "fldXUKKO28Wr1dN76": "Pending",
-              "fldHBsqpAjtOv9sBk": `Level: ${level} | Goal ID: ${goalId}`,
               "flddBUJK1K42KKsJv": openToGroups,
+              "fldsq1cfz7OnxNfm9": timezone || 'America/Bogota',
               "PIN": pin
             }
           }

@@ -42,10 +42,12 @@ interface Teacher {
   studentCount: number
   specialty: string[]
   availability: string // JSON array of "Day-Hour"
+  status: string
 }
 
 const ADMIN_TOKEN = 'LinguaAdmin2025'
 const STUDENT_STATUSES = ['Active', 'Paused', 'Inactive', 'Blocked']
+const TEACHER_STATUSES = ['Pending', 'Active', 'Paused', 'Inactive']
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 function adminHeaders() {
@@ -268,6 +270,16 @@ export default function AdminPage() {
     setEditTeacher(t)
     setTeacherForm({ name: t.name, email: t.email, phone: t.phone, timezone: t.timezone, bio: t.bio, meetingLink: t.meetingLink })
     setShowTeacherModal(true)
+  }
+
+  async function changeTeacherStatus(t: Teacher, status: string) {
+    await fetch('/api/admin/teachers', {
+      method: 'PATCH',
+      headers: adminHeaders(),
+      body: JSON.stringify({ id: t.id, status }),
+    })
+    loadTeachers()
+    loadMetrics()
   }
 
   async function submitTeacherForm() {
@@ -670,6 +682,7 @@ export default function AdminPage() {
                         <th>Zona Horaria</th>
                         <th>Alumnos</th>
                         <th>PIN</th>
+                        <th>Estado</th>
                         <th>Meet Link</th>
                         <th>Acciones</th>
                       </tr>
@@ -696,6 +709,16 @@ export default function AdminPage() {
                           </td>
                           <td>
                             <span className={styles.pinBadge}>{t.pin || '—'}</span>
+                          </td>
+                          <td>
+                            <select
+                              className={styles.statusSelect}
+                              value={t.status || 'Active'}
+                              onChange={e => changeTeacherStatus(t, e.target.value)}
+                              style={{ borderColor: statusColor(t.status), color: statusColor(t.status) }}
+                            >
+                              {TEACHER_STATUSES.map(st => <option key={st} value={st}>{st}</option>)}
+                            </select>
                           </td>
                           <td>
                             {t.meetingLink ? (

@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { fetchFromAirtable, createAirtableRecord, patchAirtableRecord } from '@/lib/airtable'
 
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN ?? 'LinguaAdmin2025'
+const TEACHER_STATUSES = ['Pending', 'Active', 'Paused', 'Inactive']
 
 function generatePin(fullName: string): string {
   const letters = fullName.replace(/\s+/g, '').toUpperCase().slice(0, 2).padEnd(2, 'X')
@@ -32,7 +33,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         meetingLink: (r.fields['Meeting Link'] ?? '') as string,
         specialty: (r.fields['Academic Interests'] ?? []) as string[],
         availability: (r.fields['Availability'] ?? '') as string,
-        // Count linked students
+        status: (r.fields['Status'] ?? 'Active') as string,
         studentCount: ((r.fields['Student-Teacher'] as string[]) ?? []).length,
       }))
 
@@ -51,8 +52,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       if (!name || !email) return res.status(400).json({ error: 'Nombre y email son requeridos' })
 
+      // Generate unique 6-char PIN, checked against both tables
       let pin = ''
-      for (let i = 0; i < 5; i++) {
+      for (let i = 0; i < 10; i++) {
         const candidate = generatePin(name)
         const check = await fetchFromAirtable('Teachers', `filterByFormula=${encodeURIComponent(`{PIN} = '${candidate}'`)}`)
         if (!check.records?.length) {
@@ -66,6 +68,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         'Name': name,
         'Email': email,
         'PIN': pin,
+        'Status': 'Active', // Admin-created teachers start Active directly
       }
       if (phone) fields['Phone'] = phone
       if (timezone) fields['Timezone'] = timezone
@@ -82,20 +85,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     if (req.method === 'PATCH') {
-      const { id, bio, phone, meetingLink, timezone } = req.body as {
+      const { id, bio, phone, meetingLink, timezone, status } = req.body as {
         id: string
         bio?: string
         phone?: string
         meetingLink?: string
         timezone?: string
+        status?: string
       }
       if (!id) return res.status(400).json({ error: 'id es requerido' })
+
+      // Validate status if provided
+      if (status && !TEACHER_STATUSES.includes(status)) {
+        return res.status(400).json({ error: `Estado inválido. Opciones: ${TEACHER_STATUSES.join(', ')}` })
+      }
 
       const fields: Record<string, any> = {}
       if (bio !== undefined) fields['Bio'] = bio
       if (phone !== undefined) fields['Phone'] = phone
       if (meetingLink !== undefined) fields['Meeting Link'] = meetingLink
       if (timezone !== undefined) fields['Timezone'] = timezone
+      if (status !== undefined) fields['Status'] = status
 
       await patchAirtableRecord('Teachers', id, fields)
       return res.status(200).json({ ok: true })
