@@ -42,8 +42,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     ssDocumentData, ssDocumentName, ssDocumentType,
   } = req.body
 
-  if (!name || !email) {
+  if (!name || !email || !phone) {
     return res.status(400).json({ error: 'Missing required fields' })
+  }
+
+  // 1. Email validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({ error: 'Formato de email inválido' })
+  }
+
+  // 2. Phone validation (only digits)
+  const phoneDigits = phone.replace(/\s+/g, '').replace(/\+/g, '')
+  if (!/^\d+$/.test(phoneDigits)) {
+    return res.status(400).json({ error: 'El número de teléfono debe contener solo números' })
+  }
+
+  // 3. Name validation (at least two names)
+  const nameParts = name.trim().split(/\s+/)
+  if (nameParts.length < 2) {
+    return res.status(400).json({ error: 'Por favor ingresa tu nombre completo (al menos dos nombres/apellidos)' })
   }
 
   // Generate unique 6-char PIN (checked against both Teachers and Students tables)

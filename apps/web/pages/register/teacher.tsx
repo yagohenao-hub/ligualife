@@ -25,7 +25,7 @@ const DAYS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom']
 const HOURS = ['6am', '7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', '3pm', '4pm', '5pm', '6pm', '7pm', '8pm']
 
 // COP per hour if all blocks are filled — adjust as needed
-const HOURLY_RATE_COP = 28000
+const HOURLY_RATE_COP = 30000
 
 export default function TeacherRegistration() {
   const [step, setStep] = useState(1)
@@ -208,7 +208,11 @@ export default function TeacherRegistration() {
                 value={formData.name}
                 onChange={e => setFormData({...formData, name: e.target.value})}
                 placeholder="Ej. Camila Rodríguez Torres"
+                required
               />
+              {formData.name && formData.name.trim().split(/\s+/).length < 2 && (
+                <p style={{ color: '#ef4444', fontSize: '0.7rem', marginTop: '0.25rem' }}>Ingresa al menos dos nombres</p>
+              )}
             </div>
 
             <div className={styles.formGroup}>
@@ -267,7 +271,11 @@ export default function TeacherRegistration() {
               <button
                 className={`${styles.btn} ${styles.btnPrimary}`}
                 onClick={handleNext}
-                disabled={!formData.name || !formData.email || !formData.phoneNumber}
+                disabled={
+                  formData.name.trim().split(/\s+/).length < 2 || 
+                  !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email) || 
+                  !/^\d+$/.test(formData.phoneNumber.replace(/\s+/g, ''))
+                }
               >
                 Siguiente
               </button>

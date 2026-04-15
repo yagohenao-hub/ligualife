@@ -37,6 +37,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(400).json({ error: 'Formato de email inválido' })
   }
 
+  // Phone validation (only digits)
+  const phoneDigits = phone.replace(/\s+/g, '').replace(/\+/g, '')
+  if (!/^\d+$/.test(phoneDigits)) {
+    return res.status(400).json({ error: 'El número de teléfono debe contener solo números' })
+  }
+
+  // Name validation (at least two names)
+  const nameParts = fullName.trim().split(/\s+/)
+  if (nameParts.length < 2) {
+    return res.status(400).json({ error: 'Por favor ingresa tu nombre completo (al menos dos nombres/apellidos)' })
+  }
+
   try {
     // Generate unique PIN (checked against Students AND Teachers, retry up to 10 times)
     let pin = ''

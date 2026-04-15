@@ -158,7 +158,11 @@ export default function StudentRegistration() {
                 value={formData.fullName}
                 onChange={e => setFormData({...formData, fullName: e.target.value})}
                 placeholder="Ej. Santiago Montes"
+                required
               />
+              {formData.fullName && formData.fullName.trim().split(/\s+/).length < 2 && (
+                <p style={{ color: '#ef4444', fontSize: '0.7rem', marginTop: '0.25rem' }}>Ingresa al menos dos nombres</p>
+              )}
             </div>
             
             <div className={styles.formGroup}>
@@ -244,7 +248,12 @@ export default function StudentRegistration() {
               <button 
                 className={`${styles.btn} ${styles.btnPrimary}`} 
                 onClick={handleNext}
-                disabled={!formData.fullName || !formData.email || !formData.phoneNumber || !formData.ageRange}
+                disabled={
+                  formData.fullName.trim().split(/\s+/).length < 2 || 
+                  !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email) || 
+                  !/^\d+$/.test(formData.phoneNumber.replace(/\s+/g, '')) || 
+                  !formData.ageRange
+                }
               >
                 Siguiente
               </button>

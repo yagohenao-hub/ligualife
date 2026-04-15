@@ -3,9 +3,10 @@ import Head from 'next/head'
 import { useRouter } from 'next/router'
 import styles from '@/styles/Admin.module.css'
 import GroupMatchmaker from '@/components/dashboard/GroupMatchmaker'
+import VideoBankCurator from '@/components/admin/VideoBankCurator'
 
 // ─── Types ──────────────────────────────────────────────────────────────────
-type Tab = 'overview' | 'students' | 'teachers' | 'matchmaker' | 'groups'
+type Tab = 'overview' | 'students' | 'teachers' | 'matchmaker' | 'groups' | 'videobank'
 
 interface Metrics {
   totalStudents: number
@@ -480,7 +481,8 @@ export default function AdminPage() {
               { key: 'teachers', icon: '👩‍🏫', label: 'Profesores' },
               { key: 'matchmaker', icon: '🎲', label: 'Matchmaker' },
               { key: 'groups', icon: '👥', label: 'Gestión Grupos' },
-              { key: 'series', icon: '🎬', label: 'Series Master' },
+              { key: 'videobank', icon: '🎬', label: 'Video Bank' },
+              { key: 'series', icon: '📺', label: 'Series Master' },
               { key: 'stories', icon: '📖', label: 'Story Studio' },
             ] as { key: any; icon: string; label: string }[]).map(item => (
               <button
@@ -764,6 +766,19 @@ export default function AdminPage() {
                   </table>
                 </div>
               )}
+            </div>
+          )}
+
+          {/* ═══ VIDEO BANK TAB ═══ */}
+          {tab === 'videobank' && (
+            <div className={styles.tabContent}>
+              <div className={styles.pageHeader}>
+                <h1 className={styles.pageTitle}>Video Bank</h1>
+                <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                  Curación de videos nativos para el banco de contenido
+                </span>
+              </div>
+              <VideoBankCurator />
             </div>
           )}
 
