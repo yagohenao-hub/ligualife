@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-const BASE_ID = 'app9ZtojlxX5FoZ7y'
+const BASE_ID = process.env.AIRTABLE_BASE_ID ?? 'app9ZtojlxX5FoZ7y'
 const TEACHERS_TABLE = 'tblqGY8vCmsFeld7G'
 const STUDENTS_TABLE = 'tblqzaBBn18txOyLu'
 const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY
@@ -63,7 +63,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               "fldwAF9uwhjDUXoZj": interests,
               "fldsCFNKymtmEbVDe": pin,
               // Status field — set to Pending on self-registration
-              "fldStatus": "Pending",
+              "Status": "Pending",
               ...(ssDocumentUrl ? { 'SS Document URL': ssDocumentUrl } : {}),
               ...(ssExpiryDate ? { 'SS Expiry Date': ssExpiryDate, 'SS Last Updated': new Date().toISOString().split('T')[0] } : {}),
             }
