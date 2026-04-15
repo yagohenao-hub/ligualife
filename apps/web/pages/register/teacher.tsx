@@ -35,7 +35,9 @@ export default function TeacherRegistration() {
     accountType: '',
     accountNumber: '',
     idNumber: '',
-    interests: [] as string[]
+    interests: [] as string[],
+    ssDocumentUrl: '',
+    ssExpiryDate: '',
   })
 
   // Calendar State
@@ -120,14 +122,16 @@ export default function TeacherRegistration() {
           phone: `${formData.phoneCode} ${formData.phoneNumber}`,
           timezone: COUNTRIES.find(c => c.name === formData.country)?.timezone || 'UTC',
           bankDetails: JSON.stringify(bankData, null, 2),
-          availability: JSON.stringify(availability)
+          availability: JSON.stringify(availability),
+          ssDocumentUrl: formData.ssDocumentUrl || undefined,
+          ssExpiryDate: formData.ssExpiryDate || undefined,
         })
       })
       
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Error en el registro')
       
-      setStep(5)
+      setStep(6)
     } catch (err: any) {
       setError(err.message)
     } finally {
@@ -143,7 +147,7 @@ export default function TeacherRegistration() {
 
       <div className={styles.card}>
         <div className={styles.stepIndicator}>
-          {[1, 2, 3, 4].map(num => (
+          {[1, 2, 3, 4, 5].map(num => (
             <div key={num} className={`${styles.dot} ${step === num ? styles.dotActive : step > num ? styles.dotCompleted : ''}`} />
           ))}
         </div>
@@ -328,6 +332,56 @@ export default function TeacherRegistration() {
 
         {step === 4 && (
           <div>
+            <h1 className={styles.title}>Documentación de Seguridad Social</h1>
+            <p className={styles.subtitle}>La SS es obligatoria y se renueva mensualmente. Súbela ahora para comenzar sin contratiempos.</p>
+
+            <div className={styles.formGroup}>
+              <label className={styles.label}>URL del documento SS (Google Drive, Dropbox, etc.)</label>
+              <input
+                className={styles.input}
+                type="url"
+                value={formData.ssDocumentUrl}
+                onChange={e => setFormData({...formData, ssDocumentUrl: e.target.value})}
+                placeholder="https://drive.google.com/file/d/..."
+              />
+              <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', marginTop: '0.4rem' }}>
+                Sube el PDF a Google Drive y comparte el enlace aquí. Asegúrate de que cualquier persona con el enlace pueda verlo.
+              </p>
+            </div>
+
+            <div className={styles.formGroup}>
+              <label className={styles.label}>Fecha de vencimiento del período actual</label>
+              <input
+                className={styles.input}
+                type="date"
+                value={formData.ssExpiryDate}
+                onChange={e => setFormData({...formData, ssExpiryDate: e.target.value})}
+              />
+              <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', marginTop: '0.4rem' }}>
+                📅 Recibirás una notificación 3 días antes de que venza para renovarla.
+              </p>
+            </div>
+
+            <div style={{ background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.25)', borderRadius: '10px', padding: '1rem', marginTop: '0.5rem' }}>
+              <p style={{ fontSize: '0.82rem', color: '#fbbf24', margin: 0 }}>
+                ⚠️ <strong>Importante:</strong> Sin la SS activa no podrás dar clases el siguiente mes. Puedes continuar sin subirla ahora y actualizarla desde tu Studio.
+              </p>
+            </div>
+
+            <div className={styles.footer}>
+              <button className={`${styles.btn} ${styles.btnSecondary}`} onClick={handleBack}>Atrás</button>
+              <button
+                className={`${styles.btn} ${styles.btnPrimary}`}
+                onClick={handleNext}
+              >
+                Siguiente
+              </button>
+            </div>
+          </div>
+        )}
+
+        {step === 5 && (
+          <div>
             <h1 className={styles.title}>Datos de Pago</h1>
             <p className={styles.subtitle}>¿A dónde enviaremos tus pagos por las clases?</p>
 
@@ -411,7 +465,7 @@ export default function TeacherRegistration() {
           </div>
         )}
 
-        {step === 5 && (
+        {step === 6 && (
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🎉</div>
             <h1 className={styles.title}>¡Aplicación Enviada!</h1>

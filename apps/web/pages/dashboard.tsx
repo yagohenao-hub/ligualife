@@ -44,6 +44,12 @@ export default function DashboardPage() {
   const [dragValue, setDragValue] = useState(false)
   const [savingAvail, setSavingAvail] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
 
+  // SS state
+  const [showSSModal, setShowSSModal] = useState(false)
+  const [ssDocUrl, setSsDocUrl] = useState('')
+  const [ssExpiryDate, setSsExpiryDate] = useState('')
+  const [ssLoading, setSsLoading] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
+
   useEffect(() => {
     const handleUp = () => setIsDragging(false)
     window.addEventListener('mouseup', handleUp)
@@ -103,6 +109,9 @@ export default function DashboardPage() {
             console.error('Error parsing availability', e)
           }
         }
+        // Pre-fill SS modal fields if already set
+        if (data.ssExpiryDate) setSsExpiryDate(data.ssExpiryDate)
+        if (data.ssDocumentUrl) setSsDocUrl(data.ssDocumentUrl)
       }
     } finally {
       setStudioLoading(false)
@@ -179,6 +188,52 @@ export default function DashboardPage() {
     } finally {
       setTimeout(() => setSavingAvail('idle'), 2500)
     }
+  }
+
+  async function saveSSDocument() {
+    if (!session) return
+    setSsLoading('saving')
+    try {
+      const res = await fetch('/api/teacher/update-ss', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          teacherId: session.teacherId,
+          ssDocumentUrl: ssDocUrl || undefined,
+          ssExpiryDate: ssExpiryDate || undefined,
+        }),
+      })
+      if (res.ok) {
+        setSsLoading('saved')
+        // Update local state so banner refreshes
+        setStudioData((prev: any) => prev ? {
+          ...prev,
+          ssDocumentUrl: ssDocUrl || prev.ssDocumentUrl,
+          ssExpiryDate: ssExpiryDate || prev.ssExpiryDate,
+          ssLastUpdated: new Date().toISOString().split('T')[0],
+        } : prev)
+        setTimeout(() => { setSsLoading('idle'); setShowSSModal(false) }, 1500)
+      } else {
+        setSsLoading('error')
+        setTimeout(() => setSsLoading('idle'), 2500)
+      }
+    } catch {
+      setSsLoading('error')
+      setTimeout(() => setSsLoading('idle'), 2500)
+    }
+  }
+
+  function getSSStatus(expiryDate: string | null): 'ok' | 'warning' | 'expired' | 'missing' {
+    if (!expiryDate) return 'missing'
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const expiry = new Date(expiryDate)
+    expiry.setHours(0, 0, 0, 0)
+    const diffMs = expiry.getTime() - today.getTime()
+    const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24))
+    if (diffDays < 0) return 'expired'
+    if (diffDays <= 3) return 'warning'
+    return 'ok'
   }
 
   function getRelativeDateLabel(dateStr: string) {
@@ -301,6 +356,43 @@ export default function DashboardPage() {
 
           {!studioLoading && studioData && (
             <>
+              {/* === SS Notification Banner === */}
+              {(() => {
+                const status = getSSStatus(studioData.ssExpiryDate)
+                if (status === 'ok') return null
+                const isExpired = status === 'expired'
+                const isMissing = status === 'missing'
+                const bgColor = isExpired || isMissing ? 'rgba(239,68,68,0.1)' : 'rgba(245,158,11,0.1)'
+                const borderColor = isExpired || isMissing ? 'rgba(239,68,68,0.3)' : 'rgba(245,158,11,0.3)'
+                const textColor = isExpired || isMissing ? '#f87171' : '#fbbf24'
+                const icon = isExpired || isMissing ? '🚨' : '⚠️'
+                const expiry = studioData.ssExpiryDate ? new Date(studioData.ssExpiryDate).toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' }) : null
+                const msg = isMissing
+                  ? 'No tienes documentación de Seguridad Social registrada. Es obligatoria para dar clases.'
+                  : isExpired
+                  ? `Tu Seguridad Social venció el ${expiry}. Debes renovarla para continuar dando clases.`
+                  : `Tu Seguridad Social vence el ${expiry}. Renuévala en los próximos días.`
+                return (
+                  <div style={{ background: bgColor, border: `1px solid ${borderColor}`, borderRadius: '12px', padding: '1rem 1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                      <span style={{ fontSize: '1.25rem' }}>{icon}</span>
+                      <div>
+                        <div style={{ fontWeight: 700, color: textColor, fontSize: '0.85rem' }}>
+                          {isMissing ? 'SS Sin Registrar' : isExpired ? 'SS Vencida' : 'SS Próxima a Vencer'}
+                        </div>
+                        <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.15rem' }}>{msg}</div>
+                      </div>
+                    </div>
+                    <button
+                      className={styles.saveBtn}
+                      style={{ background: isExpired || isMissing ? '#ef4444' : '#f59e0b', boxShadow: 'none', whiteSpace: 'nowrap', fontSize: '0.8rem' }}
+                      onClick={() => setShowSSModal(true)}
+                    >
+                      📄 Actualizar SS
+                    </button>
+                  </div>
+                )
+              })()}
               {/* Stats row */}
               <div className={styles.statsRow}>
                 <div className={`${styles.statCard} ${styles.statGreen}`}>
@@ -424,6 +516,27 @@ export default function DashboardPage() {
                       <div className={styles.legendItem}><div className={`${styles.legendBox} ${styles.boxBooked}`} /> Clase Agendada</div>
                       <div className={styles.legendItem}><div className={`${styles.legendBox} ${styles.boxExtra}`} /> Clase Extra (Token)</div>
                     </div>
+
+                    {/* SS Update Button (always visible) */}
+                    <div style={{ marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px solid var(--border-glass)' }}>
+                      <div style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-secondary)', marginBottom: '0.6rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                        SEGURIDAD SOCIAL
+                      </div>
+                      {studioData.ssExpiryDate && (
+                        <div style={{ fontSize: '0.78rem', color: getSSStatus(studioData.ssExpiryDate) === 'ok' ? 'var(--accent-green)' : '#f59e0b', marginBottom: '0.5rem' }}>
+                          Vence: {new Date(studioData.ssExpiryDate).toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' })}
+                          {studioData.ssLastUpdated && <span style={{ color: 'var(--text-secondary)', marginLeft: '0.5rem' }}>· Actualizado: {new Date(studioData.ssLastUpdated).toLocaleDateString('es-CO', { day: 'numeric', month: 'short' })}</span>}
+                        </div>
+                      )}
+                      <button
+                        className={styles.saveBtn}
+                        style={{ fontSize: '0.8rem', padding: '0.45rem 1rem', boxShadow: 'none', background: 'rgba(124,58,237,0.6)' }}
+                        onClick={() => setShowSSModal(true)}
+                      >
+                        📄 Actualizar SS
+                      </button>
+                    </div>
                   </div>
                   <button
                     className={`${styles.saveBtn} ${savingAvail === 'saved' ? styles.saveBtnSaved : ''} ${savingAvail === 'error' ? styles.saveBtnError : ''}`}
@@ -483,6 +596,57 @@ export default function DashboardPage() {
                 </div>
               </div>
             </>
+          )}
+
+          {/* === SS Update Modal === */}
+          {showSSModal && (
+            <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: '1rem' }} onClick={() => setShowSSModal(false)}>
+              <div style={{ background: '#13131a', border: '1px solid var(--border-glass)', borderRadius: '16px', maxWidth: '480px', width: '100%', padding: '1.75rem', boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }} onClick={e => e.stopPropagation()}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                  <div>
+                    <h2 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700 }}>📄 Seguridad Social</h2>
+                    <p style={{ margin: '0.25rem 0 0', fontSize: '0.82rem', color: 'var(--text-secondary)' }}>Actualiza tu documentación mensual</p>
+                  </div>
+                  <button onClick={() => setShowSSModal(false)} style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', fontSize: '1.1rem', padding: '0.25rem 0.5rem', borderRadius: '6px' }}>✕</button>
+                </div>
+
+                <div style={{ marginBottom: '1.25rem' }}>
+                  <label style={{ fontSize: '0.78rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-secondary)', display: 'block', marginBottom: '0.5rem' }}>URL del Documento (Google Drive, etc.)</label>
+                  <input
+                    type="url"
+                    value={ssDocUrl}
+                    onChange={e => setSsDocUrl(e.target.value)}
+                    placeholder="https://drive.google.com/file/d/..."
+                    style={{ width: '100%', background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border-glass)', borderRadius: '8px', padding: '0.7rem 0.9rem', color: 'var(--text-primary)', fontSize: '0.88rem', boxSizing: 'border-box', outline: 'none' }}
+                  />
+                </div>
+
+                <div style={{ marginBottom: '1.5rem' }}>
+                  <label style={{ fontSize: '0.78rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-secondary)', display: 'block', marginBottom: '0.5rem' }}>Fecha de Vencimiento</label>
+                  <input
+                    type="date"
+                    value={ssExpiryDate}
+                    onChange={e => setSsExpiryDate(e.target.value)}
+                    style={{ width: '100%', background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border-glass)', borderRadius: '8px', padding: '0.7rem 0.9rem', color: 'var(--text-primary)', fontSize: '0.88rem', boxSizing: 'border-box', outline: 'none' }}
+                  />
+                  <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.4rem', marginBottom: 0 }}>📅 Recibirás una alerta 3 días antes de que venza.</p>
+                </div>
+
+                <div style={{ display: 'flex', gap: '0.75rem' }}>
+                  <button onClick={() => setShowSSModal(false)} style={{ flex: 1, background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-glass)', borderRadius: '8px', color: 'var(--text-secondary)', padding: '0.7rem', cursor: 'pointer', fontWeight: 600 }}>Cancelar</button>
+                  <button
+                    onClick={saveSSDocument}
+                    disabled={ssLoading === 'saving' || (!ssDocUrl && !ssExpiryDate)}
+                    style={{ flex: 2, background: ssLoading === 'saved' ? '#22c55e' : ssLoading === 'error' ? '#ef4444' : 'var(--accent-purple)', border: 'none', borderRadius: '8px', color: 'white', padding: '0.7rem', cursor: 'pointer', fontWeight: 700, fontSize: '0.9rem', transition: 'all 0.2s', opacity: (ssLoading === 'saving' || (!ssDocUrl && !ssExpiryDate)) ? 0.6 : 1 }}
+                  >
+                    {ssLoading === 'saving' && '⏳ Guardando...'}
+                    {ssLoading === 'saved' && '✅ ¡Guardado!'}
+                    {ssLoading === 'error' && '❌ Error'}
+                    {ssLoading === 'idle' && '💾 Guardar SS'}
+                  </button>
+                </div>
+              </div>
+            </div>
           )}
         </div>
       )}

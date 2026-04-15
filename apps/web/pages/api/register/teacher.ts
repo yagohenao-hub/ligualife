@@ -25,7 +25,7 @@ function generatePin(fullName: string): string {
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' })
   
-  const { name, email, phone, timezone, bankDetails, availability, interests } = req.body
+  const { name, email, phone, timezone, bankDetails, availability, interests, ssDocumentUrl, ssExpiryDate } = req.body
 
   if (!name || !email) {
     return res.status(400).json({ error: 'Missing required fields' })
@@ -63,7 +63,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               "fldwAF9uwhjDUXoZj": interests,
               "fldsCFNKymtmEbVDe": pin,
               // Status field — set to Pending on self-registration
-              "fldStatus": "Pending"
+              "fldStatus": "Pending",
+              ...(ssDocumentUrl ? { 'SS Document URL': ssDocumentUrl } : {}),
+              ...(ssExpiryDate ? { 'SS Expiry Date': ssExpiryDate, 'SS Last Updated': new Date().toISOString().split('T')[0] } : {}),
             }
           }
         ],

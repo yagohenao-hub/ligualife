@@ -292,7 +292,6 @@ export default function StudentDashboardPage() {
               {profile.teacherId && (
                 <div className={styles.headerActions}>
                   <button className={styles.headerBtn} onClick={openScheduleModal} title="Cambiar horario regular">📅 Ajustar Horario</button>
-                  <button className={styles.headerBtn} onClick={() => setShowRateModal(true)} title="Calificar al profesor">⭐ Calificar</button>
                 </div>
               )}
             </div>
@@ -419,6 +418,21 @@ export default function StudentDashboardPage() {
               </div>
             )}
           </section>
+
+          {/* Rate Teacher Card */}
+          {profile.teacherId && (
+            <section className={styles.card}>
+              <h2 className={styles.sectionTitle}>⭐ Calificar a {profile.teacherName ?? 'tu Profesor'}</h2>
+              <p className={styles.empty}>Tu opinión ayuda a mejorar la experiencia de todos. ¿Cómo ha sido tu experiencia?</p>
+              <button
+                className={styles.redeemBtn}
+                style={{ marginTop: '1rem', background: 'linear-gradient(135deg, #f59e0b, #fbbf24)', color: '#000', boxShadow: '0 4px 16px rgba(245,158,11,0.3)' }}
+                onClick={() => setShowRateModal(true)}
+              >
+                ⭐ Dejar una Calificación →
+              </button>
+            </section>
+          )}
         </div>
 
         {/* === Completed Topics === */}

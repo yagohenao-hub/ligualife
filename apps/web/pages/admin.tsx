@@ -43,6 +43,9 @@ interface Teacher {
   specialty: string[]
   availability: string // JSON array of "Day-Hour"
   status: string
+  ssExpiryDate: string | null
+  ssLastUpdated: string | null
+  ssDocumentUrl: string | null
 }
 
 const ADMIN_TOKEN = 'LinguaAdmin2025'
@@ -66,6 +69,18 @@ function statusColor(status: string) {
     Blocked: '#ef4444',
   }
   return map[status] ?? '#8888aa'
+}
+
+function getSSStatus(expiryDate: string | null): { label: string; color: string; bg: string; border: string } {
+  if (!expiryDate) return { label: 'Sin SS', color: '#f87171', bg: 'rgba(239,68,68,0.1)', border: 'rgba(239,68,68,0.3)' }
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const expiry = new Date(expiryDate)
+  expiry.setHours(0, 0, 0, 0)
+  const diffDays = Math.ceil((expiry.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
+  if (diffDays < 0) return { label: `Vencida ${expiry.toLocaleDateString('es-CO', { day: 'numeric', month: 'short' })}`, color: '#f87171', bg: 'rgba(239,68,68,0.1)', border: 'rgba(239,68,68,0.3)' }
+  if (diffDays <= 3) return { label: `Vence en ${diffDays}d`, color: '#fbbf24', bg: 'rgba(245,158,11,0.1)', border: 'rgba(245,158,11,0.3)' }
+  return { label: `OK · ${expiry.toLocaleDateString('es-CO', { day: 'numeric', month: 'short' })}`, color: '#4ade80', bg: 'rgba(34,197,94,0.08)', border: 'rgba(34,197,94,0.2)' }
 }
 
 // ─── Blank forms ─────────────────────────────────────────────────────────────
@@ -683,6 +698,7 @@ export default function AdminPage() {
                         <th>Alumnos</th>
                         <th>PIN</th>
                         <th>Estado</th>
+                        <th>SS</th>
                         <th>Meet Link</th>
                         <th>Acciones</th>
                       </tr>
@@ -719,6 +735,20 @@ export default function AdminPage() {
                             >
                               {TEACHER_STATUSES.map(st => <option key={st} value={st}>{st}</option>)}
                             </select>
+                          </td>
+                          <td>
+                            {(() => {
+                              const ss = getSSStatus(t.ssExpiryDate)
+                              return (
+                                <span
+                                  title={t.ssDocumentUrl ? `Documento: ${t.ssDocumentUrl}\nÚltima actualización: ${t.ssLastUpdated ?? 'N/A'}` : 'Sin documento registrado'}
+                                  style={{ display: 'inline-block', padding: '0.2rem 0.6rem', borderRadius: '50px', fontSize: '0.72rem', fontWeight: 700, color: ss.color, background: ss.bg, border: `1px solid ${ss.border}`, cursor: t.ssDocumentUrl ? 'pointer' : 'default' }}
+                                  onClick={() => t.ssDocumentUrl && window.open(t.ssDocumentUrl, '_blank')}
+                                >
+                                  {ss.label}
+                                </span>
+                              )
+                            })()}
                           </td>
                           <td>
                             {t.meetingLink ? (

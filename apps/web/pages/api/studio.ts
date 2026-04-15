@@ -15,6 +15,9 @@ export interface StudioData {
   projectedCOP: number
   students: StudioStudent[]
   sessions: { id: string, date: string, isExtra: boolean, status: string }[]
+  ssExpiryDate: string | null
+  ssLastUpdated: string | null
+  ssDocumentUrl: string | null
 }
 
 const RATE_PER_CLASS = 30000
@@ -139,7 +142,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       projectedCOP,
       students,
       sessions: sessionDetails,
-      availability: teacherRec?.fields?.['Availability'] ?? null
+      availability: teacherRec?.fields?.['Availability'] ?? null,
+      ssExpiryDate: (teacherRec?.fields?.['SS Expiry Date'] as string) ?? null,
+      ssLastUpdated: (teacherRec?.fields?.['SS Last Updated'] as string) ?? null,
+      ssDocumentUrl: (teacherRec?.fields?.['SS Document URL'] as string) ?? null,
     }
 
     return res.status(200).json(studioData)

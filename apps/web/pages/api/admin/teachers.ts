@@ -35,6 +35,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         availability: (r.fields['Availability'] ?? '') as string,
         status: (r.fields['Status'] ?? 'Active') as string,
         studentCount: ((r.fields['Student-Teacher'] as string[]) ?? []).length,
+        ssExpiryDate: (r.fields['SS Expiry Date'] ?? null) as string | null,
+        ssLastUpdated: (r.fields['SS Last Updated'] ?? null) as string | null,
+        ssDocumentUrl: (r.fields['SS Document URL'] ?? null) as string | null,
       }))
 
       return res.status(200).json({ teachers })
