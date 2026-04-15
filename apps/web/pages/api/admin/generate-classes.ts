@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { isColombianHoliday } from '@/lib/holidays'
 import { fetchFromAirtable } from '@/lib/airtable'
 
-const BASE_ID = 'app9ZtojlxX5FoZ7y'
+const BASE_ID = process.env.AIRTABLE_BASE_ID ?? 'app9ZtojlxX5FoZ7y'
 const STUDENTS_TABLE = 'tblqzaBBn18txOyLu'
 const TEACHERS_TABLE = 'tblqGY8vCmsFeld7G'
 const SESSIONS_TABLE = 'tbliWEtFm3aJf8NQp'

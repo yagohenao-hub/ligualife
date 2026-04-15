@@ -6,8 +6,8 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { level, limit = 5 } = req.query
-  const baseId = 'app9ZtojlxX5FoZ7y'
-  const tableId = 'tbliO1eKPR3KObP95'
+  const baseId = process.env.AIRTABLE_BASE_ID ?? 'app9ZtojlxX5FoZ7y'
+  const tableId = process.env.AIRTABLE_VIDEO_BANK_TABLE ?? 'tbliO1eKPR3KObP95'
   const apiKey = process.env.AIRTABLE_API_KEY
 
   if (!apiKey) return res.status(500).json({ error: 'Missing Airtable API Key in environment' })

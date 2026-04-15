@@ -3,8 +3,9 @@ import { findAirtableRecords, fetchAirtableRecord } from '@/lib/airtable'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   // Use admin token for security
+  const ADMIN_TOKEN = process.env.ADMIN_TOKEN ?? 'LinguaAdmin2025'
   const adminToken = req.headers['x-admin-token']
-  if (adminToken !== 'LinguaAdmin2025' && process.env.NODE_ENV === 'production') {
+  if (adminToken !== ADMIN_TOKEN) {
     return res.status(401).json({ error: 'No autorizado' })
   }
 

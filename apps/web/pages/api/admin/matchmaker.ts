@@ -1,9 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-const BASE_ID = 'app9ZtojlxX5FoZ7y'
+const BASE_ID = process.env.AIRTABLE_BASE_ID ?? 'app9ZtojlxX5FoZ7y'
 const STUDENTS_TABLE = 'tblqzaBBn18txOyLu'
 const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY
-const ADMIN_TOKEN = 'LinguaAdmin2025'
+const ADMIN_TOKEN = process.env.ADMIN_TOKEN ?? 'LinguaAdmin2025'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method Not Allowed' })
