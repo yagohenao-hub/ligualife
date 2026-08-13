@@ -23,7 +23,7 @@ export const EvolutionAPI = {
    * @param phone Número de teléfono con código de país (ej. 573001234567)
    * @param text Contenido del mensaje
    */
-  async sendText(phone: string, text: string): Promise<SendMessageResponse> {
+  async sendText(phone: string, text: string): Promise<any> {
     // Sanitizar el número de teléfono: remover espacios, signos + y asegurar que tenga sufijo
     const cleanPhone = phone.replace(/[^0-9]/g, '');
     const remoteJid = \`\${cleanPhone}@s.whatsapp.net\`;
