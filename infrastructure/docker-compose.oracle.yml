@@ -29,11 +29,10 @@ services:
       - RABBITMQ_ENABLED=false
       
       # Webhook global a Next.js (El cerebro agéntico)
-      # Descomenta esto cuando tengas la URL de Vercel y Cloudflare
-      # - WEBHOOK_GLOBAL_URL=https://api.tudominio.com/api/pocket-coach/incoming-message
-      # - WEBHOOK_GLOBAL_ENABLED=true
-      # - WEBHOOK_GLOBAL_EVENTS=APPLICATION_STARTUP,MESSAGES_UPSERT
-      # - WEBHOOK_EVENTS_ERRORS=true
+      - WEBHOOK_GLOBAL_URL=https://lingualife.vercel.app/api/pocket-coach/incoming-message
+      - WEBHOOK_GLOBAL_ENABLED=true
+      - WEBHOOK_GLOBAL_EVENTS=APPLICATION_STARTUP,MESSAGES_UPSERT
+      - WEBHOOK_EVENTS_ERRORS=true
     volumes:
       - evolution_instances:/evolution/instances
       - evolution_store:/evolution/store
