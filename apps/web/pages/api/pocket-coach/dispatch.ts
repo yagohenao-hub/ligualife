@@ -11,7 +11,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
   
   const authHeader = req.headers.authorization;
-  if (process.env.CRON_SECRET && authHeader !== \`Bearer \${process.env.CRON_SECRET}\`) {
+  if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
@@ -32,7 +32,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         if (!phone) continue; // No phone, no WhatsApp message
 
         // 2. Obtener el progreso del estudiante (Tema en curso)
-        const progresses = await findAirtableRecords('StudentTopicProgress', \`AND({StudentId} = '\${studentId}', {Status} = 'In progress')\`);
+        const progresses = await findAirtableRecords('StudentTopicProgress', `AND({StudentId} = '${studentId}', {Status} = 'In progress')`);
         if (progresses.length === 0) continue; // No topic in progress
 
         const topicId = progresses[0].fields.TopicId?.[0]; // Airtable linked record returns array
@@ -68,7 +68,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         await new Promise(r => setTimeout(r, 1500));
 
       } catch (studentError) {
-        console.error(\`Error procesando estudiante \${student.id}:\`, studentError);
+        console.error(`Error procesando estudiante ${student.id}:`, studentError);
         results.push({ student: student.id, status: 'error' });
       }
     }

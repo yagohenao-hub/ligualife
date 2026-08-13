@@ -64,7 +64,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // 1. Buscar al estudiante en Airtable usando el número
     // (Asegurar formato, buscando si el teléfono contiene este número)
-    const students = await findAirtableRecords('Students', \`FIND('\${phone}', {Phone}) > 0\`);
+    const students = await findAirtableRecords('Students', `FIND('${phone}', {Phone}) > 0`);
     
     if (students.length === 0) {
       console.log('Mensaje recibido de número no registrado:', phone);
@@ -79,7 +79,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     let currentTopicTitle = 'Inglés General';
     let ldsFormula = 'Sujeto + Palabra de Tiempo + Acción';
 
-    const progresses = await findAirtableRecords('StudentTopicProgress', \`AND({StudentId} = '\${studentId}', {Status} = 'In progress')\`);
+    const progresses = await findAirtableRecords('StudentTopicProgress', `AND({StudentId} = '${studentId}', {Status} = 'In progress')`);
     
     if (progresses.length > 0) {
       const topicId = progresses[0].fields.TopicId?.[0];

@@ -26,9 +26,9 @@ export const EvolutionAPI = {
   async sendText(phone: string, text: string): Promise<any> {
     // Sanitizar el número de teléfono: remover espacios, signos + y asegurar que tenga sufijo
     const cleanPhone = phone.replace(/[^0-9]/g, '');
-    const remoteJid = \`\${cleanPhone}@s.whatsapp.net\`;
+    const remoteJid = `${cleanPhone}@s.whatsapp.net`;
 
-    const response = await fetch(\`\${EVOLUTION_API_URL}/message/sendText/\${EVOLUTION_INSTANCE}\`, {
+    const response = await fetch(`${EVOLUTION_API_URL}/message/sendText/${EVOLUTION_INSTANCE}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
