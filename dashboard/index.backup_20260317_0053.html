@@ -1,0 +1,2226 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinguaLife | Teacher Copilot</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        :root {
+            --bg-dark: #0a0e14;
+            --bg-card: #141b24;
+            --glass-bg: rgba(20, 27, 36, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --accent-blue: #00a3ff;
+            --accent-blue-glow: rgba(0, 163, 255, 0.4);
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --warmup-color: #f59e0b;
+            --core-color: #00a3ff;
+            --download-color: #10b981;
+            --border-radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+
+        h1,
+        h2,
+        h3,
+        .brand-name {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .view {
+            display: none;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+
+        .view.active {
+            display: flex;
+        }
+
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+        }
+
+        /* ── AUTH ── */
+        #auth-view {
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle at top right, #1e293b, var(--bg-dark));
+        }
+
+        .auth-card {
+            padding: 3rem;
+            border-radius: 24px;
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+        }
+
+        .brand-name {
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -1px;
+            background: linear-gradient(to right, #fff, var(--accent-blue));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: var(--accent-blue);
+            color: #fff;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .logo-container {
+            margin-bottom: 2rem;
+        }
+
+        .auth-subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .pin-group {
+            display: flex;
+            gap: 12px;
+        }
+
+        input[type="password"] {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            color: #fff;
+            font-size: 1.5rem;
+            text-align: center;
+            letter-spacing: 4px;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        input[type="password"]:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 4px var(--accent-blue-glow);
+        }
+
+        .btn-primary {
+            background: var(--accent-blue);
+            color: #fff;
+            border: none;
+            padding: 1rem 1.5rem;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+
+        .btn-primary:hover {
+            filter: brightness(1.1);
+        }
+
+        .btn-icon {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .error-msg {
+            font-size: 0.85rem;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .error-msg.show {
+            display: block;
+        }
+
+        /* ── DASHBOARD ── */
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left,
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .time-display {
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+            color: var(--text-secondary);
+        }
+
+        .dashboard-content {
+            max-width: 1100px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            width: 100%;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .date-badge {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .sessions-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .session-card {
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .session-card:hover {
+            border-color: var(--accent-blue);
+            transform: translateY(-2px);
+            background: rgba(0, 163, 255, 0.05);
+        }
+
+        .session-info h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .session-meta {
+            display: flex;
+            gap: 16px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .status-pill {
+            padding: 5px 14px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .status-scheduled {
+            background: rgba(0, 163, 255, 0.12);
+            color: var(--accent-blue);
+        }
+
+        .status-seen {
+            background: rgba(16, 185, 129, 0.12);
+            color: var(--success);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem;
+            color: var(--text-secondary);
+        }
+
+        .spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid rgba(255, 255, 255, 0.08);
+            border-top-color: var(--accent-blue);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        .loading-state {
+            text-align: center;
+            padding: 4rem;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ── CLASSROOM LAYOUT ── */
+        #classroom-view {
+            height: 100dvh; /* Dynamic viewport height */
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .classroom-header {
+            flex-shrink: 0;
+        }
+
+        .classroom-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            grid-template-rows: 1fr; /* Force single row containment */
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0.75rem 1.5rem 2rem; /* Standard breathing room */
+            flex: 1; /* Key part of the chain */
+            min-height: 0; /* Key part of the chain */
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .classroom-layout.sidebar-collapsed {
+            grid-template-columns: 40px 1fr;
+            max-width: 100% !important;
+            width: 100% !important;
+        }
+
+        /* ── COMPACT PHASE NAV ── */
+        .phase-nav {
+            display: flex;
+            align-items: stretch;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 14px;
+            padding: 4px;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+
+        .phase-tab {
+            flex: 1;
+            border: none;
+            border-radius: 10px;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            padding: 10px 8px;
+            transition: var(--transition);
+            background: transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .phase-tab .tab-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .phase-tab .tab-bar {
+            height: 3px;
+            border-radius: 2px;
+            width: 100%;
+            background: currentColor;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .phase-tab.active-warmup {
+            color: var(--warmup-color);
+            background: rgba(245, 158, 11, 0.1);
+        }
+
+        .phase-tab.active-core {
+            color: var(--core-color);
+            background: rgba(0, 163, 255, 0.1);
+        }
+
+        .phase-tab.active-download {
+            color: var(--download-color);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .phase-tab.active-warmup .tab-bar,
+        .phase-tab.active-core .tab-bar,
+        .phase-tab.active-download .tab-bar {
+            opacity: 1;
+        }
+
+        .phase-tab .timer-inline {
+            font-size: 0.72rem;
+            font-variant-numeric: tabular-nums;
+            font-weight: 700;
+            letter-spacing: 0;
+        }
+
+        .sidebar-sep {
+            border: none;
+            border-top: 1px solid var(--glass-border);
+            margin: 0.5rem 0;
+        }
+
+        .profile-section label {
+            display: block;
+            color: var(--text-muted);
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            margin-bottom: 0.4rem;
+            font-weight: 700;
+        }
+
+        .tag-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .tag {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+
+        .progress-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            font-size: 0.75rem;
+        }
+
+        .progress-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .progress-dot.done {
+            background: var(--success);
+        }
+
+        .progress-dot.current {
+            background: var(--warning);
+        }
+
+        .progress-dot.pending {
+            background: var(--text-muted);
+        }
+
+        .progress-item-text {
+            flex: 1;
+        }
+
+        .progress-item-text small {
+            color: var(--text-muted);
+            font-size: 0.65rem;
+        }
+
+        .level-badge {
+            background: rgba(16, 185, 129, 0.12);
+            color: var(--success);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        /* ── SIDEBAR ── */
+        .sidebar-container {
+            position: relative;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            min-height: 0; /* Containment */
+        }
+
+        .student-sidebar {
+            height: 100%;
+            padding: 1.25rem;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            overflow-y: auto;
+            overflow-x: hidden;
+            scrollbar-width: thin;
+            transition: opacity 0.3s;
+        }
+
+        .sidebar-collapsed .student-sidebar {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .sidebar-tab-trigger {
+            position: absolute;
+            top: 50%;
+            left: 100%;
+            transform: translateY(-50%) translateX(-50%);
+            width: 24px;
+            height: 48px;
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-left: none;
+            border-radius: 0 12px 12px 0;
+            cursor: pointer;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            transition: 0.2s;
+        }
+
+        .sidebar-tab-trigger:hover {
+            color: var(--accent-blue);
+            background: var(--glass-bg);
+        }
+
+        .sidebar-collapsed .sidebar-tab-trigger {
+            left: 10px;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .avatar-lg {
+            width: 72px;
+            height: 72px;
+            background: linear-gradient(135deg, var(--accent-blue), #50c8ff);
+            border-radius: 50%;
+            margin: 0 auto 0.6rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.7rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .profile-header {
+            text-align: center;
+        }
+
+        /* ── CLASS FLOW ── */
+        .class-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .phase-tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.04);
+            padding: 4px;
+            border-radius: 12px;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+
+        .phase-tab {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            padding: 10px 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            font-size: 0.88rem;
+        }
+
+        .phase-tab.active-warmup {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--warmup-color);
+        }
+
+        .phase-tab.active-core {
+            background: rgba(0, 163, 255, 0.15);
+            color: var(--core-color);
+        }
+
+        .phase-tab.active-download {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--download-color);
+        }
+
+        .phase-content {
+            flex: 1;
+            padding: 0.75rem;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            min-height: 0; /* Critical for scroll isolation */
+        }
+
+        .instruction-box {
+            flex-shrink: 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 0.6rem 0.8rem;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            line-height: 1.4;
+        }
+
+        .instruction-box.warmup {
+            background: rgba(245, 158, 11, 0.07);
+            color: var(--warmup-color);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .instruction-box.core {
+            background: rgba(0, 163, 255, 0.07);
+            color: var(--accent-blue);
+            border: 1px solid rgba(0, 163, 255, 0.2);
+        }
+
+        .instruction-box.download {
+            background: rgba(16, 185, 129, 0.07);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .suggestion-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            overflow: hidden;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .card-header {
+            background: rgba(255, 255, 255, 0.04);
+            padding: 0.6rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            flex-shrink: 0;
+        }
+
+        .card-body {
+            padding: 0.5rem;
+            line-height: 1.5;
+            font-size: 0.9rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            min-height: 0;
+            scrollbar-width: thin;
+        }
+
+        .formula-pill {
+            display: inline-block;
+            background: rgba(0, 163, 255, 0.12);
+            color: var(--accent-blue);
+            border-radius: 6px;
+            padding: 2px 8px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        /* ── FLOATING NOTES ── */
+        .notes-fab {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 500;
+            color: var(--accent-blue);
+            transition: all 0.3s;
+        }
+
+        .notes-fab:hover {
+            transform: scale(1.1);
+            background: var(--glass-bg);
+        }
+
+        .notes-fab.active {
+            background: var(--accent-blue);
+            color: #fff;
+        }
+
+        .notes-overlay {
+            position: fixed;
+            bottom: 90px;
+            right: 30px;
+            width: 320px;
+            height: 300px;
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+            z-index: 499;
+            transform: translateY(20px) scale(0.95);
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.3s;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .notes-overlay.active {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .notes-overlay label {
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .notes-textarea {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.2);
+            border: none;
+            padding: 10px;
+            color: var(--text-primary);
+            border-radius: 10px;
+            resize: none;
+            font-size: 0.85rem;
+        }
+
+        /* Premium Buttons */
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            padding: 8px 18px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.82rem;
+            transition: all 0.3s;
+            backdrop-filter: blur(8px);
+        }
+
+        .btn-danger:hover {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.5);
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+        }
+
+        @media (max-width: 900px) {
+            .classroom-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .student-sidebar {
+                display: none;
+            }
+        }
+
+        /* SLIDES SYSTEM - Structural Safe Dock */
+        .slides-container {
+            background: rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            margin-top: 0.5rem;
+            height: 100%; /* Force fill availability */
+            min-height: 0; /* Containment */
+        }
+
+        .slides-viewport {
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
+            padding: 0.75rem 1.1rem;
+            scrollbar-width: thin;
+        }
+
+        .slide {
+            display: none;
+            flex-direction: column;
+            justify-content: flex-start;
+            padding-bottom: 1rem;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .slide-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 0.5rem;
+            color: var(--accent-blue);
+        }
+
+        .slide-header i {
+            width: 16px;
+            height: 16px;
+        }
+
+        .slide-header h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .slide-content {
+            font-size: 0.92rem;
+            line-height: 1.55;
+            color: var(--text-secondary);
+        }
+
+        /* Allow Gemini-generated HTML tables and comparison structures to render correctly */
+        .slide-content table { width: 100%; border-collapse: collapse; margin: 0.5rem 0; background: transparent !important; }
+        .slide-content th, .slide-content td { padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,0.07); font-size: 0.87rem; background: transparent !important; }
+        .slide-content th { background: rgba(255,255,255,0.05) !important; color: var(--text-muted); font-weight: 700; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.5px; }
+        .slide-content tr:nth-child(even) td { background: rgba(255,255,255,0.02) !important; }
+        .slide-content ul, .slide-content ol { padding-left: 1.2rem; margin: 0.5rem 0; }
+        .slide-content li { margin-bottom: 0.4rem; }
+        .slide-content p { margin: 0.4rem 0; }
+        .slide-content h3, .slide-content h4, .slide-content h5 { color: var(--text-primary); margin: 0.6rem 0 0.3rem; }
+        /* FORCE DARK THEME - Override any inline light styles from Gemini */
+        .slide-content * { box-sizing: border-box; }
+        .slide-content [style*="background: white"],
+        .slide-content [style*="background:white"],
+        .slide-content [style*="background: #fff"],
+        .slide-content [style*="background:#fff"],
+        .slide-content [style*="background-color: white"],
+        .slide-content [style*="background-color:#fff"] { background: rgba(255,255,255,0.04) !important; }
+        .slide-content [style*="color: black"],
+        .slide-content [style*="color:black"],
+        .slide-content [style*="color: #000"],
+        .slide-content [style*="color:#000"],
+        .slide-content [style*="color: #333"],
+        .slide-content [style*="color:#333"] { color: var(--text-secondary) !important; }
+
+        .slide-content strong {
+            color: var(--text-primary);
+        }
+
+        .formula-box {
+            background: rgba(0, 163, 255, 0.08);
+            border-left: 3px solid var(--accent-blue);
+            padding: 6px;
+            border-radius: 4px;
+            margin: 4px 0;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+
+        /* DIAGRAMMATIC ELEMENTS */
+        .logic-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .logic-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            padding: 0.75rem;
+            border-radius: 8px;
+        }
+
+        .logic-card h5 {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            color: var(--accent-blue);
+            margin-bottom: 0.3rem;
+            letter-spacing: 1px;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 10px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--glass-border);
+            font-size: 0.85rem;
+        }
+
+        .comparison-table th {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.65rem;
+        }
+
+        .comparison-table .wrong {
+            color: var(--danger);
+            background: rgba(239, 68, 68, 0.05);
+        }
+
+        .comparison-table .correct {
+            color: var(--success);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .scenario-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 0.5rem;
+        }
+
+        .scenario-card {
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            border-left: 3px solid var(--accent-blue);
+        }
+
+        .scenario-card i {
+            color: var(--accent-blue);
+            margin-bottom: 2px;
+            height: 14px;
+            width: 14px;
+        }
+
+        .scenario-card span {
+            display: block;
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            margin-top: 2px;
+            font-style: italic;
+        }
+
+        .slides-nav {
+            flex-shrink: 0; /* Never pushed down */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1.25rem;
+            background: rgba(255, 255, 255, 0.05); /* Slightly darker for docking effect */
+            border-top: 1px solid var(--glass-border);
+            z-index: 10;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-nav {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: var(--text-primary);
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-nav:hover {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+        }
+
+        .btn-nav:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .slide-indicator {
+            display: flex;
+            gap: 6px;
+        }
+
+        .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: 0.3s;
+        }
+
+        .dot.active {
+            background: var(--accent-blue);
+            width: 12px;
+            border-radius: 3px;
+        }
+
+        .projection-toggle {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .projection-toggle:hover {
+            color: var(--text-primary);
+        }
+
+        /* PROJECTION OVERLAY */
+        #projection-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 10000;
+            padding: 5vh 10vw 12vh;
+            color: #fff;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        #projection-overlay.active {
+            display: flex;
+        }
+
+        .projection-content {
+            width: 100%;
+            max-width: 1000px;
+            text-align: left;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .close-projection {
+            display: none;
+        }
+
+        .projection-nav {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 30px;
+            z-index: 10001;
+        }
+
+        .btn-proj-nav {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-proj-nav:hover {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+            transform: scale(1.1);
+        }
+
+        .btn-proj-nav:disabled {
+            opacity: 0.2;
+            cursor: not-allowed;
+        }
+
+        .btn-proj-nav i {
+            width: 40px;
+            height: 40px;
+        }
+
+        /* Micro-structure Time Allocation */
+        .time-allocation {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            border-radius: 12px;
+            margin: 1rem 0;
+            border-left: 4px solid var(--accent-blue);
+        }
+
+        .time-allocation p {
+            font-weight: 700;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .time-allocation ul {
+            list-style: none;
+            padding-left: 0;
+            margin: 0;
+        }
+
+        .time-allocation li {
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-secondary);
+        }
+
+        .time-allocation li::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-blue);
+        }
+
+        .timer-inline {
+            font-weight: 700;
+            margin-left: 4px;
+            opacity: 0.8;
+            font-size: 0.75rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+
+        <!-- ====== AUTH ====== -->
+        <div id="auth-view" class="view active">
+            <div
+                style="display:flex;justify-content:center;align-items:center;min-height:100vh;background:radial-gradient(circle at top right, #1e293b, var(--bg-dark));">
+                <div class="auth-card glass">
+                    <div class="logo-container">
+                        <h1 class="brand-name">LinguaLife</h1><br>
+                        <span class="badge">Teacher Copilot</span>
+                    </div>
+                    <p class="auth-subtitle">Ingresa tu PIN para continuar</p>
+                    <div class="pin-group">
+                        <input type="password" id="teacher-pin" maxlength="10" placeholder="••••••" autocomplete="off">
+                        <button class="btn-primary" onclick="handleLogin()"><span>Entrar</span></button>
+                    </div>
+                    <div id="auth-error" class="error-msg"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== DASHBOARD ====== -->
+        <div id="dashboard-view" class="view">
+            <header class="main-header glass">
+                <div class="header-left">
+                    <h2 class="brand-name" style="font-size:1.5rem; margin-bottom:0;">LinguaLife</h2>
+                </div>
+                <div class="header-right">
+                    <span id="teacher-greeting" style="margin-right:15px; font-weight:600;">Bienvenido, Coach</span>
+                    <button class="btn-icon" onclick="logout()" title="Cerrar Sesión">
+                        <i data-lucide="log-out"></i>
+                    </button>
+                </div>
+            </header>
+            <div class="dashboard-content">
+                <div class="section-header">
+                    <h3>Agenda de Hoy</h3>
+                    <span class="date-badge" id="today-date"></span>
+                </div>
+                <div id="sessions-container" class="sessions-list">
+                    <div class="loading-state">
+                        <div class="spinner"></div>
+                        <p>Cargando sesiones...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== CLASSROOM ====== -->
+        <div id="classroom-view" class="view">
+            <header class="main-header glass" id="classroom-header"
+                style="max-width:1400px; margin: 0 auto; width: calc(100% - 4rem); transition: all 0.4s;">
+                <div class="header-left">
+                    <button class="btn-icon" onclick="exitClassroom()"><i data-lucide="chevron-left"></i></button>
+                    <h2 id="classroom-title">Clase en Curso</h2>
+                </div>
+                <div class="header-right">
+                    <button id="finish-btn" class="btn-danger" onclick="finishClassroom()">Finalizar Clase</button>
+                </div>
+            </header>
+
+
+            <div class="classroom-layout" id="classroom-layout">
+                <div class="sidebar-container">
+                    <button class="sidebar-tab-trigger" onclick="toggleSidebar()" title="Alternar perfil">
+                        <i data-lucide="chevron-left" id="sidebar-icon"></i>
+                    </button>
+                    <aside class="student-sidebar glass">
+                        <div class="profile-header">
+                            <div class="avatar-lg" id="student-initials">?</div>
+                            <h3 id="student-name-display">Cargando...</h3>
+                            <br>
+                            <span class="level-badge" id="student-level-display">Nivel B1</span>
+                        </div>
+                        <hr class="sidebar-sep">
+                        <div class="profile-section">
+                            <label>Vertical</label>
+                            <div id="student-vertical"><span class="tag">—</span></div>
+                        </div>
+                        <div class="profile-section">
+                            <label>Intereses</label>
+                            <div id="student-interests" class="tag-cloud"></div>
+                        </div>
+                        <hr class="sidebar-sep">
+                        <div class="profile-section" style="flex:1; overflow-y:auto;">
+                            <div class="sidebar-section">
+                                <label><i data-lucide="award"></i>Progreso & Administración</label>
+                                <div id="topic-progress" class="progress-list">
+                                    <!-- Progress items -->
+                                </div>
+                                <div class="token-counter" style="margin-top:15px; padding:10px; background:rgba(255,193,7,0.1); border-radius:8px; border:1px solid rgba(255,193,7,0.2);">
+                                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                                        <small style="color:var(--warning); font-weight:600;">Tokens de Reposición</small>
+                                        <span id="student-tokens" style="font-weight:700; color:var(--warning);">0</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+
+                <!-- Main Flow -->
+                <main class="class-flow">
+                    <nav class="phase-nav">
+                        <button class="phase-tab active-warmup" id="tab-warmup" onclick="switchPhase('warmup',0)">
+                            <div class="tab-label">🔥 Warm-up <span class="timer-inline" id="timer-warmup">7m</span>
+                            </div>
+                            <div class="tab-bar"></div>
+                        </button>
+                        <button class="phase-tab" id="tab-core" onclick="switchPhase('core',1)">
+                            <div class="tab-label">📚 Core <span class="timer-inline" id="timer-core">45m</span></div>
+                            <div class="tab-bar"></div>
+                        </button>
+                        <button class="phase-tab" id="tab-download" onclick="switchPhase('download',2)">
+                            <div class="tab-label">✅ Download <span class="timer-inline" id="timer-download">8m</span>
+                            </div>
+                            <div class="tab-bar"></div>
+                        </button>
+                    </nav>
+                    <div class="phase-content glass">
+                        <div class="instruction-box warmup" id="instruction-box">
+                            <i data-lucide="info" style="flex-shrink:0;width:16px;height:16px;"></i>
+                            <p id="phase-instruction-text">Selecciona una fase para comenzar.</p>
+                        </div>
+                        <div class="suggestion-card">
+                            <div class="card-header">
+                                <i data-lucide="sparkles" style="width:16px;height:16px;color:var(--accent-blue);"></i>
+                                <span>Material de Clase (Interactive Slides)</span>
+                                <div style="flex-grow:1;"></div>
+                                <div class="header-right" style="gap:8px;">
+                                    <button class="projection-toggle" onclick="generateGeminiContent(true)"
+                                        title="Forzar regeneración con IA">
+                                        <i data-lucide="refresh-cw" style="width:14px;height:14px;"></i>Iterar
+                                    </button>
+                                    <button class="projection-toggle" onclick="window.print()"
+                                        title="Imprimir o guardar como PDF">
+                                        <i data-lucide="download" style="width:14px;height:14px;"></i>PDF
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div id="ai-loading" class="loading-state" style="display:none;">
+                                    <div class="spinner"></div>
+                                    <p>Generando material didáctico...</p>
+                                </div>
+                                <div id="ai-content"
+                                    style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+                                    <p style="color:var(--text-muted);">Comienza seleccionando una fase (Warm-up, Core o
+                                        Download) arriba.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+
+            <!-- Floating UI -->
+            <button class="notes-fab" id="notes-fab" onclick="toggleNotes()" title="Notas de clase">
+                <i data-lucide="pen-tool"></i>
+            </button>
+            <div class="notes-overlay" id="notes-overlay">
+                <label>Notas del Profesor</label>
+                <textarea class="notes-textarea" id="class-notes"
+                    placeholder="Escribe observaciones, errores frecuentes..."></textarea>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ════════════════════════════════
+        // CONFIG
+        // ════════════════════════════════
+        const AIRTABLE_BASE = 'app9ZtojlxX5FoZ7y';
+        const AIRTABLE_KEY = 'YOUR_AIRTABLE_API_KEY';
+        const GEMINI_KEY = 'AIzaSyCC9v0BpoLENolDwcoHicUaybBp2q64HxY';
+        console.log('LinguaLife Copilot v4-beta2-2.5 Initialized');
+
+        // ════════════════════════════════
+        // RICH MOCK DATA (shown when Airtable fields are missing)
+        // ════════════════════════════════
+        const MOCK_PROFILES = {
+            'rec9GSSluX0UWbE0Q': { // Beatriz Orozco
+                interests: ['Marketing Digital', 'Viajes', 'Yoga'],
+                vertical: 'Marketing / Branding',
+                level: 'B2',
+                progress: [
+                    { topic: 'Consumer Behavior Vocabulary', status: 'done' },
+                    { topic: 'Storytelling for Brands (LDS)', status: 'current' },
+                    { topic: 'Influencer Campaign Metrics', status: 'pending' },
+                ]
+            },
+            'santiago_henao_mock': {
+                interests: ['Philosophy', 'Leadership', 'Chess', 'History'],
+                vertical: 'Strategic Management',
+                level: 'C1',
+                progress: [
+                    { topic: 'Stoicism in Leadership', status: 'done' },
+                    { topic: 'Strategic Visioning (LDS)', status: 'current' },
+                    { topic: 'High-Stakes Negotiation (Sniper)', status: 'pending' },
+                    { topic: 'Cross-Cultural Management', status: 'pending' },
+                ]
+            },
+            'recKwRlkqMilOisa2': { // Carlos Andres Mock (Airtable ID from seed)
+                interests: ['Tecnología', 'Emprendimiento', 'Fútbol', 'Series'],
+                vertical: 'Customer Success / SaaS',
+                level: 'B2',
+                progress: [
+                    { topic: 'Technical onboarding terms', status: 'done' },
+                    { topic: 'Active Listening & Empathy', status: 'current' },
+                    { topic: 'Retaining high-churn clients', status: 'pending' },
+                ]
+            },
+            'recKmQxEDJbHcwFZe': { // Maria Fernanda Demo (Airtable ID from seed)
+                interests: ['Marketing Digital', 'Viajes', 'Yoga', 'Música'],
+                vertical: 'Social Media Management',
+                level: 'B1',
+                progress: [
+                    { topic: 'Ad campaign structures', status: 'done' },
+                    { topic: 'Community engagement phrases', status: 'current' },
+                    { topic: 'Reporting & Analytics (Pro)', status: 'pending' },
+                ]
+            },
+            'recG1lQU5Pi6Xcv8q': { // Juan David Montes
+                interests: ['Logística', 'Ciclismo', 'Tecnología'],
+                vertical: 'Supply Chain / Logistics',
+                level: 'B1',
+                progress: [
+                    { topic: 'Inventory Management terms', status: 'done' },
+                    { topic: 'Coordination & Shipping Phrases', status: 'current' },
+                    { topic: 'Freight Documentation', status: 'pending' },
+                ]
+            },
+            'recKNVbEED7d2zAd8': { // Yuliana Higuita
+                interests: ['Recursos Humanos', 'Liderazgo', 'Cine'],
+                vertical: 'Human Resources',
+                level: 'B1',
+                progress: [
+                    { topic: 'Recruitment Basics', status: 'done' },
+                    { topic: 'Performance Review Feedback', status: 'current' },
+                    { topic: 'Conflict Resolution (Sniper)', status: 'pending' },
+                ]
+            }
+        };
+
+        const DEFAULT_MOCK = {
+            interests: ['General Interests', 'Culture', 'Movies'],
+            vertical: 'Standard Professional',
+            level: 'B1',
+            progress: [
+                { topic: 'Daily Routines', status: 'done' },
+                { topic: 'Workplace Interaction Basics', status: 'current' },
+                { topic: 'Future Career Goals', status: 'pending' },
+            ]
+        };
+
+        // ════════════════════════════════
+        // STATE
+        // ════════════════════════════════
+        let currentTeacher = null;
+        let currentSessions = [];
+        let currentClassData = null;
+        let currentPhase = 'warmup';
+        let timerInterval = null;
+        let currentSlides = [];
+        let activeSlideIndex = 0;
+        let currentFase = '';
+
+        // Phase durations in seconds
+        const PHASE_DURATIONS = { warmup: 7 * 60, core: 45 * 60, download: 8 * 60 };
+        const PHASE_ORDER = ['warmup', 'core', 'download'];
+
+        function getMicrostructure(order) {
+            const totalCore = 45;
+            let ratio; // % of conversation vs explanation
+            if (order <= 15) ratio = 0.15; // Installer
+            else if (order <= 35) ratio = 0.40; // Builder
+            else ratio = 0.70; // Negotiator
+
+            return {
+                warmup: 7,
+                explanation: Math.round(totalCore * (1 - ratio)),
+                conversation: Math.round(totalCore * ratio),
+                download: 8
+            };
+        }
+
+        // ════════════════════════════════
+        // VIEWS
+        // ════════════════════════════════
+        function showView(id) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        // ════════════════════════════════
+        // API HELPERS
+        // ════════════════════════════════
+        async function airtableFetch(table, params = '') {
+            const url = `https://api.airtable.com/v0/${AIRTABLE_BASE}/${encodeURIComponent(table)}${params}`;
+            const res = await fetch(url, { headers: { Authorization: `Bearer ${AIRTABLE_KEY}` } });
+            if (!res.ok) { const err = await res.json(); throw new Error(err.error?.message || res.statusText); }
+            return res.json();
+        }
+        async function airtableFetchOne(table, id) {
+            const url = `https://api.airtable.com/v0/${AIRTABLE_BASE}/${encodeURIComponent(table)}/${id}`;
+            const res = await fetch(url, { headers: { Authorization: `Bearer ${AIRTABLE_KEY}` } });
+            if (!res.ok) return null;
+            return res.json();
+        }
+        async function airtablePatch(table, id, fields) {
+            const url = `https://api.airtable.com/v0/${AIRTABLE_BASE}/${encodeURIComponent(table)}/${id}`;
+            const res = await fetch(url, {
+                method: 'PATCH',
+                headers: { Authorization: `Bearer ${AIRTABLE_KEY}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ fields })
+            });
+            if (!res.ok) { const err = await res.json(); throw new Error(err.error?.message || res.statusText); }
+            return res.json();
+        }
+        async function airtablePost(table, fields) {
+            const url = `https://api.airtable.com/v0/${AIRTABLE_BASE}/${encodeURIComponent(table)}`;
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { Authorization: `Bearer ${AIRTABLE_KEY}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ fields })
+            });
+            if (!res.ok) { const err = await res.json(); throw new Error(err.error?.message || res.statusText); }
+            return res.json();
+        }
+
+        // ════════════════════════════════
+        // AUTH
+        // ════════════════════════════════
+        async function handleLogin() {
+            const pin = document.getElementById('teacher-pin').value.trim();
+            if (!pin) return;
+            const errEl = document.getElementById('auth-error');
+            errEl.textContent = 'Verificando...';
+            errEl.style.color = 'var(--text-secondary)';
+            errEl.classList.add('show');
+            try {
+                const data = await airtableFetch('Teachers', `?filterByFormula=${encodeURIComponent(`{PIN} = '${pin}'`)}`);
+                if (!data.records.length) {
+                    errEl.textContent = 'PIN no encontrado. Verifica la tabla Teachers.';
+                    errEl.style.color = 'var(--danger)'; return;
+                }
+                const rec = data.records[0];
+                const rawName = rec.fields['Full Name'] || rec.fields['Name'] || 'Coach';
+                currentTeacher = { id: rec.id, name: rawName };
+                errEl.classList.remove('show');
+                await loadDashboard();
+                showView('dashboard-view');
+            } catch (e) {
+                errEl.textContent = `Error: ${e.message}`;
+                errEl.style.color = 'var(--danger)';
+            }
+        }
+        document.getElementById('teacher-pin').addEventListener('keypress', e => { if (e.key === 'Enter') handleLogin(); });
+
+        // ════════════════════════════════
+        // DASHBOARD
+        // ════════════════════════════════
+        async function loadDashboard() {
+            const firstName = (currentTeacher.name || 'Coach').split(' ')[0];
+            document.getElementById('teacher-greeting').textContent = `Bienvenido, ${firstName}`;
+            const container = document.getElementById('sessions-container');
+            container.innerHTML = '<div class="loading-state"><div class="spinner"></div><p>Cargando sesiones...</p></div>';
+            
+            try {
+                // Fetch sessions — filtered by the logged-in teacher's record ID
+                const teacherFilter = `AND({Status} = 'Scheduled', FIND('${currentTeacher.id}', ARRAYJOIN({Teacher})))`;
+                const data = await airtableFetch('Sessions', `?filterByFormula=${encodeURIComponent(teacherFilter)}&sort[0][field]=Scheduled Date%2FTime&sort[0][direction]=asc`);
+
+                currentSessions = data.records;
+                renderSessions(currentSessions);
+                
+                // Dynamic stats based on real sessions
+                const totalSessions = data.records.length;
+                const upcomingCount = data.records.filter(s => new Date(s.fields['Scheduled Date/Time']) >= new Date()).length;
+                const statsHtml = `
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom: 20px;">
+                        <div class="card" style="padding:15px; background:rgba(255,255,255,0.03);">
+                            <small style="color:var(--text-muted); display:block; margin-bottom:5px;">Sesiones Programadas</small>
+                            <span style="font-size:1.5rem; font-weight:700; color:var(--success);">${totalSessions}</span>
+                        </div>
+                        <div class="card" style="padding:15px; background:rgba(255,255,255,0.03);">
+                            <small style="color:var(--text-muted); display:block; margin-bottom:5px;">Próximas Clases</small>
+                            <span style="font-size:1.5rem; font-weight:700; color:var(--accent-blue);">${upcomingCount}</span>
+                        </div>
+                    </div>`;
+                const statsContainer = document.getElementById('dashboard-stats');
+                if (statsContainer) statsContainer.innerHTML = statsHtml;
+
+            } catch (e) {
+                container.innerHTML = `<div class="empty-state">Error: ${e.message}</div>`;
+            }
+        }
+
+        function renderSessions(sessions) {
+            const container = document.getElementById('sessions-container');
+            if (!sessions.length) { container.innerHTML = '<div class="empty-state">No hay sesiones programadas hoy 🎉</div>'; return; }
+            container.innerHTML = sessions.map(s => {
+                const f = s.fields;
+                const dt = f['Scheduled Date/Time'] ? new Date(f['Scheduled Date/Time']).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' }) : '--:--';
+                const status = (f['Status'] || 'scheduled').toLowerCase();
+                const name = f['Session Name'] || `Sesión — ${dt}`;
+                const link = f['Location/Link'] || '';
+                return `
+        <div class="session-card" onclick="enterClassroom('${s.id}')">
+            <div class="session-info">
+                <h4>${name}</h4>
+                <div class="session-meta">
+                    <div class="meta-item"><i data-lucide="clock" style="width:13px;height:13px;"></i><span>${dt}</span></div>
+                    <div class="meta-item"><i data-lucide="timer" style="width:13px;height:13px;"></i><span>${f['Duration (minutes)'] || 60} min</span></div>
+                    ${link ? `<div class="meta-item"><i data-lucide="video" style="width:13px;height:13px;"></i><a href="${link}" target="_blank" onclick="event.stopPropagation()" style="color:var(--accent-blue);text-decoration:none;">Unirse</a></div>` : ''}
+                </div>
+            </div>
+            <span class="status-pill status-${status}">${f['Status'] || 'Scheduled'}</span>
+        </div>`;
+            }).join('');
+            lucide.createIcons();
+        }
+
+        function logout() {
+            currentTeacher = null;
+            currentSessions = [];
+            currentClassData = null;
+            currentSlides = [];  // Clear slide cache for next teacher
+            activeSlideIndex = 0;
+            document.getElementById('teacher-pin').value = '';
+            showView('auth-view');
+        }
+
+
+        // ════════════════════════════════
+        // CLASSROOM
+        // ════════════════════════════════
+        async function enterClassroom(sessionId) {
+            showView('classroom-view');
+            const session = currentSessions.find(s => s.id === sessionId);
+            currentClassData = { session, student: null, topic: null, studentId: null, savedContent: null };
+            document.getElementById('classroom-title').textContent = session.fields['Session Name'] || 'Clase en Curso';
+            document.getElementById('student-name-display').textContent = 'Cargando...';
+            document.getElementById('class-notes').value = '';
+
+            try {
+                // 1. Load Student
+                const participantIds = session.fields['Session Participants'] || [];
+                if (participantIds.length) {
+                    const partRec = await airtableFetchOne('Session Participants', participantIds[0]);
+                    if (partRec) {
+                        const studentLinks = partRec.fields['Student'] || [];
+                        if (studentLinks.length) {
+                            currentClassData.studentId = studentLinks[0];
+                            currentClassData.student = await airtableFetchOne('Students', studentLinks[0]);
+                        }
+                    }
+                }
+
+                // 2. Load Persistence (Previous Slides)
+                try {
+                    const contentData = await airtableFetch('Session_Content', `?filterByFormula=${encodeURIComponent(`{Session} = '${sessionId}'`)}`);
+                    if (contentData?.records?.length) {
+                        currentClassData.savedContent = JSON.parse(contentData.records[0].fields['JSON_Payload']);
+                        console.log('✅ Loaded persistent session content');
+                    }
+                } catch (e) {
+                    console.warn('Persistence table not found or inaccessible:', e.message);
+                }
+
+                // 3. Load Topic (Zero-Prep Logic)
+                const topicIds = session.fields['Curriculum Topic'] || [];
+                if (topicIds.length) {
+                    currentClassData.topic = await airtableFetchOne('Curriculum Topics', topicIds[0]);
+                } else if (currentClassData.student) {
+                    // Pull next logical topic if none assigned
+                    console.log('🔍 Copilot: Searching for next logical topic...');
+                    const nextTopicId = currentClassData.student.fields['Next_Logical_Topic_ID']; 
+                    if (nextTopicId) currentClassData.topic = await airtableFetchOne('Curriculum Topics', nextTopicId);
+                }
+            } catch (e) { console.warn('Copilot Data Link Issue:', e.message); }
+
+            renderClassroom();
+            startTimer();
+            switchPhase('warmup', 0);
+        }
+
+        function renderClassroom() {
+            const { student, studentId } = currentClassData;
+            const mock = (studentId && MOCK_PROFILES[studentId]) ? MOCK_PROFILES[studentId] : DEFAULT_MOCK;
+
+            // Name & Initials
+            const name = student?.fields?.['Full Name'] || 'Alumno';
+            document.getElementById('student-name-display').textContent = name;
+            document.getElementById('student-initials').textContent = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+            document.getElementById('student-level-display').textContent = `Nivel ${student?.fields?.['Level'] || mock.level}`;
+
+            // Vertical
+            const vertical = student?.fields?.['Vertical (Lookup)']?.[0] || student?.fields?.['Vertical'] || mock.vertical;
+            document.getElementById('student-vertical').innerHTML = `<span class="tag">${vertical}</span>`;
+
+            // Interests — from Airtable if available, else mock
+            const rawInterests = student?.fields?.['Interests'] || '';
+            const interests = rawInterests ? rawInterests.split(',').map(i => i.trim()).filter(Boolean) : mock.interests;
+            document.getElementById('student-interests').innerHTML = interests.map(i => `<span class="tag">${i}</span>`).join('');
+
+            // Progress — always use rich mock data for now
+            const progressHtml = mock.progress.map(p => `
+        <div class="progress-item">
+            <div class="progress-dot ${p.status}"></div>
+            <div class="progress-item-text">
+                <div>${p.topic}</div>
+                <small>${p.status === 'done' ? '✓ Completado' : p.status === 'current' ? '▶ En curso' : '○ Pendiente'}</small>
+            </div>
+        </div>`).join('');
+            document.getElementById('topic-progress').innerHTML = progressHtml || '<span style="color:var(--text-muted)">Sin datos</span>';
+
+            lucide.createIcons();
+        }
+
+        // ════════════════════════════════
+        // PHASE SWITCHING
+        // ════════════════════════════════
+        const PHASE_META = {
+            warmup: { label: '🔥 Warm-up', hint: '7 min · Reactivación del tema anterior', colorVar: '--warmup-color', cls: 'warmup' },
+            core: { label: '📚 Core', hint: '45 min · Despliegue de la lógica LDS', colorVar: '--core-color', cls: 'core' },
+            download: { label: '✅ Download', hint: '8 min · Feedback quirúrgico y cierre', colorVar: '--download-color', cls: 'download' }
+        };
+
+        function switchPhase(phase, tabIndex) {
+            currentPhase = phase;
+            const loadingEl = document.getElementById('ai-loading');
+            if (loadingEl) loadingEl.style.display = 'none';
+
+            const meta = PHASE_META[phase];
+            const { student, topic, studentId } = currentClassData || {};
+            const mock = (studentId && MOCK_PROFILES[studentId]) ? MOCK_PROFILES[studentId] : DEFAULT_MOCK;
+
+            // Update compact tabs
+            ['warmup', 'core', 'download'].forEach(p => {
+                const tab = document.getElementById(`tab-${p}`);
+                tab.className = 'phase-tab' + (p === phase ? ` active-${p}` : '');
+            });
+
+            // Update instruction box color class
+            const ib = document.getElementById('instruction-box');
+            ib.className = `instruction-box ${meta.cls}`;
+
+            // Student context
+            const studentName = student?.fields?.['Full Name']?.split(' ')[0] || 'el alumno';
+            const vertical = student?.fields?.['Vertical (Lookup)']?.[0] || mock.vertical;
+            const currentTopicObj = mock.progress.find(p => p.status === 'current');
+
+            // PRIORITIZE real topic from Airtable session record
+            const realTopicName = topic?.fields?.['Topic Name'];
+            const currentTopic = realTopicName || currentTopicObj?.topic || 'tema actual';
+
+            const doneTopic = mock.progress.find(p => p.status === 'done')?.topic || 'el tema anterior';
+            const topicFormula = topic?.fields?.['LDS_Formula'] || 'S + T + A';
+            const topicContext = topic?.fields?.['AI_Context'] || `Aplica el patrón LDS al contexto de ${vertical}.`;
+            const faseLabel = topic?.fields?.['Fase'] || null;
+
+            const phases = {
+                warmup: {
+                    instruction: `7 min · Reactiva el motor de <strong>${studentName}</strong> en su contexto de <strong>${vertical}</strong>.`,
+                    suggestion: `
+                <div style="display:flex;flex-direction:column;gap:1rem;padding:0.25rem;font-size:1rem;">
+                    <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);border-radius:12px;padding:1.1rem;">
+                        <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;color:var(--warmup-color);font-weight:700;margin-bottom:0.6rem;">🔥 Reactivación — Tema Anterior</div>
+                        <p>Último tema visto: <strong>${doneTopic}</strong></p>
+                        <div style="margin-top:0.75rem;background:rgba(255,255,255,0.05);border-radius:8px;padding:0.75rem;">
+                            <strong style="color:var(--warmup-color);font-size:0.85rem;">Pregunta de Arranque:</strong><br>
+                            <em style="color:var(--text-primary);font-size:0.95rem;">"Tell me one thing that happened at work this week — try to use [${doneTopic}] in your answer."</em>
+                        </div>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.03);border:1px solid var(--glass-border);border-radius:12px;padding:1.1rem;">
+                        <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);font-weight:700;margin-bottom:0.6rem;">🎯 Sniper Drill (30 seg)</div>
+                        <p style="color:var(--text-secondary);">Corrige un error típico antes de arrancar el Core:</p>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:0.6rem;">
+                            <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:8px;padding:0.6rem;">
+                                <span style="color:var(--danger);font-weight:700;font-size:0.82rem;">✗ Error Típico</span><br>
+                                <em style="color:var(--text-secondary);font-size:0.85rem;">"I am working here since 3 years."</em>
+                            </div>
+                            <div style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);border-radius:8px;padding:0.6rem;">
+                                <span style="color:var(--success);font-weight:700;font-size:0.82rem;">✓ Versión LDS</span><br>
+                                <em style="color:var(--text-secondary);font-size:0.85rem;">"I have been working here for 3 years."</em>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.03);border:1px solid var(--glass-border);border-radius:12px;padding:1.1rem;">
+                        <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);font-weight:700;margin-bottom:0.6rem;">⚡ Micro-Pregunta de Contexto</div>
+                        <em style="color:var(--text-primary);font-size:0.95rem;">"What's the most challenging English situation you face in your <strong>${vertical}</strong> work right now?"</em>
+                    </div>
+                </div>`
+                },
+                core: {
+                    instruction: `45 min · Tema: <strong>${currentTopic}</strong>. Guía el descubrimiento lógico LDS.`,
+                    suggestion: `<div class="loading-state" style="padding:1rem;font-size:0.9rem;"><div class="spinner" style="width:22px;height:22px;"></div>Generando material LDS con IA...</div>`
+                },
+                download: {
+                    instruction: `8 min · ¡Buen trabajo, <strong>${studentName}</strong>! Cierra la clase con energía positiva.`,
+                    suggestion: `
+                <div style="display:flex;flex-direction:column;gap:1rem;padding:0.25rem;font-size:1rem;">
+
+                    <div style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.25);border-radius:12px;padding:1.1rem;">
+                        <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;color:var(--success);font-weight:700;margin-bottom:0.6rem;">🏆 Win del Día</div>
+                        <p style="color:var(--text-secondary);margin-bottom:0.75rem;">Pregunta a ${studentName} por algo positivo que usó o aprendió hoy:</p>
+                        <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:0.75rem;font-style:italic;color:var(--text-primary);font-size:0.95rem;">
+                            "What's ONE thing you understood better today than before class? Tell me in English."
+                        </div>
+                    </div>
+
+                    <div style="background:rgba(0,163,255,0.06);border:1px solid rgba(0,163,255,0.2);border-radius:12px;padding:1.1rem;">
+                        <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;color:var(--accent-blue);font-weight:700;margin-bottom:0.6rem;">💬 Expresión de la Semana</div>
+                        <p style="color:var(--text-secondary);margin-bottom:0.5rem;">Dale una frase poderosa y natural para usar esta semana en su contexto de <strong>${vertical}</strong>:</p>
+                        <div style="background:rgba(0,163,255,0.08);border-left:3px solid var(--accent-blue);border-radius:4px;padding:0.75rem;margin-top:0.5rem;">
+                            <strong style="color:var(--text-primary);font-size:1rem;">"I'll get back to you on that."</strong>
+                            <p style="color:var(--text-muted);font-size:0.8rem;margin-top:4px;">Úsala cuando necesitas tiempo para responder — profesional y natural.</p>
+                        </div>
+                        <p style="color:var(--text-muted);font-size:0.8rem;margin-top:0.6rem;font-style:italic;">Puedes cambiar la expresión según el tema de la clase de hoy.</p>
+                    </div>
+
+                    <div style="background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.2);border-radius:12px;padding:1.1rem;">
+                        <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;color:var(--warning);font-weight:700;margin-bottom:0.6rem;">📬 Pocket Coach Preview</div>
+                        <p style="color:var(--text-secondary);font-size:0.9rem;">Recuérdale que esta semana recibirá su reto personalizado por WhatsApp. Termina con:</p>
+                        <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:0.75rem;font-style:italic;color:var(--text-primary);font-size:0.95rem;margin-top:0.5rem;">
+                            "¡Hoy lo hiciste muy bien! Esta semana el Pocket Coach te lanza un reto sobre lo que vimos. ¡Estás listo!"
+                        </div>
+                    </div>
+
+                </div>`
+                }
+            };
+
+            const p = phases[phase];
+            document.getElementById('phase-instruction-text').innerHTML = p.instruction;
+
+            const contentArea = document.getElementById('ai-content');
+            if (contentArea) {
+                if (phase === 'core') {
+                    contentArea.innerHTML = p.suggestion; // This shows the slide placeholder/loading
+                } else {
+                    contentArea.innerHTML = `<div style="padding:0.25rem; overflow-y:auto; height:100%;">${p.suggestion}</div>`;
+
+                }
+            }
+
+            if (phase === 'core') {
+                if (currentSlides.length > 0 && !force) {
+                    // Use cached slides from this session
+                    renderSlides();
+                } else {
+                    generateGeminiContent();
+                }
+            }
+        }
+
+        async function generateGeminiContent(force = false) {
+            const { student, topic, studentId } = currentClassData || {};
+            const mock = (studentId && MOCK_PROFILES[studentId]) ? MOCK_PROFILES[studentId] : DEFAULT_MOCK;
+
+            const realTopicName = topic?.fields?.['Topic Name'];
+            const topicName = realTopicName || mock.progress.find(p => p.status === 'current')?.topic || 'English Grammar';
+
+            const vertical = student?.fields?.['Vertical (Lookup)']?.[0] || student?.fields?.['Vertical'] || mock.vertical;
+            const level = student?.fields?.['Level'] || mock.level;
+            const formula = topic?.fields?.['LDS_Formula'] || 'S + T + A';
+            const context = topic?.fields?.['AI_Context'] || '';
+            const fase = topic?.fields?.['Fase'] || '';
+
+            // 1. Check for persistent content first (Unless forced refresh)
+            if (currentClassData.savedContent && !force) {
+                console.log('🚀 Using persistent slides from Airtable...');
+                displaySlides(currentClassData.savedContent.rawText, fase);
+                return;
+            }
+
+            const loadingEl = document.getElementById('ai-loading');
+            if (loadingEl) loadingEl.style.display = 'block';
+            document.getElementById('ai-content').innerHTML = '';
+
+            const studentName = student?.fields?.['Full Name']?.split(' ')[0] || 'el alumno';
+            const rawInterests = student?.fields?.['Interests'] || '';
+            const interests = rawInterests ? rawInterests.split(',').map(i => i.trim()).join(', ') : mock.interests.join(', ');
+
+            const prompt = `
+You are an elite English coach generating dark-theme classroom slides for a B2/C1 student.
+
+STUDENT: ${studentName} | LEVEL: ${level} | VERTICAL: ${vertical}
+TOPIC: ${topicName} | INTERESTS: ${interests}
+
+YOUR OUTPUT MUST BE 4 SLIDES using EXACTLY this marker format:
+[[SLIDE_1: Logic Decoder]]
+[[SLIDE_2: Colombian Filter]]
+[[SLIDE_3: Real-Life Chunks]]
+[[SLIDE_4: Discussion & Context]]
+
+STRICT DARK THEME RULES - NEVER use white backgrounds:
+- All containers: style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:10px; margin:6px 0;"
+- Body text color: style="color:#94a3b8;"
+- Titles/Labels: style="color:#00a3ff; font-size:0.72rem; text-transform:uppercase; letter-spacing:1px; font-weight:700; margin-bottom:6px;"
+- Strong/bold text: style="color:#ffffff;"
+- Error examples: style="color:#ef4444;"
+- Correct examples: style="color:#10b981;"
+- Formula boxes: style="background:rgba(0,163,255,0.1); border-left:3px solid #00a3ff; padding:8px 12px; border-radius:4px; font-family:monospace; color:#e2e8f0; font-weight:600;"
+- Tables: style="width:100%; border-collapse:collapse;"
+- TH: style="background:rgba(255,255,255,0.06); color:#64748b; font-size:0.7rem; text-transform:uppercase; padding:8px 12px; text-align:left;"
+- TD: style="padding:8px 12px; border-bottom:1px solid rgba(255,255,255,0.06); font-size:0.88rem;"
+- Error TD: style="padding:8px 12px; border-bottom:1px solid rgba(255,255,255,0.06); color:#ef4444;"
+- Correct TD: style="padding:8px 12px; border-bottom:1px solid rgba(255,255,255,0.06); color:#10b981;"
+
+SLIDE CONTENT RULES:
+- SLIDE_1 (Logic Decoder): Concept explanation + formula box + 2 clear examples in a small grid.
+- SLIDE_2 (Colombian Filter): Table with 3+ rows of "Colombian Error" vs "Correct English". Minimum 3 rows.
+- SLIDE_3 (Real-Life Chunks): 6 power phrases related to ${vertical}, each with brief Spanish context.
+- SLIDE_4 (Discussion & Context): 2 conversation questions (personalized to interests: ${interests}) + 1 relevant News Headline + 1 LDS Tactical Mission sentence.
+
+ABSOLUTE RULES:
+- Use ONLY the [[SLIDE_N: Title]] markers, exactly as shown above.
+- Output PURE HTML inside each slide. NO markdown, NO code fences.
+- Never use background:white or background:#ffffff or color:black.
+- No text outside the slide markers.`;
+
+
+
+            try {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${GEMINI_KEY}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                });
+
+                const data = await res.json();
+                if (data.error) throw new Error(`${data.error.status}: ${data.error.message}`);
+                let text = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No content generated.';
+                text = text.replace(/```html/gi, '').replace(/```/g, '').trim();
+
+                // Sanitize: strip any light backgrounds Gemini might have added
+                text = text
+                    .replace(/background:\s*white/gi, 'background:rgba(255,255,255,0.05)')
+                    .replace(/background:\s*#fff[^;"]*/gi, 'background:rgba(255,255,255,0.05)')
+                    .replace(/background-color:\s*white/gi, 'background:rgba(255,255,255,0.05)')
+                    .replace(/background-color:\s*#fff[^;"]*/gi, 'background:rgba(255,255,255,0.05)')
+                    .replace(/color:\s*black/gi, 'color:#94a3b8')
+                    .replace(/color:\s*#000[^;"]*/gi, 'color:#94a3b8')
+                    .replace(/color:\s*#333[^;"]*/gi, 'color:#94a3b8');
+
+
+                // SAVE TO AIRTABLE (Persistence) - Soft fail if table missing
+                try {
+                    await airtablePost('Session_Content', {
+                        'Session': [currentClassData.session.id],
+                        'JSON_Payload': JSON.stringify({ rawText: text, timestamp: new Date().toISOString() })
+                    });
+                    console.log('✅ AI content saved to Airtable.');
+                } catch (e) {
+                    console.warn('Could not save persistence:', e.message);
+                }
+
+                displaySlides(text, fase);
+            } catch (e) {
+                console.error('Gemini Error:', e);
+                if (loadingEl) {
+                    loadingEl.innerHTML = `<p style="color:var(--danger);font-size:0.75rem;padding:1rem;">Error de IA: ${e.message}</p>`;
+                }
+            }
+        }
+
+        function displaySlides(text, fase = '') {
+            currentSlides = parseAISlides(text);
+            activeSlideIndex = 0;
+            currentFase = fase;
+            renderSlides();
+        }
+
+        function parseAISlides(text) {
+            const slides = [];
+            const sections = text.split(/\[\[SLIDE_\d+:\s*(.*?)\]\]/);
+
+            // sections[0] is everything before the first tag (usually empty)
+            for (let i = 1; i < sections.length; i += 2) {
+                const title = sections[i].trim();
+                const content = sections[i + 1]?.trim() || '';
+                slides.push({ title, content });
+            }
+
+            // Fallback if AI fails to follow tags
+            if (slides.length === 0) {
+                slides.push({ title: 'Sugerencia Express', content: text });
+            }
+            return slides;
+        }
+
+        function renderSlides() {
+            const loadingEl = document.getElementById('ai-loading');
+            if (loadingEl) loadingEl.style.display = 'none';
+
+            const container = document.getElementById('ai-content');
+            if (!container) return; // Definitive stability fix
+
+            if (currentSlides.length === 0) {
+                return;
+            }
+
+            const slidesHtml = currentSlides.map((s, i) => `
+        <div class="slide ${i === activeSlideIndex ? 'active' : ''}">
+            <div class="slide-header">
+                <i data-lucide="${getSlideIcon(s.title)}"></i>
+                <h4>${s.title}</h4>
+            </div>
+            <div class="slide-content">${s.content}</div>
+        </div>
+    `).join('');
+
+            const navHtml = `
+        <div class="slides-nav">
+            <div class="slide-indicator">
+                ${currentSlides.map((_, i) => `<div class="dot ${i === activeSlideIndex ? 'active' : ''}" onclick="goToSlide(${i})"></div>`).join('')}
+            </div>
+            <div class="nav-buttons">
+                <button class="btn-nav" onclick="changeSlide(-1)" ${activeSlideIndex === 0 ? 'disabled' : ''}>
+                    <i data-lucide="chevron-left"></i>
+                </button>
+                <button class="btn-nav" onclick="changeSlide(1)" ${activeSlideIndex === currentSlides.length - 1 ? 'disabled' : ''}>
+                    <i data-lucide="chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    `;
+
+            container.innerHTML = `
+        ${currentFase ? `<div class="fase-badge" style="margin: 1rem 1.5rem 0;"><i data-lucide="layers" style="width:12px;height:12px;"></i>Fase: <strong>${currentFase}</strong></div>` : ''}
+        <div class="slides-container">
+            <div class="slides-viewport">
+                ${slidesHtml}
+            </div>
+            ${navHtml}
+        </div>
+    `;
+            lucide.createIcons();
+        }
+
+        function getSlideIcon(title) {
+            const t = title.toLowerCase();
+            if (t.includes('logic') || t.includes('decoder')) return 'cpu';
+            if (t.includes('colombian') || t.includes('filter') || t.includes('sniper')) return 'target';
+            if (t.includes('life') || t.includes('chunks') || t.includes('scenarios')) return 'zap';
+            if (t.includes('discussion') || t.includes('prompt')) return 'message-circle';
+            return 'presentation';
+        }
+
+        function changeSlide(dir) {
+            activeSlideIndex = Math.max(0, Math.min(currentSlides.length - 1, activeSlideIndex + dir));
+            renderSlides();
+        }
+
+        function goToSlide(idx) {
+            activeSlideIndex = idx;
+            renderSlides();
+        }
+
+
+        function exitClassroom() {
+            stopTimer();
+            showView('dashboard-view');
+        }
+
+        async function finishClassroom() {
+            console.log('Finalizing class...', currentClassData);
+
+            const btn = document.getElementById('finish-btn');
+            const originalText = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = 'Procesando...';
+
+            const { session, student, topic } = currentClassData;
+
+            try {
+                // 1. Mark current session as Seen
+                await airtablePatch('Sessions', session.id, { 'Status': 'Seen' });
+
+                // 2. Calculate next session date (+7 days)
+                const oldDate = new Date(session.fields['Scheduled Date/Time']);
+                const nextDate = new Date(oldDate.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+                // 3. Create next session
+                const nextTopicId = (student?.fields?.['Next_Logical_Topic_ID']) ? student.fields['Next_Logical_Topic_ID'] : (topic ? topic.id : null);
+                
+                const newSessionFields = {
+                    'Scheduled Date/Time': nextDate.toISOString(),
+                    'Duration (minutes)': session.fields['Duration (minutes)'] || 60,
+                    'Status': 'Scheduled',
+                    'Teacher': session.fields['Teacher'],
+                    'Location/Link': session.fields['Location/Link'] || '',
+                    'Session Name': `Next: ${student?.fields?.['Full Name']?.split(' ')[0] || 'Student'}`
+                };
+                if (nextTopicId) newSessionFields['Curriculum Topic'] = [nextTopicId];
+
+                const newSession = await airtablePost('Sessions', newSessionFields);
+
+                // 4. Save Final Notes to Student Progress History
+                const finalNotes = document.getElementById('class-notes').value;
+                if (finalNotes && student) {
+                    try {
+                        await airtablePost('Student_Feedback', {
+                            'Student': [student.id],
+                            'Feedback': finalNotes,
+                            'Session': [session.id]
+                        });
+                        console.log('✅ Final notes saved to Airtable.');
+                    } catch (e) {
+                        console.warn('Could not save feedback:', e.message);
+                    }
+                }
+
+                alert(`¡Clase finalizada con éxito!\nPróxima cita programada (LDS Pattern): ${nextDate.toLocaleString('es-CO')}`);
+                exitClassroom();
+            } catch (e) {
+                alert('Error al automatizar la siguiente sesión: ' + e.message);
+                console.error(e);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = originalText;
+            }
+        }
+
+        // ════════════════════════════════
+        // TIMER
+        // ════════════════════════════════
+        let phaseTimers = { warmup: PHASE_DURATIONS.warmup, core: PHASE_DURATIONS.core, download: PHASE_DURATIONS.download };
+
+        function startTimer() {
+            stopTimer();
+            const order = currentClassData?.topic?.fields?.['Order'] || 1;
+            const ms = getMicrostructure(order);
+            phaseTimers = { 
+                warmup: ms.warmup * 60, 
+                core: (ms.explanation + ms.conversation) * 60, 
+                download: ms.download * 60 
+            };
+            timerInterval = setInterval(() => {
+                if (phaseTimers[currentPhase] > 0) {
+                    phaseTimers[currentPhase]--;
+                    updateTimerUI();
+                }
+            }, 1000);
+        }
+
+        function updateTimerUI() {
+            ['warmup', 'core', 'download'].forEach(p => {
+                const sec = phaseTimers[p];
+                const m = Math.floor(sec / 60);
+                const s = sec % 60;
+                const el = document.getElementById(`timer-${p}`);
+                if (el) el.textContent = `${m}:${s.toString().padStart(2, '0')}`;
+
+                // Alert color if phase finished
+                if (sec === 0 && p === currentPhase) {
+                    document.getElementById(`tab-${p}`).style.color = 'var(--danger)';
+                }
+            });
+        }
+        function stopTimer() { clearInterval(timerInterval); }
+
+        // ════════════════════════════════
+        // CLOCK & DATE
+        // ════════════════════════════════
+        function updateClock() {
+            document.getElementById('live-clock').textContent = new Date().toLocaleTimeString('es-CO');
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+        document.getElementById('today-date').textContent = new Date().toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'long' });
+
+        // Toggle Sidebar
+        function toggleSidebar() {
+            const layout = document.getElementById('classroom-layout');
+            const icon = document.getElementById('sidebar-icon');
+            const header = document.getElementById('classroom-header'); // Assuming this ID for the header
+            const isCollapsed = layout.classList.toggle('sidebar-collapsed');
+
+            if (isCollapsed) {
+                icon.setAttribute('data-lucide', 'chevron-right');
+                if (header) header.style.maxWidth = '98%';
+            } else {
+                icon.setAttribute('data-lucide', 'chevron-left');
+                if (header) header.style.maxWidth = '1400px';
+            }
+            lucide.createIcons();
+        }
+
+        // Toggle Notes
+        function toggleNotes() {
+            const fab = document.getElementById('notes-fab');
+            const overlay = document.getElementById('notes-overlay');
+            fab.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+
+        lucide.createIcons();
+
+        // Keyboard navigation for slides
+        window.addEventListener('keydown', (e) => {
+            const projectionOverlay = document.getElementById('projection-overlay');
+            const classroomView = document.getElementById('classroom-view');
+
+            if (classroomView.classList.contains('active')) {
+                if (e.key === 'ArrowRight' || e.key === ' ') changeSlide(1);
+                if (e.key === 'ArrowLeft') changeSlide(-1);
+                if (e.key === 'Escape' && projectionOverlay.classList.contains('active')) toggleProjection();
+            }
+        });
+    </script>
+</body>
+
+</html>

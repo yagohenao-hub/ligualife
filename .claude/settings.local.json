@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(cat package.json)",
+      "Bash(ls .nvmrc)",
+      "Bash(ls vercel.json)",
+      "Bash(gh run *)",
+      "Bash(gh deployment *)",
+      "Bash(npx vercel *)",
+      "Bash(ls .vercel)",
+      "Bash(cat .vercel/project.json)"
+    ]
+  }
+}
