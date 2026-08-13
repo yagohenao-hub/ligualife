@@ -50,7 +50,7 @@ export const EvolutionAPI = {
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Error enviando mensaje via Evolution API:', errorText);
-      throw new Error(\`Evolution API error: \${response.statusText}\`);
+      throw new Error(`Evolution API error: ${response.statusText}`);
     }
 
     return await response.json();
