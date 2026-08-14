@@ -29,8 +29,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(200).json({ status: 'Ignorado - Mensaje propio' });
     }
 
-    // Extraer texto (conversation o extendedTextMessage)
-    const textContent = messageData.message?.conversation || 
+    // Extraer texto (conversation o extendedTextMessage de Evolution API v2)
+    const textContent = messageData.conversation || 
+                        messageData.extendedTextMessage?.text || 
+                        messageData.message?.conversation || 
                         messageData.message?.extendedTextMessage?.text || 
                         messageData.text || '';
                         
