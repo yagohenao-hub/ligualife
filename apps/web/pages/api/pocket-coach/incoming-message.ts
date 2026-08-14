@@ -37,7 +37,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         messageData.text || '';
                         
     if (!textContent.trim()) {
-      return res.status(200).json({ status: 'Ignorado - Sin texto' });
+      return res.status(200).json({ status: 'Ignorado v2.0 - Sin texto' });
     }
 
     const remoteJid = key.remoteJid;
