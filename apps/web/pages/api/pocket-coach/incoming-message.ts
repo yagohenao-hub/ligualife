@@ -62,32 +62,38 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(200).json({ status: 'Handoff humano activado por palabra clave' });
     }
 
-    // 1. Buscar al estudiante en Airtable usando el número
-    // (Asegurar formato, buscando si el teléfono contiene este número)
-    const students = await findAirtableRecords('Students', `FIND('${phone}', {Phone}) > 0`);
+    // 1. Buscar al estudiante en Airtable usando los últimos 10 dígitos del número
+    const cleanDigits = phone.replace(/[^0-9]/g, '');
+    const last10 = cleanDigits.slice(-10);
     
-    if (students.length === 0) {
-      console.log('Mensaje recibido de número no registrado:', phone);
-      return res.status(200).json({ status: 'Usuario no registrado' });
-    }
+    let studentName = 'Estudiante';
+    let studentId = '';
 
-    const student = students[0];
-    const studentName = student.fields.FullName || 'Estudiante';
-    const studentId = student.id;
+    if (last10) {
+      const students = await findAirtableRecords('Students', `FIND('${last10}', {Phone}) > 0`);
+      if (students.length > 0) {
+        studentName = students[0].fields.FullName || 'Estudiante';
+        studentId = students[0].id;
+      } else {
+        console.log(`Número ${phone} no registrado en Airtable. Usando perfil por defecto ('${studentName}').`);
+      }
+    }
 
     // 2. Buscar tema en progreso
     let currentTopicTitle = 'Inglés General';
     let ldsFormula = 'Sujeto + Palabra de Tiempo + Acción';
 
-    const progresses = await findAirtableRecords('StudentTopicProgress', `AND({StudentId} = '${studentId}', {Status} = 'In progress')`);
-    
-    if (progresses.length > 0) {
-      const topicId = progresses[0].fields.TopicId?.[0];
-      if (topicId) {
-        const topic = await fetchAirtableRecord('CurriculumTopics', topicId);
-        if (topic) {
-          currentTopicTitle = topic.fields.Title || currentTopicTitle;
-          ldsFormula = topic.fields.LDSFormula || ldsFormula;
+    if (studentId) {
+      const progresses = await findAirtableRecords('StudentTopicProgress', `AND({StudentId} = '${studentId}', {Status} = 'In progress')`);
+      
+      if (progresses.length > 0) {
+        const topicId = progresses[0].fields.TopicId?.[0];
+        if (topicId) {
+          const topic = await fetchAirtableRecord('CurriculumTopics', topicId);
+          if (topic) {
+            currentTopicTitle = topic.fields.Title || currentTopicTitle;
+            ldsFormula = topic.fields.LDSFormula || ldsFormula;
+          }
         }
       }
     }
