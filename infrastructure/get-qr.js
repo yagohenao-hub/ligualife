@@ -2,7 +2,7 @@ const fs = require('fs');
 
 async function getQR() {
   const apikey = 'TuSuperSecretaGlobalApiKeyDeEvolution';
-  const url = 'http://129.213.164.129:8080';
+  const url = 'https://evolution-api-production-0971.up.railway.app';
 
   console.log("🧹 1. Eliminando sesión atascada anterior...");
   try {

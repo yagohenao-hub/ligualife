@@ -35,14 +35,12 @@ export const EvolutionAPI = {
         'apikey': EVOLUTION_API_KEY
       },
       body: JSON.stringify({
-        number: remoteJid,
+        number: cleanPhone,
+        text: text,
         options: {
           delay: 1200,
           presence: 'composing',
           linkPreview: false
-        },
-        textMessage: {
-          text: text
         }
       })
     });
