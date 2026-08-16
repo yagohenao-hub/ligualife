@@ -12,8 +12,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     const payload = req.body;
 
-    // Verificar si el payload es el evento de mensajes de Evolution API
-    if (payload.event !== 'messages.upsert' && !payload.messages) {
+    // Verificar si el payload contiene un mensaje de Evolution API v2
+    const eventName = (payload.event || '').toLowerCase();
+    const isMessageEvent = eventName.includes('messages.upsert') || eventName.includes('messages_upsert') || Boolean(payload.messages) || Boolean(payload.data?.message);
+
+    if (!isMessageEvent) {
       return res.status(200).json({ status: 'Ignorado - No es un mensaje nuevo' });
     }
 

@@ -26,7 +26,13 @@ async function getQR() {
       body: JSON.stringify({
         instanceName: "PocketCoach",
         qrcode: true,
-        integration: "WHATSAPP-BAILEYS"
+        integration: "WHATSAPP-BAILEYS",
+        webhook: {
+          enabled: true,
+          url: "https://lingualife.vercel.app/api/pocket-coach/incoming-message",
+          byEvents: false,
+          events: ["MESSAGES_UPSERT"]
+        }
       })
     });
 
