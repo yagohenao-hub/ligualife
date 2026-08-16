@@ -6,6 +6,9 @@ import { buildConversationalPrompt } from '@/lib/pocket-coach/prompt-engine';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
+// Cache en memoria para deduplicar mensajes por key.id y evitar respuestas dobles
+const processedMessageIds = new Set<string>();
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
@@ -31,6 +34,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (key.fromMe) {
       return res.status(200).json({ status: 'Ignorado - Mensaje propio' });
+    }
+
+    // Deduplicación de mensajes para prevenir respuestas dobles
+    if (key.id) {
+      if (processedMessageIds.has(key.id)) {
+        console.log(`[Deduplicación] Mensaje repetido omitido: ${key.id}`);
+        return res.status(200).json({ status: 'Ignorado - Mensaje duplicado' });
+      }
+      processedMessageIds.add(key.id);
+      setTimeout(() => processedMessageIds.delete(key.id), 120000); // 2 minutos de expiración
     }
 
     // Extraer texto (conversation o extendedTextMessage de Evolution API v2)
