@@ -3,27 +3,38 @@ const API_KEY = process.env.AIRTABLE_API_KEY!
 
 export async function fetchFromAirtable(table: string, params = ''): Promise<any> {
   const url = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(table)}?${params}`
-  const res = await fetch(url, {
-    headers: { Authorization: `Bearer ${API_KEY}` },
-  })
-  if (!res.ok) throw new Error(`Airtable error: ${res.status}`)
-  return res.json()
+  try {
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${API_KEY}` },
+    })
+    if (!res.ok) {
+      console.error(`Airtable error (${table}): ${res.status} ${res.statusText}`);
+      return null;
+    }
+    return await res.json()
+  } catch (err) {
+    console.error(`Airtable network error (${table}):`, err);
+    return null;
+  }
 }
 
 export async function findAirtableRecords(table: string, formula: string): Promise<any[]> {
   const params = `filterByFormula=${encodeURIComponent(formula)}`
   const data = await fetchFromAirtable(table, params)
-  return data.records || []
+  return data?.records || []
 }
 
 export async function fetchAirtableRecord(table: string, recordId: string): Promise<any> {
   const url = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(table)}/${recordId}`
-  const res = await fetch(url, {
-    headers: { Authorization: `Bearer ${API_KEY}` },
-  })
-  if (res.status === 404) return null
-  if (!res.ok) throw new Error(`Airtable error: ${res.status}`)
-  return res.json()
+  try {
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${API_KEY}` },
+    })
+    if (!res.ok) return null
+    return await res.json()
+  } catch (err) {
+    return null
+  }
 }
 
 export async function patchAirtableRecord(table: string, recordId: string, fields: Record<string, any>): Promise<any> {
