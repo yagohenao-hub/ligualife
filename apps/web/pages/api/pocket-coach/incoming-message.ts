@@ -44,9 +44,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(200).json({ status: 'Ignorado v2.0 - Sin texto' });
     }
 
+    // Extraer el JID real (Soporte para privacidad WhatsApp LID: si remoteJid es @lid, usar remoteJidAlt)
+    const targetJid = key.remoteJidAlt || payload.data?.remoteJidAlt || key.remoteJid || '';
     const remoteJid = key.remoteJid;
     // Extraer el número limpio (quitar sufijos de grupo/dispositivo como :14@s.whatsapp.net)
-    const phone = remoteJid.split('@')[0].split(':')[0];
+    const phone = targetJid.split('@')[0].split(':')[0];
 
     // -------------------------------------------------------------
     // DETECCIÓN AUTOMÁTICA DE INTENCIÓN ADMINISTRATIVA / HUMAN HANDOFF
@@ -64,7 +66,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       console.log(`Mensaje administrativo detectado para ${phone}: "${textContent}"`);
       const handoffMessage = `¡Hola! He notado que escribes sobre un tema administrativo o de pagos/horarios. 📱\n\nTu asesor se pondrá en contacto contigo a la brevedad para atenderte personalmente.`;
       
-      await EvolutionAPI.sendText(remoteJid, handoffMessage);
+      await EvolutionAPI.sendText(phone, handoffMessage);
       return res.status(200).json({ status: 'Handoff humano activado por palabra clave' });
     }
 
@@ -116,7 +118,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const aiResponseText = result.response.text();
 
     // 4. Enviar la respuesta por WhatsApp
-    await EvolutionAPI.sendText(remoteJid, aiResponseText);
+    await EvolutionAPI.sendText(phone, aiResponseText);
 
     return res.status(200).json({ success: true, message: 'Respuesta enviada' });
 
