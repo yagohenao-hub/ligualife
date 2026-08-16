@@ -45,8 +45,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const remoteJid = key.remoteJid;
-    // Extraer el número (quitar @s.whatsapp.net)
-    const phone = remoteJid.split('@')[0];
+    // Extraer el número limpio (quitar sufijos de grupo/dispositivo como :14@s.whatsapp.net)
+    const phone = remoteJid.split('@')[0].split(':')[0];
 
     // -------------------------------------------------------------
     // DETECCIÓN AUTOMÁTICA DE INTENCIÓN ADMINISTRATIVA / HUMAN HANDOFF
