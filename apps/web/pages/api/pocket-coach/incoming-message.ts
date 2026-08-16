@@ -11,6 +11,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     const payload = req.body;
+    console.log('📥 WEBHOOK POCKET COACH RECIBIDO:', JSON.stringify(payload, null, 2));
 
     // Verificar si el payload contiene un mensaje de Evolution API v2
     const eventName = (payload.event || '').toLowerCase();
