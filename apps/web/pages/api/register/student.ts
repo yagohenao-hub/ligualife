@@ -65,38 +65,55 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(500).json({ error: 'No se pudo generar un PIN único. Intenta de nuevo.' })
     }
 
-    const response = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${STUDENTS_TABLE}`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        records: [
-          {
-            fields: {
-              "fldbdDNucZwILRMwO": fullName,
-              "fldxAsAn6aQDHRR9U": email,
-              "fldu8P3X4o9P4V9dn": phone,
-              "fld1Vi2ti4xdraYyo": ageRange,
-              "fld6HZD7X8hzgGCUX": goalId ? [goalId] : [],
-              "fldTfNhYtykGeDx1x": interests,
-              "fldmPdharKvZzqsMq": availability,
-              "fldXUKKO28Wr1dN76": "Pending",
-              "flddBUJK1K42KKsJv": openToGroups,
-              "fldsq1cfz7OnxNfm9": timezone || 'America/Bogota',
-              "PIN": pin
-            }
-          }
-        ],
-        typecast: true
-      })
-    })
+    const fields: Record<string, unknown> = {
+      "fldbdDNucZwILRMwO": fullName,
+      "fldxAsAn6aQDHRR9U": email,
+      "fldu8P3X4o9P4V9dn": phone,
+      "fld1Vi2ti4xdraYyo": ageRange,
+      "fld6HZD7X8hzgGCUX": goalId ? [goalId] : [],
+      "fldTfNhYtykGeDx1x": Array.isArray(interests) ? interests : [],
+      "fldmPdharKvZzqsMq": availability,
+      "fldXUKKO28Wr1dN76": "Pending",
+      "flddBUJK1K42KKsJv": openToGroups,
+      "fldsq1cfz7OnxNfm9": timezone || 'America/Bogota',
+      "fld3C6vGWEA7RR1LM": pin
+    }
 
-    const data = await response.json()
+    const postToAirtable = async (f: Record<string, unknown>) =>
+      fetch(`https://api.airtable.com/v0/${BASE_ID}/${STUDENTS_TABLE}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          records: [{ fields: f }],
+          typecast: true
+        })
+      })
+
+    let response = await postToAirtable(fields)
+    let data = await response.json()
+
+    // Si falla por ID de objetivo inválido o campo no reconocido, reintentar sin goalId
     if (!response.ok) {
-      console.error('Airtable Error:', data)
-      return res.status(500).json({ error: 'No se pudo guardar la información en la base de datos', details: data })
+      const errMsg: string = data?.error?.message || JSON.stringify(data)
+      console.warn('Primer intento falló en Airtable:', errMsg)
+      if (fields["fld6HZD7X8hzgGCUX"] && (fields["fld6HZD7X8hzgGCUX"] as any[]).length > 0) {
+        console.warn('Reintentando sin el campo Goal/Objetivo...')
+        const coreFields = { ...fields, "fld6HZD7X8hzgGCUX": [] }
+        response = await postToAirtable(coreFields)
+        data = await response.json()
+      }
+    }
+
+    if (!response.ok) {
+      console.error('Airtable Error final:', data)
+      const detailMsg = data?.error?.message || data?.error || JSON.stringify(data)
+      return res.status(500).json({ 
+        error: `No se pudo guardar la información en la base de datos: ${detailMsg}`, 
+        details: data 
+      })
     }
 
     // Enviar mensaje de bienvenida vía WhatsApp (Pocket Coach)
@@ -111,6 +128,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(200).json({ success: true, pin, record: data.records[0] })
   } catch (error: any) {
     console.error('API Error:', error)
-    return res.status(500).json({ error: 'Error del servidor' })
+    return res.status(500).json({ error: error.message || 'Error del servidor' })
   }
 }
