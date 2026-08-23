@@ -1,8 +1,6 @@
+import { supabase } from './supabaseClient'
 import fs from 'fs'
 import path from 'path'
-
-const BASE_ID = process.env.AIRTABLE_BASE_ID ?? 'app9ZtojlxX5FoZ7y'
-const API_KEY = process.env.AIRTABLE_API_KEY
 
 const MOCK_FILE = path.join(process.cwd(), 'tmp_mock_airtable.json')
 
@@ -21,177 +19,217 @@ function writeMockStore(data: Record<string, Record<string, any>>) {
   } catch {}
 }
 
-function normalizeFields(fields: Record<string, any>): Record<string, any> {
-  const f = { ...fields }
-  if (f.fldYW4Oh6dPrZh4wY) { f['Name'] = f.fldYW4Oh6dPrZh4wY; f['FullName'] = f.fldYW4Oh6dPrZh4wY; f['Full Name'] = f.fldYW4Oh6dPrZh4wY; }
-  if (f.fldwHO6pmhgSxhtMU) { f['Email'] = f.fldwHO6pmhgSxhtMU; }
-  if (f.fldmvzzWizaHinAMu) { f['Phone'] = f.fldmvzzWizaHinAMu; }
-  if (f.fldsCFNKymtmEbVDe) { f['PIN'] = f.fldsCFNKymtmEbVDe; f['Pin'] = f.fldsCFNKymtmEbVDe; }
-  if (f.fldSIYNoMW8jWfJPf) { f['Status'] = f.fldSIYNoMW8jWfJPf; }
-  if (f.fldt7Uk2WdYmMemW7) { f['MeetingLink'] = f.fldt7Uk2WdYmMemW7; f['Meeting Link'] = f.fldt7Uk2WdYmMemW7; }
-
-  if (f.fldbdDNucZwILRMwO) { f['FullName'] = f.fldbdDNucZwILRMwO; f['Name'] = f.fldbdDNucZwILRMwO; f['Full Name'] = f.fldbdDNucZwILRMwO; }
-  if (f.fldxAsAn6aQDHRR9U) { f['Email'] = f.fldxAsAn6aQDHRR9U; }
-  if (f.fldu8P3X4o9P4V9dn) { f['Phone'] = f.fldu8P3X4o9P4V9dn; }
-  if (f.fld3C6vGWEA7RR1LM) { f['PIN'] = f.fld3C6vGWEA7RR1LM; f['Pin'] = f.fld3C6vGWEA7RR1LM; }
-  if (f.fldXUKKO28Wr1dN76) { f['Status'] = f.fldXUKKO28Wr1dN76; }
-  if (f.fld9Gd9q1eMuxf9MX !== undefined) { f['ClassesRemaining'] = f.fld9Gd9q1eMuxf9MX; f['Tokens'] = f.fld9Gd9q1eMuxf9MX; }
-  return f
-}
-
-function getMockRecords(table: string): any[] {
-  const store = readMockStore()
-  const tableData = store[table] || {}
-  return Object.values(tableData)
-}
-
-function saveMockRecord(table: string, record: any) {
-  const store = readMockStore()
-  if (!store[table]) store[table] = {}
-  record.fields = normalizeFields(record.fields || {})
-  store[table][record.id] = record
-  writeMockStore(store)
-}
-
-function filterMockRecords(records: any[], formula: string): any[] {
-  if (!formula) return records;
-  const decoded = decodeURIComponent(formula);
-
-  const eqMatch = decoded.match(/\{([^}]+)\}\s*=\s*'([^']*)'/) || decoded.match(/\{([^}]+)\}\s*=\s*"([^"]*)"/);
-  if (eqMatch) {
-    const [, field, val] = eqMatch;
-    return records.filter(r => {
-      const fVal = r.fields[field] ?? r.fields[field.toLowerCase()] ?? r.fields['FullName'] ?? r.fields['Name'] ?? r.fields['Email'] ?? r.fields['PIN'] ?? r.fields['Pin'] ?? r.fields['Phone'];
-      return String(fVal || '').toLowerCase() === String(val || '').toLowerCase();
-    });
+// Map Airtable table names to Supabase SQL table names (17 tables exact mapping)
+function getTableName(table: string): string {
+  const map: Record<string, string> = {
+    'Curriculum Topics': 'curriculum_topics',
+    'Curriculums': 'curriculums',
+    'Error Patterns': 'error_patterns',
+    'Interests': 'interests',
+    'Progress Apply Queue': 'progress_apply_queue',
+    'Series Requests': 'series_requests',
+    'Session Participants': 'session_participants',
+    'Sessions': 'sessions',
+    'Student Curriculum': 'student_curriculum',
+    'Student Topic Progress': 'student_topic_progress',
+    'Student-Teacher': 'student_teacher',
+    'Students': 'students',
+    'Study Groups': 'study_groups',
+    'Teacher Availability': 'teacher_availability',
+    'Teachers': 'teachers',
+    'Verticals': 'verticals',
+    'Video Bank': 'video_bank'
   }
+  return map[table] || table.toLowerCase().replace(/\s+/g, '_')
+}
 
-  const idMatch = decoded.match(/RECORD_ID\(\)\s*=\s*'([^']*)'/);
-  if (idMatch) {
-    return records.filter(r => r.id === idMatch[1]);
+// Convert Supabase DB Row to Airtable-compatible Record structure for frontend compatibility
+function formatRecord(row: any): any {
+  if (!row) return null
+  
+  // Como ahora las tablas de Postgres usan los mismos nombres con comillas ("Full Name", "Email")
+  // row ya trae la estructura { "Full Name": "...", "PIN": "..." }
+  const fields: Record<string, any> = { ...row }
+  
+  // Agregar aliases que el código frontend pueda seguir esperando por seguridad
+  if (row['Full Name']) { fields['FullName'] = row['Full Name']; fields['Name'] = row['Full Name']; }
+  if (row['Name']) { fields['FullName'] = row['Name']; fields['Full Name'] = row['Name']; }
+  if (row['Scheduled Date/Time']) { fields['Scheduled Date/Time'] = row['Scheduled Date/Time']; }
+  if (row['Tokens de Reposición']) { fields['Tokens'] = row['Tokens de Reposición']; }
+
+  // En Airtable las relaciones son arrays (ej. ['rec123'])
+  // Nuestro script auto-genera los ID foráneos como strings simples o null.
+  // Algunos componentes del frontend asumen arrays para relaciones, así que las devolvemos como arrays si existen:
+  if (row['Teacher'] && !Array.isArray(row['Teacher'])) fields['Teacher'] = [row['Teacher']]
+  if (row['Student'] && !Array.isArray(row['Student'])) fields['Student'] = [row['Student']]
+  if (row['Session'] && !Array.isArray(row['Session'])) fields['Session'] = [row['Session']]
+  if (row['Curriculum Topic'] && !Array.isArray(row['Curriculum Topic'])) fields['Curriculum Topic'] = [row['Curriculum Topic']]
+
+  return {
+    id: row.id,
+    fields,
+    createdTime: row.created_at || new Date().toISOString()
   }
-
-  return records;
 }
 
 export async function fetchFromAirtable(table: string, params = ''): Promise<any> {
-  let formula = '';
-  const match = params.match(/filterByFormula=([^&]+)/);
-  if (match) formula = match[1];
-
-  if (!API_KEY) {
-    const raw = getMockRecords(table);
-    return { records: filterMockRecords(raw, formula) };
-  }
-  const url = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(table)}?${params}`
+  const dbTable = getTableName(table)
   try {
-    const res = await fetch(url, {
-      headers: { Authorization: `Bearer ${API_KEY}` },
-    })
-    if (!res.ok) {
-      const raw = getMockRecords(table);
-      return { records: filterMockRecords(raw, formula) };
+    let query = supabase.from(dbTable).select('*')
+
+    const decoded = decodeURIComponent(params)
+
+    // Formula parsing for Supabase queries
+    const pinMatch = decoded.match(/\{PIN\}\s*=\s*'([^']*)'/) || decoded.match(/\{PIN\}\s*=\s*"([^"]*)"/)
+    if (pinMatch) {
+      query = query.eq('PIN', pinMatch[1])
     }
-    return await res.json()
+
+    const emailMatch = decoded.match(/\{Email\}\s*=\s*'([^']*)'/)
+    if (emailMatch) {
+      query = query.eq('Email', emailMatch[1])
+    }
+
+    const findMatch = decoded.match(/FIND\(\s*'([^']+)'/);
+    if (findMatch) {
+      const targetId = findMatch[1];
+      if (dbTable === 'session_participants') {
+        query = query.eq('Student', targetId) // La columna en Postgres ahora es "Student"
+      } else if (dbTable === 'student_teacher') {
+        query = query.eq('Student', targetId)
+      }
+    }
+
+    if (decoded.includes('RECORD_ID()')) {
+      const ids = Array.from(decoded.matchAll(/RECORD_ID\(\)\s*=\s*'([^']*)'/g)).map(m => m[1])
+      if (ids.length > 0) {
+        query = query.in('id', ids)
+      }
+    }
+
+    const { data, error } = await query
+
+    if (error || !data) {
+      console.warn(`Supabase fetch error for table ${dbTable}:`, error?.message)
+      const store = readMockStore()
+      return { records: Object.values(store[table] || {}).map(formatRecord) }
+    }
+
+    return { records: data.map(formatRecord) }
   } catch (err) {
-    const raw = getMockRecords(table);
-    return { records: filterMockRecords(raw, formula) };
+    const store = readMockStore()
+    return { records: Object.values(store[table] || {}).map(formatRecord) }
   }
 }
 
 export async function findAirtableRecords(table: string, formula: string): Promise<any[]> {
-  const data = await fetchFromAirtable(table, `filterByFormula=${encodeURIComponent(formula)}`)
-  return data?.records || []
+  const res = await fetchFromAirtable(table, `filterByFormula=${encodeURIComponent(formula)}`)
+  return res?.records || []
 }
 
 export async function fetchAirtableRecord(table: string, recordId: string): Promise<any> {
-  const store = readMockStore()
-  const local = store[table]?.[recordId] || null
-  if (!API_KEY) return local
-
-  const url = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(table)}/${recordId}`
+  const dbTable = getTableName(table)
   try {
-    const res = await fetch(url, {
-      headers: { Authorization: `Bearer ${API_KEY}` },
-    })
-    if (!res.ok) return local
-    return await res.json()
-  } catch (err) {
-    return local
-  }
-}
-
-export async function patchAirtableRecord(table: string, recordId: string, fields: Record<string, any>): Promise<any> {
-  const store = readMockStore()
-  const existing = store[table]?.[recordId] || { id: recordId, fields: {} }
-  existing.fields = { ...existing.fields, ...fields }
-  saveMockRecord(table, existing)
-
-  if (!API_KEY) return existing
-
-  const url = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(table)}/${recordId}`
-  try {
-    const res = await fetch(url, {
-      method: 'PATCH',
-      headers: {
-        Authorization: `Bearer ${API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ fields }),
-    })
-    if (!res.ok) return existing
-    return res.json()
-  } catch (err) {
-    return existing
+    const { data, error } = await supabase.from(dbTable).select('*').eq('id', recordId).single()
+    if (error || !data) {
+      const store = readMockStore()
+      return store[table]?.[recordId] || null
+    }
+    return formatRecord(data)
+  } catch {
+    const store = readMockStore()
+    return store[table]?.[recordId] || null
   }
 }
 
 export async function createAirtableRecord(table: string, fields: Record<string, any>): Promise<any> {
-  const mockId = `recMock${Math.random().toString(36).substr(2, 9)}`
-  const recordObj = { id: mockId, fields, createdTime: new Date().toISOString() }
-  saveMockRecord(table, recordObj)
+  const dbTable = getTableName(table)
+  
+  let row: Record<string, any> = {}
 
-  if (!API_KEY) return recordObj
+  if (dbTable === 'students') {
+    row = {
+      "Full Name": fields.FullName || fields.Name || fields['Full Name'] || fields.fldbdDNucZwILRMwO,
+      "Email": fields.Email || fields.fldxAsAn6aQDHRR9U,
+      "Phone": fields.Phone || fields.fldu8P3X4o9P4V9dn,
+      "Timezone": fields.timezone || fields.fldsq1cfz7OnxNfm9 || 'America/Bogota',
+      "PIN": fields.PIN || fields.Pin || fields.fld3C6vGWEA7RR1LM,
+      "Status": fields.Status || fields.fldXUKKO28Wr1dN76 || 'Active',
+      "Age Range": fields.ageRange || fields.fld1Vi2ti4xdraYyo,
+      "Interests": Array.isArray(fields.interests) ? fields.interests.join(',') : (fields.fldTfNhYtykGeDx1x ? fields.fldTfNhYtykGeDx1x.join(',') : ''),
+      "Availability": typeof fields.availability === 'string' ? fields.availability : JSON.stringify(fields.availability || []),
+      "Open to Group Classes": fields.openToGroups || fields.flddBUJK1K42KKsJv || false,
+      "Tokens de Reposición": fields.Tokens || 0
+    }
+  } else if (dbTable === 'teachers') {
+    row = {
+      "Name": fields.Name || fields.fldYW4Oh6dPrZh4wY,
+      "Email": fields.Email || fields.fldwHO6pmhgSxhtMU,
+      "Phone": fields.Phone || fields.fldmvzzWizaHinAMu,
+      "Timezone": fields.timezone || fields.fldsq1cfz7OnxNfm9 || 'America/Bogota',
+      "PIN": fields.PIN || fields.Pin || fields.fldsCFNKymtmEbVDe,
+      "Status": fields.Status || fields.fldSIYNoMW8jWfJPf || 'Active',
+      "Meeting Link": fields.MeetingLink || fields['Meeting Link'] || fields.fldt7Uk2WdYmMemW7,
+      "Availability": typeof fields.availability === 'string' ? fields.availability : JSON.stringify(fields.availability || [])
+    }
+  } else if (dbTable === 'sessions') {
+    row = {
+      "Teacher": Array.isArray(fields.Teacher) ? fields.Teacher[0] : fields.Teacher,
+      "Scheduled Date/Time": fields['Scheduled Date/Time'] || new Date().toISOString(),
+      "Status": fields.Status || 'Scheduled',
+      "Session Name": fields['Session Name'],
+      "Curriculum Topic": Array.isArray(fields['Curriculum Topic']) ? fields['Curriculum Topic'][0] : fields['Curriculum Topic']
+    }
+  } else if (dbTable === 'session_participants') {
+    row = {
+      "Session": Array.isArray(fields.Session) ? fields.Session[0] : fields.Session,
+      "Student": Array.isArray(fields.Student) ? fields.Student[0] : fields.Student
+    }
+  } else {
+    // Para tablas arbitrarias que pasan ya los campos
+    row = { ...fields }
+  }
 
-  const url = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(table)}`
   try {
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ records: [{ fields }], typecast: true }),
-    })
-    if (!res.ok) return recordObj
-    const data = await res.json()
-    const finalRec = data.records?.[0] || recordObj
-    saveMockRecord(table, finalRec)
-    return finalRec
-  } catch (err) {
-    return recordObj
+    const { data, error } = await supabase.from(dbTable).insert([row]).select().single()
+    if (error || !data) {
+      console.warn(`Supabase insert error for table ${dbTable}:`, error?.message)
+      throw new Error(error?.message || 'Insert error')
+    }
+    return formatRecord(data)
+  } catch (err: any) {
+    throw err
   }
 }
 
-function deleteMockRecord(table: string, recordId: string) {
-  const store = readMockStore()
-  if (store[table]) delete store[table][recordId]
-  writeMockStore(store)
+export async function patchAirtableRecord(table: string, recordId: string, fields: Record<string, any>): Promise<any> {
+  const dbTable = getTableName(table)
+  
+  let updateData: Record<string, any> = {}
+  if (fields['Current Topic']) updateData['Current Topic (Bot)'] = fields['Current Topic'][0]
+  if (fields['Tokens']) updateData['Tokens de Reposición'] = fields['Tokens']
+  if (fields['Status']) updateData['Status'] = fields['Status']
+  if (fields['Teacher']) updateData['Teacher'] = Array.isArray(fields.Teacher) ? fields.Teacher[0] : fields.Teacher
+
+  if (Object.keys(updateData).length === 0) updateData = { ...fields }
+
+  try {
+    const { data, error } = await supabase.from(dbTable).update(updateData).eq('id', recordId).select().single()
+    if (error || !data) {
+      return fetchAirtableRecord(table, recordId)
+    }
+    return formatRecord(data)
+  } catch {
+    return fetchAirtableRecord(table, recordId)
+  }
 }
 
 export async function deleteAirtableRecord(table: string, recordId: string): Promise<any> {
-  deleteMockRecord(table, recordId)
-  if (!API_KEY) return { id: recordId, deleted: true }
-  const url = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(table)}/${recordId}`
+  const dbTable = getTableName(table)
   try {
-    const res = await fetch(url, {
-      method: 'DELETE',
-      headers: { Authorization: `Bearer ${API_KEY}` },
-    })
-    if (!res.ok) return { id: recordId, deleted: true }
-    return res.json()
-  } catch (err) {
+    await supabase.from(dbTable).delete().eq('id', recordId)
+    return { id: recordId, deleted: true }
+  } catch {
     return { id: recordId, deleted: true }
   }
 }
-
