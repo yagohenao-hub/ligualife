@@ -1,0 +1,689 @@
+{
+  "Curriculum Topics": {
+    "recTopicMock1": {
+      "id": "recTopicMock1",
+      "fields": {
+        "Topic Name": "Talking about yesterday",
+        "Order": 1,
+        "LDSFormula": "Sujeto + Did + Acción"
+      }
+    }
+  },
+  "Teachers": {
+    "recTestnj8qdi": {
+      "id": "recTestnj8qdi",
+      "fields": {
+        "fldYW4Oh6dPrZh4wY": "Ana García Test",
+        "fldwHO6pmhgSxhtMU": "ana.garcia.test@lingualife.co",
+        "fldmvzzWizaHinAMu": "+57 321 000 0001",
+        "fldsq1cfz7OnxNfm9": "America/Bogota",
+        "fld7vSUdd69zdl6yQ": "[[false,false,false,false,false,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[false,false,false,false,false,false,false]]",
+        "fld9QkYJhY4df17Bb": "{\"Bank\":\"Bancolombia\",\"AccountType\":\"Ahorros\",\"AccountNumber\":\"69812345678\",\"ID\":\"1020345678\",\"IDType\":\"Cédula de Ciudadanía\"}",
+        "fldwAF9uwhjDUXoZj": [
+          "Startups & Emprendimiento",
+          "Inteligencia Artificial & Tech",
+          "Programación & Software",
+          "Liderazgo & Gestión de Equipos",
+          "Inversiones, Crypto & Finanzas"
+        ],
+        "fldsCFNKymtmEbVDe": "AN1234",
+        "fldSIYNoMW8jWfJPf": "Active",
+        "fldt7Uk2WdYmMemW7": "https://meet.google.com/test-ana-garcia"
+      },
+      "createdTime": "2026-08-20T00:04:59.683Z"
+    },
+    "recTestw91x7": {
+      "id": "recTestw91x7",
+      "fields": {
+        "fldYW4Oh6dPrZh4wY": "Ana García Test",
+        "fldwHO6pmhgSxhtMU": "ana.garcia.test@lingualife.co",
+        "fldmvzzWizaHinAMu": "+57 321 000 0001",
+        "fldsq1cfz7OnxNfm9": "America/Bogota",
+        "fld7vSUdd69zdl6yQ": "[[false,false,false,false,false,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[false,false,false,false,false,false,false]]",
+        "fld9QkYJhY4df17Bb": "{\"Bank\":\"Bancolombia\",\"AccountType\":\"Ahorros\",\"AccountNumber\":\"69812345678\",\"ID\":\"1020345678\",\"IDType\":\"Cédula de Ciudadanía\"}",
+        "fldwAF9uwhjDUXoZj": [
+          "Startups & Emprendimiento",
+          "Inteligencia Artificial & Tech",
+          "Programación & Software",
+          "Liderazgo & Gestión de Equipos",
+          "Inversiones, Crypto & Finanzas"
+        ],
+        "fldsCFNKymtmEbVDe": "AN1234",
+        "fldSIYNoMW8jWfJPf": "Active",
+        "fldt7Uk2WdYmMemW7": "https://meet.google.com/test-ana-garcia"
+      },
+      "createdTime": "2026-08-20T00:05:46.096Z"
+    },
+    "recTest1bwq6": {
+      "id": "recTest1bwq6",
+      "fields": {
+        "fldYW4Oh6dPrZh4wY": "Ana García Test",
+        "fldwHO6pmhgSxhtMU": "ana.garcia.test@lingualife.co",
+        "fldmvzzWizaHinAMu": "+57 321 000 0001",
+        "fldsq1cfz7OnxNfm9": "America/Bogota",
+        "fld7vSUdd69zdl6yQ": "[[false,false,false,false,false,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[false,false,false,false,false,false,false]]",
+        "fld9QkYJhY4df17Bb": "{\"Bank\":\"Bancolombia\",\"AccountType\":\"Ahorros\",\"AccountNumber\":\"69812345678\",\"ID\":\"1020345678\",\"IDType\":\"Cédula de Ciudadanía\"}",
+        "fldwAF9uwhjDUXoZj": [
+          "Startups & Emprendimiento",
+          "Inteligencia Artificial & Tech",
+          "Programación & Software",
+          "Liderazgo & Gestión de Equipos",
+          "Inversiones, Crypto & Finanzas"
+        ],
+        "fldsCFNKymtmEbVDe": "AN1234",
+        "fldSIYNoMW8jWfJPf": "Active",
+        "fldt7Uk2WdYmMemW7": "https://meet.google.com/test-ana-garcia"
+      },
+      "createdTime": "2026-08-20T00:06:57.709Z"
+    },
+    "recTesthqukcu": {
+      "id": "recTesthqukcu",
+      "fields": {
+        "fldYW4Oh6dPrZh4wY": "Ana García Test",
+        "fldwHO6pmhgSxhtMU": "ana.garcia.test@lingualife.co",
+        "fldmvzzWizaHinAMu": "+57 321 000 0001",
+        "fldsq1cfz7OnxNfm9": "America/Bogota",
+        "fld7vSUdd69zdl6yQ": "[[false,false,false,false,false,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[false,false,false,false,false,false,false]]",
+        "fld9QkYJhY4df17Bb": "{\"Bank\":\"Bancolombia\",\"AccountType\":\"Ahorros\",\"AccountNumber\":\"69812345678\",\"ID\":\"1020345678\",\"IDType\":\"Cédula de Ciudadanía\"}",
+        "fldwAF9uwhjDUXoZj": [
+          "Startups & Emprendimiento",
+          "Inteligencia Artificial & Tech",
+          "Programación & Software",
+          "Liderazgo & Gestión de Equipos",
+          "Inversiones, Crypto & Finanzas"
+        ],
+        "fldsCFNKymtmEbVDe": "AN1234",
+        "fldSIYNoMW8jWfJPf": "Active",
+        "fldt7Uk2WdYmMemW7": "https://meet.google.com/test-ana-garcia",
+        "Name": "Ana García Test",
+        "FullName": "Ana García Test",
+        "Full Name": "Ana García Test",
+        "Email": "ana.garcia.test@lingualife.co",
+        "Phone": "+57 321 000 0001",
+        "PIN": "AN1234",
+        "Pin": "AN1234",
+        "Status": "Active",
+        "MeetingLink": "https://meet.google.com/test-ana-garcia",
+        "Meeting Link": "https://meet.google.com/test-ana-garcia"
+      },
+      "createdTime": "2026-08-20T00:08:19.951Z"
+    }
+  },
+  "Students": {
+    "recTestjugxc8": {
+      "id": "recTestjugxc8",
+      "fields": {
+        "fldbdDNucZwILRMwO": "Carlos Pérez Test",
+        "fldxAsAn6aQDHRR9U": "carlos.perez.test@gmail.com",
+        "fldu8P3X4o9P4V9dn": "+57 320 000 0002",
+        "fld1Vi2ti4xdraYyo": "14+",
+        "fldTfNhYtykGeDx1x": [
+          "Startups & Emprendimiento",
+          "Inteligencia Artificial & Tech",
+          "Programación & Software",
+          "Liderazgo & Gestión de Equipos",
+          "Inversiones, Crypto & Finanzas"
+        ],
+        "fldmPdharKvZzqsMq": "[[false,false,false,false,false,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[false,false,false,false,false,false,false]]",
+        "fldXUKKO28Wr1dN76": "Active",
+        "flddBUJK1K42KKsJv": false,
+        "fldYfN4QGDOa5JAGM": "America/Bogota",
+        "fld3C6vGWEA7RR1LM": "CP5678",
+        "fld9Gd9q1eMuxf9MX": 2,
+        "Tokens de Reposición": 3,
+        "FullName": "Carlos Pérez Test",
+        "Name": "Carlos Pérez Test",
+        "Full Name": "Carlos Pérez Test",
+        "Email": "carlos.perez.test@gmail.com",
+        "Phone": "+57 320 000 0002",
+        "PIN": "CP5678",
+        "Pin": "CP5678",
+        "Status": "Active",
+        "ClassesRemaining": 2,
+        "Tokens": 2
+      },
+      "createdTime": "2026-08-20T00:04:59.709Z"
+    },
+    "recTest9voxwq": {
+      "id": "recTest9voxwq",
+      "fields": {
+        "fldbdDNucZwILRMwO": "Carlos Pérez Test",
+        "fldxAsAn6aQDHRR9U": "carlos.perez.test@gmail.com",
+        "fldu8P3X4o9P4V9dn": "+57 320 000 0002",
+        "fld1Vi2ti4xdraYyo": "14+",
+        "fldTfNhYtykGeDx1x": [
+          "Startups & Emprendimiento",
+          "Inteligencia Artificial & Tech",
+          "Programación & Software",
+          "Liderazgo & Gestión de Equipos",
+          "Inversiones, Crypto & Finanzas"
+        ],
+        "fldmPdharKvZzqsMq": "[[false,false,false,false,false,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[false,false,false,false,false,false,false]]",
+        "fldXUKKO28Wr1dN76": "Active",
+        "flddBUJK1K42KKsJv": false,
+        "fldYfN4QGDOa5JAGM": "America/Bogota",
+        "fld3C6vGWEA7RR1LM": "CP5678",
+        "fld9Gd9q1eMuxf9MX": 2,
+        "Tokens de Reposición": 3,
+        "FullName": "Carlos Pérez Test",
+        "Name": "Carlos Pérez Test",
+        "Full Name": "Carlos Pérez Test",
+        "Email": "carlos.perez.test@gmail.com",
+        "Phone": "+57 320 000 0002",
+        "PIN": "CP5678",
+        "Pin": "CP5678",
+        "Status": "Active",
+        "ClassesRemaining": 2,
+        "Tokens": 2
+      },
+      "createdTime": "2026-08-20T00:05:46.103Z"
+    },
+    "recTestvws81c": {
+      "id": "recTestvws81c",
+      "fields": {
+        "fldbdDNucZwILRMwO": "Carlos Pérez Test",
+        "fldxAsAn6aQDHRR9U": "carlos.perez.test@gmail.com",
+        "fldu8P3X4o9P4V9dn": "+57 320 000 0002",
+        "fld1Vi2ti4xdraYyo": "14+",
+        "fldTfNhYtykGeDx1x": [
+          "Startups & Emprendimiento",
+          "Inteligencia Artificial & Tech",
+          "Programación & Software",
+          "Liderazgo & Gestión de Equipos",
+          "Inversiones, Crypto & Finanzas"
+        ],
+        "fldmPdharKvZzqsMq": "[[false,false,false,false,false,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[false,false,false,false,false,false,false]]",
+        "fldXUKKO28Wr1dN76": "Active",
+        "flddBUJK1K42KKsJv": false,
+        "fldYfN4QGDOa5JAGM": "America/Bogota",
+        "fld3C6vGWEA7RR1LM": "CP5678",
+        "fld9Gd9q1eMuxf9MX": 2,
+        "Tokens de Reposición": 3,
+        "FullName": "Carlos Pérez Test",
+        "Name": "Carlos Pérez Test",
+        "Full Name": "Carlos Pérez Test",
+        "Email": "carlos.perez.test@gmail.com",
+        "Phone": "+57 320 000 0002",
+        "PIN": "CP5678",
+        "Pin": "CP5678",
+        "Status": "Active",
+        "ClassesRemaining": 2,
+        "Tokens": 2
+      },
+      "createdTime": "2026-08-20T00:06:57.728Z"
+    },
+    "recTestb5wzir": {
+      "id": "recTestb5wzir",
+      "fields": {
+        "fldbdDNucZwILRMwO": "Carlos Pérez Test",
+        "fldxAsAn6aQDHRR9U": "carlos.perez.test@gmail.com",
+        "fldu8P3X4o9P4V9dn": "+57 320 000 0002",
+        "fld1Vi2ti4xdraYyo": "14+",
+        "fldTfNhYtykGeDx1x": [
+          "Startups & Emprendimiento",
+          "Inteligencia Artificial & Tech",
+          "Programación & Software",
+          "Liderazgo & Gestión de Equipos",
+          "Inversiones, Crypto & Finanzas"
+        ],
+        "fldmPdharKvZzqsMq": "[[false,false,false,false,false,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[true,true,true,true,true,false,false],[false,false,false,false,false,false,false]]",
+        "fldXUKKO28Wr1dN76": "Active",
+        "flddBUJK1K42KKsJv": false,
+        "fldYfN4QGDOa5JAGM": "America/Bogota",
+        "fld3C6vGWEA7RR1LM": "CP5678",
+        "fld9Gd9q1eMuxf9MX": 2,
+        "FullName": "Carlos Pérez Test",
+        "Name": "Carlos Pérez Test",
+        "Full Name": "Carlos Pérez Test",
+        "Email": "carlos.perez.test@gmail.com",
+        "Phone": "+57 320 000 0002",
+        "PIN": "CP5678",
+        "Pin": "CP5678",
+        "Status": "Active",
+        "ClassesRemaining": 2,
+        "Tokens": 2,
+        "Tokens de Reposición": 5
+      },
+      "createdTime": "2026-08-20T00:08:19.966Z"
+    },
+    "recTestpatsm": {
+      "id": "recTestpatsm",
+      "fields": {
+        "Tokens de Reposición": 2
+      }
+    },
+    "recTest90p7vu": {
+      "id": "recTest90p7vu",
+      "fields": {
+        "Tokens de Reposición": 1
+      }
+    }
+  },
+  "Student-Teacher": {
+    "recTest6rfmt": {
+      "id": "recTest6rfmt",
+      "fields": {
+        "flducGScj8CAuebVd": [
+          "recTestjugxc8"
+        ],
+        "fld4sRiJEA7g85fOA": [
+          "recTestnj8qdi"
+        ],
+        "fld14OomEuzP6b8Wr": "Active"
+      },
+      "createdTime": "2026-08-20T00:04:59.749Z"
+    },
+    "recTestxpugt": {
+      "id": "recTestxpugt",
+      "fields": {
+        "flducGScj8CAuebVd": [
+          "recTest9voxwq"
+        ],
+        "fld4sRiJEA7g85fOA": [
+          "recTestw91x7"
+        ],
+        "fld14OomEuzP6b8Wr": "Active"
+      },
+      "createdTime": "2026-08-20T00:05:46.110Z"
+    },
+    "recTestx9zkap": {
+      "id": "recTestx9zkap",
+      "fields": {
+        "flducGScj8CAuebVd": [
+          "recTestvws81c"
+        ],
+        "fld4sRiJEA7g85fOA": [
+          "recTest1bwq6"
+        ],
+        "fld14OomEuzP6b8Wr": "Active"
+      },
+      "createdTime": "2026-08-20T00:06:57.737Z"
+    },
+    "recTest51prt8": {
+      "id": "recTest51prt8",
+      "fields": {
+        "flducGScj8CAuebVd": [
+          "recTestb5wzir"
+        ],
+        "fld4sRiJEA7g85fOA": [
+          "recTesthqukcu"
+        ],
+        "fld14OomEuzP6b8Wr": "Active"
+      },
+      "createdTime": "2026-08-20T00:08:19.981Z"
+    }
+  },
+  "Sessions": {
+    "recTestvoba1k": {
+      "id": "recTestvoba1k",
+      "fields": {
+        "Teacher": [
+          "recTestnj8qdi"
+        ],
+        "Scheduled Date/Time": "2026-08-20T14:00:00.000Z",
+        "Status": "Scheduled",
+        "Session Name": "Clase de prueba — Carlos Pérez",
+        "Location/Link": "https://meet.google.com/test-ana-garcia",
+        "Curriculum Topic": [
+          "recTopicMock1"
+        ]
+      },
+      "createdTime": "2026-08-20T00:04:59.766Z"
+    },
+    "recTeste4cto": {
+      "id": "recTeste4cto",
+      "fields": {
+        "Teacher": [
+          "recTestnj8qdi"
+        ],
+        "Scheduled Date/Time": "2026-08-12T14:00:00.000Z",
+        "Status": "Seen",
+        "Session Name": "Clase completada — Carlos Pérez",
+        "Curriculum Topic": [
+          "recTopicMock1"
+        ]
+      },
+      "createdTime": "2026-08-20T00:04:59.862Z"
+    },
+    "recTest0aybxv": {
+      "id": "recTest0aybxv",
+      "fields": {
+        "Teacher": [
+          "recTestnj8qdi"
+        ],
+        "Scheduled Date/Time": "2026-08-20T14:00:00.000Z",
+        "Status": "Scheduled",
+        "Session Name": "Clase fresca — Carlos Pérez",
+        "Location/Link": "https://meet.google.com/test-ana-garcia",
+        "Curriculum Topic": [
+          "recTopicMock1"
+        ]
+      },
+      "createdTime": "2026-08-20T00:05:04.294Z"
+    },
+    "recTest7p1fe": {
+      "id": "recTest7p1fe",
+      "fields": {
+        "Teacher": [
+          "recTestw91x7"
+        ],
+        "Scheduled Date/Time": "2026-08-20T14:00:00.000Z",
+        "Status": "Scheduled",
+        "Session Name": "Clase de prueba — Carlos Pérez",
+        "Location/Link": "https://meet.google.com/test-ana-garcia",
+        "Curriculum Topic": [
+          "recTopicMock1"
+        ]
+      },
+      "createdTime": "2026-08-20T00:05:46.121Z"
+    },
+    "recTest9w2cg4": {
+      "id": "recTest9w2cg4",
+      "fields": {
+        "Teacher": [
+          "recTestw91x7"
+        ],
+        "Scheduled Date/Time": "2026-08-12T14:00:00.000Z",
+        "Status": "Seen",
+        "Session Name": "Clase completada — Carlos Pérez",
+        "Curriculum Topic": [
+          "recTopicMock1"
+        ]
+      },
+      "createdTime": "2026-08-20T00:05:46.229Z"
+    },
+    "recTest24p1cm": {
+      "id": "recTest24p1cm",
+      "fields": {
+        "Teacher": [
+          "recTestw91x7"
+        ],
+        "Scheduled Date/Time": "2026-08-20T14:00:00.000Z",
+        "Status": "Scheduled",
+        "Session Name": "Clase fresca — Carlos Pérez",
+        "Location/Link": "https://meet.google.com/test-ana-garcia",
+        "Curriculum Topic": [
+          "recTopicMock1"
+        ]
+      },
+      "createdTime": "2026-08-20T00:05:51.027Z"
+    },
+    "recTesttysmr4": {
+      "id": "recTesttysmr4",
+      "fields": {
+        "Teacher": [
+          "recTest1bwq6"
+        ],
+        "Scheduled Date/Time": "2026-08-20T14:00:00.000Z",
+        "Status": "Scheduled",
+        "Session Name": "Clase de prueba — Carlos Pérez",
+        "Location/Link": "https://meet.google.com/test-ana-garcia",
+        "Curriculum Topic": [
+          "recTopicMock1"
+        ]
+      },
+      "createdTime": "2026-08-20T00:06:57.747Z"
+    },
+    "recTestrhaqp5": {
+      "id": "recTestrhaqp5",
+      "fields": {
+        "Teacher": [
+          "recTest1bwq6"
+        ],
+        "Scheduled Date/Time": "2026-08-12T14:00:00.000Z",
+        "Status": "Seen",
+        "Session Name": "Clase completada — Carlos Pérez",
+        "Curriculum Topic": [
+          "recTopicMock1"
+        ]
+      },
+      "createdTime": "2026-08-20T00:06:57.839Z"
+    },
+    "recTestpu65fm": {
+      "id": "recTestpu65fm",
+      "fields": {
+        "Teacher": [
+          "recTest1bwq6"
+        ],
+        "Scheduled Date/Time": "2026-08-20T14:00:00.000Z",
+        "Status": "Scheduled",
+        "Session Name": "Clase fresca — Carlos Pérez",
+        "Location/Link": "https://meet.google.com/test-ana-garcia",
+        "Curriculum Topic": [
+          "recTopicMock1"
+        ]
+      },
+      "createdTime": "2026-08-20T00:07:45.905Z"
+    },
+    "recTestbn3ve8f": {
+      "id": "recTestbn3ve8f",
+      "fields": {
+        "Teacher": [
+          "recTesthqukcu"
+        ],
+        "Scheduled Date/Time": "2026-08-20T14:00:00.000Z",
+        "Status": "Scheduled",
+        "Session Name": "Clase de prueba — Carlos Pérez",
+        "Location/Link": "https://meet.google.com/test-ana-garcia",
+        "Curriculum Topic": [
+          "recTopicMock1"
+        ]
+      },
+      "createdTime": "2026-08-20T00:08:20.005Z"
+    },
+    "recTestmrp1wm": {
+      "id": "recTestmrp1wm",
+      "fields": {
+        "Teacher": [
+          "recTesthqukcu"
+        ],
+        "Scheduled Date/Time": "2026-08-12T14:00:00.000Z",
+        "Status": "Seen",
+        "Session Name": "Clase completada — Carlos Pérez",
+        "Curriculum Topic": [
+          "recTopicMock1"
+        ]
+      },
+      "createdTime": "2026-08-20T00:08:20.194Z"
+    },
+    "recTest99pf6": {
+      "id": "recTest99pf6",
+      "fields": {
+        "Teacher": [
+          "recTesthqukcu"
+        ],
+        "Scheduled Date/Time": "2026-08-20T14:00:00.000Z",
+        "Status": "Scheduled",
+        "Session Name": "Clase fresca — Carlos Pérez",
+        "Location/Link": "https://meet.google.com/test-ana-garcia",
+        "Curriculum Topic": [
+          "recTopicMock1"
+        ]
+      },
+      "createdTime": "2026-08-20T00:08:22.346Z"
+    }
+  },
+  "Session Participants": {
+    "recTest9d1tuo": {
+      "id": "recTest9d1tuo",
+      "fields": {
+        "fldks0CvUFGcgfDJQ": [
+          "recTestvoba1k"
+        ],
+        "fldc7e8c28KUXVCam": [
+          "recTestjugxc8"
+        ]
+      },
+      "createdTime": "2026-08-20T00:04:59.872Z"
+    },
+    "recTestohri84": {
+      "id": "recTestohri84",
+      "fields": {
+        "fldks0CvUFGcgfDJQ": [
+          "recTeste4cto"
+        ],
+        "fldc7e8c28KUXVCam": [
+          "recTestjugxc8"
+        ]
+      },
+      "createdTime": "2026-08-20T00:04:59.899Z"
+    },
+    "recTestkrre99": {
+      "id": "recTestkrre99",
+      "fields": {
+        "Session": [
+          "recTest0aybxv"
+        ],
+        "Student": [
+          "recTestjugxc8"
+        ]
+      },
+      "createdTime": "2026-08-20T00:05:04.301Z"
+    },
+    "recTest9eub3": {
+      "id": "recTest9eub3",
+      "fields": {
+        "fldks0CvUFGcgfDJQ": [
+          "recTest7p1fe"
+        ],
+        "fldc7e8c28KUXVCam": [
+          "recTest9voxwq"
+        ]
+      },
+      "createdTime": "2026-08-20T00:05:46.254Z"
+    },
+    "recTestcnqfb2": {
+      "id": "recTestcnqfb2",
+      "fields": {
+        "fldks0CvUFGcgfDJQ": [
+          "recTest9w2cg4"
+        ],
+        "fldc7e8c28KUXVCam": [
+          "recTest9voxwq"
+        ]
+      },
+      "createdTime": "2026-08-20T00:05:46.277Z"
+    },
+    "recTesti68aw": {
+      "id": "recTesti68aw",
+      "fields": {
+        "Session": [
+          "recTest24p1cm"
+        ],
+        "Student": [
+          "recTest9voxwq"
+        ]
+      },
+      "createdTime": "2026-08-20T00:05:51.035Z"
+    },
+    "recTest1sioc": {
+      "id": "recTest1sioc",
+      "fields": {
+        "fldks0CvUFGcgfDJQ": [
+          "recTesttysmr4"
+        ],
+        "fldc7e8c28KUXVCam": [
+          "recTestvws81c"
+        ]
+      },
+      "createdTime": "2026-08-20T00:06:57.861Z"
+    },
+    "recTest6ql7dc": {
+      "id": "recTest6ql7dc",
+      "fields": {
+        "fldks0CvUFGcgfDJQ": [
+          "recTestrhaqp5"
+        ],
+        "fldc7e8c28KUXVCam": [
+          "recTestvws81c"
+        ]
+      },
+      "createdTime": "2026-08-20T00:06:57.892Z"
+    },
+    "recTestj5tn6b": {
+      "id": "recTestj5tn6b",
+      "fields": {
+        "Session": [
+          "recTestpu65fm"
+        ],
+        "Student": [
+          "recTestvws81c"
+        ]
+      },
+      "createdTime": "2026-08-20T00:07:45.915Z"
+    },
+    "recTest6pw4dl": {
+      "id": "recTest6pw4dl",
+      "fields": {
+        "fldks0CvUFGcgfDJQ": [
+          "recTestbn3ve8f"
+        ],
+        "fldc7e8c28KUXVCam": [
+          "recTestb5wzir"
+        ]
+      },
+      "createdTime": "2026-08-20T00:08:20.206Z"
+    },
+    "recTest47269u": {
+      "id": "recTest47269u",
+      "fields": {
+        "fldks0CvUFGcgfDJQ": [
+          "recTestmrp1wm"
+        ],
+        "fldc7e8c28KUXVCam": [
+          "recTestb5wzir"
+        ]
+      },
+      "createdTime": "2026-08-20T00:08:20.232Z"
+    },
+    "recTestxmfdq": {
+      "id": "recTestxmfdq",
+      "fields": {
+        "Session": [
+          "recTest99pf6"
+        ],
+        "Student": [
+          "recTestb5wzir"
+        ]
+      },
+      "createdTime": "2026-08-20T00:08:22.359Z"
+    },
+    "recMockxy85tjnd4": {
+      "id": "recMockxy85tjnd4",
+      "fields": {
+        "Session": [
+          "recMock1hobizq8m"
+        ],
+        "Student": [
+          "recTestpatsm"
+        ]
+      },
+      "createdTime": "2026-08-20T00:14:00.740Z"
+    },
+    "recMockrztw02u16": {
+      "id": "recMockrztw02u16",
+      "fields": {
+        "Session": [
+          "recMock4vuymo6p2"
+        ],
+        "Student": [
+          "recTest90p7vu"
+        ]
+      },
+      "createdTime": "2026-08-20T08:15:56.285Z"
+    },
+    "recMockt2680085c": {
+      "id": "recMockt2680085c",
+      "fields": {
+        "Session": [
+          "recMock3ibcwl823"
+        ],
+        "Student": [
+          "recTest82cdg9"
+        ]
+      },
+      "createdTime": "2026-08-20T08:52:20.088Z"
+    }
+  },
+  "Teacher Reviews": {}
+}

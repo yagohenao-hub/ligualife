@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { findAirtableRecords, fetchAirtableRecord } from '@/lib/airtable';
+import { findAirtableRecords, fetchAirtableRecord, patchAirtableRecord } from '@/lib/airtable';
 import { EvolutionAPI } from '@/lib/evolution';
 import { buildConversationalPrompt } from '@/lib/pocket-coach/prompt-engine';
 
@@ -63,6 +63,59 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Extraer el número limpio (quitar sufijos de grupo/dispositivo como :14@s.whatsapp.net)
     const phone = targetJid.split('@')[0].split(':')[0];
 
+    // Cache en memoria para contador de mensajes diarios anti-abuso por teléfono
+    const todayStr = new Date().toISOString().split('T')[0];
+    const userDailyCounts = (global as any).__userDailyCounts || new Map<string, { date: string; count: number }>();
+    (global as any).__userDailyCounts = userDailyCounts;
+
+    const userUsage = userDailyCounts.get(phone);
+    if (userUsage && userUsage.date === todayStr && userUsage.count >= 10) {
+      console.log(`[Anti-Abuso] Límite diario alcanzado para ${phone}`);
+      const limitMsg = `⚠️ ¡Has alcanzado el límite de 10 consultas diarias con tu Pocket Coach! Volveremos a practicar mañana para asimilar lo aprendido. 🚀`;
+      await EvolutionAPI.sendText(phone, limitMsg);
+      return res.status(200).json({ status: 'Límite diario alcanzado' });
+    }
+
+    // 1. Buscar al estudiante en Airtable usando los últimos 10 dígitos del número
+    const cleanDigits = phone.replace(/[^0-9]/g, '');
+    const last10 = cleanDigits.slice(-10);
+    
+    let studentName = 'Estudiante';
+    let studentId = '';
+    let adminSupportActive = false;
+    let lastChallengeContext = '';
+    let currentTopicTitle = 'Inglés General';
+    let ldsFormula = 'Sujeto + Palabra de Tiempo + Acción';
+
+    if (last10) {
+      const students = await findAirtableRecords('Students', `FIND('${last10}', {Phone}) > 0`);
+      if (students.length > 0) {
+        const studentRec = students[0];
+        studentName = studentRec.fields.FullName || 'Estudiante';
+        studentId = studentRec.id;
+        adminSupportActive = Boolean(studentRec.fields.Admin_Support_Active);
+        lastChallengeContext = (studentRec.fields.Last_Challenge_Context as string) || '';
+
+        // Verificar Current Topic mediante Puntero Único
+        const currentTopicId = ((studentRec.fields['Current Topic'] as string[]) ?? [])[0];
+        if (currentTopicId) {
+          const topic = await fetchAirtableRecord('Curriculum Topics', currentTopicId);
+          if (topic) {
+            currentTopicTitle = (topic.fields['Topic Name'] ?? topic.fields['Title'] ?? currentTopicTitle) as string;
+            ldsFormula = (topic.fields['LDS_Formula'] ?? topic.fields['LDSFormula'] ?? ldsFormula) as string;
+          }
+        }
+      } else {
+        console.log(`Número ${phone} no registrado en Airtable. Usando perfil por defecto ('${studentName}').`);
+      }
+    }
+
+    // Si el soporte humano está activo (Handoff manual), el bot no responde
+    if (adminSupportActive) {
+      console.log(`[Handoff Activo] Pocket Coach pausado para ${phone} por atención de la Secretaría.`);
+      return res.status(200).json({ status: 'Pausado por soporte humano activo' });
+    }
+
     // -------------------------------------------------------------
     // DETECCIÓN AUTOMÁTICA DE INTENCIÓN ADMINISTRATIVA / HUMAN HANDOFF
     // -------------------------------------------------------------
@@ -77,53 +130,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (isAdministrativeIntent) {
       console.log(`Mensaje administrativo detectado para ${phone}: "${textContent}"`);
-      const handoffMessage = `¡Hola! He notado que escribes sobre un tema administrativo o de pagos/horarios. 📱\n\nTu asesor se pondrá en contacto contigo a la brevedad para atenderte personalmente.`;
+      const handoffMessage = `¡Hola! He notado que escribes sobre un tema administrativo o de pagos/horarios. 📱\n\nTu asesor se pondrá en contacto contigo a la brevedad en este mismo chat para atenderte personalmente.`;
+      
+      if (studentId) {
+        await patchAirtableRecord('Students', studentId, { Admin_Support_Active: true }).catch(() => {});
+      }
       
       await EvolutionAPI.sendText(phone, handoffMessage);
       return res.status(200).json({ status: 'Handoff humano activado por palabra clave' });
     }
 
-    // 1. Buscar al estudiante en Airtable usando los últimos 10 dígitos del número
-    const cleanDigits = phone.replace(/[^0-9]/g, '');
-    const last10 = cleanDigits.slice(-10);
-    
-    let studentName = 'Estudiante';
-    let studentId = '';
+    // Actualizar contador diario anti-abuso
+    const currentCount = (userUsage && userUsage.date === todayStr) ? userUsage.count + 1 : 1;
+    userDailyCounts.set(phone, { date: todayStr, count: currentCount });
 
-    if (last10) {
-      const students = await findAirtableRecords('Students', `FIND('${last10}', {Phone}) > 0`);
-      if (students.length > 0) {
-        studentName = students[0].fields.FullName || 'Estudiante';
-        studentId = students[0].id;
-      } else {
-        console.log(`Número ${phone} no registrado en Airtable. Usando perfil por defecto ('${studentName}').`);
-      }
-    }
-
-    // 2. Buscar tema en progreso
-    let currentTopicTitle = 'Inglés General';
-    let ldsFormula = 'Sujeto + Palabra de Tiempo + Acción';
-
-    if (studentId) {
-      const progresses = await findAirtableRecords('StudentTopicProgress', `AND({StudentId} = '${studentId}', {Status} = 'In progress')`);
-      
-      if (progresses.length > 0) {
-        const topicId = progresses[0].fields.TopicId?.[0];
-        if (topicId) {
-          const topic = await fetchAirtableRecord('CurriculumTopics', topicId);
-          if (topic) {
-            currentTopicTitle = topic.fields.Title || currentTopicTitle;
-            ldsFormula = topic.fields.LDSFormula || ldsFormula;
-          }
-        }
-      }
-    }
-
-    // TODO: Recuperar el historial de chat de una base de datos o Redis si se desea contexto largo.
-    // Por ahora lo pasamos vacío, Gemini responderá al mensaje actual.
-    const chatHistory = ""; 
-
-    // 3. Generar la respuesta usando Gemini
+    // 3. Generar la respuesta usando Gemini (con memoria efímera del último reto)
+    const chatHistory = lastChallengeContext ? `ÚLTIMO RETO ENVIADO HACE POCO:\n"${lastChallengeContext}"` : ""; 
     const prompt = buildConversationalPrompt(studentName, textContent, chatHistory, currentTopicTitle, ldsFormula);
     
     const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });

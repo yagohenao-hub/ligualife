@@ -52,6 +52,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         name: record.fields['Full Name'] as string,
         email: record.fields['Email'] as string,
         tokens: (record.fields['Tokens de Reposición'] as number) ?? 0,
+        classesRemaining: (record.fields['ClassesRemaining'] as number) ?? 0,
         teacherId,
         teacherName,
         teacherPhone,

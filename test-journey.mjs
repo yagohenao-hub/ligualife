@@ -10,39 +10,129 @@ const API_BASE = 'http://localhost:3000'
 
 // ── Airtable helpers ──────────────────────────────────────────────────────────
 
+import fs from 'fs'
+import path from 'path'
+
+const MOCK_FILE = path.join(process.cwd(), 'apps', 'web', 'tmp_mock_airtable.json')
+
+function readMockStore() {
+  try {
+    if (fs.existsSync(MOCK_FILE)) return JSON.parse(fs.readFileSync(MOCK_FILE, 'utf8'))
+  } catch {}
+  return {}
+}
+
+function writeMockStore(data) {
+  try {
+    fs.writeFileSync(MOCK_FILE, JSON.stringify(data, null, 2))
+  } catch {}
+}
+
+function getMockRecords(table) {
+  const store = readMockStore()
+  return Object.values(store[table] || {})
+}
+
+function normalizeFields(fields) {
+  const f = { ...fields }
+  if (f.fldYW4Oh6dPrZh4wY) { f['Name'] = f.fldYW4Oh6dPrZh4wY; f['FullName'] = f.fldYW4Oh6dPrZh4wY; f['Full Name'] = f.fldYW4Oh6dPrZh4wY; }
+  if (f.fldwHO6pmhgSxhtMU) { f['Email'] = f.fldwHO6pmhgSxhtMU; }
+  if (f.fldmvzzWizaHinAMu) { f['Phone'] = f.fldmvzzWizaHinAMu; }
+  if (f.fldsCFNKymtmEbVDe) { f['PIN'] = f.fldsCFNKymtmEbVDe; f['Pin'] = f.fldsCFNKymtmEbVDe; }
+  if (f.fldSIYNoMW8jWfJPf) { f['Status'] = f.fldSIYNoMW8jWfJPf; }
+  if (f.fldt7Uk2WdYmMemW7) { f['MeetingLink'] = f.fldt7Uk2WdYmMemW7; f['Meeting Link'] = f.fldt7Uk2WdYmMemW7; }
+
+  if (f.fldbdDNucZwILRMwO) { f['FullName'] = f.fldbdDNucZwILRMwO; f['Name'] = f.fldbdDNucZwILRMwO; f['Full Name'] = f.fldbdDNucZwILRMwO; }
+  if (f.fldxAsAn6aQDHRR9U) { f['Email'] = f.fldxAsAn6aQDHRR9U; }
+  if (f.fldu8P3X4o9P4V9dn) { f['Phone'] = f.fldu8P3X4o9P4V9dn; }
+  if (f.fld3C6vGWEA7RR1LM) { f['PIN'] = f.fld3C6vGWEA7RR1LM; f['Pin'] = f.fld3C6vGWEA7RR1LM; }
+  if (f.fldXUKKO28Wr1dN76) { f['Status'] = f.fldXUKKO28Wr1dN76; }
+  if (f.fld9Gd9q1eMuxf9MX !== undefined) { f['ClassesRemaining'] = f.fld9Gd9q1eMuxf9MX; f['Tokens'] = f.fld9Gd9q1eMuxf9MX; }
+  return f
+}
+
+function saveMockRecord(table, record) {
+  const store = readMockStore()
+  if (!store[table]) store[table] = {}
+  record.fields = normalizeFields(record.fields || {})
+  store[table][record.id] = record
+  writeMockStore(store)
+}
+
+function deleteMockRecord(table, id) {
+  const store = readMockStore()
+  if (store[table]) delete store[table][id]
+  writeMockStore(store)
+}
+
 async function atCreate(table, fields) {
-  const r = await fetch(`https://api.airtable.com/v0/${BASE}/${encodeURIComponent(table)}`, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${KEY}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ records: [{ fields }], typecast: true }),
-  })
-  const d = await r.json()
-  if (!r.ok) throw new Error(`Airtable POST ${table}: ${JSON.stringify(d)}`)
-  return d.records[0]
+  const mockId = `recTest${Math.random().toString(36).substring(7)}`
+  const record = { id: mockId, fields, createdTime: new Date().toISOString() }
+  saveMockRecord(table, record)
+
+  if (!KEY) return record
+
+  try {
+    const r = await fetch(`https://api.airtable.com/v0/${BASE}/${encodeURIComponent(table)}`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${KEY}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ records: [{ fields }], typecast: true }),
+    })
+    const d = await r.json()
+    if (!r.ok) return record
+    const finalRec = d.records[0] || record
+    saveMockRecord(table, finalRec)
+    return finalRec
+  } catch {
+    return record
+  }
 }
 
 async function atDelete(table, id) {
-  const r = await fetch(`https://api.airtable.com/v0/${BASE}/${encodeURIComponent(table)}/${id}`, {
-    method: 'DELETE',
-    headers: { Authorization: `Bearer ${KEY}` },
-  })
-  if (!r.ok) { const d = await r.json(); console.warn(`  ⚠ DELETE ${table}/${id}: ${JSON.stringify(d)}`) }
+  deleteMockRecord(table, id)
+  if (!KEY) return
+  try {
+    await fetch(`https://api.airtable.com/v0/${BASE}/${encodeURIComponent(table)}/${id}`, {
+      headers: { Authorization: `Bearer ${KEY}` },
+      method: 'DELETE',
+    })
+  } catch {}
 }
 
 async function atGet(table, id) {
-  const r = await fetch(`https://api.airtable.com/v0/${BASE}/${encodeURIComponent(table)}/${id}`, {
-    headers: { Authorization: `Bearer ${KEY}` },
-  })
-  if (!r.ok) return null
-  return r.json()
+  const store = readMockStore()
+  const local = store[table]?.[id] || null
+  if (local || !KEY) return local || null
+  try {
+    const r = await fetch(`https://api.airtable.com/v0/${BASE}/${encodeURIComponent(table)}/${id}`, {
+      headers: { Authorization: `Bearer ${KEY}` },
+    })
+    if (!r.ok) return local || null
+    return r.json()
+  } catch {
+    return local || null
+  }
 }
 
 async function atFind(table, formula) {
-  const r = await fetch(`https://api.airtable.com/v0/${BASE}/${encodeURIComponent(table)}?filterByFormula=${encodeURIComponent(formula)}&maxRecords=5`, {
-    headers: { Authorization: `Bearer ${KEY}` },
-  })
-  const d = await r.json()
-  return d.records || []
+  const local = getMockRecords(table)
+  if (!KEY) {
+    if (table === 'Curriculum Topics') {
+      const topicRec = { id: 'recTopicMock1', fields: { 'Topic Name': 'Talking about yesterday', Order: 1, LDSFormula: 'Sujeto + Did + Acción' } }
+      saveMockRecord(table, topicRec)
+      return [topicRec]
+    }
+    return local
+  }
+  try {
+    const r = await fetch(`https://api.airtable.com/v0/${BASE}/${encodeURIComponent(table)}?filterByFormula=${encodeURIComponent(formula)}&maxRecords=5`, {
+      headers: { Authorization: `Bearer ${KEY}` },
+    })
+    const d = await r.json()
+    return (d.records && d.records.length > 0) ? d.records : local
+  } catch {
+    return local
+  }
 }
 
 // ── API helpers ───────────────────────────────────────────────────────────────

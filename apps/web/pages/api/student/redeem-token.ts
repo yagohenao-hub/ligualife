@@ -22,7 +22,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     // 1. Fetch student data and check for group partners
     const student = await fetchAirtableRecord('Students', studentId)
-    const tokens = (student?.fields?.['Tokens de Reposición'] as number) ?? 0
+    const tokens = (student?.fields?.['Tokens de Reposición'] as number) ?? (student?.fields?.['Tokens'] as number) ?? 0
     if (tokens <= 0) return res.status(400).json({ error: 'No tienes tokens de reposición disponibles' })
 
     // Check if student belongs to a "Conocidos" group (Student-Teacher table with multiple students)
@@ -36,8 +36,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (isGroup) {
       for (const sid of allStudentIds) {
         const s = await fetchAirtableRecord('Students', sid)
-        if (((s?.fields?.['Tokens de Reposición'] as number) || 0) <= 0) {
-          return res.status(400).json({ error: `El compañero ${s?.fields?.['Full Name']} no tiene tokens suficientes` })
+        if (((s?.fields?.['Tokens de Reposición'] as number) ?? (s?.fields?.['Tokens'] as number) ?? 0) <= 0) {
+          return res.status(400).json({ error: `El compañero ${s?.fields?.['Full Name'] ?? s?.fields?.['FullName']} no tiene tokens suficientes` })
         }
       }
     }
@@ -62,7 +62,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // 3. Verify slot is available
     const teacher = await fetchAirtableRecord('Teachers', teacherId)
-    const rawAvail = teacher?.fields?.['Availability'] as string | null
+    const rawAvail = (teacher?.fields?.['Availability'] ?? teacher?.fields?.['fld7vSUdd69zdl6yQ']) as string | null
     let availability: boolean[][] = []
     if (rawAvail) { try { availability = JSON.parse(rawAvail) } catch { } }
     if (!availability?.[hourIndex]?.[dayIndex]) {

@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { fetchAirtableRecord } from '@/lib/airtable'
+import { fetchAirtableRecord, findAirtableRecords } from '@/lib/airtable'
 import type { Session } from '@/types'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -13,11 +13,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!record) return res.status(404).json({ error: 'Sesión no encontrada' })
 
     // Session Participants is a junction table — resolve the actual Student ID
-    const participantId = (record.fields['Session Participants'] as string[])?.[0]
+    let participantId = (record.fields['Session Participants'] as string[])?.[0] ?? ''
     let studentId = ''
     if (participantId) {
       const participant = await fetchAirtableRecord('Session Participants', participantId)
-      studentId = (participant?.fields['Student'] as string[])?.[0] ?? ''
+      studentId = (participant?.fields['Student'] as string[])?.[0] ?? (participant?.fields['StudentId'] as string) ?? ''
+    } else {
+      const participants = await findAirtableRecords('Session Participants', `FIND('${id}', ARRAYJOIN({Session}, ',')) > 0`)
+      if (participants.length > 0) {
+        participantId = participants[0].id
+        studentId = (participants[0].fields['Student'] as string[])?.[0] ?? (participants[0].fields['StudentId'] as string) ?? ''
+      }
     }
 
     const teacherId = (record.fields['Teacher'] as string[])?.[0] ?? ''

@@ -34,6 +34,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         notes: (r.fields['Notes'] ?? '') as string,
         interests: (r.fields['Interests'] ?? []) as string[],
         availability: (r.fields['Availability'] ?? '') as string,
+        classesRemaining: (r.fields['ClassesRemaining'] ?? 0) as number,
       }))
 
       return res.status(200).json({ students })

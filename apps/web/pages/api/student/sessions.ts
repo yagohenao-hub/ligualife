@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { fetchFromAirtable, fetchAirtableRecord } from '@/lib/airtable'
+import { fetchFromAirtable, fetchAirtableRecord, findAirtableRecords } from '@/lib/airtable'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' })
@@ -12,25 +12,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const student = await fetchAirtableRecord('Students', studentId)
     if (!student) return res.status(404).json({ error: 'Estudiante no encontrado' })
 
-    // 2. Extract Session Participant IDs from the record
-    // fldQX0rpUzjOm3YWb is "Session Participants"
-    const participantIds = (student.fields['Session Participants'] as string[]) ?? []
-    
-    if (participantIds.length === 0) {
-      return res.status(200).json({ upcomingSessions: [], completedSessions: [] })
+    // 2. Extract Session Participant IDs or find via junction
+    let participantIds = (student.fields['Session Participants'] as string[]) ?? []
+    let participantRecords = []
+
+    if (participantIds.length > 0) {
+      const participantsFormula = `OR(${participantIds.map(id => `RECORD_ID()='${id}'`).join(',')})`
+      const pRes = await fetchFromAirtable('Session Participants', `filterByFormula=${encodeURIComponent(participantsFormula)}`)
+      participantRecords = pRes.records ?? []
+    } else {
+      participantRecords = await findAirtableRecords('Session Participants', `FIND('${studentId}', ARRAYJOIN({Student}, ',')) > 0`)
     }
 
-    // 3. Get the actual Session Participant records to find their linked Session IDs
-    // Construct filter for junction table
-    const participantsFormula = `OR(${participantIds.map(id => `RECORD_ID()='${id}'`).join(',')})`
-    const participants = await fetchFromAirtable('Session Participants', `filterByFormula=${encodeURIComponent(participantsFormula)}`)
-
-    const sessionIds = (participants.records ?? [])
-      .map((r: any) => ((r.fields['Session'] as string[]) ?? [])[0])
+    const sessionIds = participantRecords
+      .map((r: any) => ((r.fields['Session'] as string[]) ?? [])[0] ?? (r.fields['SessionId'] as string))
       .filter(Boolean)
 
     if (sessionIds.length === 0) {
-      return res.status(200).json({ upcomingSessions: [], completedSessions: [] })
+      return res.status(200).json({ upcomingSessions: [], completedSessions: [], totalTopics: 60 })
     }
 
     // 3. Construct filter for Sessions table using the found IDs

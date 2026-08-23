@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
+import { EvolutionAPI } from '@/lib/evolution'
 
 const BASE_ID = process.env.AIRTABLE_BASE_ID ?? 'app9ZtojlxX5FoZ7y'
 const STUDENTS_TABLE = 'tblqzaBBn18txOyLu'
@@ -96,6 +97,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!response.ok) {
       console.error('Airtable Error:', data)
       return res.status(500).json({ error: 'No se pudo guardar la información en la base de datos', details: data })
+    }
+
+    // Enviar mensaje de bienvenida vía WhatsApp (Pocket Coach)
+    try {
+      const welcomeMessage = `¡Hola ${fullName.split(' ')[0]}! 🎉 Bienvenido/a a LinguaLife.\n\nSoy tu *Pocket Coach*, tu tutor personal de inteligencia artificial.\n\nTu registro se ha completado exitosamente. Tu PIN de acceso a la plataforma es: *${pin}*\n\nPor favor envía el comprobante de pago a tu asesor para activar tu cuenta y agendar tus primeras clases.\n\n¡Estoy aquí para ayudarte a dominar el inglés! 🚀`;
+      await EvolutionAPI.sendText(phone, welcomeMessage);
+    } catch (wpError) {
+      console.error('Error enviando mensaje de bienvenida por WhatsApp:', wpError);
+      // No bloqueamos el registro exitoso si WhatsApp falla
     }
 
     return res.status(200).json({ success: true, pin, record: data.records[0] })

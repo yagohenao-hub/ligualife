@@ -25,8 +25,16 @@ interface StudentProfile {
   name: string
   email: string
   tokens: number
+  classesRemaining?: number
   teacherId: string | null
   teacherName: string | null
+}
+
+interface PocketCoachExercise {
+  id: string
+  content: string
+  date: string
+  topicName: string
 }
 
 export default function StudentDashboardPage() {
@@ -41,6 +49,7 @@ export default function StudentDashboardPage() {
   const [teacherAvail, setTeacherAvail] = useState<boolean[][]>([])
   const [redeemMsg, setRedeemMsg] = useState<string | null>(null)
   const [courseTotal, setCourseTotal] = useState(58)
+  const [exercises, setExercises] = useState<PocketCoachExercise[]>([])
   const [calSelectedDate, setCalSelectedDate] = useState<Date | null>(null)
 
   const [showScheduleModal, setShowScheduleModal] = useState(false)
@@ -77,6 +86,12 @@ export default function StudentDashboardPage() {
       setUpcoming(data.upcomingSessions ?? [])
       setCompleted(data.completedSessions ?? [])
       if (data.totalTopics) setCourseTotal(data.totalTopics)
+    }
+    
+    const exRes = await fetch(`/api/student/exercises?studentId=${sid}`)
+    if (exRes.ok) {
+      const exData = await exRes.json()
+      setExercises(exData.exercises ?? [])
     }
     setLoading(false)
   }
@@ -314,6 +329,18 @@ export default function StudentDashboardPage() {
             {progressPct}% del camino recorrido
             {progressPct >= 50 && <span className={styles.badge}>🏆 ¡Más de la mitad!</span>}
           </div>
+          
+          <div style={{ marginTop: '1.5rem', padding: '1rem', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Saldo de Clases Disponibles</div>
+              <div style={{ fontSize: '1.5rem', fontWeight: 600, color: '#10b981' }}>{profile.classesRemaining ?? 0} clases</div>
+            </div>
+            {(profile.classesRemaining ?? 0) <= 2 && (
+              <div style={{ fontSize: '0.8rem', color: '#fbbf24', background: 'rgba(251, 191, 36, 0.1)', padding: '0.5rem 1rem', borderRadius: '8px' }}>
+                ⚠️ Paquete por terminar. ¡Hora de renovar!
+              </div>
+            )}
+          </div>
         </div>
 
         {/* === Body Grid === */}
@@ -376,6 +403,19 @@ export default function StudentDashboardPage() {
             })}
           </section>
 
+          {/* Current Topic Indicator (Next Upcoming) */}
+          {upcoming.length > 0 && !loading && (
+            <section className={styles.card} style={{ border: '1px solid rgba(16, 185, 129, 0.3)', background: 'linear-gradient(180deg, rgba(16, 185, 129, 0.05) 0%, transparent 100%)' }}>
+              <h2 className={styles.sectionTitle}>🎯 Tema en Progreso</h2>
+              <div style={{ fontSize: '1.1rem', fontWeight: 500, color: '#f8fafc', marginBottom: '0.5rem' }}>
+                {upcoming.find(s => s.topicName && !s.isHoliday)?.topicName || 'Próxima lección'}
+              </div>
+              <p className={styles.empty} style={{ margin: 0 }}>
+                Prepárate para esta clase. Tu profesor utilizará el <em>Filtro Colombiano</em> para enfocar tu aprendizaje.
+              </p>
+            </section>
+          )}
+
           {/* Tokens */}
           <section className={styles.card}>
             <h2 className={styles.sectionTitle}>🎟️ Tokens de Reposición</h2>
@@ -433,6 +473,30 @@ export default function StudentDashboardPage() {
               </button>
             </section>
           )}
+
+          {/* Pocket Coach Exercises */}
+          <section className={styles.card} style={{ gridColumn: '1 / -1' }}>
+            <h2 className={styles.sectionTitle}>🤖 Historial Pocket Coach</h2>
+            {loading && <div className="spinner" />}
+            {!loading && exercises.length === 0 && (
+              <p className={styles.empty}>Tus micro-retos diarios de WhatsApp aparecerán aquí.</p>
+            )}
+            {!loading && exercises.length > 0 && (
+              <div style={{ display: 'grid', gap: '1rem', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))' }}>
+                {exercises.map(ex => (
+                  <div key={ex.id} style={{ background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                      <span style={{ fontSize: '0.75rem', color: '#10b981', fontWeight: 600 }}>{ex.topicName}</span>
+                      <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{formatDate(ex.date)}</span>
+                    </div>
+                    <p style={{ fontSize: '0.9rem', color: '#e2e8f0', margin: 0, whiteSpace: 'pre-wrap' }}>
+                      {ex.content}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
         </div>
 
         {/* === Completed Topics === */}

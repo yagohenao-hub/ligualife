@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { fetchFromAirtable, fetchAirtableRecord, patchAirtableRecord } from '@/lib/airtable'
+import { fetchFromAirtable, fetchAirtableRecord, patchAirtableRecord, findAirtableRecords } from '@/lib/airtable'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
@@ -15,7 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const currentTopicIds = currentSession.fields['Curriculum Topic'] as string[]
     const currentTopicId = currentTopicIds?.[0]
 
-    const participantIds = currentSession.fields['Session Participants'] as string[] || []
+    const participantIds = (currentSession.fields['Session Participants'] as string[]) || []
     const groupIds = currentSession.fields['Study Group'] as string[]
     const groupId = groupIds?.[0]
 
@@ -26,17 +26,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       groupType = groupRecord?.fields['Group Type'] as string
     }
 
-    // Determine the target for future cascading
-    // If there is a group, we filter future sessions for that group.
-    // If not, we filter future sessions for the primary student.
+    let resolvedParticipantIds = [...participantIds]
     let studentId = ''
-    if (!groupId && participantIds.length > 0) {
-      const participant = await fetchAirtableRecord('Session Participants', participantIds[0])
+
+    if (!groupId && resolvedParticipantIds.length > 0) {
+      const participant = await fetchAirtableRecord('Session Participants', resolvedParticipantIds[0])
       studentId = (participant?.fields['Student'] as string[])?.[0] ?? ''
     }
 
     if (!groupId && !studentId) {
-      return res.status(400).json({ error: 'No se encontraron alumnos ni grupos en esta sesión' })
+      const pRecords = await findAirtableRecords('Session Participants', `FIND('${sessionId}', ARRAYJOIN({Session}, ',')) > 0`)
+      if (pRecords.length > 0) {
+        resolvedParticipantIds = pRecords.map(p => p.id)
+        studentId = (pRecords[0].fields['Student'] as string[])?.[0] ?? ''
+      }
     }
 
     // 2. Fetch all future scheduled sessions for cascading
@@ -98,14 +101,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       // Keep track of who received a refund to avoid double charging
       const refundedStudents = new Set<string>()
 
-      for (const pId of participantIds) {
+      for (const pId of resolvedParticipantIds) {
         const participant = await fetchAirtableRecord('Session Participants', pId)
-        const sId = (participant?.fields['Student'] as string[])?.[0]
+        const sId = (participant?.fields['Student'] as string[])?.[0] ?? (participant?.fields['StudentId'] as string) ?? studentId
         
         if (sId && !refundedStudents.has(sId)) {
           refundedStudents.add(sId)
           const student = await fetchAirtableRecord('Students', sId)
-          const currentTokens = (student?.fields['Tokens de Reposición'] as number) || 0
+          const currentTokens = (student?.fields['Tokens de Reposición'] as number) || (student?.fields['Tokens'] as number) || 0
           await patchAirtableRecord('Students', sId, {
             'Tokens de Reposición': currentTokens + 1
           })

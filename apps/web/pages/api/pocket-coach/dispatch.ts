@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { findAirtableRecords, fetchAirtableRecord, createAirtableRecord } from '@/lib/airtable';
+import { findAirtableRecords, fetchAirtableRecord, createAirtableRecord, patchAirtableRecord } from '@/lib/airtable';
 import { EvolutionAPI } from '@/lib/evolution';
 import { buildDispatchPrompt } from '@/lib/pocket-coach/prompt-engine';
 
@@ -31,20 +31,41 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         if (!phone) continue; // No phone, no WhatsApp message
 
-        // 2. Obtener el progreso del estudiante (Tema en curso)
-        const progresses = await findAirtableRecords('StudentTopicProgress', `AND({StudentId} = '${studentId}', {Status} = 'In progress')`);
-        if (progresses.length === 0) continue; // No topic in progress
+        // Lista estática de habilidades B2 para intercalar (70% de probabilidad)
+        const b2Skills = [
+          { title: 'Reported Speech in Daily Life', formula: 'Subject + Said/Told + Backshifted Verb', context: 'Práctica de cómo reportar lo que otros dijeron en contextos casuales o de negocios.' },
+          { title: 'Speculating about the Past (Modal Verbs)', formula: 'Subject + Must have / Could have + Past Participle', context: 'Práctica de deducir eventos pasados con modales de alta certeza.' },
+          { title: 'Advanced Phrasal Verbs in Conversations', formula: 'Subject + Phrasal Verb (carry out, figure out, come up with) + Object', context: 'Uso natural de verbos frasales en el trabajo y viajes.' },
+          { title: 'Second Conditionals for Hypotheses', formula: 'If + Subject + Past Simple, Subject + Would + Base Verb', context: 'Expresar situaciones hipotéticas del presente o futuro.' }
+        ];
 
-        const topicId = progresses[0].fields.TopicId?.[0]; // Airtable linked record returns array
-        if (!topicId) continue;
+        let topicTitle = 'Inglés General B2';
+        let ldsFormula = 'Sujeto + Palabra de Tiempo + Acción';
+        let aiContext = 'Enfócate en fluidez y vocabulario real B2.';
+        let topicId = '';
 
-        // 3. Obtener los detalles del tema
-        const topic = await fetchAirtableRecord('CurriculumTopics', topicId);
-        if (!topic) continue;
+        // Decidir si usar B2 (70%) o Tema en progreso (30%)
+        const useB2Skill = Math.random() < 0.7;
 
-        const topicTitle = topic.fields.Title;
-        const ldsFormula = topic.fields.LDSFormula;
-        const aiContext = topic.fields.AIContext;
+        const currentTopicId = ((student.fields['Current Topic'] as string[]) ?? [])[0];
+        if (currentTopicId) {
+          const topic = await fetchAirtableRecord('Curriculum Topics', currentTopicId);
+          if (topic) {
+            topicId = topic.id;
+            if (!useB2Skill) {
+              topicTitle = (topic.fields['Topic Name'] ?? topic.fields['Title'] ?? topicTitle) as string;
+              ldsFormula = (topic.fields['LDS_Formula'] ?? topic.fields['LDSFormula'] ?? ldsFormula) as string;
+              aiContext = (topic.fields['AI_Context'] ?? topic.fields['AIContext'] ?? aiContext) as string;
+            }
+          }
+        }
+
+        if (useB2Skill || !topicId) {
+          const randomB2 = b2Skills[Math.floor(Math.random() * b2Skills.length)];
+          topicTitle = randomB2.title;
+          ldsFormula = randomB2.formula;
+          aiContext = randomB2.context;
+        }
 
         // 4. Generar el micro-reto con Gemini
         const prompt = buildDispatchPrompt(studentName, topicTitle, ldsFormula, aiContext, interests);
@@ -54,13 +75,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         // 5. Enviar mensaje por Evolution API
         await EvolutionAPI.sendText(phone, challengeText);
 
-        // 6. Registrar el ejercicio enviado en Airtable
-        await createAirtableRecord('Exercises', {
-          StudentId: [studentId],
-          TopicId: [topicId],
-          ExerciseContent: challengeText,
-          GeneratedAt: new Date().toISOString()
-        });
+        // 6. Guardar la memoria efímera en el estudiante
+        await patchAirtableRecord('Students', studentId, {
+          Last_Challenge_Context: `Reto enviado (${topicTitle}): ${challengeText.slice(0, 200)}...`
+        }).catch((err: any) => console.error('Error guardando memoria efímera:', err));
 
         results.push({ student: studentName, status: 'sent' });
         

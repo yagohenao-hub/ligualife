@@ -42,6 +42,7 @@ export default function StudentRegistration() {
     goalId: '',
     interests: [] as string[],
     openToGroups: false,
+    acceptTerms: false,
   })
 
   // Calendar State
@@ -243,6 +244,20 @@ export default function StudentRegistration() {
               </div>
             </div>
 
+            <div className={styles.formGroup} style={{ marginTop: '1rem' }}>
+              <label style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', cursor: 'pointer', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                <input 
+                  type="checkbox" 
+                  checked={formData.acceptTerms}
+                  onChange={e => setFormData({...formData, acceptTerms: e.target.checked})}
+                  style={{ marginTop: '0.2rem', width: '16px', height: '16px', accentColor: '#10b981' }}
+                />
+                <span>
+                  He leído y acepto los <a href="/terms" target="_blank" style={{ color: '#10b981', textDecoration: 'underline' }}>Términos de Servicio</a> y la <a href="/privacy" target="_blank" style={{ color: '#10b981', textDecoration: 'underline' }}>Política de Privacidad</a> (incluyendo el tratamiento de datos para el uso de WhatsApp e Inteligencia Artificial).
+                </span>
+              </label>
+            </div>
+
             <div className={styles.footer}>
               <div />
               <button 
@@ -252,7 +267,8 @@ export default function StudentRegistration() {
                   formData.fullName.trim().split(/\s+/).length < 2 || 
                   !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email) || 
                   !/^\d+$/.test(formData.phoneNumber.replace(/\s+/g, '')) || 
-                  !formData.ageRange
+                  !formData.ageRange ||
+                  !formData.acceptTerms
                 }
               >
                 Siguiente
@@ -485,9 +501,28 @@ export default function StudentRegistration() {
             )}
 
             <p className={styles.subtitle}>
-              Hemos recibido tu información. Estás a un paso de comenzar tu aventura con LinguaLife.<br /><br />
-              Por favor, envía el comprobante de pago a tu asesor asignado para activar tu cuenta y agendar tus primeras clases.
+              Hemos recibido tu información y tu PIN ha sido generado. Estás a un paso de comenzar tu aventura con LinguaLife.<br /><br />
+              Por favor, confirma tu registro o comunícate con tu asesor para activar tus clases privadas.
             </p>
+
+            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '2rem', flexWrap: 'wrap' }}>
+              <button
+                className={`${styles.btn} ${styles.btnPrimary}`}
+                onClick={() => router.push('/login')}
+              >
+                Acceder a mi Portal con PIN 🔑
+              </button>
+
+              <a
+                href={`https://wa.me/573210000000?text=Hola,%20acabo%20de%20registrarme%20en%20LinguaLife%20con%20el%20PIN%20${generatedPin}`}
+                target="_blank"
+                rel="noreferrer"
+                className={`${styles.btn} ${styles.btnSecondary}`}
+                style={{ textDecoration: 'none', background: '#25D366', color: '#fff', border: 'none' }}
+              >
+                💬 Abrir WhatsApp con mi Asesor
+              </a>
+            </div>
           </div>
         )}
 

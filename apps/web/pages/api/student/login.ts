@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { fetchFromAirtable, fetchAirtableRecord } from '@/lib/airtable'
+import { fetchFromAirtable, fetchAirtableRecord, findAirtableRecords } from '@/lib/airtable'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
@@ -21,21 +21,30 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(401).json({ error: 'PIN incorrecto' })
     }
 
-    // Resolve teacher via Student-Teacher junction or Student Curriculum
+    // Resolve teacher via Student-Teacher junction
     let teacherId: string | null = null
     let teacherName: string | null = null
     let teacherPhone: string | null = null
 
-    const stLinks = (record.fields['Student-Teacher'] as string[]) ?? []
-    for (const stId of stLinks) {
-      const st = await fetchAirtableRecord('Student-Teacher', stId)
-      const status = st?.fields?.['Status'] as string
+    let stLinks = (record.fields['Student-Teacher'] as string[]) ?? []
+    let stRecords = []
+    if (stLinks.length > 0) {
+      for (const stId of stLinks) {
+        const st = await fetchAirtableRecord('Student-Teacher', stId)
+        if (st) stRecords.push(st)
+      }
+    } else {
+      stRecords = await findAirtableRecords('Student-Teacher', `FIND('${record.id}', ARRAYJOIN({Student}, ',')) > 0`)
+    }
+
+    for (const st of stRecords) {
+      const status = st?.fields?.['Status'] as string ?? 'Active'
       if (status === 'Active') {
         const tId = ((st.fields['Teacher'] as string[]) ?? [])[0]
         if (tId) {
           const teacher = await fetchAirtableRecord('Teachers', tId)
           teacherId = tId
-          teacherName = teacher?.fields?.['Name'] as string ?? null
+          teacherName = (teacher?.fields?.['Name'] ?? teacher?.fields?.['FullName'] ?? teacher?.fields?.['Full Name']) as string ?? null
           teacherPhone = teacher?.fields?.['Phone'] as string ?? null
           break
         }
@@ -44,9 +53,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     return res.status(200).json({
       id: record.id,
-      name: record.fields['Full Name'] as string,
+      name: (record.fields['Full Name'] ?? record.fields['FullName'] ?? record.fields['Name']) as string,
       email: record.fields['Email'] as string,
-      tokens: (record.fields['Tokens de Reposición'] as number) ?? 0,
+      tokens: (record.fields['Tokens de Reposición'] as number) ?? (record.fields['Tokens'] as number) ?? 0,
       teacherId,
       teacherName,
       teacherPhone,

@@ -4,9 +4,10 @@ import { useRouter } from 'next/router'
 import styles from '@/styles/Admin.module.css'
 import GroupMatchmaker from '@/components/dashboard/GroupMatchmaker'
 import VideoBankCurator from '@/components/admin/VideoBankCurator'
+import { SceneStudioTab } from '@/components/admin/SceneStudioTab'
 
 // ─── Types ──────────────────────────────────────────────────────────────────
-type Tab = 'overview' | 'students' | 'teachers' | 'matchmaker' | 'groups' | 'videobank'
+type Tab = 'overview' | 'students' | 'teachers' | 'matchmaker' | 'groups' | 'videobank' | 'scene_studio'
 
 interface Metrics {
   totalStudents: number
@@ -29,6 +30,7 @@ interface Student {
   notes: string
   interests: string[]
   availability: string // JSON array of "Day-Hour"
+  classesRemaining: number
 }
 
 interface Teacher {
@@ -482,6 +484,7 @@ export default function AdminPage() {
               { key: 'matchmaker', icon: '🎲', label: 'Matchmaker' },
               { key: 'groups', icon: '👥', label: 'Gestión Grupos' },
               { key: 'videobank', icon: '🎬', label: 'Video Bank' },
+              { key: 'scene_studio', icon: '🔍', label: 'Studio Escenas' },
               { key: 'series', icon: '📺', label: 'Series Master' },
               { key: 'stories', icon: '📖', label: 'Story Studio' },
             ] as { key: any; icon: string; label: string }[]).map(item => (
@@ -615,6 +618,7 @@ export default function AdminPage() {
                         <th>Alumno</th>
                         <th>Email</th>
                         <th>Día de Cobro</th>
+                        <th>Saldo Clases</th>
                         <th>Tokens</th>
                         <th>PIN</th>
                         <th>Estado</th>
@@ -639,6 +643,9 @@ export default function AdminPage() {
                           <td className={styles.emailCell}>{s.email || '—'}</td>
                           <td className={styles.tzCell} style={{ opacity: 0.5 }}>Próximamente</td>
                           <td>
+                            <span style={{ fontWeight: 'bold', color: s.classesRemaining <= 2 ? '#ef4444' : '#10b981' }}>{s.classesRemaining}</span>
+                          </td>
+                          <td>
                             <div className={styles.tokenCell}>
                               <button className={styles.tokenBtn} onClick={() => adjustTokens(s, -1)} disabled={s.tokens <= 0}>−</button>
                               <span className={styles.tokenNum}>{s.tokens}</span>
@@ -660,6 +667,13 @@ export default function AdminPage() {
                           </td>
                           <td>
                             <button className={styles.editBtn} onClick={() => openEditStudent(s)}>✏️ Editar</button>
+                            <button 
+                              className={styles.editBtn} 
+                              style={{ marginLeft: '0.5rem', background: 'rgba(59,130,246,0.1)', color: '#3b82f6', borderColor: 'rgba(59,130,246,0.2)' }} 
+                              onClick={() => { setLinkForm({ studentIds: [s.id], teacherId: '', notes: '' }); setShowLinkModal(true); }}
+                            >
+                              🔗 Asignar
+                            </button>
                           </td>
                         </tr>
                       ))}
@@ -897,6 +911,13 @@ export default function AdminPage() {
               )}
             </div>
           )}
+
+          {/* ═══ SCENE STUDIO TAB ═══ */}
+          {tab === 'scene_studio' && (
+            <div className={styles.tabContent}>
+              <SceneStudioTab />
+            </div>
+          )}
         </main>
       </div>
 
@@ -1006,10 +1027,10 @@ export default function AdminPage() {
             </div>
             <div className={styles.modalBody}>
               <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
-                Selecciona hasta 3 alumnos **Pendientes** para crear su primer vínculo grupal. 
+                Selecciona hasta 3 alumnos para crear su vínculo grupal. 
               </p>
               
-              <label className={styles.fieldLabel}>Alumnos Pendientes (Máx 3)</label>
+              <label className={styles.fieldLabel}>Alumnos (Máx 3)</label>
               <div style={{ 
                 maxHeight: '180px', 
                 overflowY: 'auto', 

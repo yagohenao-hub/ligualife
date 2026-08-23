@@ -72,6 +72,7 @@ export default function ClassroomPage() {
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [notesOpen, setNotesOpen] = useState(false)
   const [notes, setNotes] = useState('')
+  const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [savingNotes, setSavingNotes] = useState(false)
   const [notesSaved, setNotesSaved] = useState(false)
   const [classStarted, setClassStarted] = useState(false)
@@ -342,17 +343,20 @@ export default function ClassroomPage() {
     setRunning(false)
     if (timerRef.current) clearInterval(timerRef.current)
 
-    // Save notes explicitly
-    if (participantId && notes.trim() !== '') {
-      try {
-        await fetch('/api/session-notes', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ participantId, notes }),
-        })
-      } catch (e) {
-        console.error(e)
-      }
+    try {
+      await fetch('/api/finalize-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          sessionId: router.query.sessionId,
+          studentId: student?.id,
+          participantId, 
+          notes,
+          errorTags: selectedTags
+        }),
+      })
+    } catch (e) {
+      console.error(e)
     }
 
     await router.push('/dashboard')
@@ -869,8 +873,30 @@ export default function ClassroomPage() {
             value={notes}
             onChange={e => setNotes(e.target.value)}
           />
+          <div style={{ marginTop: '0.5rem', marginBottom: '0.5rem' }}>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Etiquetas de Error (Filtro Colombiano):</span>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginTop: '0.4rem' }}>
+              {['Pronunciación (TH/R/Vocales)', 'Gramática (Tiempos/Preposiciones)', 'Traducción Literal', 'Vocabulario (Falsos amigos)'].map(tag => (
+                <button
+                  key={tag}
+                  onClick={() => setSelectedTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag])}
+                  style={{
+                    fontSize: '0.7rem',
+                    padding: '0.2rem 0.5rem',
+                    borderRadius: '12px',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    background: selectedTags.includes(tag) ? '#3b82f6' : 'transparent',
+                    color: selectedTags.includes(tag) ? '#fff' : 'var(--text-secondary)',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
+          </div>
           <div className={styles.notesPanelFooter}>
-            <button className={styles.notesClear} onClick={() => setNotes('')}>Limpiar</button>
+            <button className={styles.notesClear} onClick={() => { setNotes(''); setSelectedTags([]); }}>Limpiar</button>
             <span className={styles.textSecondary} style={{ fontSize: '0.7rem', alignSelf: 'center', opacity: 0.6 }}> (Se guardan al finalizar) </span>
           </div>
         </div>

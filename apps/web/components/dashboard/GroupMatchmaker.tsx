@@ -12,8 +12,9 @@ export default function GroupMatchmaker() {
   const fetchCandidates = async () => {
     setLoading(true)
     try {
+      const token = typeof window !== 'undefined' ? sessionStorage.getItem('adminToken') || 'LinguaAdmin2025' : 'LinguaAdmin2025'
       const res = await fetch('/api/admin/matchmaker', {
-        headers: { 'x-admin-token': 'LinguaAdmin2025' }
+        headers: { 'x-admin-token': token }
       })
       if (res.ok) {
         const data = await res.json()

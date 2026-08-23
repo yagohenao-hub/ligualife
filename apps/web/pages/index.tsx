@@ -1,61 +1,46 @@
 import { useState } from 'react'
-import { useRouter } from 'next/router'
-import { PinInput } from '@/components/PinInput'
-import { useAppContext } from '@/context/AppContext'
-import styles from '@/styles/Home.module.css'
+import Head from 'next/head'
+import { Navbar } from '@/components/landing/Navbar'
+import { HeroSection } from '@/components/landing/HeroSection'
+import { PocketCoachSimulator } from '@/components/landing/PocketCoachSimulator'
+import { MethodSection } from '@/components/landing/MethodSection'
+import { PricingSection } from '@/components/landing/PricingSection'
+import { Footer } from '@/components/landing/Footer'
+import { LoginModal } from '@/components/LoginModal'
+import styles from '@/styles/Landing.module.css'
 
-export default function LoginPage() {
-  const router = useRouter()
-  const { setAppState } = useAppContext()
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-
-  async function handlePin(pin: string) {
-    setLoading(true)
-    setError(null)
-
-    try {
-      const res = await fetch('/api/validate-unified', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ pin }),
-      })
-      const data = await res.json()
-
-      if (!res.ok) {
-        setError(data.error || 'PIN inválido')
-        return
-      }
-
-      if (data.role === 'teacher') {
-        const session = { teacherId: data.teacherId, name: data.name }
-        sessionStorage.setItem('lingualife_session', JSON.stringify(session))
-        setAppState({ teacher: { id: data.teacherId, name: data.name } })
-        router.push('/dashboard')
-      } else if (data.role === 'student') {
-        sessionStorage.setItem('ll_student', JSON.stringify(data))
-        router.push('/student')
-      }
-    } catch {
-      setError('Error de conexión. Intenta nuevamente.')
-    } finally {
-      setLoading(false)
-    }
-  }
+export default function LandingPage() {
+  const [isLoginOpen, setIsLoginOpen] = useState(false)
 
   return (
-    <div className={styles.container}>
-      <div className={`glass ${styles.card}`}>
-        <h1 className={styles.logo}>LinguaLife</h1>
-        <p className={styles.subtitle}>Introduce tu PIN para acceder</p>
-        {error && <div className={styles.errorMessage}>{error}</div>}
-        <PinInput onSubmit={handlePin} loading={loading} />
-        <div style={{ marginTop: '2.5rem', paddingTop: '1.25rem', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-          <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.65rem', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
-            Plataforma Unificada
-          </p>
-        </div>
+    <>
+      <Head>
+        <title>LinguaLife — Sistema Acelerado de Fluidez B2 con Clases 1-a-1 & IA en WhatsApp</title>
+        <meta 
+          name="description" 
+          content="Alcanza nivel B2 de inglés en 60 lecciones con clases privadas 1-a-1, copiloto inteligente para profesores y Pocket Coach disponible 24/7 en tu WhatsApp." 
+        />
+        <meta name="keywords" content="clases de inglés, inglés B2, clases privadas inglés, pocket coach whatsapp, método LDS" />
+        <meta property="og:title" content="LinguaLife — Tu Camina Acelerado a la Fluidez B2" />
+        <meta property="og:description" content="Aprende inglés real con clases 1-a-1 y práctica diaria 24/7 en tu WhatsApp." />
+      </Head>
+
+      <div className={styles.pageContainer}>
+        <div className={styles.glowTop}></div>
+        <div className={styles.glowMiddle}></div>
+
+        <Navbar onOpenLogin={() => setIsLoginOpen(true)} />
+        <HeroSection />
+        <PocketCoachSimulator />
+        <MethodSection />
+        <PricingSection />
+        <Footer />
+
+        <LoginModal 
+          isOpen={isLoginOpen} 
+          onClose={() => setIsLoginOpen(false)} 
+        />
       </div>
-    </div>
+    </>
   )
 }
