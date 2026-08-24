@@ -15,7 +15,7 @@ export default function AdminDashboard() {
         </h1>
 
         <div style={{ display: 'flex', gap: '2rem', marginTop: '4rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-          <Link href="/admin" style={{ textDecoration: 'none' }}>
+          <a href="/admin.html" style={{ textDecoration: 'none' }}>
             <div style={{ 
               padding: '2rem', 
               background: 'rgba(16, 185, 129, 0.1)', 
@@ -28,7 +28,7 @@ export default function AdminDashboard() {
               <h2 style={{ color: '#10b981', marginBottom: '1rem' }}>🛡️ Panel General & Matchmaker</h2>
               <p style={{ color: '#9ca3af' }}>Gestión de alumnos, profesores, vinculación de grupos y métricas.</p>
             </div>
-          </Link>
+          </a>
 
           <Link href="/admin/scene-studio" style={{ textDecoration: 'none' }}>
             <div style={{ 
