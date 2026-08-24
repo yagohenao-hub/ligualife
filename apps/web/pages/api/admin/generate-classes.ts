@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { isColombianHoliday } from '@/lib/holidays'
-import { fetchFromAirtable } from '@/lib/airtable'
+import { fetchFromAirtable, createAirtableRecord, patchAirtableRecord } from '@/lib/airtable'
 
 const BASE_ID = process.env.AIRTABLE_BASE_ID ?? 'app9ZtojlxX5FoZ7y'
 const STUDENTS_TABLE = 'tblqzaBBn18txOyLu'
@@ -153,105 +153,62 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return { fields }
     })
 
-    // Batch insert sessions (10 at a time max)
+    // Batch insert sessions
     let createdSessions: any[] = []
-    for (let i = 0; i < newSessions.length; i += 10) {
-      const batch = newSessions.slice(i, i + 10)
-      const batchRes = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${SESSIONS_TABLE}`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ records: batch, typecast: true })
-      })
-      const batchData = await batchRes.json()
-      if (!batchRes.ok) throw new Error(JSON.stringify(batchData))
-      createdSessions = [...createdSessions, ...batchData.records]
+    for (const s of newSessions) {
+      try {
+        const record = await createAirtableRecord('Sessions', s.fields)
+        createdSessions.push(record)
+      } catch (e) {
+        console.error('Error creating session record:', e)
+      }
     }
 
     // 6b. Assign Curriculum Topics to sessions sequentially
-    const topicsData = await fetchFromAirtable('Curriculum Topics', 'sort[0][field]=Order&sort[0][direction]=asc')
+    const topicsData = await fetchFromAirtable('Curriculum Topics', '1=1')
     const topics: { id: string }[] = topicsData.records || []
 
     if (topics.length > 0) {
-      // Sort sessions chronologically by scheduled date
       const sortedSessions = [...createdSessions].sort((a, b) => {
         const dateA = new Date(a.fields['Scheduled Date/Time']).getTime()
         const dateB = new Date(b.fields['Scheduled Date/Time']).getTime()
         return dateA - dateB
       })
 
-      // Assign topics in order; stop if we run out of topics
-      const updates: { id: string; fields: { 'Curriculum Topic': string[] } }[] = []
       for (let i = 0; i < sortedSessions.length && i < topics.length; i++) {
-        updates.push({
-          id: sortedSessions[i].id,
-          fields: { 'Curriculum Topic': [topics[i].id] }
+        await patchAirtableRecord('Sessions', sortedSessions[i].id, {
+          'Curriculum Topic': [topics[i].id]
         })
-      }
-
-      // Batch-update in groups of 10
-      for (let i = 0; i < updates.length; i += 10) {
-        const batch = updates.slice(i, i + 10)
-        const patchRes = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${SESSIONS_TABLE}`, {
-          method: 'PATCH',
-          headers: {
-            'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ records: batch, typecast: true })
-        })
-        if (!patchRes.ok) throw new Error(JSON.stringify(await patchRes.json()))
       }
     }
 
     // 7. Insert into 'Session Participants' mapping Students <-> Sessions
-    const participantRecords: any[] = []
-    
-    // For each session created, create a participant record FOR EACH student in the group
-    createdSessions.forEach(session => {
-      studentIds.forEach(sId => {
-        participantRecords.push({
-          fields: {
+    for (const session of createdSessions) {
+      for (const sId of studentIds) {
+        try {
+          await createAirtableRecord('Session Participants', {
             "Session": [session.id],
             "Student": [sId],
             "Attendance": "Scheduled"
-          }
-        })
-      })
-    })
-
-    for (let i = 0; i < participantRecords.length; i += 10) {
-      const batch = participantRecords.slice(i, i + 10)
-      const batchRes = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${SESSION_PARTICIPANTS_TABLE}`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ records: batch, typecast: true })
-      })
-      if (!batchRes.ok) throw new Error(JSON.stringify(await batchRes.json()))
+          })
+        } catch (e) {
+          console.error('Error creating participant record:', e)
+        }
+      }
     }
 
     // 8. Update Student Status to Active if not already (for all involved students)
     for (const sId of studentIds) {
-      await fetch(`https://api.airtable.com/v0/${BASE_ID}/${STUDENTS_TABLE}/${sId}`, {
-        method: 'PATCH',
-        headers: {
-          'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ fields: { "Status": "Active" } })
-      })
+      await patchAirtableRecord('Students', sId, { 'Status': 'Active' })
     }
+
+    const totalParticipants = createdSessions.length * studentIds.length
 
     return res.status(200).json({ 
       success: true, 
       sessionsGenerated: createdSessions.length,
-      participantsGenerated: participantRecords.length,
-      message: `Se generaron ${createdSessions.length} clases y ${participantRecords.length} participaciones exitosamente.`
+      participantsGenerated: totalParticipants,
+      message: `Se generaron ${createdSessions.length} clases y ${totalParticipants} participaciones exitosamente.`
     })
 
   } catch (error: any) {

@@ -1,8 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
+import { findAirtableRecords } from '@/lib/airtable'
 
-const BASE_ID = process.env.AIRTABLE_BASE_ID ?? 'app9ZtojlxX5FoZ7y'
-const STUDENTS_TABLE = 'tblqzaBBn18txOyLu'
-const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN ?? 'LinguaAdmin2025'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -13,25 +11,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    // Only fetch students open to groups and with 'Pending' status (or any if we want to expand)
-    const formula = `AND({Open to Group Classes} = 1, {Status} = 'Pending')`
-    const url = `https://api.airtable.com/v0/${BASE_ID}/${STUDENTS_TABLE}?filterByFormula=${encodeURIComponent(formula)}`
-    
-    const response = await fetch(url, {
-      headers: { 'Authorization': `Bearer ${AIRTABLE_API_KEY}` }
-    })
+    const records = await findAirtableRecords('Students', `{Status} = 'Pending'`)
 
-    if (!response.ok) throw new Error('Airtable fetch failed')
-    
-    const data = await response.json()
-
-    // Map the records to a cleaner interface
-    const candidates = data.records.map((r: any) => ({
+    const candidates = records.map((r: any) => ({
       id: r.id,
-      name: r.fields['Full Name'] || 'Sin nombre',
+      name: r.fields['Full Name'] || r.fields['FullName'] || r.fields['Name'] || 'Sin nombre',
       email: r.fields['Email'] || '',
       ageRange: r.fields['Age Range'] || '14+',
-      vertical: r.fields['Verticals'] ? 'General' : '', // Simplified mapping
+      vertical: 'General',
       needs: r.fields['Notes'] || 'No especificado',
       hasAvailability: !!r.fields['Availability']
     }))
