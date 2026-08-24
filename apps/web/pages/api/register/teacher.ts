@@ -1,12 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
+import { findAirtableRecords, createAirtableRecord } from '@/lib/airtable'
 
 const BASE_ID = process.env.AIRTABLE_BASE_ID ?? 'app9ZtojlxX5FoZ7y'
-const TEACHERS_TABLE = 'tblqGY8vCmsFeld7G'
-const STUDENTS_TABLE = 'tblqzaBBn18txOyLu'
 const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY
-
-// Optional: set to the Airtable field ID of an Attachment-type field named "SS Document"
-// e.g. process.env.AIRTABLE_SS_FIELD_ID = 'fldXXXXXXXXXXXXXX'
 const SS_DOCUMENT_FIELD_ID = process.env.AIRTABLE_SS_FIELD_ID || ''
 
 async function fetchTable(table: string, params: string) {
@@ -68,10 +64,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   let pin = ''
   for (let i = 0; i < 10; i++) {
     const candidate = generatePin(name)
-    const checkTeachers = await fetchTable(TEACHERS_TABLE, `filterByFormula=${encodeURIComponent(`{PIN} = '${candidate}'`)}`)
-    if (!checkTeachers.records?.length) {
-      const checkStudents = await fetchTable(STUDENTS_TABLE, `filterByFormula=${encodeURIComponent(`{PIN} = '${candidate}'`)}`)
-      if (!checkStudents.records?.length) { pin = candidate; break }
+    const checkTeachers = await findAirtableRecords('Teachers', `{PIN} = '${candidate}'`)
+    if (!checkTeachers?.length) {
+      const checkStudents = await findAirtableRecords('Students', `{PIN} = '${candidate}'`)
+      if (!checkStudents?.length) { pin = candidate; break }
     }
   }
   if (!pin) return res.status(500).json({ error: 'No se pudo generar un PIN único. Intenta de nuevo.' })
@@ -80,54 +76,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const ssExpiryDate = addDays(30)
   const today = new Date().toISOString().split('T')[0]
 
-  // Build the Airtable record fields (use field IDs for all known fields)
+  // Build the record fields
   const fields: Record<string, unknown> = {
-    "fldYW4Oh6dPrZh4wY": name,
-    "fldwHO6pmhgSxhtMU": email,
-    "fldmvzzWizaHinAMu": phone,
-    "fldsq1cfz7OnxNfm9": timezone,
-    "fld7vSUdd69zdl6yQ": availability,
-    "fld9QkYJhY4df17Bb": bankDetails,
-    "fldwAF9uwhjDUXoZj": Array.isArray(interests) ? interests : [],
-    "fldsCFNKymtmEbVDe": pin,
+    "Name": name,
+    "Email": email,
+    "Phone": phone,
+    "timezone": timezone,
+    "availability": availability,
+    "Bank Account Details": bankDetails,
+    "Academic Interests": Array.isArray(interests) ? interests : [],
+    "PIN": pin,
     "Status": "Pending",
-    // SS fields: set via field names — require these fields to exist in the Airtable table.
-    // If they don't exist yet, comment them out until they're created.
     "SS Expiry Date": ssExpiryDate,
     "SS Last Updated": today,
   }
 
-  const postToAirtable = async (f: Record<string, unknown>) =>
-    fetch(`https://api.airtable.com/v0/${BASE_ID}/${TEACHERS_TABLE}`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ records: [{ fields: f }], typecast: true }),
-    })
-
   try {
-    let response = await postToAirtable(fields)
-    let data = await response.json()
-
-    // If Airtable rejects due to unknown SS fields, retry without them
-    if (!response.ok) {
-      const errMsg: string = data?.error?.message || ''
-      if (errMsg.toLowerCase().includes('unknown field') || errMsg.toLowerCase().includes('field')) {
-        console.warn('Retrying without SS date fields:', errMsg)
-        const { 'SS Expiry Date': _a, 'SS Last Updated': _b, ...coreFields } = fields
-        response = await postToAirtable(coreFields)
-        data = await response.json()
-      }
-    }
-
-    if (!response.ok) {
-      console.error('Airtable Error:', JSON.stringify(data, null, 2))
-      return res.status(500).json({ error: 'No se pudo guardar la aplicación', details: data })
-    }
-
-    const recordId: string = data.records[0]?.id
+    const record = await createAirtableRecord('Teachers', fields)
+    const recordId: string = record.id
 
     // Upload SS document as Airtable attachment (requires an Attachment field + AIRTABLE_SS_FIELD_ID)
     if (ssDocumentData && ssDocumentName && ssDocumentType && SS_DOCUMENT_FIELD_ID && recordId) {
@@ -160,7 +126,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     }
 
-    return res.status(200).json({ success: true, record: data.records[0] })
+    return res.status(200).json({ success: true, record, pin })
   } catch (error: any) {
     console.error('API Error:', error)
     return res.status(500).json({ error: 'Error del servidor' })
