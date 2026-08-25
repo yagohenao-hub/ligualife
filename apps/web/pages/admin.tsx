@@ -79,6 +79,9 @@ function getSSStatus(expiryDate: string | null): { label: string; color: string;
   const today = new Date()
   today.setHours(0, 0, 0, 0)
   const expiry = new Date(expiryDate)
+  if (isNaN(expiry.getTime())) {
+    return { label: 'SS Registrada', color: '#fbbf24', bg: 'rgba(245,158,11,0.1)', border: 'rgba(245,158,11,0.3)' }
+  }
   expiry.setHours(0, 0, 0, 0)
   const diffDays = Math.ceil((expiry.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
   if (diffDays < 0) return { label: `Vencida ${expiry.toLocaleDateString('es-CO', { day: 'numeric', month: 'short' })}`, color: '#f87171', bg: 'rgba(239,68,68,0.1)', border: 'rgba(239,68,68,0.3)' }
@@ -708,7 +711,7 @@ export default function AdminPage() {
                               <div key={r.id} className={`${styles.pendingCard} ${styles.pendingCardPurple}`}>
                                 <div className={styles.pendingCardTop}>
                                   <span className={styles.pendingTag}>📺 Solicitud de Serie</span>
-                                  <span className={styles.pendingTime}>{r.date ? new Date(r.date).toLocaleDateString('es-CO') : 'Reciente'}</span>
+                                  <span className={styles.pendingTime}>{r.date && !isNaN(new Date(r.date).getTime()) ? new Date(r.date).toLocaleDateString('es-CO') : 'Reciente'}</span>
                                 </div>
                                 <h4 className={styles.pendingTitle}>{r.studentName}</h4>
                                 <p className={styles.pendingSub}>Serie deseada: <strong>{r.seriesName}</strong></p>
