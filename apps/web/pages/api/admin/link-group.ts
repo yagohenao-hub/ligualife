@@ -40,6 +40,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const created = await createAirtableRecord('Student-Teacher', fields)
 
+    // Actualizar estado de los alumnos vinculados a 'Active' si estaban en 'Pending'
+    for (const sid of studentIds) {
+      try {
+        await patchAirtableRecord('Students', sid, { 'Status': 'Active' })
+      } catch {}
+    }
+
     return res.status(200).json({ 
       ok: true, 
       id: created.id,

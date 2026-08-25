@@ -60,8 +60,12 @@ function formatRecord(row: any): any {
   // En Airtable las relaciones son arrays (ej. ['rec123'])
   // Nuestro script auto-genera los ID foráneos como strings simples o null.
   // Algunos componentes del frontend asumen arrays para relaciones, así que las devolvemos como arrays si existen:
-  if (row['Teacher'] && !Array.isArray(row['Teacher'])) fields['Teacher'] = [row['Teacher']]
-  if (row['Student'] && !Array.isArray(row['Student'])) fields['Student'] = [row['Student']]
+  if (row['Teacher'] && !Array.isArray(row['Teacher'])) {
+    fields['Teacher'] = typeof row['Teacher'] === 'string' && row['Teacher'].includes(',') ? row['Teacher'].split(',') : [row['Teacher']]
+  }
+  if (row['Student'] && !Array.isArray(row['Student'])) {
+    fields['Student'] = typeof row['Student'] === 'string' && row['Student'].includes(',') ? row['Student'].split(',') : [row['Student']]
+  }
   if (row['Session'] && !Array.isArray(row['Session'])) fields['Session'] = [row['Session']]
   if (row['Curriculum Topic'] && !Array.isArray(row['Curriculum Topic'])) fields['Curriculum Topic'] = [row['Curriculum Topic']]
 
@@ -184,6 +188,16 @@ export async function createAirtableRecord(table: string, fields: Record<string,
     row = {
       "Session": Array.isArray(fields.Session) ? fields.Session[0] : fields.Session,
       "Student": Array.isArray(fields.Student) ? fields.Student[0] : fields.Student
+    }
+  } else if (dbTable === 'student_teacher') {
+    row = {
+      "Student": Array.isArray(fields.Student) ? fields.Student.join(',') : fields.Student,
+      "Teacher": Array.isArray(fields.Teacher) ? fields.Teacher.join(',') : fields.Teacher,
+      "Status": fields.Status || 'Active',
+      "Start Date": fields['Start Date'] || new Date().toISOString().split('T')[0],
+      "Notes": fields.Notes || '',
+      "Recurrence Day": Array.isArray(fields['Recurrence Day']) ? fields['Recurrence Day'].join(',') : (fields['Recurrence Day'] || ''),
+      "Recurrence Time": fields['Recurrence Time'] || ''
     }
   } else {
     // Para tablas arbitrarias que pasan ya los campos

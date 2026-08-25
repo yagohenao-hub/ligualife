@@ -131,6 +131,20 @@ export default function AdminPage() {
   const [matchmakerGroups, setMatchmakerGroups] = useState<any[]>([])
   const [groupsLoading, setGroupsLoading] = useState(false)
 
+  // Secretary Pending Inbox state
+  const [seriesRequests, setSeriesRequests] = useState<any[]>([])
+  const [pendingFilter, setPendingFilter] = useState<'all' | 'teachers' | 'students' | 'ss' | 'series'>('all')
+
+  function openWhatsApp(phone: string, text: string) {
+    const cleanPhone = phone.replace(/[^0-9]/g, '')
+    if (!cleanPhone) {
+      alert('Este usuario no tiene un número de teléfono registrado.')
+      return
+    }
+    const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(text)}`
+    window.open(url, '_blank')
+  }
+
   // ── Auth ────────────────────────────────────────────────────────────────────
   function handleAdminLogin() {
     if (pinInput === ADMIN_TOKEN) {
@@ -178,12 +192,23 @@ export default function AdminPage() {
     }
   }, [])
 
+  const loadSeriesRequests = useCallback(async () => {
+    try {
+      const res = await fetch('/api/admin/series-requests', { headers: adminHeaders() })
+      if (res.ok) {
+        const data = await res.json()
+        setSeriesRequests(data.requests ?? [])
+      }
+    } catch {}
+  }, [])
+
   useEffect(() => {
     if (!authed) return
     loadMetrics()
     loadStudents()
     loadTeachers()
     loadGroups()
+    loadSeriesRequests()
   }, [authed])
 
   const loadGroups = useCallback(async () => {
@@ -393,16 +418,16 @@ export default function AdminPage() {
 
   function getSortedTeachers() {
     const selectedStudentsData = students.filter(s => linkForm.studentIds.includes(s.id))
-    if (selectedStudentsData.length === 0) return []
-
-    const candidates = teachers.filter(t => {
-        const match = getMatchingSlots(selectedStudentsData, t)
-        return match.length > 0
-    })
+    const activeTeachers = teachers.filter(t => (t.status || 'Active') === 'Active')
+    if (selectedStudentsData.length === 0) return activeTeachers
 
     const studentInterests = Array.from(new Set(selectedStudentsData.flatMap(s => s.interests || [])))
-    
-    return candidates.sort((a, b) => {
+
+    return [...activeTeachers].sort((a, b) => {
+        const aSlots = getMatchingSlots(selectedStudentsData, a).length
+        const bSlots = getMatchingSlots(selectedStudentsData, b).length
+        if (bSlots !== aSlots) return bSlots - aSlots
+
         const aMatch = (a.specialty || []).filter(x => studentInterests.includes(x)).length
         const bMatch = (b.specialty || []).filter(x => studentInterests.includes(x)).length
         return bMatch - aMatch
@@ -554,27 +579,156 @@ export default function AdminPage() {
                     </div>
                   </div>
 
-                  {/* Quick access */}
-                  <div className={styles.quickActions}>
-                    <h2 className={styles.sectionTitle}>Acciones Rápidas</h2>
-                    <div className={styles.quickBtns}>
-                      <button className={styles.quickBtn} onClick={() => { setTab('students'); openCreateStudent() }}>
-                        <span>➕</span> Nuevo Alumno
-                      </button>
-                      <button className={styles.quickBtn} onClick={() => { setTab('teachers'); openCreateTeacher() }}>
-                        <span>➕</span> Nuevo Profesor
-                      </button>
-                      <button className={styles.quickBtn} onClick={() => setTab('students')}>
-                        <span>👁️</span> Ver Alumnos
-                      </button>
-                      <button className={styles.quickBtn} onClick={() => router.push('/series-companion')}>
-                        <span>🎬</span> Series Activity Master
-                      </button>
-                      <button className={styles.quickBtn} onClick={() => setTab('teachers')}>
-                        <span>👁️</span> Ver Profesores
-                      </button>
-                    </div>
-                  </div>
+                  {/* ═══ SECRETARY PENDING INBOX ═══ */}
+                  {(() => {
+                    const pendingTeachers = teachers.filter(t => t.status === 'Pending')
+                    const pendingStudents = students.filter(s => s.status === 'Pending')
+                    const ssAlertTeachers = teachers.filter(t => {
+                      const ss = getSSStatus(t.ssExpiryDate)
+                      return ss.label.startsWith('Sin SS') || ss.label.startsWith('Vencida') || ss.label.startsWith('Vence en')
+                    })
+                    const pendingSeries = seriesRequests.filter(r => r.status === 'Pending')
+                    const totalPending = pendingTeachers.length + pendingStudents.length + ssAlertTeachers.length + pendingSeries.length
+
+                    return (
+                      <div className={styles.pendingSection}>
+                        <div className={styles.pendingHeader}>
+                          <h2 className={styles.sectionTitle} style={{ display: 'flex', alignItems: 'center', margin: 0 }}>
+                            <span>📥</span> Bandeja de Pendientes del Secretario
+                            {totalPending > 0 && <span className={styles.pendingBadge}>{totalPending}</span>}
+                          </h2>
+                          <div className={styles.pendingFilters}>
+                            <button className={`${styles.filterChip} ${pendingFilter === 'all' ? styles.filterChipActive : ''}`} onClick={() => setPendingFilter('all')}>
+                              Todos ({totalPending})
+                            </button>
+                            <button className={`${styles.filterChip} ${pendingFilter === 'teachers' ? styles.filterChipActive : ''}`} onClick={() => setPendingFilter('teachers')}>
+                              👨‍🏫 Profesores ({pendingTeachers.length})
+                            </button>
+                            <button className={`${styles.filterChip} ${pendingFilter === 'students' ? styles.filterChipActive : ''}`} onClick={() => setPendingFilter('students')}>
+                              👩‍🎓 Alumnos ({pendingStudents.length})
+                            </button>
+                            <button className={`${styles.filterChip} ${pendingFilter === 'ss' ? styles.filterChipActive : ''}`} onClick={() => setPendingFilter('ss')}>
+                              ⚠️ SS Docs ({ssAlertTeachers.length})
+                            </button>
+                            <button className={`${styles.filterChip} ${pendingFilter === 'series' ? styles.filterChipActive : ''}`} onClick={() => setPendingFilter('series')}>
+                              📺 Series ({pendingSeries.length})
+                            </button>
+                          </div>
+                        </div>
+
+                        {totalPending === 0 ? (
+                          <div className={styles.emptyPending}>
+                            <span>🎉</span>
+                            <h3>¡Todo al día! No hay pendientes operativos en este momento.</h3>
+                          </div>
+                        ) : (
+                          <div className={styles.pendingGrid}>
+                            {/* Pending Teachers Cards */}
+                            {(pendingFilter === 'all' || pendingFilter === 'teachers') && pendingTeachers.map(t => (
+                              <div key={t.id} className={`${styles.pendingCard} ${styles.pendingCardAmber}`}>
+                                <div className={styles.pendingCardTop}>
+                                  <span className={styles.pendingTag}>👨‍🏫 Profesor Pendiente</span>
+                                  <span className={styles.pendingTime}>{t.timezone || 'América/Bogotá'}</span>
+                                </div>
+                                <h4 className={styles.pendingTitle}>{t.name}</h4>
+                                <p className={styles.pendingSub}>{t.email} {t.phone ? `· ${t.phone}` : ''}</p>
+                                <div className={styles.pendingActions}>
+                                  <button className={styles.actionBtnPrimary} onClick={() => changeTeacherStatus(t, 'Active')}>
+                                    ✅ Aprobar
+                                  </button>
+                                  <button className={styles.actionBtnSecondary} onClick={() => openEditTeacher(t)}>
+                                    ✏️ Editar
+                                  </button>
+                                  {t.phone && (
+                                    <button className={styles.actionBtnWa} onClick={() => openWhatsApp(t.phone, `Hola ${t.name}, tu registro como profesor en LinguaLife ha sido aprobado. ¡Bienvenido!`)}>
+                                      💬 WhatsApp
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+
+                            {/* Pending Students Cards */}
+                            {(pendingFilter === 'all' || pendingFilter === 'students') && pendingStudents.map(s => (
+                              <div key={s.id} className={`${styles.pendingCard} ${styles.pendingCardBlue}`}>
+                                <div className={styles.pendingCardTop}>
+                                  <span className={styles.pendingTag}>👩‍🎓 Alumno Sin Profesor</span>
+                                  <span className={styles.pendingTime}>{s.timezone || 'América/Bogotá'}</span>
+                                </div>
+                                <h4 className={styles.pendingTitle}>{s.name}</h4>
+                                <p className={styles.pendingSub}>{s.email} {s.interests?.length ? `· ${s.interests.join(' · ')}` : ''}</p>
+                                <div className={styles.pendingActions}>
+                                  <button className={styles.actionBtnPrimary} onClick={() => { setLinkForm({ studentIds: [s.id], teacherId: '', notes: '' }); setShowLinkModal(true); }}>
+                                    🔗 Asignar Profesor
+                                  </button>
+                                  <button className={styles.actionBtnSecondary} onClick={() => openEditStudent(s)}>
+                                    ✏️ Editar
+                                  </button>
+                                  {s.phone && (
+                                    <button className={styles.actionBtnWa} onClick={() => openWhatsApp(s.phone, `Hola ${s.name}, tu inscripción a LinguaLife está confirmada. Pronto te asignaremos profesor.`)}>
+                                      💬 WhatsApp
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+
+                            {/* SS Alert Teachers Cards */}
+                            {(pendingFilter === 'all' || pendingFilter === 'ss') && ssAlertTeachers.map(t => {
+                              const ss = getSSStatus(t.ssExpiryDate)
+                              return (
+                                <div key={`ss-${t.id}`} className={`${styles.pendingCard} ${styles.pendingCardRed}`}>
+                                  <div className={styles.pendingCardTop}>
+                                    <span className={styles.pendingTag}>⚠️ Seguridad Social</span>
+                                    <span className={styles.pendingTime} style={{ color: ss.color }}>{ss.label}</span>
+                                  </div>
+                                  <h4 className={styles.pendingTitle}>{t.name}</h4>
+                                  <p className={styles.pendingSub}>Documento SS: {t.ssExpiryDate ? `Vence: ${t.ssExpiryDate}` : 'Sin soporte cargado'}</p>
+                                  <div className={styles.pendingActions}>
+                                    {t.ssDocumentUrl && (
+                                      <button className={styles.actionBtnSecondary} onClick={() => window.open(t.ssDocumentUrl!, '_blank')}>
+                                        📄 Ver Doc
+                                      </button>
+                                    )}
+                                    <button className={styles.actionBtnSecondary} onClick={() => openEditTeacher(t)}>
+                                      ✏️ Actualizar SS
+                                    </button>
+                                    {t.phone && (
+                                      <button className={styles.actionBtnWa} onClick={() => openWhatsApp(t.phone, `Hola ${t.name}, te recordamos actualizar tu documento de Seguridad Social en LinguaLife.`)}>
+                                        💬 WhatsApp
+                                      </button>
+                                    )}
+                                  </div>
+                                </div>
+                              )
+                            })}
+
+                            {/* Series Requests Cards */}
+                            {(pendingFilter === 'all' || pendingFilter === 'series') && pendingSeries.map(r => (
+                              <div key={r.id} className={`${styles.pendingCard} ${styles.pendingCardPurple}`}>
+                                <div className={styles.pendingCardTop}>
+                                  <span className={styles.pendingTag}>📺 Solicitud de Serie</span>
+                                  <span className={styles.pendingTime}>{r.date ? new Date(r.date).toLocaleDateString('es-CO') : 'Reciente'}</span>
+                                </div>
+                                <h4 className={styles.pendingTitle}>{r.studentName}</h4>
+                                <p className={styles.pendingSub}>Serie deseada: <strong>{r.seriesName}</strong></p>
+                                <div className={styles.pendingActions}>
+                                  <button className={styles.actionBtnPrimary} onClick={() => router.push('/series-companion')}>
+                                    🎬 Ir a Series Master
+                                  </button>
+                                  {r.whatsapp && (
+                                    <button className={styles.actionBtnWa} onClick={() => openWhatsApp(r.whatsapp, `Hola ${r.studentName}, estamos procesando tu solicitud para la serie ${r.seriesName}.`)}>
+                                      💬 WhatsApp
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })()}
                 </>
               )}
             </div>
@@ -586,7 +740,8 @@ export default function AdminPage() {
               <div className={styles.pageHeader}>
                 <h1 className={styles.pageTitle}>Alumnos <span className={styles.countBadge}>{students.length}</span></h1>
                 <div style={{ display: 'flex', gap: '0.75rem' }}>
-                  <button className={styles.addBtnSecondary} onClick={() => setShowLinkModal(true)}>🔗 Vincular Grupo</button>
+                  <button className={styles.addBtn} onClick={openCreateStudent}>+ Nuevo Alumno</button>
+                  <button className={styles.addBtnSecondary} onClick={() => { setLinkForm({ studentIds: [], teacherId: '', notes: '' }); setShowLinkModal(true); }}>🔗 Vincular Grupo</button>
                 </div>
               </div>
 
@@ -1046,7 +1201,7 @@ export default function AdminPage() {
                 border: '1px solid rgba(255,255,255,0.05)',
                 padding: '0.5rem'
               }}>
-                {students.filter(s => s.status === 'Pending').map(s => (
+                {students.map(s => (
                   <label key={s.id} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.5rem', cursor: 'pointer', borderRadius: '6px', borderBottom: '1px solid rgba(255,255,255,0.02)' }}>
                     <input 
                       type="checkbox" 
@@ -1054,12 +1209,12 @@ export default function AdminPage() {
                       onChange={() => toggleStudentInLink(s.id)}
                     />
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <span style={{ fontSize: '0.85rem' }}>{s.name}</span>
-                        <span style={{ fontSize: '0.7rem', opacity: 0.5 }}>{s.interests?.join(' · ')}</span>
+                        <span style={{ fontSize: '0.85rem' }}>{s.name} {s.status === 'Pending' ? ' (Pendiente)' : ''}</span>
+                        <span style={{ fontSize: '0.7rem', opacity: 0.5 }}>{s.interests?.join(' · ') || 'Sin intereses registrados'}</span>
                     </div>
                   </label>
                 ))}
-                {students.filter(s => s.status === 'Pending').length === 0 && <div style={{ opacity: 0.5, fontSize: '0.8rem', textAlign: 'center', padding: '1rem' }}>No hay alumnos pendientes.</div>}
+                {students.length === 0 && <div style={{ opacity: 0.5, fontSize: '0.8rem', textAlign: 'center', padding: '1rem' }}>No hay alumnos registrados.</div>}
               </div>
 
               <label className={styles.fieldLabel} style={{ marginTop: '0.5rem' }}>Profesor Compatible (Ordenados por afinidad)</label>
