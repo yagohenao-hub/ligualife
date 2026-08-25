@@ -912,6 +912,13 @@ export default function AdminPage() {
             </div>
           )}
 
+          {/* ═══ MATCHMAKER TAB ═══ */}
+          {tab === 'matchmaker' && (
+            <div className={styles.tabContent}>
+              <GroupMatchmaker />
+            </div>
+          )}
+
           {/* ═══ SCENE STUDIO TAB ═══ */}
           {tab === 'scene_studio' && (
             <div className={styles.tabContent}>
