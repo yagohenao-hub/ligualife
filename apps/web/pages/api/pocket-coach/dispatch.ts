@@ -29,13 +29,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const phone = student.fields.Phone;
         const interests = student.fields.Interests || '';
 
-        console.log(`[Dispatch Check] Estudiante: "${studentName}", Phone: "${phone}"`);
-
-        // GUARDIA DE SEGURIDAD: Solo enviar a cuentas de prueba del usuario (Sebastian / Santiago)
-        const nameLower = studentName.toLowerCase();
-        if (!nameLower.includes('sebastian') && !nameLower.includes('santiago')) {
-          continue;
-        }
+        console.log(`[Dispatch Check] Estudiante: "${studentName}", Phone: "${phone}", Status: "${student.fields.Status}"`);
 
         if (!phone) continue; // No phone, no WhatsApp message
 

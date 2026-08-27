@@ -73,6 +73,11 @@ export async function fetchFromDB(table: string, params = ''): Promise<any> {
     const decoded = decodeURIComponent(params)
 
     // Formula parsing for query parameters
+    const statusMatch = decoded.match(/\{Status\}\s*=\s*'([^']*)'/) || decoded.match(/\{Status\}\s*=\s*"([^"]*)"/)
+    if (statusMatch) {
+      query = query.eq('Status', statusMatch[1])
+    }
+
     const pinMatch = decoded.match(/\{PIN\}\s*=\s*'([^']*)'/) || decoded.match(/\{PIN\}\s*=\s*"([^"]*)"/)
     if (pinMatch) {
       query = query.eq('PIN', pinMatch[1])
