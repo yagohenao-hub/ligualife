@@ -15,12 +15,13 @@ Reglas estrictas (GUARDRAILS) que debes seguir SIEMPRE:
 6. SI EL ESTUDIANTE PREGUNTA SOBRE PAGOS, HORARIOS, AGENDAMIENTO, O PIDE HABLAR CON UN ASESOR: NO intentes responder con inglés ni dar explicaciones académicas. Simplemente responde amablemente: "He recibido tu mensaje sobre este tema administrativo. Tu asesor se pondrá en contacto contigo muy pronto para colaborarte."
 `;
 
-export const ARCHETYPES = {
-  sniper: "The Sniper: Sé hiper-directo. Da la corrección en una línea y exige al estudiante que lo intente de nuevo de inmediato.",
-  architect: "The Architect: Desglosa la oración en sus piezas (Sujeto, Palabra de Tiempo, Acción). Muestra cómo encajan como bloques de Lego.",
-  cheerleader: "The Cheerleader: Celebra efusivamente el intento, y luego introduce la pequeña corrección de forma súper positiva.",
-  storyteller: "The Storyteller: Pon un escenario rápido (ej. estás en un café) y haz que el estudiante aplique la corrección en esa situación."
-};
+export const ARCHETYPES = [
+  "Tu visión tech impulsa el futuro del negocio.",
+  "Impulsa tu inglés para el éxito global.",
+  "Impulsa tu visión de negocio global.",
+  "Lleva tu comunicación profesional al siguiente nivel.",
+  "Estrategias claras para tus reuniones de alto impacto."
+];
 
 /**
  * Construye el prompt para el Modo A (Retos Programados 4x/día)
@@ -35,24 +36,37 @@ export function buildDispatchPrompt(
   return `
 ${POCKET_COACH_GUARDRAILS}
 
-TIPO DE TAREA: MODO A - Reto Programado (Micro-reto)
+TIPO DE TAREA: MODO A - Reto Programado (Micro-reto para WhatsApp)
 
 CONTEXTO DEL ESTUDIANTE:
 - Nombre: ${studentName}
 - Tema actual: ${topicTitle}
 - Fórmula LDS del tema: ${ldsFormula}
 - Contexto pedagógico: ${aiContext}
-- Intereses (si aplica): ${interests || 'General'}
+- Intereses del alumno (usar para personalizar el escenario): ${interests || 'Negocios, Tecnología, Desarrollo profesional'}
 
-INSTRUCCIÓN:
-Genera un único micro-reto en español para el estudiante (máximo 3 párrafos cortos). 
-El reto debe incluir:
-1. Un saludo amigable.
-2. Un escenario o pregunta rápida basada en el tema actual y, si es posible, en sus intereses.
-3. INCLUYE LA RESPUESTA INMEDIATAMENTE DESPUÉS. Usa el formato de auto-corrección. 
-   Por ejemplo: "¿Cómo dirías 'Yo no juego tenis'? Piensa tu respuesta... La fórmula es Sujeto + Palabra de Tiempo + Acción. Por tanto es: 'I + do not + play + tennis'."
+REGLA DE LONGITUD: Sé un 30% MÁS CORTO y conciso que lo habitual. Explicaciones directas, ultra-eficientes y al grano para WhatsApp.
 
-No pidas al estudiante que te responda. Este es un reto de "léelo y asimílalo".
+INSTRUCCIÓN: Genera el mensaje siguiendo EXACTAMENTE este formato y estructura, sin agregar intros ni comentarios adicionales fuera de la plantilla:
+
+¡Hola, ${studentName}! 🚀 [Selecciona un gancho de arquetipo aleatorio adaptado a sus intereses: ej. "Tu visión tech impulsa el futuro del negocio." / "Impulsa tu visión de negocio global."]
+
+Reto: [Escenario profesional ultra-corto de 1 oración basado en sus intereses "${interests || 'tecnología/negocios'}" y el tema "${topicTitle}"]. [Pregunta o instrucción breve de opción múltiple].
+
+""
+
+A) [Opción A en inglés]
+B) [Opción B en inglés]
+
+¡A pensar se dijo! 🕵️‍♂️
+
+---RESPUESTA---
+
+✅ La opción correcta es [A o B].
+
+💡 Logic Decoder: [Explicación ultracorta de 2 oraciones máximo sobre la lógica de la frase. NUNCA uses la palabra "LDS" ni términos tradicionales como "presente perfecto"].
+
+🇨🇴 Filtro Colombiano: [1 oración rápida sobre el error o trampa común de traducción literal desde el español colombiano].
 `;
 }
 

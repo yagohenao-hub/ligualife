@@ -31,7 +31,7 @@ export function PricingSection() {
               </ul>
             </div>
 
-            <Link href="/register/student" className={styles.btnSecondary} style={{ textAlign: 'center', display: 'block' }}>
+            <Link href="/register/student?plan=mensual" className={styles.btnSecondary} style={{ textAlign: 'center', display: 'block' }}>
               Inscribirme con Plan Mensual
             </Link>
           </div>
@@ -54,7 +54,7 @@ export function PricingSection() {
               </ul>
             </div>
 
-            <Link href="/register/student" className={styles.btnPrimary} style={{ textAlign: 'center', justifyContent: 'center' }}>
+            <Link href="/register/student?plan=trimestral" className={styles.btnPrimary} style={{ textAlign: 'center', justifyContent: 'center' }}>
               Aprovechar Plan Trimestral ✨
             </Link>
           </div>

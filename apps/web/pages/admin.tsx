@@ -54,6 +54,8 @@ interface Teacher {
 const ADMIN_TOKEN = 'LinguaAdmin2025'
 const STUDENT_STATUSES = ['Active', 'Paused', 'Inactive', 'Blocked']
 const TEACHER_STATUSES = ['Pending', 'Active', 'Paused', 'Inactive']
+const DAYS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom']
+const HOURS = ['6am', '7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', '3pm', '4pm', '5pm', '6pm', '7pm', '8pm']
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 function adminHeaders() {
@@ -101,6 +103,8 @@ export default function AdminPage() {
   const [pinError, setPinError] = useState('')
 
   const [tab, setTab] = useState<Tab>('overview')
+  const [isDirectoryExpanded, setIsDirectoryExpanded] = useState(false)
+  const [isContentExpanded, setIsContentExpanded] = useState(false)
   const [metrics, setMetrics] = useState<Metrics | null>(null)
   const [metricsLoading, setMetricsLoading] = useState(false)
 
@@ -126,13 +130,19 @@ export default function AdminPage() {
 
   // Link Group state
   const [showLinkModal, setShowLinkModal] = useState(false)
-  const [linkForm, setLinkForm] = useState({ studentIds: [] as string[], teacherId: '', notes: '' })
+  const [linkForm, setLinkForm] = useState({ studentIds: [] as string[], teacherId: '', notes: '', selectedDays: [] as string[], selectedTimes: {} as Record<string, string> })
   const [linkFormLoading, setLinkFormLoading] = useState(false)
+
+  // Edit Group state
+  const [showEditGroupModal, setShowEditGroupModal] = useState(false)
+  const [editGroupForm, setEditGroupForm] = useState({ id: '', type: 'conocidos', studentIds: [] as string[], teacherId: '', notes: '', selectedDays: [] as string[], selectedTimes: {} as Record<string, string> })
+  const [editGroupLoading, setEditGroupLoading] = useState(false)
 
   // Groups management state
   const [acquaintanceGroups, setAcquaintanceGroups] = useState<any[]>([])
   const [matchmakerGroups, setMatchmakerGroups] = useState<any[]>([])
   const [groupsLoading, setGroupsLoading] = useState(false)
+  const [scheduleFilter, setScheduleFilter] = useState<'all' | 'individual' | 'group'>('all')
 
   // Secretary Pending Inbox state
   const [seriesRequests, setSeriesRequests] = useState<any[]>([])
@@ -362,24 +372,7 @@ export default function AdminPage() {
   async function submitLinkForm() {
     if (linkForm.studentIds.length === 0 || !linkForm.teacherId) return
     
-    // Assign random schedule from available common slots
-    const selectedStudentsData = students.filter(s => linkForm.studentIds.includes(s.id))
-    const teacher = teachers.find(t => t.id === linkForm.teacherId)
-    if (!teacher) return
-
-    const matchingSlots = getMatchingSlots(selectedStudentsData, teacher)
-    const days = Array.from(new Set(matchingSlots.map(s => s.split('-')[0])))
-    
-    let chosenDays: string[] = []
-    let chosenTime: string = ''
-
-    if (days.length >= 2) {
-        chosenDays = [days[0], days[1]]
-        chosenTime = matchingSlots.find(s => s.startsWith(days[0]))?.split('-')[1] || ''
-    } else if (days.length === 1) {
-        chosenDays = [days[0]]
-        chosenTime = matchingSlots[0].split('-')[1]
-    }
+    const timesString = linkForm.selectedDays.map(d => linkForm.selectedTimes?.[d] || '').join(', ')
 
     setLinkFormLoading(true)
     try {
@@ -388,14 +381,14 @@ export default function AdminPage() {
         headers: adminHeaders(),
         body: JSON.stringify({
             ...linkForm,
-            days: chosenDays,
-            time: chosenTime
+            days: linkForm.selectedDays,
+            time: timesString
         }),
       })
       if (res.ok) {
         setShowLinkModal(false)
-        setLinkForm({ studentIds: [], teacherId: '', notes: '' })
-        alert('✅ Grupo vinculado exitosamente con horario asignado')
+        setLinkForm({ studentIds: [], teacherId: '', notes: '', selectedDays: [], selectedTimes: {} })
+        alert('✅ Alumno/Grupo vinculado exitosamente')
         loadMetrics()
         loadStudents()
         loadGroups()
@@ -406,6 +399,87 @@ export default function AdminPage() {
     } finally {
       setLinkFormLoading(false)
     }
+  }
+
+  const handleTeacherChangeInLink = (teacherId: string) => {
+    const selectedStudentsData = students.filter(s => linkForm.studentIds.includes(s.id))
+    const teacher = teachers.find(t => t.id === teacherId)
+    let chosenDays: string[] = []
+    const chosenTimes: Record<string, string> = {}
+
+    if (teacher) {
+      const matchingSlots = getMatchingSlots(selectedStudentsData, teacher)
+      const days = Array.from(new Set(matchingSlots.map(s => s.split('-')[0])))
+      if (days.length >= 2) {
+          chosenDays = [days[0], days[1]]
+          const time1 = matchingSlots.find(s => s.startsWith(days[0]))?.split('-')[1] || ''
+          const time2 = matchingSlots.find(s => s.startsWith(days[1]))?.split('-')[1] || ''
+          chosenTimes[days[0]] = time1
+          chosenTimes[days[1]] = time2
+      } else if (days.length === 1) {
+          chosenDays = [days[0]]
+          chosenTimes[days[0]] = matchingSlots[0].split('-')[1]
+      }
+    }
+
+    setLinkForm(prev => ({
+      ...prev,
+      teacherId,
+      selectedDays: chosenDays,
+      selectedTimes: chosenTimes
+    }))
+  }
+
+  async function submitEditGroupForm() {
+    if (!editGroupForm.id || !editGroupForm.teacherId) return
+    const timesString = editGroupForm.selectedDays.map(d => editGroupForm.selectedTimes?.[d] || '').join(', ')
+
+    setEditGroupLoading(true)
+    try {
+      const res = await fetch('/api/admin/groups', {
+        method: 'PATCH',
+        headers: adminHeaders(),
+        body: JSON.stringify({
+          id: editGroupForm.id,
+          type: editGroupForm.type,
+          teacherId: editGroupForm.teacherId,
+          days: editGroupForm.selectedDays,
+          time: timesString,
+          notes: editGroupForm.notes
+        })
+      })
+      if (res.ok) {
+        setShowEditGroupModal(false)
+        alert('✅ Horario/Grupo actualizado exitosamente')
+        loadGroups()
+      } else {
+        const data = await res.json()
+        alert(data.error || 'Error al actualizar grupo')
+      }
+    } finally {
+      setEditGroupLoading(false)
+    }
+  }
+
+  const openEditGroup = (group: any) => {
+    const timesArray = typeof group.time === 'string' ? group.time.split(',').map((t: string) => t.trim()) : []
+    const timesMap: Record<string, string> = {}
+    if (Array.isArray(group.days)) {
+      group.days.forEach((day: string, idx: number) => {
+        timesMap[day] = timesArray[idx] || timesArray[0] || ''
+      })
+    }
+
+    setEditGroupForm({
+      id: group.id,
+      type: group.type,
+      studentIds: group.studentIds || [],
+      teacherId: group.teacherId || '',
+      notes: group.notes || '',
+      selectedDays: group.days || [],
+      selectedTimes: timesMap
+    })
+    setShowEditGroupModal(true)
   }
 
   function getMatchingSlots(selectedStudents: Student[], teacher: Teacher) {
@@ -424,15 +498,36 @@ export default function AdminPage() {
     const activeTeachers = teachers.filter(t => (t.status || 'Active') === 'Active')
     if (selectedStudentsData.length === 0) return activeTeachers
 
-    const studentInterests = Array.from(new Set(selectedStudentsData.flatMap(s => s.interests || [])))
+    const studentInterests = Array.from(
+      new Set(
+        selectedStudentsData.flatMap(s => {
+          const rawInterests = s.interests as any
+          if (Array.isArray(rawInterests)) return rawInterests
+          if (typeof rawInterests === 'string' && rawInterests) {
+            return rawInterests.split(',').map((x: string) => x.trim())
+          }
+          return []
+        })
+      )
+    )
 
     return [...activeTeachers].sort((a, b) => {
         const aSlots = getMatchingSlots(selectedStudentsData, a).length
         const bSlots = getMatchingSlots(selectedStudentsData, b).length
         if (bSlots !== aSlots) return bSlots - aSlots
 
-        const aMatch = (a.specialty || []).filter(x => studentInterests.includes(x)).length
-        const bMatch = (b.specialty || []).filter(x => studentInterests.includes(x)).length
+        const rawASpecs = a.specialty as any
+        const aSpecs: string[] = Array.isArray(rawASpecs) 
+          ? rawASpecs 
+          : (typeof rawASpecs === 'string' && rawASpecs ? rawASpecs.split(',').map((x: string) => x.trim()) : [])
+
+        const rawBSpecs = b.specialty as any
+        const bSpecs: string[] = Array.isArray(rawBSpecs) 
+          ? rawBSpecs 
+          : (typeof rawBSpecs === 'string' && rawBSpecs ? rawBSpecs.split(',').map((x: string) => x.trim()) : [])
+
+        const aMatch = aSpecs.filter((x: string) => studentInterests.includes(x)).length
+        const bMatch = bSpecs.filter((x: string) => studentInterests.includes(x)).length
         return bMatch - aMatch
     })
   }
@@ -505,30 +600,103 @@ export default function AdminPage() {
             <span className={styles.logoText}>Admin</span>
           </div>
           <nav className={styles.sidebarNav}>
-            {([
-              { key: 'overview', icon: '📊', label: 'General' },
-              { key: 'students', icon: '👩‍🎓', label: 'Alumnos' },
-              { key: 'teachers', icon: '👩‍🏫', label: 'Profesores' },
-              { key: 'matchmaker', icon: '🎲', label: 'Matchmaker' },
-              { key: 'groups', icon: '👥', label: 'Gestión Grupos' },
-              { key: 'videobank', icon: '🎬', label: 'Video Bank' },
-              { key: 'scene_studio', icon: '🔍', label: 'Studio Escenas' },
-              { key: 'series', icon: '📺', label: 'Series Master' },
-              { key: 'stories', icon: '📖', label: 'Story Studio' },
-            ] as { key: any; icon: string; label: string }[]).map(item => (
-              <button
-                key={item.key}
-                className={`${styles.navItem} ${tab === item.key ? styles.navItemActive : ''}`}
-                onClick={() => {
-                  if (item.key === 'series') router.push('/series-companion')
-                  else if (item.key === 'stories') router.push('/admin/story-studio')
-                  else setTab(item.key)
-                }}
+            {/* 1. Visión General */}
+            <button 
+              className={`${styles.navItem} ${tab === 'overview' ? styles.navItemActive : ''}`}
+              onClick={() => setTab('overview')}
+            >
+              <span className={styles.navIcon}>📥</span>
+              <span>Visión General</span>
+            </button>
+
+            {/* 2. Directorio (Collapsible) */}
+            <div>
+              <button 
+                className={styles.navItem}
+                onClick={() => setIsDirectoryExpanded(!isDirectoryExpanded)}
+                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
               >
-                <span className={styles.navIcon}>{item.icon}</span>
-                <span>{item.label}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <span className={styles.navIcon}>👥</span>
+                  <span style={{ fontWeight: 600 }}>Directorio</span>
+                </div>
+                <span className={`${styles.categoryArrow} ${isDirectoryExpanded ? styles.categoryArrowExpanded : ''}`}>▶</span>
               </button>
-            ))}
+              {isDirectoryExpanded && (
+                <div className={styles.subNavContainer}>
+                  <button 
+                    className={`${styles.subNavItem} ${tab === 'students' ? styles.subNavItemActive : ''}`}
+                    onClick={() => setTab('students')}
+                  >
+                    <span className={styles.navIcon}>👩‍🎓</span>
+                    <span>Alumnos</span>
+                  </button>
+                  <button 
+                    className={`${styles.subNavItem} ${tab === 'teachers' ? styles.subNavItemActive : ''}`}
+                    onClick={() => setTab('teachers')}
+                  >
+                    <span className={styles.navIcon}>👨‍🏫</span>
+                    <span>Profesores</span>
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* 3. Agenda & Clases */}
+            <button 
+              className={`${styles.navItem} ${tab === 'groups' ? styles.navItemActive : ''}`}
+              onClick={() => setTab('groups')}
+            >
+              <span className={styles.navIcon}>📅</span>
+              <span>Agenda & Clases</span>
+            </button>
+
+            {/* 4. Contenido & Studio (Collapsible) */}
+            <div>
+              <button 
+                className={styles.navItem}
+                onClick={() => setIsContentExpanded(!isContentExpanded)}
+                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <span className={styles.navIcon}>🎬</span>
+                  <span style={{ fontWeight: 600 }}>Contenido & Studio</span>
+                </div>
+                <span className={`${styles.categoryArrow} ${isContentExpanded ? styles.categoryArrowExpanded : ''}`}>▶</span>
+              </button>
+              {isContentExpanded && (
+                <div className={styles.subNavContainer}>
+                  <button 
+                    className={`${styles.subNavItem} ${tab === 'videobank' ? styles.subNavItemActive : ''}`}
+                    onClick={() => setTab('videobank')}
+                  >
+                    <span className={styles.navIcon}>📹</span>
+                    <span>Video Bank</span>
+                  </button>
+                  <button 
+                    className={`${styles.subNavItem} ${tab === 'scene_studio' ? styles.subNavItemActive : ''}`}
+                    onClick={() => setTab('scene_studio')}
+                  >
+                    <span className={styles.navIcon}>🔍</span>
+                    <span>Studio Escenas</span>
+                  </button>
+                  <button 
+                    className={styles.subNavItem}
+                    onClick={() => router.push('/series-companion')}
+                  >
+                    <span className={styles.navIcon}>📺</span>
+                    <span>Series Master</span>
+                  </button>
+                  <button 
+                    className={styles.subNavItem}
+                    onClick={() => router.push('/admin/story-studio')}
+                  >
+                    <span className={styles.navIcon}>📖</span>
+                    <span>Story Studio</span>
+                  </button>
+                </div>
+              )}
+            </div>
           </nav>
           <div className={styles.sidebarFooter}>
             <span className={styles.footerVersion}>MVP v1.0</span>
@@ -659,9 +827,9 @@ export default function AdminPage() {
                                   <span className={styles.pendingTime}>{s.timezone || 'América/Bogotá'}</span>
                                 </div>
                                 <h4 className={styles.pendingTitle}>{s.name}</h4>
-                                <p className={styles.pendingSub}>{s.email} {s.interests?.length ? `· ${s.interests.join(' · ')}` : ''}</p>
+                                <p className={styles.pendingSub}>{s.email} {s.interests ? `· ${Array.isArray(s.interests) ? s.interests.join(' · ') : s.interests}` : ''}</p>
                                 <div className={styles.pendingActions}>
-                                  <button className={styles.actionBtnPrimary} onClick={() => { setLinkForm({ studentIds: [s.id], teacherId: '', notes: '' }); setShowLinkModal(true); }}>
+                                  <button className={styles.actionBtnPrimary} onClick={() => { setLinkForm({ studentIds: [s.id], teacherId: '', notes: '', selectedDays: [], selectedTimes: {} }); setShowLinkModal(true); }}>
                                     🔗 Asignar Profesor
                                   </button>
                                   <button className={styles.actionBtnSecondary} onClick={() => openEditStudent(s)}>
@@ -744,7 +912,7 @@ export default function AdminPage() {
                 <h1 className={styles.pageTitle}>Alumnos <span className={styles.countBadge}>{students.length}</span></h1>
                 <div style={{ display: 'flex', gap: '0.75rem' }}>
                   <button className={styles.addBtn} onClick={openCreateStudent}>+ Nuevo Alumno</button>
-                  <button className={styles.addBtnSecondary} onClick={() => { setLinkForm({ studentIds: [], teacherId: '', notes: '' }); setShowLinkModal(true); }}>🔗 Vincular Grupo</button>
+                  <button className={styles.addBtnSecondary} onClick={() => { setLinkForm({ studentIds: [], teacherId: '', notes: '', selectedDays: [], selectedTimes: {} }); setShowLinkModal(true); }}>🔗 Vincular Grupo</button>
                 </div>
               </div>
 
@@ -828,7 +996,7 @@ export default function AdminPage() {
                             <button 
                               className={styles.editBtn} 
                               style={{ marginLeft: '0.5rem', background: 'rgba(59,130,246,0.1)', color: '#3b82f6', borderColor: 'rgba(59,130,246,0.2)' }} 
-                              onClick={() => { setLinkForm({ studentIds: [s.id], teacherId: '', notes: '' }); setShowLinkModal(true); }}
+                              onClick={() => { setLinkForm({ studentIds: [s.id], teacherId: '', notes: '', selectedDays: [], selectedTimes: {} }); setShowLinkModal(true); }}
                             >
                               🔗 Asignar
                             </button>
@@ -954,36 +1122,98 @@ export default function AdminPage() {
             </div>
           )}
 
-          {/* ═══ GROUPS TAB ═══ */}
+          {/* ═══ AGENDA & CLASES TAB ═══ */}
           {tab === 'groups' && (
             <div className={styles.tabContent}>
               <div className={styles.pageHeader}>
-                <h1 className={styles.pageTitle}>Gestión de Grupos <span className={styles.countBadge}>{acquaintanceGroups.length + matchmakerGroups.length}</span></h1>
+                <div>
+                  <h1 className={styles.pageTitle}>Agenda & Clases Activas <span className={styles.countBadge}>{acquaintanceGroups.length}</span></h1>
+                  <p style={{ fontSize: '0.85rem', opacity: 0.6, marginTop: '0.2rem' }}>
+                    Gestión centralizada de horarios para clases individuales 1-a-1 y parejas/grupos familiares
+                  </p>
+                </div>
+                <button 
+                  className={styles.addBtn} 
+                  onClick={() => { setLinkForm({ studentIds: [], teacherId: '', notes: '', selectedDays: [], selectedTimes: {} }); setShowLinkModal(true); }}
+                >
+                  🔗 + Asignar Clase / Pareja / Familia
+                </button>
+              </div>
+
+              {/* Class Type Filter Tabs */}
+              <div className={styles.filterRow} style={{ marginBottom: '1.25rem' }}>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <button 
+                    className={`${styles.filterChip} ${scheduleFilter === 'all' ? styles.filterChipActive : ''}`} 
+                    onClick={() => setScheduleFilter('all')}
+                  >
+                    Todas las Clases ({acquaintanceGroups.length})
+                  </button>
+                  <button 
+                    className={`${styles.filterChip} ${scheduleFilter === 'individual' ? styles.filterChipActive : ''}`} 
+                    onClick={() => setScheduleFilter('individual')}
+                  >
+                    👤 1-a-1 Individuales ({acquaintanceGroups.filter(g => g.studentIds.length === 1).length})
+                  </button>
+                  <button 
+                    className={`${styles.filterChip} ${scheduleFilter === 'group' ? styles.filterChipActive : ''}`} 
+                    onClick={() => setScheduleFilter('group')}
+                  >
+                    👥 Pareja / Grupo Familiar ({acquaintanceGroups.filter(g => g.studentIds.length > 1).length})
+                  </button>
+                </div>
               </div>
 
               {groupsLoading && <div className="spinner" />}
 
               {!groupsLoading && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-                  
-                  {/* Conocidos Section */}
-                  <section>
-                    <h2 className={styles.sectionTitle}>Grupos de Conocidos (Directos)</h2>
-                    <div className={styles.tableWrap}>
-                      <table className={styles.dataTable}>
-                        <thead>
+                <div className={styles.tableWrap}>
+                  <table className={styles.dataTable}>
+                    <thead>
+                      <tr>
+                        <th>Tipo</th>
+                        <th>Alumno(s) Vinculado(s)</th>
+                        <th>Profesor Asignado</th>
+                        <th>Horarios Recurrentes</th>
+                        <th>Notas Internas</th>
+                        <th>Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {acquaintanceGroups
+                        .filter(g => {
+                          if (scheduleFilter === 'individual') return g.studentIds.length === 1
+                          if (scheduleFilter === 'group') return g.studentIds.length > 1
+                          return true
+                        })
+                        .length === 0 && (
                           <tr>
-                            <th>Alumnos</th>
-                            <th>Profesor</th>
-                            <th>Horario</th>
-                            <th>Notas</th>
-                            <th>Acciones</th>
+                            <td colSpan={6} className={styles.emptyRow}>
+                              No hay clases registradas en esta categoría.
+                            </td>
                           </tr>
-                        </thead>
-                        <tbody>
-                          {acquaintanceGroups.length === 0 && <tr><td colSpan={5} className={styles.emptyRow}>No hay grupos de conocidos vinculados.</td></tr>}
-                          {acquaintanceGroups.map(g => (
+                        )}
+                      {acquaintanceGroups
+                        .filter(g => {
+                          if (scheduleFilter === 'individual') return g.studentIds.length === 1
+                          if (scheduleFilter === 'group') return g.studentIds.length > 1
+                          return true
+                        })
+                        .map(g => {
+                          const isIndividual = g.studentIds.length === 1
+                          return (
                             <tr key={g.id} className={styles.tableRow}>
+                              <td>
+                                {isIndividual ? (
+                                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', padding: '0.25rem 0.65rem', borderRadius: '6px', background: 'rgba(59, 130, 246, 0.12)', color: '#60a5fa', fontSize: '0.75rem', fontWeight: 600, border: '1px solid rgba(59, 130, 246, 0.25)' }}>
+                                    👤 1-a-1 Individual
+                                  </span>
+                                ) : (
+                                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', padding: '0.25rem 0.65rem', borderRadius: '6px', background: 'rgba(168, 85, 247, 0.12)', color: '#c084fc', fontSize: '0.75rem', fontWeight: 600, border: '1px solid rgba(168, 85, 247, 0.25)' }}>
+                                    👥 Pareja / Familia ({g.studentIds.length})
+                                  </span>
+                                )}
+                              </td>
                               <td>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
                                   {g.studentIds.map((sid: string) => {
@@ -991,11 +1221,13 @@ export default function AdminPage() {
                                       return (
                                         <div key={sid} style={{ fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255,255,255,0.03)', padding: '0.2rem 0.6rem', borderRadius: '4px' }}>
                                           👤 {s?.name || 'Cargando...'}
-                                          <button 
-                                            onClick={() => deleteGroup(g.id, 'conocidos', sid)} 
-                                            style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-                                            title="Desvincular del grupo"
-                                          >✕</button>
+                                          {g.studentIds.length > 1 && (
+                                            <button 
+                                              onClick={() => deleteGroup(g.id, 'conocidos', sid)} 
+                                              style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginLeft: 'auto' }}
+                                              title="Remover de esta pareja/grupo"
+                                            >✕</button>
+                                          )}
                                         </div>
                                       )
                                   })}
@@ -1003,77 +1235,32 @@ export default function AdminPage() {
                               </td>
                               <td>{teachers.find(t => t.id === g.teacherId)?.name || '—'}</td>
                               <td>
-                                <div style={{ fontSize: '0.8rem' }}>
-                                    <div>📅 {g.days.join(', ')}</div>
-                                    <div style={{ opacity: 0.7 }}>⏰ {g.time}</div>
+                                <div style={{ fontSize: '0.8rem', display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
+                                  {(() => {
+                                    const timesArray = typeof g.time === 'string' ? g.time.split(',').map((t: string) => t.trim()) : []
+                                    if (Array.isArray(g.days) && g.days.length > 0) {
+                                      return g.days.map((day: string, idx: number) => (
+                                        <div key={day}>
+                                          📅 <strong>{day}</strong>: {timesArray[idx] || timesArray[0] || 'Sin hora'}
+                                        </div>
+                                      ))
+                                    }
+                                    return <div style={{ opacity: 0.5 }}>Sin horario</div>
+                                  })()}
                                 </div>
                               </td>
                               <td style={{ maxWidth: '150px', whiteSpace: 'normal', fontSize: '0.75rem', opacity: 0.7 }}>{g.notes || '—'}</td>
                               <td>
-                                <button className={styles.editBtn} style={{ color: '#ef4444', borderColor: 'rgba(239, 68, 68, 0.2)' }} onClick={() => deleteGroup(g.id, 'conocidos')}>🗑️ Eliminar</button>
+                                <button className={styles.editBtn} onClick={() => openEditGroup(g)}>✏️ Editar Horario</button>
+                                <button className={styles.editBtn} style={{ marginLeft: '0.5rem', color: '#ef4444', borderColor: 'rgba(239, 68, 68, 0.2)' }} onClick={() => deleteGroup(g.id, 'conocidos')}>🗑️ Eliminar</button>
                               </td>
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </section>
-
-                  {/* Matchmaker Groups Section */}
-                  <section>
-                    <h2 className={styles.sectionTitle}>Grupos Matchmaker (Propuestos)</h2>
-                    <div className={styles.tableWrap}>
-                      <table className={styles.dataTable}>
-                        <thead>
-                          <tr>
-                            <th>Nombre / Tema</th>
-                            <th>Alumnos</th>
-                            <th>Profesor</th>
-                            <th>Nivel</th>
-                            <th>Acciones</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {matchmakerGroups.length === 0 && <tr><td colSpan={5} className={styles.emptyRow}>No hay grupos de matchmaker activos.</td></tr>}
-                          {matchmakerGroups.map(g => (
-                            <tr key={g.id} className={styles.tableRow}>
-                              <td>
-                                <div style={{ fontWeight: 600 }}>{g.name}</div>
-                                <div style={{ fontSize: '0.75rem', opacity: 0.6 }}>{g.topic}</div>
-                              </td>
-                              <td>
-                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem' }}>
-                                  {g.studentIds.map((sid: string) => {
-                                      const s = students.find(x => x.id === sid)
-                                      return (
-                                        <div key={sid} style={{ fontSize: '0.75rem', background: 'rgba(255,255,255,0.05)', padding: '0.1rem 0.4rem', borderRadius: '4px' }}>
-                                          {s?.name?.split(' ')[0] || '...'}
-                                          <button onClick={() => deleteGroup(g.id, 'matchmaker', sid)} style={{ marginLeft: '4px', color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer' }}>×</button>
-                                        </div>
-                                      )
-                                  })}
-                                </div>
-                              </td>
-                              <td>{teachers.find(t => t.id === g.teacherId)?.name || '—'}</td>
-                              <td><span className={styles.pinBadge} style={{ fontSize: '0.75rem' }}>{g.level}</span></td>
-                              <td>
-                                <button className={styles.editBtn} style={{ color: '#ef4444', borderColor: 'rgba(239, 68, 68, 0.2)' }} onClick={() => deleteGroup(g.id, 'matchmaker')}>🗑️ Eliminar</button>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </section>
+                          )
+                        })}
+                    </tbody>
+                  </table>
                 </div>
               )}
-            </div>
-          )}
-
-          {/* ═══ MATCHMAKER TAB ═══ */}
-          {tab === 'matchmaker' && (
-            <div className={styles.tabContent}>
-              <GroupMatchmaker />
             </div>
           )}
 
@@ -1187,15 +1374,23 @@ export default function AdminPage() {
         <div className={styles.modalOverlay} onClick={() => setShowLinkModal(false)}>
           <div className={styles.modal} onClick={e => e.stopPropagation()}>
             <div className={styles.modalHeader}>
-              <span>🔗 Vincular Conocidos (Grupo Directo)</span>
+              <span>🔗 Asignar Clase (1-a-1 o Pareja / Grupo Familiar)</span>
               <button className={styles.modalClose} onClick={() => setShowLinkModal(false)}>✕</button>
             </div>
             <div className={styles.modalBody}>
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
-                Selecciona hasta 3 alumnos para crear su vínculo grupal. 
-              </p>
-              
-              <label className={styles.fieldLabel}>Alumnos (Máx 3)</label>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                <span className={styles.fieldLabel}>Alumnos Vinculados (Máx 3)</span>
+                {linkForm.studentIds.length === 1 && (
+                  <span style={{ fontSize: '0.75rem', color: '#60a5fa', fontWeight: 600, background: 'rgba(59, 130, 246, 0.15)', padding: '0.15rem 0.5rem', borderRadius: '4px' }}>
+                    👤 Clase Individual 1-a-1
+                  </span>
+                )}
+                {linkForm.studentIds.length > 1 && (
+                  <span style={{ fontSize: '0.75rem', color: '#c084fc', fontWeight: 600, background: 'rgba(168, 85, 247, 0.15)', padding: '0.15rem 0.5rem', borderRadius: '4px' }}>
+                    👥 Pareja / Grupo Familiar ({linkForm.studentIds.length} pers)
+                  </span>
+                )}
+              </div>
               <div style={{ 
                 maxHeight: '180px', 
                 overflowY: 'auto', 
@@ -1213,7 +1408,11 @@ export default function AdminPage() {
                     />
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
                         <span style={{ fontSize: '0.85rem' }}>{s.name} {s.status === 'Pending' ? ' (Pendiente)' : ''}</span>
-                        <span style={{ fontSize: '0.7rem', opacity: 0.5 }}>{s.interests?.join(' · ') || 'Sin intereses registrados'}</span>
+                        <span style={{ fontSize: '0.7rem', opacity: 0.5 }}>
+                          {s.interests 
+                            ? (Array.isArray(s.interests) ? s.interests.join(' · ') : s.interests) 
+                            : 'Sin intereses registrados'}
+                        </span>
                     </div>
                   </label>
                 ))}
@@ -1224,14 +1423,103 @@ export default function AdminPage() {
               <select 
                 className={styles.fieldInput} 
                 value={linkForm.teacherId} 
-                onChange={e => setLinkForm({ ...linkForm, teacherId: e.target.value })}
+                onChange={e => handleTeacherChangeInLink(e.target.value)}
                 disabled={linkForm.studentIds.length === 0}
               >
                 <option value="">{linkForm.studentIds.length === 0 ? 'Selecciona alumnos primero...' : 'Selecciona un profesor compatible...'}</option>
-                {getSortedTeachers().map(t => (
-                  <option key={t.id} value={t.id}>{t.name} — Coincide disponibilidad</option>
-                ))}
+                {getSortedTeachers().map(t => {
+                  const selectedStudentsData = students.filter(s => linkForm.studentIds.includes(s.id))
+                  const studentInterests = Array.from(
+                    new Set(
+                      selectedStudentsData.flatMap(s => {
+                        const rawInterests = s.interests as any
+                        if (Array.isArray(rawInterests)) return rawInterests
+                        if (typeof rawInterests === 'string' && rawInterests) {
+                          return rawInterests.split(',').map((x: string) => x.trim())
+                        }
+                        return []
+                      })
+                    )
+                  )
+                  const slots = getMatchingSlots(selectedStudentsData, t).length
+                  const rawSpecs = t.specialty as any
+                  const tSpecs = Array.isArray(rawSpecs) 
+                    ? rawSpecs 
+                    : (typeof rawSpecs === 'string' && rawSpecs ? rawSpecs.split(',').map((x: string) => x.trim()) : [])
+                  const matchCount = tSpecs.filter((x: string) => studentInterests.includes(x)).length
+
+                  const availabilityText = slots > 0 ? `Coincide en ${slots} horario${slots > 1 ? 's' : ''}` : 'Sin coincidencia horaria'
+                  const affinityText = matchCount > 0 ? `· ${matchCount} gusto${matchCount > 1 ? 's' : ''} en común` : '· Sin gustos en común'
+
+                  return (
+                    <option key={t.id} value={t.id} style={{ background: '#121218', color: '#fff' }}>
+                      {t.name} — {availabilityText} {affinityText}
+                    </option>
+                  )
+                })}
               </select>
+
+              {linkForm.teacherId && (
+                <>
+                  <label className={styles.fieldLabel} style={{ marginTop: '0.75rem' }}>Días de Recurrencia (Selecciona máx. 2)</label>
+                  <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.25rem' }}>
+                    {DAYS.map(d => {
+                      const isChecked = linkForm.selectedDays.includes(d)
+                      return (
+                        <label key={d} style={{ 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          gap: '0.25rem', 
+                          padding: '0.35rem 0.65rem', 
+                          borderRadius: '6px', 
+                          background: isChecked ? 'rgba(124, 58, 237, 0.2)' : 'rgba(255,255,255,0.03)',
+                          border: isChecked ? '1px solid rgba(124, 58, 237, 0.4)' : '1px solid rgba(255,255,255,0.05)',
+                          cursor: 'pointer',
+                          fontSize: '0.8rem'
+                        }}>
+                          <input 
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={() => {
+                              setLinkForm(prev => {
+                                const exist = prev.selectedDays.includes(d)
+                                const next = exist 
+                                  ? prev.selectedDays.filter(x => x !== d) 
+                                  : [...prev.selectedDays, d].slice(0, 2)
+                                return { ...prev, selectedDays: next }
+                              })
+                            }}
+                            style={{ display: 'none' }}
+                          />
+                          {d}
+                        </label>
+                      )
+                    })}
+                  </div>
+
+                  {linkForm.selectedDays.map(day => (
+                    <div key={day} style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', marginTop: '0.5rem' }}>
+                      <label className={styles.fieldLabel}>Hora para el {day}</label>
+                      <select
+                        className={styles.fieldInput}
+                        value={linkForm.selectedTimes?.[day] || ''}
+                        onChange={e => {
+                          setLinkForm(prev => ({
+                            ...prev,
+                            selectedTimes: {
+                              ...(prev.selectedTimes || {}),
+                              [day]: e.target.value
+                            }
+                          }))
+                        }}
+                      >
+                        <option value="">Selecciona hora para {day}...</option>
+                        {HOURS.map(h => <option key={h} value={h}>{h}</option>)}
+                      </select>
+                    </div>
+                  ))}
+                </>
+              )}
               {linkForm.studentIds.length > 0 && getSortedTeachers().length === 0 && (
                   <p style={{ fontSize: '0.7rem', color: '#ef4444' }}>⚠️ No hay profesores con disponibilidad coincidente para este grupo.</p>
               )}
@@ -1246,13 +1534,122 @@ export default function AdminPage() {
               />
             </div>
             <div className={styles.modalFooter}>
-              <button className={styles.cancelBtn} onClick={() => { setShowLinkModal(false); setLinkForm({ studentIds: [], teacherId: '', notes: '' }) }}>Cancelar</button>
+              <button className={styles.cancelBtn} onClick={() => { setShowLinkModal(false); setLinkForm({ studentIds: [], teacherId: '', notes: '', selectedDays: [], selectedTimes: {} }) }}>Cancelar</button>
               <button 
                 className={styles.submitBtn} 
                 onClick={submitLinkForm} 
                 disabled={linkFormLoading || linkForm.studentIds.length === 0 || !linkForm.teacherId}
               >
                 {linkFormLoading ? 'Vinculando...' : 'Crear Vínculo'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showEditGroupModal && (
+        <div className={styles.modalOverlay} onClick={() => setShowEditGroupModal(false)}>
+          <div className={styles.modal} onClick={e => e.stopPropagation()}>
+            <div className={styles.modalHeader}>
+              <span>✏️ Editar Horario / Grupo</span>
+              <button className={styles.modalClose} onClick={() => setShowEditGroupModal(false)}>✕</button>
+            </div>
+            <div className={styles.modalBody}>
+              <label className={styles.fieldLabel}>Alumnos Vinculados</label>
+              <div style={{ padding: '0.5rem', background: 'rgba(255,255,255,0.03)', borderRadius: '6px', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
+                {editGroupForm.studentIds.map(sid => {
+                  const s = students.find(x => x.id === sid)
+                  return <div key={sid}>• {s?.name || 'Alumno'}</div>
+                })}
+              </div>
+
+              <label className={styles.fieldLabel}>Profesor Asignado</label>
+              <select 
+                className={styles.fieldInput} 
+                value={editGroupForm.teacherId} 
+                onChange={e => setEditGroupForm({ ...editGroupForm, teacherId: e.target.value })}
+              >
+                <option value="">Selecciona profesor...</option>
+                {teachers.filter(t => t.status === 'Active').map(t => (
+                  <option key={t.id} value={t.id}>{t.name}</option>
+                ))}
+              </select>
+
+              <label className={styles.fieldLabel} style={{ marginTop: '0.75rem' }}>Días de Recurrencia (Selecciona máx. 2)</label>
+              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.25rem' }}>
+                {DAYS.map(d => {
+                  const isChecked = editGroupForm.selectedDays.includes(d)
+                  return (
+                    <label key={d} style={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: '0.25rem', 
+                      padding: '0.35rem 0.65rem', 
+                      borderRadius: '6px', 
+                      background: isChecked ? 'rgba(124, 58, 237, 0.2)' : 'rgba(255,255,255,0.03)',
+                      border: isChecked ? '1px solid rgba(124, 58, 237, 0.4)' : '1px solid rgba(255,255,255,0.05)',
+                      cursor: 'pointer',
+                      fontSize: '0.8rem'
+                    }}>
+                      <input 
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={() => {
+                          setEditGroupForm(prev => {
+                            const exist = prev.selectedDays.includes(d)
+                            const next = exist 
+                              ? prev.selectedDays.filter(x => x !== d) 
+                              : [...prev.selectedDays, d].slice(0, 2)
+                            return { ...prev, selectedDays: next }
+                          })
+                        }}
+                        style={{ display: 'none' }}
+                      />
+                      {d}
+                    </label>
+                  )
+                })}
+              </div>
+
+              {editGroupForm.selectedDays.map(day => (
+                <div key={day} style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', marginTop: '0.5rem' }}>
+                  <label className={styles.fieldLabel}>Hora para el {day}</label>
+                  <select
+                    className={styles.fieldInput}
+                    value={editGroupForm.selectedTimes?.[day] || ''}
+                    onChange={e => {
+                      setEditGroupForm(prev => ({
+                        ...prev,
+                        selectedTimes: {
+                          ...(prev.selectedTimes || {}),
+                          [day]: e.target.value
+                        }
+                      }))
+                    }}
+                  >
+                    <option value="">Selecciona hora para {day}...</option>
+                    {HOURS.map(h => <option key={h} value={h}>{h}</option>)}
+                  </select>
+                </div>
+              ))}
+
+              <label className={styles.fieldLabel} style={{ marginTop: '0.75rem' }}>Notas</label>
+              <textarea 
+                className={styles.fieldTextarea} 
+                value={editGroupForm.notes} 
+                onChange={e => setEditGroupForm({ ...editGroupForm, notes: e.target.value })} 
+                placeholder="Ej: Modificaciones hechas por el secretario..." 
+                rows={2} 
+              />
+            </div>
+            <div className={styles.modalFooter}>
+              <button className={styles.cancelBtn} onClick={() => setShowEditGroupModal(false)}>Cancelar</button>
+              <button 
+                className={styles.submitBtn} 
+                onClick={submitEditGroupForm} 
+                disabled={editGroupLoading || !editGroupForm.teacherId}
+              >
+                {editGroupLoading ? 'Guardando...' : 'Guardar Cambios'}
               </button>
             </div>
           </div>

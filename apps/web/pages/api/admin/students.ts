@@ -35,6 +35,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         interests: (r.fields['Interests'] ?? []) as string[],
         availability: (r.fields['Availability'] ?? '') as string,
         classesRemaining: (r.fields['ClassesRemaining'] ?? 0) as number,
+        adminSupportActive: Boolean(r.fields.Admin_Support_Active),
       }))
 
       return res.status(200).json({ students })
@@ -86,11 +87,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     if (req.method === 'PATCH') {
-      const { id, status, tokens, notes } = req.body as {
+      const { id, status, tokens, notes, adminSupportActive, phone } = req.body as {
         id: string
         status?: string
         tokens?: number
         notes?: string
+        adminSupportActive?: boolean
+        phone?: string
       }
       if (!id) return res.status(400).json({ error: 'id es requerido' })
 
@@ -98,6 +101,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if (status !== undefined) fields['Status'] = status
       if (tokens !== undefined) fields['Tokens de Reposición'] = tokens
       if (notes !== undefined) fields['Notes'] = notes
+      if (adminSupportActive !== undefined) {
+        fields['Admin_Support_Active'] = adminSupportActive
+        
+        // Sincronizar cache de memoria
+        const handoffPhoneMap = (global as any).__handoffPhoneMap
+        if (handoffPhoneMap && phone) {
+          const cleanDigits = phone.replace(/[^0-9]/g, '');
+          const last10 = cleanDigits.slice(-10);
+          if (!adminSupportActive) {
+            handoffPhoneMap.delete(cleanDigits)
+            if (last10) handoffPhoneMap.delete(last10)
+          } else {
+            handoffPhoneMap.set(cleanDigits, Date.now())
+            if (last10) handoffPhoneMap.set(last10, Date.now())
+          }
+        }
+      }
 
       await patchAirtableRecord('Students', id, fields)
       return res.status(200).json({ ok: true })

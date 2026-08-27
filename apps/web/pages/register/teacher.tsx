@@ -539,12 +539,30 @@ export default function TeacherRegistration() {
               <>
                 <div className={styles.formGroup}>
                   <label className={styles.label}>Nombre del Banco</label>
-                  <input
-                    className={styles.input}
+                  <select
+                    className={`${styles.input} ${styles.selectInput}`}
                     value={formData.bankName}
                     onChange={e => setFormData({...formData, bankName: e.target.value})}
-                    placeholder="Ej. Bancolombia, Davivienda, Nequi..."
-                  />
+                  >
+                    <option value="">Selecciona el banco...</option>
+                    <option value="Bancolombia">Bancolombia</option>
+                    <option value="Nequi">Nequi</option>
+                    <option value="Davivienda">Davivienda</option>
+                    <option value="Daviplata">Daviplata</option>
+                    <option value="Nu Colombia">Nu (Nubank)</option>
+                    <option value="Lulo Bank">Lulo Bank</option>
+                    <option value="Banco de Bogotá">Banco de Bogotá</option>
+                    <option value="BBVA Colombia">BBVA</option>
+                    <option value="Banco de Occidente">Banco de Occidente</option>
+                    <option value="Banco Popular">Banco Popular</option>
+                    <option value="Scotiabank Colpatria">Scotiabank Colpatria</option>
+                    <option value="Banco Agrario">Banco Agrario</option>
+                    <option value="Itaú">Itaú</option>
+                    <option value="Banco Falabella">Banco Falabella</option>
+                    <option value="Dale">Dale</option>
+                    <option value="Movii">Movii</option>
+                    <option value="Otro">Otro Banco / Entidad</option>
+                  </select>
                 </div>
                 <div className={styles.formGroup}>
                   <label className={styles.label}>Tipo de Cuenta</label>

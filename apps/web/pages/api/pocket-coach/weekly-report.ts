@@ -52,12 +52,12 @@ El texto será guardado para que el estudiante lo descargue como PDF de vocabula
         const result = await model.generateContent(prompt);
         const reportText = result.response.text();
 
-        // Guardar como "Ejercicio" especial
-        await createAirtableRecord('Exercises', {
-          StudentId: [studentId],
-          ExerciseContent: `# Reporte Semanal de Vocabulario\n\n${reportText}`,
-          GeneratedAt: new Date().toISOString()
-        });
+        // Comentado para evitar escrituras del Pocket Coach en base de datos para el MVP
+        // await createAirtableRecord('Exercises', {
+        //   StudentId: [studentId],
+        //   ExerciseContent: `# Reporte Semanal de Vocabulario\n\n${reportText}`,
+        //   GeneratedAt: new Date().toISOString()
+        // });
 
         // Notificar por WhatsApp
         const msg = `¡Hola ${studentName}! 📄 Tu reporte y PDF de vocabulario semanal está listo basado en los errores de tus últimas clases. Entra a tu dashboard de LinguaLife para descargarlo y practicar. ¡Buen fin de semana!`;

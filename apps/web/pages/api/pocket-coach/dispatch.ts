@@ -20,14 +20,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const students = await findAirtableRecords('Students', "{Status} = 'Active'");
     const results = [];
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-3.5-flash' });
 
     for (const student of students) {
       try {
         const studentId = student.id;
-        const studentName = student.fields.FullName || 'Estudiante';
+        const studentName = student.fields.FullName || student.fields.Name || student.fields['Full Name'] || 'Estudiante';
         const phone = student.fields.Phone;
         const interests = student.fields.Interests || '';
+
+        console.log(`[Dispatch Check] Estudiante: "${studentName}", Phone: "${phone}"`);
+
+        // GUARDIA DE SEGURIDAD: Solo enviar a cuentas de prueba del usuario (Sebastian / Santiago)
+        const nameLower = studentName.toLowerCase();
+        if (!nameLower.includes('sebastian') && !nameLower.includes('santiago')) {
+          continue;
+        }
 
         if (!phone) continue; // No phone, no WhatsApp message
 
@@ -67,23 +75,41 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           aiContext = randomB2.context;
         }
 
-        // 4. Generar el micro-reto con Gemini
+        // 4. Generar el micro-reto con Gemini (con retry automático si hay spike 503)
         const prompt = buildDispatchPrompt(studentName, topicTitle, ldsFormula, aiContext, interests);
-        const result = await model.generateContent(prompt);
+        let result;
+        try {
+          result = await model.generateContent(prompt);
+        } catch (e: any) {
+          if (e?.status === 503 || e?.message?.includes('503')) {
+            console.log('🔄 Reintentando generación por spike 503...');
+            await new Promise(r => setTimeout(r, 2000));
+            result = await model.generateContent(prompt);
+          } else {
+            throw e;
+          }
+        }
         const challengeText = result.response.text();
 
         // 5. Enviar mensaje por Evolution API
-        await EvolutionAPI.sendText(phone, challengeText);
+        const evoRes = await EvolutionAPI.sendText(phone, challengeText);
+        console.log(`[EvolutionAPI RESULT for ${studentName} (${phone})]:`, JSON.stringify(evoRes));
 
-        // 6. Guardar la memoria efímera en el estudiante
-        await patchAirtableRecord('Students', studentId, {
-          Last_Challenge_Context: `Reto enviado (${topicTitle}): ${challengeText.slice(0, 200)}...`
-        }).catch((err: any) => console.error('Error guardando memoria efímera:', err));
+        // 6. Guardar la memoria efímera en memoria en lugar de escribir en la base de datos para el MVP
+        const lastChallengeMap = (global as any).__lastChallengeMap || new Map<string, string>();
+        (global as any).__lastChallengeMap = lastChallengeMap;
+        const cleanDigits = phone.replace(/[^0-9]/g, '');
+        const last10 = cleanDigits.slice(-10);
+        
+        lastChallengeMap.set(phone, `Reto enviado (${topicTitle}): ${challengeText.slice(0, 200)}...`);
+        if (last10) {
+          lastChallengeMap.set(last10, `Reto enviado (${topicTitle}): ${challengeText.slice(0, 200)}...`);
+        }
 
         results.push({ student: studentName, status: 'sent' });
         
-        // Pausa breve para evitar Rate Limits (1.5 segundos)
-        await new Promise(r => setTimeout(r, 1500));
+        // Pausa de 3 segundos para cumplir holgadamente con el Free Tier (15 RPM) sin agotar el timeout HTTP
+        await new Promise(r => setTimeout(r, 3000));
 
       } catch (studentError) {
         console.error(`Error procesando estudiante ${student.id}:`, studentError);

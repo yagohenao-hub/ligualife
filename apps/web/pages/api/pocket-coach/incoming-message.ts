@@ -76,6 +76,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(200).json({ status: 'Límite diario alcanzado' });
     }
 
+    // Cache de Handoff Humano en memoria (phone/last10 -> timestamp)
+    const handoffPhoneMap = (global as any).__handoffPhoneMap || new Map<string, number>();
+    (global as any).__handoffPhoneMap = handoffPhoneMap;
+
+    const HANDOFF_TIMEOUT_MS = 12 * 60 * 60 * 1000; // 12 horas de inactividad
+    const now = Date.now();
+
     // 1. Buscar al estudiante en Airtable usando los últimos 10 dígitos del número
     const cleanDigits = phone.replace(/[^0-9]/g, '');
     const last10 = cleanDigits.slice(-10);
@@ -83,23 +90,41 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     let studentName = 'Estudiante';
     let studentId = '';
     let adminSupportActive = false;
-    let lastChallengeContext = '';
     let currentTopicTitle = 'Inglés General';
     let ldsFormula = 'Sujeto + Palabra de Tiempo + Acción';
 
+    // Verificar si hay handoff activo en memoria y si no ha expirado
+    const phoneTimestamp = handoffPhoneMap.get(phone) || (last10 ? handoffPhoneMap.get(last10) : undefined);
+    if (phoneTimestamp) {
+      if (now - phoneTimestamp < HANDOFF_TIMEOUT_MS) {
+        adminSupportActive = true;
+      } else {
+        // Expiraron las 12 horas, remover de memoria
+        handoffPhoneMap.delete(phone);
+        if (last10) handoffPhoneMap.delete(last10);
+      }
+    }
+
     if (last10) {
-      const students = await findAirtableRecords('Students', `FIND('${last10}', {Phone}) > 0`);
+      const students = await findAirtableRecords('Students', `FIND('${last10}', {Phone}) > 0`).catch(() => []);
       if (students.length > 0) {
         const studentRec = students[0];
-        studentName = studentRec.fields.FullName || 'Estudiante';
+        studentName = studentRec.fields.FullName || studentRec.fields['Full Name'] || 'Estudiante';
         studentId = studentRec.id;
-        adminSupportActive = Boolean(studentRec.fields.Admin_Support_Active);
-        lastChallengeContext = (studentRec.fields.Last_Challenge_Context as string) || '';
+        
+        // Si en Airtable está activo el handoff, sincronizarlo con memoria
+        if (studentRec.fields.Admin_Support_Active) {
+          adminSupportActive = true;
+          handoffPhoneMap.set(phone, now);
+          handoffPhoneMap.set(last10, now);
+        }
+        
+
 
         // Verificar Current Topic mediante Puntero Único
         const currentTopicId = ((studentRec.fields['Current Topic'] as string[]) ?? [])[0];
         if (currentTopicId) {
-          const topic = await fetchAirtableRecord('Curriculum Topics', currentTopicId);
+          const topic = await fetchAirtableRecord('Curriculum Topics', currentTopicId).catch(() => null);
           if (topic) {
             currentTopicTitle = (topic.fields['Topic Name'] ?? topic.fields['Title'] ?? currentTopicTitle) as string;
             ldsFormula = (topic.fields['LDS_Formula'] ?? topic.fields['LDSFormula'] ?? ldsFormula) as string;
@@ -110,9 +135,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     }
 
-    // Si el soporte humano está activo (Handoff manual), el bot no responde
+    // Si el soporte humano está activo (Handoff manual o automático), EL BOT PERMANECE TOTALMENTE EN SILENCIO
     if (adminSupportActive) {
-      console.log(`[Handoff Activo] Pocket Coach pausado para ${phone} por atención de la Secretaría.`);
+      console.log(`[Handoff Activo] Pocket Coach SILENCIADO para ${phone} (${studentName}) por atención de Secretaría / Asesor.`);
       return res.status(200).json({ status: 'Pausado por soporte humano activo' });
     }
 
@@ -123,19 +148,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const adminKeywords = [
       'pago', 'pagos', 'comprobante', 'transferencia', 'nequi', 'bancolombia', 'daviplata',
       'factura', 'recibo', 'horario', 'horarios', 'cancelar', 'agendar', 'asesor', 
-      'humano', 'persona', 'precio', 'costo', 'suscripcion', 'cuenta', 'consecutivo'
+      'humano', 'persona', 'precio', 'costo', 'suscripcion', 'cuenta', 'consecutivo',
+      'hablar con', 'modificar mi horario', 'cambiar mi horario', 'atencion'
     ];
 
     const isAdministrativeIntent = adminKeywords.some(keyword => lowerText.includes(keyword));
 
     if (isAdministrativeIntent) {
       console.log(`Mensaje administrativo detectado para ${phone}: "${textContent}"`);
-      const handoffMessage = `¡Hola! He notado que escribes sobre un tema administrativo o de pagos/horarios. 📱\n\nTu asesor se pondrá en contacto contigo a la brevedad en este mismo chat para atenderte personalmente.`;
       
+      // Marcar handoff activo en memoria inmediatamente para silenciar respuestas futuras
+      handoffPhoneMap.set(phone, now);
+      if (last10) handoffPhoneMap.set(last10, now);
+
       if (studentId) {
         await patchAirtableRecord('Students', studentId, { Admin_Support_Active: true }).catch(() => {});
       }
       
+      const handoffMessage = `¡Hola! He notado que escribes sobre un tema administrativo o de pagos/horarios. 📱\n\nTu asesor se pondrá en contacto contigo a la brevedad en este mismo chat para atenderte personal y directamente.`;
       await EvolutionAPI.sendText(phone, handoffMessage);
       return res.status(200).json({ status: 'Handoff humano activado por palabra clave' });
     }
@@ -144,11 +174,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const currentCount = (userUsage && userUsage.date === todayStr) ? userUsage.count + 1 : 1;
     userDailyCounts.set(phone, { date: todayStr, count: currentCount });
 
-    // 3. Generar la respuesta usando Gemini (con memoria efímera del último reto)
-    const chatHistory = lastChallengeContext ? `ÚLTIMO RETO ENVIADO HACE POCO:\n"${lastChallengeContext}"` : ""; 
+    const chatHistory = ""; 
     const prompt = buildConversationalPrompt(studentName, textContent, chatHistory, currentTopicTitle, ldsFormula);
     
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-3.5-flash' });
     const result = await model.generateContent(prompt);
     const aiResponseText = result.response.text();
 

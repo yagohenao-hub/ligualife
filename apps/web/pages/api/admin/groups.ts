@@ -21,9 +21,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const groupData = await fetchFromAirtable('Study Groups')
       const groupRecords = groupData.records ?? []
 
-      // Map to a unified format for Group Management
+        // Map to a unified format for Group Management
       const acquaintanceGroups = stRecords
-        .filter((r: any) => (r.fields['Student']?.length ?? 0) > 1)
+        .filter((r: any) => (r.fields['Student']?.length ?? 0) >= 1)
         .map((r: any) => ({
             id: r.id,
             type: 'conocidos',
@@ -50,6 +50,33 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           acquaintanceGroups, 
           matchmakerGroups 
       })
+    }
+
+    if (req.method === 'PATCH') {
+        const { id, type, teacherId, days, time, notes } = req.body as {
+            id: string
+            type: string
+            teacherId?: string
+            days?: string[]
+            time?: string
+            notes?: string
+        }
+        if (!id || !type) return res.status(400).json({ error: 'id y type son requeridos' })
+
+        if (type === 'conocidos') {
+            await patchAirtableRecord('Student-Teacher', id, {
+                'Teacher': teacherId ? [teacherId] : [],
+                'Recurrence Day': days || [],
+                'Recurrence Time': time || '',
+                'Notes': notes || ''
+            })
+        } else {
+            await patchAirtableRecord('Study Groups', id, {
+                'Primary Teacher': teacherId ? [teacherId] : [],
+                'Notes': notes || ''
+            })
+        }
+        return res.status(200).json({ ok: true, message: 'Grupo/Vinculo actualizado exitosamente' })
     }
 
     if (req.method === 'DELETE') {
