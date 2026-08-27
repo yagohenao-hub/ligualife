@@ -7,8 +7,10 @@ import { buildDispatchPrompt } from '@/lib/pocket-coach/prompt-engine';
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  // Asegurar que sea POST y (opcionalmente) verificar un API Key de cron job para seguridad
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+  // Vercel Crons envían peticiones GET por defecto; los triggers manuales envían POST
+  if (req.method !== 'POST' && req.method !== 'GET') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
   
   const authHeader = req.headers.authorization;
   if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
@@ -69,18 +71,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           aiContext = randomB2.context;
         }
 
-        // 4. Generar el micro-reto con Gemini (con retry automático si hay spike 503)
+        // 4. Generar el micro-reto con Gemini (con retry de hasta 3 intentos y fallback de modelo)
         const prompt = buildDispatchPrompt(studentName, topicTitle, ldsFormula, aiContext, interests);
-        let result;
-        try {
-          result = await model.generateContent(prompt);
-        } catch (e: any) {
-          if (e?.status === 503 || e?.message?.includes('503')) {
-            console.log('🔄 Reintentando generación por spike 503...');
-            await new Promise(r => setTimeout(r, 2000));
-            result = await model.generateContent(prompt);
-          } else {
-            throw e;
+        let result: any;
+        let attempts = 0;
+        let currentModel = model;
+        while (attempts < 3) {
+          try {
+            attempts++;
+            result = await currentModel.generateContent(prompt);
+            break;
+          } catch (e: any) {
+            console.warn(`[Gemini Attempt ${attempts} Failed]:`, e?.message || e);
+            if (attempts < 3) {
+              await new Promise(r => setTimeout(r, attempts * 2500));
+              if (attempts === 2) {
+                // Cambiar a modelo de respaldo si gemini-3.5-flash está saturado
+                currentModel = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+              }
+            } else {
+              throw e;
+            }
           }
         }
         const challengeText = result.response.text();

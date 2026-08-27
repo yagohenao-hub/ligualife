@@ -130,22 +130,135 @@ export const INITIAL_OFFICE_SCENE: InteractiveScene = {
   ]
 }
 
+export const INITIAL_GYM_SCENE: InteractiveScene = {
+  id: 'modern-gym-b1-b2',
+  title: 'Modern Fitness Gym — Verbos & Frases de Gimnasio (A2-B2)',
+  subtitle: 'Explora el gimnasio interactivo. Haz clic en las personas para aprender verbos y frases de entrenamiento y salud en contexto.',
+  imageSrc: '/interactive_gym_scene.png',
+  totalVerbs: 10,
+  createdAt: '2026-08-27',
+  hotspots: [
+    {
+      id: 'h-gym-1',
+      x: 16,
+      y: 28,
+      verb: 'Jogging',
+      sentence: 'She is jogging on the treadmill to build her endurance.',
+      translation: 'Ella está trotando en la cinta para desarrollar su resistencia.',
+      level: 'A2+',
+      category: 'Cardio & Calentamiento',
+    },
+    {
+      id: 'h-gym-2',
+      x: 34,
+      y: 47,
+      verb: 'Bench Pressing',
+      sentence: 'He is bench pressing heavy weight to build chest strength.',
+      translation: 'Él está haciendo press de banca con peso pesado para fortalecer el pecho.',
+      level: 'B1+',
+      category: 'Fuerza & Pesas',
+    },
+    {
+      id: 'h-gym-3',
+      x: 29,
+      y: 39,
+      verb: 'Spotting',
+      sentence: 'She is spotting her training partner to ensure safety during the lift.',
+      translation: 'Ella está asistiendo a su compañero para garantizar la seguridad durante el levantamiento.',
+      level: 'B2',
+      category: 'Trabajo en Equipo & Seguridad',
+    },
+    {
+      id: 'h-gym-4',
+      x: 22,
+      y: 81,
+      verb: 'Stretching',
+      sentence: 'She is stretching her legs on the mat to prevent muscle soreness.',
+      translation: 'Ella está estirando las piernas en la colchoneta para evitar dolores musculares.',
+      level: 'A2+',
+      category: 'Flexibilidad & Recuperación',
+    },
+    {
+      id: 'h-gym-5',
+      x: 54,
+      y: 60,
+      verb: 'Deadlifting',
+      sentence: 'He is deadlifting with proper form to engage his posture muscles.',
+      translation: 'Él está haciendo peso muerto con buena postura para activar sus músculos estabilizadores.',
+      level: 'B2',
+      category: 'Técnica & Fuerza Avanzada',
+    },
+    {
+      id: 'h-gym-6',
+      x: 68,
+      y: 44,
+      verb: 'Hydrating',
+      sentence: 'He is hydrating at the water station between workout sets.',
+      translation: 'Él se está hidratando en la estación de agua entre series de ejercicio.',
+      level: 'A2+',
+      category: 'Salud & Hábitos',
+    },
+    {
+      id: 'h-gym-7',
+      x: 89,
+      y: 56,
+      verb: 'Wiping Down Equipment',
+      sentence: 'She is wiping down the machine with a towel after finishing her set.',
+      translation: 'Ella está limpiando la máquina con una toalla tras terminar su serie.',
+      level: 'B1',
+      category: 'Higiene & Etiqueta de Gimnasio',
+    },
+    {
+      id: 'h-gym-8',
+      x: 74,
+      y: 80,
+      verb: 'Adjusting Weights',
+      sentence: 'He is adjusting the weight plates before starting his squat workout.',
+      translation: 'Él está ajustando los discos de peso antes de comenzar su rutina de sentadillas.',
+      level: 'B1+',
+      category: 'Equipamiento',
+    },
+    {
+      id: 'h-gym-9',
+      x: 46,
+      y: 24,
+      verb: 'Warming Up',
+      sentence: 'He is warming up his arms with light dumbbells in front of the mirror.',
+      translation: 'Él está calentando los brazos con mancuernas livianas frente al espejo.',
+      level: 'B1',
+      category: 'Acondicionamiento',
+    },
+    {
+      id: 'h-gym-10',
+      x: 87,
+      y: 31,
+      verb: 'Cooling Down',
+      sentence: 'She is cooling down with upper body arm stretches.',
+      translation: 'Ella está haciendo ejercicios de enfriamiento con estiramientos de brazos.',
+      level: 'B1+',
+      category: 'Recuperación',
+    },
+  ]
+}
+
+export const BUILTIN_SCENES: InteractiveScene[] = [INITIAL_OFFICE_SCENE, INITIAL_GYM_SCENE]
+
 const STORAGE_KEY = 'lingualife_custom_scenes_v1'
 
 export function getAllScenes(): InteractiveScene[] {
-  if (typeof window === 'undefined') return [INITIAL_OFFICE_SCENE]
+  if (typeof window === 'undefined') return BUILTIN_SCENES
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return [INITIAL_OFFICE_SCENE]
+    if (!raw) return BUILTIN_SCENES
     const customScenes: InteractiveScene[] = JSON.parse(raw)
     
-    // Merge initial with custom, allowing overrides
+    // Merge initial builtins with custom, allowing overrides
     const map = new Map<string, InteractiveScene>()
-    map.set(INITIAL_OFFICE_SCENE.id, INITIAL_OFFICE_SCENE)
+    BUILTIN_SCENES.forEach(s => map.set(s.id, s))
     customScenes.forEach(s => map.set(s.id, s))
     return Array.from(map.values())
   } catch {
-    return [INITIAL_OFFICE_SCENE]
+    return BUILTIN_SCENES
   }
 }
 
@@ -175,3 +288,4 @@ export function deleteScene(sceneId: string): void {
     } catch {}
   }
 }
+

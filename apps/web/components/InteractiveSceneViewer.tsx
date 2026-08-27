@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { INITIAL_OFFICE_SCENE, InteractiveScene, Hotspot } from '@/lib/interactive-scenes'
+import { INITIAL_OFFICE_SCENE, InteractiveScene, Hotspot, getAllScenes } from '@/lib/interactive-scenes'
 import styles from '@/styles/Landing.module.css'
 
 interface InteractiveSceneViewerProps {
@@ -7,6 +7,7 @@ interface InteractiveSceneViewerProps {
 }
 
 export function InteractiveSceneViewer({ scene: customScene }: InteractiveSceneViewerProps) {
+  const [scenesList, setScenesList] = useState<InteractiveScene[]>([])
   const [scene, setScene] = useState<InteractiveScene>(customScene || INITIAL_OFFICE_SCENE)
   const [activeHotspot, setActiveHotspot] = useState<Hotspot | null>(null)
   const [discoveredIds, setDiscoveredIds] = useState<Set<string>>(new Set())
@@ -14,12 +15,25 @@ export function InteractiveSceneViewer({ scene: customScene }: InteractiveSceneV
   const [isPlayingAudio, setIsPlayingAudio] = useState(false)
 
   useEffect(() => {
+    const list = getAllScenes()
+    setScenesList(list)
     if (customScene) {
       setScene(customScene)
       setDiscoveredIds(new Set())
       setActiveHotspot(null)
+    } else if (list.length > 0 && !scene) {
+      setScene(list[0])
     }
   }, [customScene])
+
+  function handleSelectScene(sceneId: string) {
+    const found = scenesList.find(s => s.id === sceneId)
+    if (found) {
+      setScene(found)
+      setDiscoveredIds(new Set())
+      setActiveHotspot(null)
+    }
+  }
 
   function handleHotspotClick(hotspot: Hotspot) {
     setActiveHotspot(hotspot)
@@ -60,9 +74,34 @@ export function InteractiveSceneViewer({ scene: customScene }: InteractiveSceneV
         }}
       >
         <div>
-          <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#f4f4f5', margin: 0 }}>
-            {scene.title}
-          </h3>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap', marginBottom: '0.25rem' }}>
+            <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#f4f4f5', margin: 0 }}>
+              {scene.title}
+            </h3>
+            {scenesList.length > 1 && !customScene && (
+              <select
+                value={scene.id}
+                onChange={e => handleSelectScene(e.target.value)}
+                style={{
+                  background: 'rgba(255,255,255,0.08)',
+                  border: '1px solid rgba(255,255,255,0.2)',
+                  color: '#10b981',
+                  fontWeight: 700,
+                  fontSize: '0.8rem',
+                  padding: '0.25rem 0.6rem',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  outline: 'none'
+                }}
+              >
+                {scenesList.map(s => (
+                  <option key={s.id} value={s.id} style={{ background: '#121218', color: '#fff' }}>
+                    Cambiar a: {s.title.split('—')[0]}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
           <p style={{ fontSize: '0.825rem', color: '#a1a1aa', margin: '0.2rem 0 0 0' }}>
             {scene.subtitle}
           </p>

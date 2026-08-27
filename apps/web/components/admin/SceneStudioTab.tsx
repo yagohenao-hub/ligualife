@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef } from 'react'
 import { getAllScenes, saveScene, deleteScene, InteractiveScene, Hotspot, INITIAL_OFFICE_SCENE } from '@/lib/interactive-scenes'
+import { InteractiveSceneViewer } from '@/components/InteractiveSceneViewer'
 import styles from '@/styles/Admin.module.css'
 
 export function SceneStudioTab() {
   const [scenes, setScenes] = useState<InteractiveScene[]>([])
   const [editingScene, setEditingScene] = useState<InteractiveScene | null>(null)
-  const [step, setStep] = useState<'list' | 'step1' | 'step2'>('list')
+  const [viewingScene, setViewingScene] = useState<InteractiveScene | null>(null)
+  const [step, setStep] = useState<'list' | 'step1' | 'step2' | 'viewer'>('list')
   const [isGeneratingAI, setIsGeneratingAI] = useState(false)
 
   // Step 1 Form State
@@ -266,23 +268,45 @@ export function SceneStudioTab() {
                     {s.subtitle}
                   </p>
 
-                  <div style={{ display: 'flex', gap: '0.6rem' }}>
-                    <button
-                      onClick={() => handleEditExisting(s)}
-                      style={{
-                        flex: 1,
-                        background: 'rgba(255, 255, 255, 0.08)',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
-                        color: '#fff',
-                        padding: '0.5rem',
-                        borderRadius: '8px',
-                        fontSize: '0.85rem',
-                        fontWeight: 600,
-                        cursor: 'pointer'
-                      }}
-                    >
-                      ✏️ Editar Hotspots
-                    </button>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                    <div style={{ display: 'flex', gap: '0.6rem' }}>
+                      <button
+                        onClick={() => {
+                          setViewingScene(s)
+                          setStep('viewer')
+                        }}
+                        style={{
+                          flex: 1,
+                          background: 'rgba(16, 185, 129, 0.1)',
+                          border: '1px solid rgba(16, 185, 129, 0.25)',
+                          color: '#10b981',
+                          padding: '0.5rem',
+                          borderRadius: '8px',
+                          fontSize: '0.85rem',
+                          fontWeight: 600,
+                          cursor: 'pointer'
+                        }}
+                      >
+                        👁️ Probar Escena
+                      </button>
+
+                      <button
+                        onClick={() => handleEditExisting(s)}
+                        style={{
+                          flex: 1,
+                          background: 'rgba(255, 255, 255, 0.08)',
+                          border: '1px solid rgba(255, 255, 255, 0.15)',
+                          color: '#fff',
+                          padding: '0.5rem',
+                          borderRadius: '8px',
+                          fontSize: '0.85rem',
+                          fontWeight: 600,
+                          cursor: 'pointer'
+                        }}
+                      >
+                        ✏️ Editar
+                      </button>
+                    </div>
 
                     {s.id !== INITIAL_OFFICE_SCENE.id && (
                       <button
@@ -291,13 +315,14 @@ export function SceneStudioTab() {
                           background: 'rgba(239, 68, 68, 0.15)',
                           border: '1px solid rgba(239, 68, 68, 0.3)',
                           color: '#ef4444',
-                          padding: '0.5rem 0.8rem',
+                          padding: '0.5rem',
                           borderRadius: '8px',
                           fontSize: '0.85rem',
-                          cursor: 'pointer'
+                          cursor: 'pointer',
+                          width: '100%'
                         }}
                       >
-                        🗑️
+                        🗑️ Eliminar Escena
                       </button>
                     )}
                   </div>
@@ -598,6 +623,34 @@ export function SceneStudioTab() {
               )}
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Step 4: Viewer / Try Scene Preview */}
+      {step === 'viewer' && viewingScene && (
+        <div style={{ background: 'rgba(18, 18, 24, 0.95)', border: '1px solid rgba(255, 255, 255, 0.1)', padding: '2rem', borderRadius: '20px', boxShadow: '0 20px 50px rgba(0,0,0,0.8)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#fff', margin: 0 }}>Vista Previa de Alumno</h3>
+            <button
+              onClick={() => {
+                setStep('list')
+                setViewingScene(null)
+              }}
+              style={{
+                background: 'rgba(255, 255, 255, 0.08)',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                color: '#fff',
+                padding: '0.5rem 1rem',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontWeight: 600,
+                fontSize: '0.85rem'
+              }}
+            >
+              ← Volver al Listado
+            </button>
+          </div>
+          <InteractiveSceneViewer scene={viewingScene} />
         </div>
       )}
     </div>
