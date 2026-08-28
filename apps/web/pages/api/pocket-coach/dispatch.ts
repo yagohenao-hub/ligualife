@@ -22,7 +22,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const students = await findAirtableRecords('Students', "{Status} = 'Active'");
     const results = [];
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-3.5-flash' });
+    const model = genAI.getGenerativeModel({
+      model: 'gemini-3.5-flash',
+      generationConfig: {
+        temperature: 0.95,
+        topP: 0.95,
+      }
+    });
 
     for (const student of students) {
       try {
@@ -35,12 +41,28 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         if (!phone) continue; // No phone, no WhatsApp message
 
-        // Lista estática de habilidades B2 para intercalar (70% de probabilidad)
+        // Banco extendido de 20+ habilidades B1-C1 para máxima variedad
         const b2Skills = [
-          { title: 'Reported Speech in Daily Life', formula: 'Subject + Said/Told + Backshifted Verb', context: 'Práctica de cómo reportar lo que otros dijeron en contextos casuales o de negocios.' },
-          { title: 'Speculating about the Past (Modal Verbs)', formula: 'Subject + Must have / Could have + Past Participle', context: 'Práctica de deducir eventos pasados con modales de alta certeza.' },
-          { title: 'Advanced Phrasal Verbs in Conversations', formula: 'Subject + Phrasal Verb (carry out, figure out, come up with) + Object', context: 'Uso natural de verbos frasales en el trabajo y viajes.' },
-          { title: 'Second Conditionals for Hypotheses', formula: 'If + Subject + Past Simple, Subject + Would + Base Verb', context: 'Expresar situaciones hipotéticas del presente o futuro.' }
+          { title: 'Softening & Politeness in Business', formula: 'Subject + Could / Would mind + Verb-ing', context: 'Pedir favores o solicitar cambios de forma diplomática en el trabajo.' },
+          { title: 'Phrasal Verbs for Tech & Projects', formula: 'Subject + Phrasal Verb (roll out, iron out, scale up, wind down) + Object', context: 'Vocabulario ágil en lanzamientos y proyectos de software/negocio.' },
+          { title: 'Past Speculation & High Certainty', formula: 'Subject + Must have / Can\'t have + Action (Past Participle)', context: 'Concluir lo que ocurrió en un evento pasado con seguridad.' },
+          { title: 'Reporting Key Decisions & Feedback', formula: 'Subject + Mentioned / Pointed out that + Past Action', context: 'Resumir acuerdos y feedback de reuniones importantes.' },
+          { title: 'Expressing Contrast & Trade-offs', formula: 'Although / Even though + Subject + Action, Subject + Action', context: 'Conectar dos ideas opuestas con fluidez y sofisticación.' },
+          { title: 'Indirect Questions for Executive Tact', formula: 'Could you tell me if / Do you know when + Subject + Time Word + Action', context: 'Preguntas indirectas para sonar ultra educado con clientes y directivos.' },
+          { title: 'Giving Recommendations & Advice', formula: 'Subject + Had better / Ought to + Action', context: 'Sugerir pasos estratégicos con impacto y urgencia.' },
+          { title: 'First Conditional for Business Scenarios', formula: 'If + Subject + Present Simple, Subject + Will + Action', context: 'Plantear compromisos reales y consecuencias futuras.' },
+          { title: 'Passive Voice for Formal Updates', formula: 'Subject + Is/Was + Action (Past Participle) + by...', context: 'Enfocarse en el resultado o producto en lugar de quién hizo la tarea.' },
+          { title: 'Idioms for Decision Making', formula: 'Subject + Idiom (call the shots, bite the bullet, hit the mark) + Object', context: 'Expresiones idiomáticas comunes en entornos corporativos.' },
+          { title: 'Third Conditionals for Past Regrets', formula: 'If + Subject + Had + Action, Subject + Would have + Action', context: 'Analizar escenarios del pasado que pudieron ser diferentes.' },
+          { title: 'Expressing Purpose & Intent', formula: 'Subject + Action + In order to / So as to + Base Action', context: 'Explicar el objetivo de una decisión o estrategia.' },
+          { title: 'Emphasizing Action Speed & Urgency', formula: 'As soon as / The moment + Subject + Action', context: 'Coordinar entregables rápidos con el equipo.' },
+          { title: 'Past Habits vs Present States', formula: 'Subject + Used to / Would + Action', context: 'Comparar cómo se hacían las cosas antes frente al presente.' },
+          { title: 'Clarifying & Asking for Reassurance', formula: 'Subject + Make sure that / Double check if + Subject + Action', context: 'Confirmar detalles críticos antes de un lanzamiento.' },
+          { title: 'Expressing Partial Agreement & Negotiation', formula: 'I see your point, but / To some extent + Subject + Action', context: 'Negociar objeciones manteniendo una relación positiva.' },
+          { title: 'Making Hypotheses (Second Conditional)', formula: 'If + Subject + Past Simple, Subject + Would + Base Action', context: 'Escenarios hipotéticos del presente o futuro.' },
+          { title: 'Phrasal Verbs for Daily Communication', formula: 'Subject + Phrasal Verb (pick up, catch up, follow up, break down) + Object', context: 'Seguimiento de tareas cotidianas y llamadas breves.' },
+          { title: 'Degree Modifiers for Precision', formula: 'Subject + Is slightly / Significantly / Considerably + Adjective', context: 'Matizar la magnitud de métricas, costos o avances.' },
+          { title: 'Cause & Effect Connectors', formula: 'Due to / As a result of + Noun, Subject + Action', context: 'Explicar razones detrás de resultados o retrasos.' }
         ];
 
         let topicTitle = 'Inglés General B2';

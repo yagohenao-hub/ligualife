@@ -156,7 +156,6 @@ export function VisualSceneEditor({ scene, onChangeScene }: VisualSceneEditorPro
               fontWeight: 800,
               fontSize: '0.75rem'
             }}
-            title={h.verb}
           >
             ✏️
           </div>

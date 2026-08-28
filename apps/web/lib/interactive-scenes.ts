@@ -262,6 +262,27 @@ export function getAllScenes(): InteractiveScene[] {
   }
 }
 
+export async function fetchScenesFromServer(): Promise<InteractiveScene[]> {
+  const local = getAllScenes()
+  if (typeof window === 'undefined') return local
+
+  try {
+    const res = await fetch('/api/admin/scenes')
+    if (res.ok) {
+      const data = await res.json()
+      if (Array.isArray(data.scenes)) {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(data.scenes))
+        } catch {}
+        return data.scenes
+      }
+    }
+  } catch (err) {
+    console.warn('[InteractiveScenes] Could not sync scenes from server:', err)
+  }
+  return local
+}
+
 export function saveScene(scene: InteractiveScene): InteractiveScene {
   const scenes = getAllScenes()
   const index = scenes.findIndex(s => s.id === scene.id)
@@ -275,7 +296,37 @@ export function saveScene(scene: InteractiveScene): InteractiveScene {
   if (typeof window !== 'undefined') {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(scenes))
+      // Trigger background sync to server
+      fetch('/api/admin/scenes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(scene)
+      }).catch(e => console.warn('[saveScene sync error]:', e))
     } catch {}
+  }
+  return scene
+}
+
+export async function saveSceneAsync(scene: InteractiveScene): Promise<InteractiveScene> {
+  saveScene(scene)
+  if (typeof window !== 'undefined') {
+    try {
+      const res = await fetch('/api/admin/scenes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(scene)
+      })
+      if (res.ok) {
+        const data = await res.json()
+        if (Array.isArray(data.scenes)) {
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data.scenes))
+          } catch {}
+        }
+      }
+    } catch (e) {
+      console.warn('[saveSceneAsync server sync warning]:', e)
+    }
   }
   return scene
 }
@@ -285,7 +336,11 @@ export function deleteScene(sceneId: string): void {
   if (typeof window !== 'undefined') {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(scenes))
+      fetch(`/api/admin/scenes?id=${encodeURIComponent(sceneId)}`, {
+        method: 'DELETE'
+      }).catch(e => console.warn('[deleteScene sync error]:', e))
     } catch {}
   }
 }
+
 

@@ -5,9 +5,10 @@ import styles from '@/styles/Admin.module.css'
 import GroupMatchmaker from '@/components/dashboard/GroupMatchmaker'
 import VideoBankCurator from '@/components/admin/VideoBankCurator'
 import { SceneStudioTab } from '@/components/admin/SceneStudioTab'
+import { FlashcardStudioTab } from '@/components/admin/FlashcardStudioTab'
 
 // ─── Types ──────────────────────────────────────────────────────────────────
-type Tab = 'overview' | 'students' | 'teachers' | 'matchmaker' | 'groups' | 'videobank' | 'scene_studio'
+type Tab = 'overview' | 'students' | 'teachers' | 'matchmaker' | 'groups' | 'videobank' | 'scene_studio' | 'flashcard_studio'
 
 interface Metrics {
   totalStudents: number
@@ -681,6 +682,13 @@ export default function AdminPage() {
                     <span>Studio Escenas</span>
                   </button>
                   <button 
+                    className={`${styles.subNavItem} ${tab === 'flashcard_studio' ? styles.subNavItemActive : ''}`}
+                    onClick={() => setTab('flashcard_studio')}
+                  >
+                    <span className={styles.navIcon}>🃏</span>
+                    <span>Flashcards Studio</span>
+                  </button>
+                  <button 
                     className={styles.subNavItem}
                     onClick={() => router.push('/series-companion')}
                   >
@@ -1268,6 +1276,13 @@ export default function AdminPage() {
           {tab === 'scene_studio' && (
             <div className={styles.tabContent}>
               <SceneStudioTab />
+            </div>
+          )}
+
+          {/* ═══ FLASHCARD STUDIO TAB ═══ */}
+          {tab === 'flashcard_studio' && (
+            <div className={styles.tabContent}>
+              <FlashcardStudioTab />
             </div>
           )}
         </main>

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { getAllScenes, saveScene, deleteScene, InteractiveScene, Hotspot, INITIAL_OFFICE_SCENE } from '@/lib/interactive-scenes'
+import { getAllScenes, saveScene, saveSceneAsync, fetchScenesFromServer, deleteScene, InteractiveScene, Hotspot, INITIAL_OFFICE_SCENE } from '@/lib/interactive-scenes'
 import { InteractiveSceneViewer } from '@/components/InteractiveSceneViewer'
 import styles from '@/styles/Admin.module.css'
 
@@ -9,6 +9,7 @@ export function SceneStudioTab() {
   const [viewingScene, setViewingScene] = useState<InteractiveScene | null>(null)
   const [step, setStep] = useState<'list' | 'step1' | 'step2' | 'viewer'>('list')
   const [isGeneratingAI, setIsGeneratingAI] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
 
   // Step 1 Form State
   const [title, setTitle] = useState('')
@@ -25,6 +26,11 @@ export function SceneStudioTab() {
 
   useEffect(() => {
     setScenes(getAllScenes())
+    fetchScenesFromServer().then(fresh => {
+      if (fresh && fresh.length > 0) {
+        setScenes(fresh)
+      }
+    })
   }, [])
 
   function handleStartNew() {
@@ -197,13 +203,21 @@ export function SceneStudioTab() {
     }
   }
 
-  function handleSaveFinal() {
+  async function handleSaveFinal() {
     if (!editingScene) return
-    saveScene(editingScene)
-    setScenes(getAllScenes())
-    setStep('list')
-    setEditingScene(null)
-    alert('🎉 ¡Escena interactiva guardada y publicada en la biblioteca!')
+    setIsSaving(true)
+    try {
+      await saveSceneAsync(editingScene)
+      const fresh = await fetchScenesFromServer()
+      setScenes(fresh)
+      setStep('list')
+      setEditingScene(null)
+      alert('🎉 ¡Escena interactiva guardada y publicada en la biblioteca!')
+    } catch (e) {
+      alert('⚠️ Hubo un detalle al guardar en el servidor, pero se guardó localmente.')
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   return (
@@ -517,7 +531,6 @@ export function SceneStudioTab() {
                       fontWeight: 800,
                       fontSize: '0.75rem'
                     }}
-                    title={h.verb}
                   >
                     ●
                   </div>

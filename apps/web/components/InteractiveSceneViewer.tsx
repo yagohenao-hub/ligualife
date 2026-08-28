@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { INITIAL_OFFICE_SCENE, InteractiveScene, Hotspot, getAllScenes } from '@/lib/interactive-scenes'
+import { INITIAL_OFFICE_SCENE, InteractiveScene, Hotspot, getAllScenes, fetchScenesFromServer } from '@/lib/interactive-scenes'
 import styles from '@/styles/Landing.module.css'
 
 interface InteractiveSceneViewerProps {
@@ -24,6 +24,19 @@ export function InteractiveSceneViewer({ scene: customScene }: InteractiveSceneV
     } else if (list.length > 0 && !scene) {
       setScene(list[0])
     }
+
+    // Sync scenes from server
+    fetchScenesFromServer().then(fresh => {
+      if (fresh && fresh.length > 0) {
+        setScenesList(fresh)
+        if (!customScene) {
+          const currentInFresh = fresh.find(s => s.id === (scene?.id || list[0]?.id))
+          if (currentInFresh) {
+            setScene(currentInFresh)
+          }
+        }
+      }
+    })
   }, [customScene])
 
   function handleSelectScene(sceneId: string) {
@@ -197,7 +210,6 @@ export function InteractiveSceneViewer({ scene: customScene }: InteractiveSceneV
                 fontSize: '0.75rem',
                 outline: 'none'
               }}
-              title={`Verbo: ${h.verb}`}
             >
               {isDiscovered ? '✓' : '?'}
             </button>

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import { InteractiveSceneViewer } from '@/components/InteractiveSceneViewer'
-import { getAllScenes, InteractiveScene } from '@/lib/interactive-scenes'
+import { getAllScenes, fetchScenesFromServer, InteractiveScene } from '@/lib/interactive-scenes'
 import styles from '@/styles/Landing.module.css'
 
 export default function StudentInteractiveScenePage() {
@@ -15,6 +15,12 @@ export default function StudentInteractiveScenePage() {
     if (list.length > 0) {
       setSelectedScene(list[0])
     }
+    fetchScenesFromServer().then(fresh => {
+      if (fresh && fresh.length > 0) {
+        setScenes(fresh)
+        setSelectedScene(prev => fresh.find(s => s.id === prev?.id) || fresh[0])
+      }
+    })
   }, [])
 
   return (
@@ -27,9 +33,14 @@ export default function StudentInteractiveScenePage() {
       <div className={styles.pageContainer} style={{ padding: '2rem 1rem' }}>
         <div className={styles.container}>
           <div style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
-            <Link href="/student" style={{ color: '#a1a1aa', textDecoration: 'none', fontSize: '0.9rem' }}>
-              ← Volver a mi Portal de Alumno
-            </Link>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <Link href="/student" style={{ color: '#a1a1aa', textDecoration: 'none', fontSize: '0.9rem' }}>
+                ← Portal de Alumno
+              </Link>
+              <Link href="/student/flashcards" style={{ color: '#c4b5fd', background: 'rgba(124, 58, 237, 0.15)', border: '1px solid rgba(124, 58, 237, 0.3)', textDecoration: 'none', fontSize: '0.825rem', padding: '0.3rem 0.8rem', borderRadius: '8px', fontWeight: 600 }}>
+                🃏 Ir a Flashcards
+              </Link>
+            </div>
 
             {scenes.length > 1 && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
