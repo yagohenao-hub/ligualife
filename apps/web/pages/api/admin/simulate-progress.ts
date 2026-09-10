@@ -55,8 +55,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const cleanupStudentSessions = async (sid: string) => {
       try {
-        const participants = await findAirtableRecords('Session Participants', `FIND('${sid}', ARRAYJOIN({Student}, ',')) > 0`)
-        for (const p of participants) {
+        const participants = await findAirtableRecords('Session Participants', `FIND('${sid}')`)
+        for (const p of (participants || [])) {
           const sessId = Array.isArray(p.fields['Session']) ? p.fields['Session'][0] : p.fields['Session']
           if (sessId) {
             await deleteAirtableRecord('Sessions', sessId).catch(() => {})

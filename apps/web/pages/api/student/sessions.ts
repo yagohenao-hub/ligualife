@@ -12,19 +12,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const student = await fetchAirtableRecord('Students', studentId)
     if (!student) return res.status(404).json({ error: 'Estudiante no encontrado' })
 
-    // 2. Extract Session Participant IDs or find via junction
-    let participantIds = (student.fields['Session Participants'] as string[]) ?? []
-    let participantRecords = []
-
-    if (participantIds.length > 0) {
-      const participantsFormula = `OR(${participantIds.map(id => `RECORD_ID()='${id}'`).join(',')})`
-      const pRes = await fetchFromAirtable('Session Participants', `filterByFormula=${encodeURIComponent(participantsFormula)}`)
-      participantRecords = pRes.records ?? []
-    } else {
-      participantRecords = await findAirtableRecords('Session Participants', `FIND('${studentId}', ARRAYJOIN({Student}, ',')) > 0`)
+    // 2. Extract Session Participant IDs for this student directly
+    let participantRecords = await findAirtableRecords('Session Participants', `FIND('${studentId}')`)
+    if (!participantRecords || participantRecords.length === 0) {
+      const rawParticipants = (student.fields['Session Participants'] as string[]) ?? []
+      const validIds = rawParticipants.filter(id => typeof id === 'string' && !id.includes('|'))
+      if (validIds.length > 0) {
+        const participantsFormula = `OR(${validIds.map(id => `RECORD_ID()='${id}'`).join(',')})`
+        const pRes = await fetchFromAirtable('Session Participants', `filterByFormula=${encodeURIComponent(participantsFormula)}`)
+        participantRecords = pRes.records ?? []
+      }
     }
 
-    const sessionIds = participantRecords
+    const sessionIds = (participantRecords ?? [])
       .map((r: any) => ((r.fields['Session'] as string[]) ?? [])[0] ?? (r.fields['SessionId'] as string))
       .filter(Boolean)
 
@@ -57,17 +57,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(200).json({ upcomingSessions: [], completedSessions: [], totalTopics: 60, studentProfile })
     }
 
-    // 3. Construct filter for Sessions table using the found IDs
-    const idsFilter = `OR(${sessionIds.map((id: string) => `RECORD_ID()='${id}'`).join(',')})`
-    const now = new Date().toISOString()
-    
-    const upcomingFilter = encodeURIComponent(`AND(${idsFilter}, OR({Status} = 'Scheduled', AND({Status} = 'Canceled', {Is Holiday})), IS_AFTER({Scheduled Date/Time}, '${now}'))`)
-    const seenFilter = encodeURIComponent(`AND(${idsFilter}, {Status} = 'Seen')`)
+    // 3. Fetch all sessions for these session IDs directly and filter in memory
+    const sessionRecords = await Promise.all(
+      sessionIds.map(id => fetchAirtableRecord('Sessions', id))
+    )
+    const validSessions = sessionRecords.filter(Boolean)
 
-    const [upcoming, completed] = await Promise.all([
-      fetchFromAirtable('Sessions', `filterByFormula=${upcomingFilter}&sort[0][field]=Scheduled%20Date%2FTime&sort[0][direction]=asc&maxRecords=10`),
-      fetchFromAirtable('Sessions', `filterByFormula=${seenFilter}&sort[0][field]=Scheduled%20Date%2FTime&sort[0][direction]=asc&maxRecords=50`)
-    ])
+    const completed = validSessions
+      .filter((s: any) => s.fields['Status'] === 'Seen')
+      .sort((a: any, b: any) => new Date(a.fields['Scheduled Date/Time'] || 0).getTime() - new Date(b.fields['Scheduled Date/Time'] || 0).getTime())
+
+    const upcoming = validSessions
+      .filter((s: any) => s.fields['Status'] === 'Scheduled' || (s.fields['Status'] === 'Canceled' && s.fields['Is Holiday']))
+      .sort((a: any, b: any) => new Date(a.fields['Scheduled Date/Time'] || 0).getTime() - new Date(b.fields['Scheduled Date/Time'] || 0).getTime())
 
     // Resolve topic details for sessions
     const resolveTopics = async (records: any[], isUpcoming = false) => {
@@ -106,8 +108,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const [upcomingSessions, completedSessions] = await Promise.all([
-      resolveTopics(upcoming.records ?? [], true),
-      resolveTopics(completed.records ?? [], false),
+      resolveTopics(upcoming, true),
+      resolveTopics(completed, false),
     ])
 
     // ── Dynamically count total topics from the student's goal curriculum ──────
