@@ -241,7 +241,138 @@ export const INITIAL_GYM_SCENE: InteractiveScene = {
   ]
 }
 
-export const BUILTIN_SCENES: InteractiveScene[] = [INITIAL_OFFICE_SCENE, INITIAL_GYM_SCENE]
+export const INITIAL_DRAW_FAMILY_SCENE: InteractiveScene = {
+  id: 'draw-family-scene',
+  title: 'Estudio de Diseño — Familia Conceptual de "DRAW" (B1-B2)',
+  subtitle: 'Explora la escena interactiva del estudio creativo. Haz clic en las zonas para aprender las 12 acepciones y palabras derivadas de "Draw".',
+  imageSrc: '/flashcards/draw_family_scene.png',
+  totalVerbs: 12,
+  createdAt: '2026-08-28',
+  hotspots: [
+    {
+      id: 'h-draw-1',
+      x: 62,
+      y: 15,
+      verb: 'Draw',
+      sentence: 'Draw: To make a picture with a pencil or pull something gently.',
+      translation: 'Draw: Dibujar o tirar de algo suavemente.',
+      level: 'B1',
+      category: 'Polisemia & Morfología'
+    },
+    {
+      id: 'h-draw-2',
+      x: 31,
+      y: 74,
+      verb: 'Drawer',
+      sentence: 'Drawer: A wooden box inside a desk that you pull out to store things.',
+      translation: 'Drawer: Cajón o gaveta de madera para guardar cosas.',
+      level: 'A2+',
+      category: 'Polisemia & Morfología'
+    },
+    {
+      id: 'h-draw-3',
+      x: 49,
+      y: 38,
+      verb: 'Withdraw',
+      sentence: 'Withdraw: To take money out of a bank account or leave a place.',
+      translation: 'Withdraw: Retirar dinero del cajero o salirse de un lugar.',
+      level: 'B2',
+      category: 'Polisemia & Morfología'
+    },
+    {
+      id: 'h-draw-4',
+      x: 63,
+      y: 64,
+      verb: 'Drawback',
+      sentence: 'Drawback: A problem, bad feature, or disadvantage of a situation.',
+      translation: 'Drawback: Desventaja o inconveniente de una situación.',
+      level: 'B2',
+      category: 'Polisemia & Morfología'
+    },
+    {
+      id: 'h-draw-5',
+      x: 88,
+      y: 18,
+      verb: 'Draw Attention',
+      sentence: 'Draw Attention: To make people notice, look at, or listen to something.',
+      translation: 'Draw Attention: Llamar la atención o atraer miradas.',
+      level: 'B1+',
+      category: 'Polisemia & Morfología'
+    },
+    {
+      id: 'h-draw-6',
+      x: 65,
+      y: 35,
+      verb: 'Draw a Conclusion',
+      sentence: 'Draw a Conclusion: To make a final decision or opinion after studying facts.',
+      translation: 'Draw a Conclusion: Sacar una conclusión tras estudiar hechos.',
+      level: 'B2',
+      category: 'Polisemia & Morfología'
+    },
+    {
+      id: 'h-draw-7',
+      x: 88,
+      y: 80,
+      verb: 'Redraft',
+      sentence: 'Redraft: To write or draw a plan again to fix errors and make it better.',
+      translation: 'Redraft: Reescribir o rehacer un borrador para mejorarlo.',
+      level: 'B2',
+      category: 'Polisemia & Morfología'
+    },
+    {
+      id: 'h-draw-8',
+      x: 25,
+      y: 18,
+      verb: 'Draw a Tie',
+      sentence: 'Draw a Tie: To finish a game or competition with equal points so no one wins.',
+      translation: 'Draw a Tie: Empatar el partido o quedar en empate.',
+      level: 'B1',
+      category: 'Polisemia & Morfología'
+    },
+    {
+      id: 'h-draw-9',
+      x: 12,
+      y: 45,
+      verb: 'Draw a Bath',
+      sentence: 'Draw a Bath: To fill a bathtub with warm water for taking a bath.',
+      translation: 'Draw a Bath: Llenar la tina o preparar un baño de agua tibia.',
+      level: 'B1',
+      category: 'Polisemia & Morfología'
+    },
+    {
+      id: 'h-draw-10',
+      x: 42,
+      y: 82,
+      verb: 'Draw Blood',
+      sentence: 'Draw Blood: To make blood come out of the body with a needle or small cut.',
+      translation: 'Draw Blood: Sacar sangre o extraer una muestra médica.',
+      level: 'B1+',
+      category: 'Polisemia & Morfología'
+    },
+    {
+      id: 'h-draw-11',
+      x: 80,
+      y: 48,
+      verb: 'Draw a Blank',
+      sentence: 'Draw a Blank: To fail to remember an answer, name, or memory when asked.',
+      translation: 'Draw a Blank: Quedarse en blanco u olvidar la respuesta.',
+      level: 'B2',
+      category: 'Polisemia & Morfología'
+    },
+    {
+      id: 'h-draw-12',
+      x: 38,
+      y: 15,
+      verb: 'Overdraw',
+      sentence: 'Overdraw: To spend more money than you actually have in your bank account.',
+      translation: 'Overdraw: Sobregirar la cuenta bancaria.',
+      level: 'B2+',
+      category: 'Polisemia & Morfología'
+    }
+  ]
+}
+
+export const BUILTIN_SCENES: InteractiveScene[] = [INITIAL_OFFICE_SCENE, INITIAL_GYM_SCENE, INITIAL_DRAW_FAMILY_SCENE]
 
 const STORAGE_KEY = 'lingualife_custom_scenes_v1'
 

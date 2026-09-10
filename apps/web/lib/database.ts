@@ -78,6 +78,11 @@ export async function fetchFromDB(table: string, params = ''): Promise<any> {
       query = query.eq('Status', statusMatch[1])
     }
 
+    const pcStatusMatch = decoded.match(/\{Pocket Coach Status\}\s*=\s*'([^']*)'/) || decoded.match(/\{Pocket Coach Status\}\s*=\s*"([^"]*)"/)
+    if (pcStatusMatch) {
+      query = query.eq('Pocket Coach Status', pcStatusMatch[1])
+    }
+
     const pinMatch = decoded.match(/\{PIN\}\s*=\s*'([^']*)'/) || decoded.match(/\{PIN\}\s*=\s*"([^"]*)"/)
     if (pinMatch) {
       query = query.eq('PIN', pinMatch[1])
@@ -88,13 +93,27 @@ export async function fetchFromDB(table: string, params = ''): Promise<any> {
       query = query.eq('Email', emailMatch[1])
     }
 
-    const findMatch = decoded.match(/FIND\(\s*'([^']+)'/);
+    const phoneMatch = decoded.match(/\{Phone\}\s*=\s*'([^']*)'/) || decoded.match(/\{Phone\}\s*=\s*"([^"]*)"/)
+    if (phoneMatch) {
+      query = query.eq('Phone', phoneMatch[1])
+    }
+
+    const findMatch = decoded.match(/FIND\(\s*'([^']+)'\s*,\s*\{([^}]+)\}\s*\)/);
     if (findMatch) {
-      const targetId = findMatch[1];
-      if (dbTable === 'session_participants') {
-        query = query.eq('Student', targetId)
-      } else if (dbTable === 'student_teacher') {
-        query = query.eq('Student', targetId)
+      const targetVal = findMatch[1];
+      const targetCol = findMatch[2];
+      query = query.ilike(targetCol, `%${targetVal}%`);
+    } else {
+      const simpleFind = decoded.match(/FIND\(\s*'([^']+)'/);
+      if (simpleFind) {
+        const targetId = simpleFind[1];
+        if (dbTable === 'session_participants') {
+          query = query.eq('Student', targetId)
+        } else if (dbTable === 'student_teacher') {
+          query = query.eq('Student', targetId)
+        } else if (dbTable === 'students') {
+          query = query.ilike('Phone', `%${targetId}%`)
+        }
       }
     }
 
@@ -210,13 +229,15 @@ export async function createDBRecord(table: string, fields: Record<string, any>)
 
 export async function patchDBRecord(table: string, recordId: string, fields: Record<string, any>): Promise<any> {
   const dbTable = getTableName(table)
-  let updateData: Record<string, any> = {}
-  if (fields['Current Topic']) updateData['Current Topic (Bot)'] = fields['Current Topic'][0]
-  if (fields['Tokens']) updateData['Tokens de Reposición'] = fields['Tokens']
-  if (fields['Status']) updateData['Status'] = fields['Status']
-  if (fields['Teacher']) updateData['Teacher'] = Array.isArray(fields.Teacher) ? fields.Teacher[0] : fields.Teacher
-
-  if (Object.keys(updateData).length === 0) updateData = { ...fields }
+  let updateData: Record<string, any> = { ...fields }
+  if (fields['Current Topic']) {
+    updateData['Current Topic (Bot)'] = Array.isArray(fields['Current Topic']) ? fields['Current Topic'][0] : fields['Current Topic']
+  }
+  if (fields['Tokens'] !== undefined) updateData['Tokens de Reposición'] = fields['Tokens']
+  if (fields['Status'] !== undefined) updateData['Status'] = fields['Status']
+  if (fields['Pocket Coach Status'] !== undefined) updateData['Pocket Coach Status'] = fields['Pocket Coach Status']
+  if (fields['Teacher'] !== undefined) updateData['Teacher'] = Array.isArray(fields.Teacher) ? fields.Teacher[0] : fields.Teacher
+  if (fields['Notes'] !== undefined) updateData['Notes'] = fields['Notes']
 
   try {
     const { data, error } = await supabase.from(dbTable).update(updateData).eq('id', recordId).select().single()

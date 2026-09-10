@@ -31,6 +31,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         tokens: (r.fields['Tokens de Reposición'] ?? 0) as number,
         pin: (r.fields['PIN'] ?? '') as string,
         status: (r.fields['Status'] ?? 'Active') as string,
+        pocketCoachStatus: (r.fields['Pocket Coach Status'] ?? 'Paused') as string,
         notes: (r.fields['Notes'] ?? '') as string,
         interests: (r.fields['Interests'] ?? []) as string[],
         availability: (r.fields['Availability'] ?? '') as string,
@@ -72,6 +73,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         'PIN': pin,
         'Tokens de Reposición': tokens ?? 0,
         'Status': 'Active',
+        'Pocket Coach Status': 'Active',
       }
       if (phone) fields['Phone'] = phone
       if (timezone) fields['Timezone'] = timezone
@@ -87,9 +89,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     if (req.method === 'PATCH') {
-      const { id, status, tokens, notes, adminSupportActive, phone } = req.body as {
+      const { id, status, pocketCoachStatus, tokens, notes, adminSupportActive, phone } = req.body as {
         id: string
         status?: string
+        pocketCoachStatus?: string
         tokens?: number
         notes?: string
         adminSupportActive?: boolean
@@ -99,6 +102,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       const fields: Record<string, any> = {}
       if (status !== undefined) fields['Status'] = status
+      if (pocketCoachStatus !== undefined) fields['Pocket Coach Status'] = pocketCoachStatus
       if (tokens !== undefined) fields['Tokens de Reposición'] = tokens
       if (notes !== undefined) fields['Notes'] = notes
       if (adminSupportActive !== undefined) {

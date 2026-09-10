@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { getAllScenes, saveScene, saveSceneAsync, fetchScenesFromServer, deleteScene, InteractiveScene, Hotspot, INITIAL_OFFICE_SCENE } from '@/lib/interactive-scenes'
+import { getAllScenes, saveScene, saveSceneAsync, fetchScenesFromServer, deleteScene, InteractiveScene, Hotspot, BUILTIN_SCENES, INITIAL_OFFICE_SCENE } from '@/lib/interactive-scenes'
 import { InteractiveSceneViewer } from '@/components/InteractiveSceneViewer'
 import styles from '@/styles/Admin.module.css'
 
@@ -49,8 +49,8 @@ export function SceneStudioTab() {
   }
 
   function handleDeleteScene(id: string) {
-    if (id === INITIAL_OFFICE_SCENE.id) {
-      alert('La escena inicial por defecto no se puede eliminar.')
+    if (BUILTIN_SCENES.some(b => b.id === id)) {
+      alert('Las escenas oficiales incorporadas no se pueden eliminar.')
       return
     }
     if (confirm('¿Estás seguro de eliminar esta escena?')) {
@@ -322,7 +322,7 @@ export function SceneStudioTab() {
                       </button>
                     </div>
 
-                    {s.id !== INITIAL_OFFICE_SCENE.id && (
+                    {!BUILTIN_SCENES.some(b => b.id === s.id) && (
                       <button
                         onClick={() => handleDeleteScene(s.id)}
                         style={{

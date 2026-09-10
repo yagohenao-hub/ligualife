@@ -28,6 +28,7 @@ interface Student {
   tokens: number
   pin: string
   status: string
+  pocketCoachStatus?: string
   notes: string
   interests: string[]
   availability: string // JSON array of "Day-Hour"
@@ -148,6 +149,52 @@ export default function AdminPage() {
   // Secretary Pending Inbox state
   const [seriesRequests, setSeriesRequests] = useState<any[]>([])
   const [pendingFilter, setPendingFilter] = useState<'all' | 'teachers' | 'students' | 'ss' | 'series'>('all')
+
+  // Simulator & Testing State
+  const [showSimulatorModal, setShowSimulatorModal] = useState(false)
+  const [simulatorStudent, setSimulatorStudent] = useState<Student | null>(null)
+  const [simulatorLoading, setSimulatorLoading] = useState(false)
+  const [simulatorResult, setSimulatorResult] = useState<any>(null)
+  const [targetClassNum, setTargetClassNum] = useState('5')
+  const [manualTeacherId, setManualTeacherId] = useState('')
+  const [manualDate, setManualDate] = useState('')
+
+  function openSimulator(s: Student) {
+    setSimulatorStudent(s)
+    setSimulatorResult(null)
+    setTargetClassNum('5')
+    setManualTeacherId(teachers[0]?.id || '')
+    const defaultDate = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000)
+    setManualDate(defaultDate.toISOString().slice(0, 16))
+    setShowSimulatorModal(true)
+  }
+
+  async function runSimulatorAction(action: string, extra: any = {}) {
+    if (!simulatorStudent) return
+    setSimulatorLoading(true)
+    setSimulatorResult(null)
+    try {
+      const res = await fetch('/api/admin/simulate-progress', {
+        method: 'POST',
+        headers: adminHeaders(),
+        body: JSON.stringify({
+          studentId: simulatorStudent.id,
+          action,
+          ...extra
+        })
+      })
+      const data = await res.json()
+      setSimulatorResult(data)
+      if (res.ok) {
+        loadStudents()
+        loadMetrics()
+      }
+    } catch (err: any) {
+      setSimulatorResult({ error: err.message || 'Error en el simulador' })
+    } finally {
+      setSimulatorLoading(false)
+    }
+  }
 
   function openWhatsApp(phone: string, text: string) {
     const cleanPhone = phone.replace(/[^0-9]/g, '')
@@ -304,6 +351,30 @@ export default function AdminPage() {
     })
     loadStudents()
     loadMetrics()
+  }
+
+  async function togglePocketCoachStatus(s: Student) {
+    const newStatus = (s.pocketCoachStatus || '').toLowerCase() === 'active' ? 'Paused' : 'Active'
+    await fetch('/api/admin/students', {
+      method: 'PATCH',
+      headers: adminHeaders(),
+      body: JSON.stringify({ id: s.id, pocketCoachStatus: newStatus }),
+    })
+    setStudents(prev => prev.map(x => x.id === s.id ? { ...x, pocketCoachStatus: newStatus } : x))
+  }
+
+  async function activateAllPocketCoach() {
+    if (!confirm('¿Deseas activar el Pocket Coach para todos los alumnos con teléfono válido?')) return
+    const valid = students.filter(s => s.phone && s.phone.replace(/[^0-9]/g, '').length >= 10)
+    for (const s of valid) {
+      await fetch('/api/admin/students', {
+        method: 'PATCH',
+        headers: adminHeaders(),
+        body: JSON.stringify({ id: s.id, status: 'Active', pocketCoachStatus: 'Active' }),
+      })
+    }
+    loadStudents()
+    alert(`¡Se activó el Pocket Coach para ${valid.length} alumnos!`)
   }
 
   async function adjustTokens(s: Student, delta: number) {
@@ -919,6 +990,14 @@ export default function AdminPage() {
               <div className={styles.pageHeader}>
                 <h1 className={styles.pageTitle}>Alumnos <span className={styles.countBadge}>{students.length}</span></h1>
                 <div style={{ display: 'flex', gap: '0.75rem' }}>
+                  <button 
+                    className={styles.addBtn} 
+                    style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', border: 'none' }}
+                    onClick={activateAllPocketCoach}
+                    title="Activa el Pocket Coach para todos los estudiantes con número de WhatsApp válido"
+                  >
+                    🤖 Activar Pocket Coach Global
+                  </button>
                   <button className={styles.addBtn} onClick={openCreateStudent}>+ Nuevo Alumno</button>
                   <button className={styles.addBtnSecondary} onClick={() => { setLinkForm({ studentIds: [], teacherId: '', notes: '', selectedDays: [], selectedTimes: {} }); setShowLinkModal(true); }}>🔗 Vincular Grupo</button>
                 </div>
@@ -956,12 +1035,13 @@ export default function AdminPage() {
                         <th>Tokens</th>
                         <th>PIN</th>
                         <th>Estado</th>
+                        <th>Pocket Coach</th>
                         <th>Acciones</th>
                       </tr>
                     </thead>
                     <tbody>
                       {filteredStudents.length === 0 && (
-                        <tr><td colSpan={7} className={styles.emptyRow}>No se encontraron alumnos.</td></tr>
+                        <tr><td colSpan={8} className={styles.emptyRow}>No se encontraron alumnos.</td></tr>
                       )}
                       {filteredStudents.map(s => (
                         <tr key={s.id} className={styles.tableRow}>
@@ -1000,6 +1080,35 @@ export default function AdminPage() {
                             </select>
                           </td>
                           <td>
+                            <button
+                              onClick={() => togglePocketCoachStatus(s)}
+                              style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.35rem',
+                                padding: '0.3rem 0.65rem',
+                                borderRadius: '9999px',
+                                fontSize: '0.75rem',
+                                fontWeight: 600,
+                                cursor: 'pointer',
+                                border: '1px solid',
+                                transition: 'all 0.15s ease',
+                                background: (s.pocketCoachStatus || '').toLowerCase() === 'active' 
+                                  ? 'rgba(16, 185, 129, 0.15)' 
+                                  : 'rgba(239, 68, 68, 0.15)',
+                                color: (s.pocketCoachStatus || '').toLowerCase() === 'active' 
+                                  ? '#34d399' 
+                                  : '#f87171',
+                                borderColor: (s.pocketCoachStatus || '').toLowerCase() === 'active' 
+                                  ? 'rgba(16, 185, 129, 0.4)' 
+                                  : 'rgba(239, 68, 68, 0.4)'
+                              }}
+                              title="Haz clic para activar/pausar Pocket Coach"
+                            >
+                              {(s.pocketCoachStatus || '').toLowerCase() === 'active' ? '🟢 Activo' : '⚪ Pausado'}
+                            </button>
+                          </td>
+                          <td>
                             <button className={styles.editBtn} onClick={() => openEditStudent(s)}>✏️ Editar</button>
                             <button 
                               className={styles.editBtn} 
@@ -1007,6 +1116,13 @@ export default function AdminPage() {
                               onClick={() => { setLinkForm({ studentIds: [s.id], teacherId: '', notes: '', selectedDays: [], selectedTimes: {} }); setShowLinkModal(true); }}
                             >
                               🔗 Asignar
+                            </button>
+                            <button 
+                              className={styles.editBtn} 
+                              style={{ marginLeft: '0.5rem', background: 'rgba(16, 185, 129, 0.15)', color: '#10b981', borderColor: 'rgba(16, 185, 129, 0.3)' }} 
+                              onClick={() => openSimulator(s)}
+                            >
+                              🧪 Simulador
                             </button>
                           </td>
                         </tr>
@@ -1666,6 +1782,154 @@ export default function AdminPage() {
               >
                 {editGroupLoading ? 'Guardando...' : 'Guardar Cambios'}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ═══ SIMULATOR MODAL ═══ */}
+      {showSimulatorModal && simulatorStudent && (
+        <div className={styles.modalOverlay} onClick={() => setShowSimulatorModal(false)}>
+          <div className={styles.modal} style={{ maxWidth: '650px' }} onClick={e => e.stopPropagation()}>
+            <div className={styles.modalHeader}>
+              <span>🧪 Control del Simulador de Clases & Pruebas</span>
+              <button className={styles.modalClose} onClick={() => setShowSimulatorModal(false)}>✕</button>
+            </div>
+            <div className={styles.modalBody}>
+              <div style={{ background: 'rgba(16, 185, 129, 0.08)', border: '1px solid rgba(16, 185, 129, 0.2)', padding: '0.85rem 1rem', borderRadius: '10px', marginBottom: '1.25rem' }}>
+                <div style={{ fontWeight: 700, fontSize: '0.95rem', color: '#10b981' }}>
+                  Alumno: {simulatorStudent.name}
+                </div>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.2rem', display: 'flex', gap: '1rem' }}>
+                  <span>Saldo de Clases: <strong>{simulatorStudent.classesRemaining}</strong></span>
+                  <span>Tokens de Reposición: <strong>{simulatorStudent.tokens}</strong></span>
+                  <span>Estado: <strong>{simulatorStudent.status}</strong></span>
+                </div>
+              </div>
+
+              {/* Feedback Alert */}
+              {simulatorResult && (
+                <div style={{ 
+                  background: simulatorResult.error ? 'rgba(239, 68, 68, 0.15)' : 'rgba(59, 130, 246, 0.15)', 
+                  border: `1px solid ${simulatorResult.error ? '#ef4444' : '#3b82f6'}`, 
+                  borderRadius: '8px', 
+                  padding: '0.85rem 1rem', 
+                  fontSize: '0.85rem', 
+                  marginBottom: '1.25rem',
+                  color: simulatorResult.error ? '#f87171' : '#60a5fa'
+                }}>
+                  {simulatorResult.error ? (
+                    <div>❌ <strong>Error:</strong> {simulatorResult.error}</div>
+                  ) : (
+                    <div>✅ {simulatorResult.message}</div>
+                  )}
+                </div>
+              )}
+
+              {/* Action 1: Advance 1 class */}
+              <div style={{ marginBottom: '1.25rem', paddingBottom: '1rem', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                <div className={styles.fieldLabel} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span>⏩</span> 1. Avanzar 1 Clase (Simular avance de 1 en 1)
+                </div>
+                <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', margin: '0.2rem 0 0.6rem' }}>
+                  Simula la finalización de la clase actual, la marca como vista ("Seen") en el historial y avanza al siguiente tema del currículo.
+                </p>
+                <button 
+                  className={styles.addBtn}
+                  style={{ background: '#10b981', boxShadow: '0 4px 12px rgba(16,185,129,0.3)', width: '100%' }}
+                  onClick={() => runSimulatorAction('advance_one')}
+                  disabled={simulatorLoading}
+                >
+                  {simulatorLoading ? 'Procesando...' : '+1 Avanzar Siguiente Clase →'}
+                </button>
+              </div>
+
+              {/* Action 2: Set Class N */}
+              <div style={{ marginBottom: '1.25rem', paddingBottom: '1rem', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                <div className={styles.fieldLabel} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span>🎯</span> 2. Estructurar Posición en Clase Específica (Saltar a Clase N)
+                </div>
+                <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', margin: '0.2rem 0 0.6rem' }}>
+                  Asigna al alumno en la clase N (ej. Clase 5) y asume que ha visto todas las anteriores (1 a N-1) reflejándolas en su historial.
+                </p>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <input 
+                    type="number" 
+                    min="1" 
+                    max="58"
+                    className={styles.fieldInput} 
+                    value={targetClassNum} 
+                    onChange={e => setTargetClassNum(e.target.value)} 
+                    placeholder="Número de clase..." 
+                    style={{ width: '140px' }}
+                  />
+                  <button 
+                    className={styles.addBtnSecondary}
+                    style={{ flex: 1 }}
+                    onClick={() => runSimulatorAction('set_class', { classNumber: targetClassNum })}
+                    disabled={simulatorLoading || !targetClassNum}
+                  >
+                    Establecer Posición en Clase #{targetClassNum}
+                  </button>
+                </div>
+              </div>
+
+              {/* Action 3: Assign Manual Class */}
+              <div style={{ marginBottom: '1.25rem', paddingBottom: '1rem', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                <div className={styles.fieldLabel} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span>📅</span> 3. Asignación Manual de Clase (Consumo de Token/Crédito)
+                </div>
+                <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', margin: '0.2rem 0 0.6rem' }}>
+                  Agenda una lección futura para este estudiante descontando 1 crédito de su saldo.
+                </p>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                  <div>
+                    <label style={{ fontSize: '0.75rem', opacity: 0.7 }}>Profesor</label>
+                    <select className={styles.fieldInput} value={manualTeacherId} onChange={e => setManualTeacherId(e.target.value)}>
+                      {teachers.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '0.75rem', opacity: 0.7 }}>Fecha y Hora</label>
+                    <input type="datetime-local" className={styles.fieldInput} value={manualDate} onChange={e => setManualDate(e.target.value)} />
+                  </div>
+                </div>
+                <button 
+                  className={styles.addBtnSecondary}
+                  style={{ width: '100%', borderColor: 'rgba(124, 58, 237, 0.4)', color: '#c084fc' }}
+                  onClick={() => runSimulatorAction('assign_manual', { teacherId: manualTeacherId, scheduledDate: manualDate ? new Date(manualDate).toISOString() : undefined })}
+                  disabled={simulatorLoading || !manualTeacherId}
+                >
+                  📅 Agendar Clase Manual & Consumir Token
+                </button>
+              </div>
+
+              {/* Action 4: Test Cancellation & Reset */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                <div>
+                  <button 
+                    className={styles.editBtn}
+                    style={{ width: '100%', padding: '0.65rem', color: '#ef4444', borderColor: 'rgba(239,68,68,0.3)', background: 'rgba(239,68,68,0.1)' }}
+                    onClick={() => runSimulatorAction('test_cancel')}
+                    disabled={simulatorLoading}
+                  >
+                    ❌ Simular Cancelación (Regla 24h)
+                  </button>
+                </div>
+                <div>
+                  <button 
+                    className={styles.editBtn}
+                    style={{ width: '100%', padding: '0.65rem', color: '#f59e0b', borderColor: 'rgba(245,158,11,0.3)', background: 'rgba(245,158,11,0.1)' }}
+                    onClick={() => runSimulatorAction('reset')}
+                    disabled={simulatorLoading}
+                  >
+                    ↺ Resetear a Clase 1
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div className={styles.modalFooter}>
+              <button className={styles.cancelBtn} onClick={() => setShowSimulatorModal(false)}>Cerrar</button>
             </div>
           </div>
         </div>

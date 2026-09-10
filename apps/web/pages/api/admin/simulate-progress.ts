@@ -7,34 +7,41 @@ import {
 } from '@/lib/airtable'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  // Solo permitir en desarrollo o si se conoce el token del admin
-  // (Para simplificar, permitimos peticiones GET/POST para que puedan ejecutarlo desde el navegador pegando la URL)
-  const { studentId, count = '24', classesRemaining = '16' } = req.query as { 
-    studentId?: string
-    count?: string
-    classesRemaining?: string
+  const adminToken = req.headers['x-admin-token'] || req.query.token
+  const isDev = process.env.NODE_ENV !== 'production'
+  
+  if (!isDev && adminToken !== 'LinguaAdmin2025') {
+    return res.status(401).json({ error: 'No autorizado. Requiere token de admin.' })
   }
 
-  if (!studentId) {
-    return res.status(400).json({ error: 'studentId es requerido como query parameter' })
-  }
+  const { 
+    studentId, 
+    action = 'advance_one',
+    classNumber,
+    count = '24', 
+    classesRemaining = '16',
+    teacherId: reqTeacherId,
+    topicId: reqTopicId,
+    scheduledDate,
+    sessionId
+  } = (req.method === 'POST' ? req.body : req.query) as any
 
-  const sessionsCount = parseInt(count, 10)
-  const remaining = parseInt(classesRemaining, 10)
+  if (!studentId && action !== 'cancel_session') {
+    return res.status(400).json({ error: 'studentId es requerido' })
+  }
 
   try {
-    // 1. Obtener datos del estudiante
-    const student = await fetchAirtableRecord('Students', studentId)
-    if (!student) {
-      return res.status(404).json({ error: 'Estudiante no encontrado en la base de datos' })
+    // 1. Fetch Student Data
+    const student = studentId ? await fetchAirtableRecord('Students', studentId) : null
+    if (studentId && !student) {
+      return res.status(404).json({ error: 'Estudiante no encontrado' })
     }
 
-    const teacherId = student.fields['Teacher']?.[0] || 'recTestnj8qdi' // Fallback a docente de pruebas si no tiene
-    const studentName = student.fields['FullName'] || 'Estudiante de Prueba'
+    const studentName = student?.fields?.['FullName'] || student?.fields?.['Full Name'] || 'Estudiante de Prueba'
+    const teacherId = reqTeacherId || student?.fields?.['Teacher']?.[0] || 'recTestnj8qdi'
 
-    // 2. Obtener los temas del currículo ordenados
+    // 2. Fetch Curriculum Topics
     const curriculumTopics = await findAirtableRecords('Curriculum Topics', '1=1')
-    // Ordenar los temas según su campo 'Order'
     curriculumTopics.sort((a, b) => {
       const orderA = (a.fields['Order'] as number) || 0
       const orderB = (b.fields['Order'] as number) || 0
@@ -42,64 +49,230 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     })
 
     if (curriculumTopics.length === 0) {
-      return res.status(404).json({ error: 'No se encontraron temas en Curriculum Topics para asignar' })
+      return res.status(404).json({ error: 'No se encontraron temas en el currículo' })
     }
 
-    const createdSessions = []
-    const now = new Date()
+    // ----------------------------------------------------
+    // ACTION: ADVANCE ONE CLASS (Avanzar 1 en 1)
+    // ----------------------------------------------------
+    if (action === 'advance_one') {
+      // Find existing participant records for this student to calculate completed count
+      const allParticipants = await findAirtableRecords('Session Participants', '1=1')
+      const studentParticipants = allParticipants.filter(p => {
+        const sid = Array.isArray(p.fields['Student']) ? p.fields['Student'][0] : p.fields['Student']
+        return sid === studentId
+      })
 
-    // 3. Generar las N sesiones en el pasado
-    for (let i = 0; i < sessionsCount; i++) {
-      // Espaciar las clases 3 días hacia atrás por cada sesión
-      const sessionDate = new Date(now.getTime() - (sessionsCount - i) * 3 * 24 * 60 * 60 * 1000)
-      
-      // Asignar tema secuencial
-      const topicIndex = i % curriculumTopics.length
+      const completedCount = studentParticipants.length
+      const topicIndex = completedCount % curriculumTopics.length
       const topic = curriculumTopics[topicIndex]
 
-      // Crear Sesión en estado 'Seen' (Completada)
+      const sessionDate = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000)
+
+      // Create completed session
       const session = await createAirtableRecord('Sessions', {
         'Teacher': [teacherId],
         'Scheduled Date/Time': sessionDate.toISOString(),
         'Status': 'Seen',
-        'Session Name': `Simulada: Clase ${i + 1} — ${studentName}`,
+        'Session Name': `Simulada: Clase ${completedCount + 1} — ${studentName}`,
         'Curriculum Topic': [topic.id]
       })
 
-      // Crear participante (Junction table)
       await createAirtableRecord('Session Participants', {
         'Session': [session.id],
         'Student': [studentId]
       })
 
-      createdSessions.push({
-        id: session.id,
-        date: sessionDate.toLocaleDateString(),
-        topic: topic.fields['Topic Name'] || topic.fields['Title'] || 'Tema sin título'
+      // Move Current Topic to next
+      const nextTopicIndex = (completedCount + 1) % curriculumTopics.length
+      const nextTopic = curriculumTopics[nextTopicIndex]
+
+      const currentRemaining = typeof student.fields['ClassesRemaining'] === 'number' 
+        ? student.fields['ClassesRemaining'] 
+        : parseInt(classesRemaining, 10)
+      
+      const newRemaining = Math.max(0, currentRemaining - 1)
+
+      await patchAirtableRecord('Students', studentId, {
+        'Current Topic': [nextTopic.id],
+        'ClassesRemaining': newRemaining
+      })
+
+      return res.status(200).json({
+        success: true,
+        action: 'advance_one',
+        message: `Se avanzó 1 clase exitosamente. Clase #${completedCount + 1} ("${topic.fields['Topic Name'] || topic.fields['Title']}") completada.`,
+        student: studentName,
+        completedClass: completedCount + 1,
+        nextTopic: nextTopic.fields['Topic Name'] || nextTopic.fields['Title'],
+        classesRemaining: newRemaining
       })
     }
 
-    // 4. Actualizar puntero del Current Topic del estudiante al tema del próximo orden
-    const nextTopicIndex = sessionsCount % curriculumTopics.length
-    const nextTopic = curriculumTopics[nextTopicIndex]
-    
-    await patchAirtableRecord('Students', studentId, {
-      'Current Topic': [nextTopic.id],
-      'ClassesRemaining': remaining,
-      'Tokens': remaining // Actualizar clases y tokens restantes para que el alumno pueda seguir agendando
-    })
+    // ----------------------------------------------------
+    // ACTION: SET CLASS NUMBER (Saltar a Clase N)
+    // ----------------------------------------------------
+    if (action === 'set_class') {
+      const targetClassNum = parseInt(classNumber || count, 10)
+      if (isNaN(targetClassNum) || targetClassNum < 1) {
+        return res.status(400).json({ error: 'classNumber debe ser un número entero >= 1' })
+      }
 
-    return res.status(200).json({
-      success: true,
-      message: `Se simularon exitosamente ${sessionsCount} clases en el pasado (~${Math.round(sessionsCount / 8)} meses de progreso a 2 clases/semana).`,
-      student: studentName,
-      classesRemainingSetTo: remaining,
-      nextTopicAssigned: nextTopic.fields['Topic Name'] || nextTopic.fields['Title'],
-      simulatedSessions: createdSessions
-    })
+      const sessionsToCreate = targetClassNum - 1
+      const createdSessions = []
+      const now = new Date()
+
+      for (let i = 0; i < sessionsToCreate; i++) {
+        const sessionDate = new Date(now.getTime() - (sessionsToCreate - i) * 3 * 24 * 60 * 60 * 1000)
+        const topicIndex = i % curriculumTopics.length
+        const topic = curriculumTopics[topicIndex]
+
+        const session = await createAirtableRecord('Sessions', {
+          'Teacher': [teacherId],
+          'Scheduled Date/Time': sessionDate.toISOString(),
+          'Status': 'Seen',
+          'Session Name': `Simulada: Clase ${i + 1} — ${studentName}`,
+          'Curriculum Topic': [topic.id]
+        })
+
+        await createAirtableRecord('Session Participants', {
+          'Session': [session.id],
+          'Student': [studentId]
+        })
+
+        createdSessions.push({
+          id: session.id,
+          date: sessionDate.toLocaleDateString(),
+          topic: topic.fields['Topic Name'] || topic.fields['Title']
+        })
+      }
+
+      const currentTopicIndex = (targetClassNum - 1) % curriculumTopics.length
+      const currentTopic = curriculumTopics[currentTopicIndex]
+
+      await patchAirtableRecord('Students', studentId, {
+        'Current Topic': [currentTopic.id],
+        'ClassesRemaining': parseInt(classesRemaining, 10)
+      })
+
+      return res.status(200).json({
+        success: true,
+        action: 'set_class',
+        message: `Se estableció la posición del alumno en la Clase #${targetClassNum}. Se simularon ${sessionsToCreate} clases anteriores vistas.`,
+        student: studentName,
+        currentClassNumber: targetClassNum,
+        currentTopicAssigned: currentTopic.fields['Topic Name'] || currentTopic.fields['Title'],
+        simulatedCount: sessionsToCreate
+      })
+    }
+
+    // ----------------------------------------------------
+    // ACTION: ASSIGN MANUAL CLASS (Asignación Manual)
+    // ----------------------------------------------------
+    if (action === 'assign_manual') {
+      const topicIdToUse = reqTopicId || student?.fields?.['Current Topic']?.[0] || curriculumTopics[0].id
+      const dateToUse = scheduledDate || new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString()
+      const targetTopic = curriculumTopics.find(t => t.id === topicIdToUse) || curriculumTopics[0]
+
+      const session = await createAirtableRecord('Sessions', {
+        'Teacher': [teacherId],
+        'Scheduled Date/Time': dateToUse,
+        'Status': 'Scheduled',
+        'Session Name': `Clase Manual: ${targetTopic.fields['Topic Name'] || targetTopic.fields['Title'] || 'Tema'} — ${studentName}`,
+        'Curriculum Topic': [topicIdToUse]
+      })
+
+      await createAirtableRecord('Session Participants', {
+        'Session': [session.id],
+        'Student': [studentId]
+      })
+
+      // Deduct token/class
+      const currentRemaining = typeof student.fields['ClassesRemaining'] === 'number' 
+        ? student.fields['ClassesRemaining'] 
+        : 16
+      const newRemaining = Math.max(0, currentRemaining - 1)
+
+      await patchAirtableRecord('Students', studentId, {
+        'ClassesRemaining': newRemaining
+      })
+
+      return res.status(200).json({
+        success: true,
+        action: 'assign_manual',
+        message: `🎉 Clase asignada manualmente para el ${new Date(dateToUse).toLocaleString('es-CO')}. Se consumió 1 crédito de clase.`,
+        sessionId: session.id,
+        scheduledDate: dateToUse,
+        topic: targetTopic.fields['Topic Name'] || targetTopic.fields['Title'],
+        classesRemaining: newRemaining
+      })
+    }
+
+    // ----------------------------------------------------
+    // ACTION: TEST CANCELLATION (Probar Cancelación)
+    // ----------------------------------------------------
+    if (action === 'test_cancel') {
+      if (!sessionId) {
+        // Find latest upcoming scheduled session for student
+        const participants = await findAirtableRecords('Session Participants', '1=1')
+        const studentParts = participants.filter(p => (Array.isArray(p.fields['Student']) ? p.fields['Student'][0] : p.fields['Student']) === studentId)
+        if (studentParts.length === 0) {
+          return res.status(404).json({ error: 'No se encontraron sesiones para cancelar en este estudiante' })
+        }
+        const lastPart = studentParts[studentParts.length - 1]
+        const targetSessionId = Array.isArray(lastPart.fields['Session']) ? lastPart.fields['Session'][0] : lastPart.fields['Session']
+        
+        await patchAirtableRecord('Sessions', targetSessionId, { 'Status': 'Canceled' })
+
+        // Check 24h rule
+        const currentTokens = typeof student.fields['Tokens'] === 'number' ? student.fields['Tokens'] : 0
+        const newTokens = currentTokens + 1
+
+        await patchAirtableRecord('Students', studentId, { 'Tokens': newTokens })
+
+        return res.status(200).json({
+          success: true,
+          action: 'test_cancel',
+          message: '❌ Clase cancelada exitosamente. Se otorgó 1 token de reposición al estudiante.',
+          refundTokenGiven: true,
+          newTokens
+        })
+      } else {
+        await patchAirtableRecord('Sessions', sessionId, { 'Status': 'Canceled' })
+        return res.status(200).json({
+          success: true,
+          action: 'test_cancel',
+          message: '❌ Sesión marcada como cancelada'
+        })
+      }
+    }
+
+    // ----------------------------------------------------
+    // ACTION: RESET PROGRESS (Resetear a Clase 1)
+    // ----------------------------------------------------
+    if (action === 'reset') {
+      const firstTopic = curriculumTopics[0]
+      await patchAirtableRecord('Students', studentId, {
+        'Current Topic': [firstTopic.id],
+        'ClassesRemaining': 16,
+        'Tokens': 0
+      })
+
+      return res.status(200).json({
+        success: true,
+        action: 'reset',
+        message: '↺ Avance del estudiante reseteado a la Clase 1 ("' + (firstTopic.fields['Topic Name'] || firstTopic.fields['Title']) + '"). Saldo de clases restaurado a 16.',
+        student: studentName,
+        classesRemaining: 16,
+        tokens: 0
+      })
+    }
+
+    return res.status(400).json({ error: `Acción desconocida: ${action}` })
 
   } catch (err: any) {
-    console.error('Error al simular progreso:', err)
-    return res.status(500).json({ error: 'Error interno del servidor', detail: err.message })
+    console.error('Error en simulador de progreso:', err)
+    return res.status(500).json({ error: 'Error interno en el simulador', detail: err.message })
   }
 }
+
