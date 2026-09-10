@@ -30,13 +30,6 @@ interface StudentProfile {
   teacherName: string | null
 }
 
-interface PocketCoachExercise {
-  id: string
-  content: string
-  date: string
-  topicName: string
-}
-
 export default function StudentDashboardPage() {
   const router = useRouter()
   const [profile, setProfile] = useState<StudentProfile | null>(null)
@@ -49,7 +42,6 @@ export default function StudentDashboardPage() {
   const [teacherAvail, setTeacherAvail] = useState<boolean[][]>([])
   const [redeemMsg, setRedeemMsg] = useState<string | null>(null)
   const [courseTotal, setCourseTotal] = useState(58)
-  const [exercises, setExercises] = useState<PocketCoachExercise[]>([])
   const [calSelectedDate, setCalSelectedDate] = useState<Date | null>(null)
 
   const [showScheduleModal, setShowScheduleModal] = useState(false)
@@ -65,13 +57,13 @@ export default function StudentDashboardPage() {
 
   useEffect(() => {
     const raw = sessionStorage.getItem('ll_student')
-    if (!raw) { router.replace('/'); return }
+    if (!raw) { router.replace('/login'); return }
     let p: StudentProfile
     try {
       p = JSON.parse(raw)
     } catch {
       sessionStorage.removeItem('ll_student')
-      router.replace('/')
+      router.replace('/login')
       return
     }
     setProfile(p)
@@ -86,12 +78,13 @@ export default function StudentDashboardPage() {
       setUpcoming(data.upcomingSessions ?? [])
       setCompleted(data.completedSessions ?? [])
       if (data.totalTopics) setCourseTotal(data.totalTopics)
-    }
-    
-    const exRes = await fetch(`/api/student/exercises?studentId=${sid}`)
-    if (exRes.ok) {
-      const exData = await exRes.json()
-      setExercises(exData.exercises ?? [])
+      if (data.studentProfile) {
+        setProfile(prev => {
+          const updated = { ...(prev || {}), ...data.studentProfile }
+          sessionStorage.setItem('ll_student', JSON.stringify(updated))
+          return updated
+        })
+      }
     }
     setLoading(false)
   }
@@ -474,29 +467,6 @@ export default function StudentDashboardPage() {
             </section>
           )}
 
-          {/* Pocket Coach Exercises */}
-          <section className={styles.card} style={{ gridColumn: '1 / -1' }}>
-            <h2 className={styles.sectionTitle}>🤖 Historial Pocket Coach</h2>
-            {loading && <div className="spinner" />}
-            {!loading && exercises.length === 0 && (
-              <p className={styles.empty}>Tus micro-retos diarios de WhatsApp aparecerán aquí.</p>
-            )}
-            {!loading && exercises.length > 0 && (
-              <div style={{ display: 'grid', gap: '1rem', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))' }}>
-                {exercises.map(ex => (
-                  <div key={ex.id} style={{ background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                      <span style={{ fontSize: '0.75rem', color: '#10b981', fontWeight: 600 }}>{ex.topicName}</span>
-                      <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{formatDate(ex.date)}</span>
-                    </div>
-                    <p style={{ fontSize: '0.9rem', color: '#e2e8f0', margin: 0, whiteSpace: 'pre-wrap' }}>
-                      {ex.content}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            )}
-          </section>
         </div>
 
         {/* === Completed Topics === */}

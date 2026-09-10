@@ -28,8 +28,33 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       .map((r: any) => ((r.fields['Session'] as string[]) ?? [])[0] ?? (r.fields['SessionId'] as string))
       .filter(Boolean)
 
+    // Construct studentProfile for caller
+    const rawTokens = student.fields['Tokens de Reposición'] ?? student.fields['Tokens']
+    const rawClasses = student.fields['ClassesRemaining'] ?? student.fields['Classes Remaining']
+    const teacherId = Array.isArray(student.fields['Teacher']) ? student.fields['Teacher'][0] : (student.fields['Teacher'] as string | null)
+    let teacherName: string | null = null
+
+    if (teacherId) {
+      try {
+        const teacherRec = await fetchAirtableRecord('Teachers', teacherId)
+        if (teacherRec) {
+          teacherName = (teacherRec.fields['Name'] || teacherRec.fields['Full Name']) as string
+        }
+      } catch {}
+    }
+
+    const studentProfile = {
+      id: student.id,
+      name: (student.fields['Full Name'] || student.fields['Name'] || student.fields['FullName'] || 'Estudiante') as string,
+      email: (student.fields['Email'] as string) || '',
+      tokens: typeof rawTokens === 'number' ? rawTokens : (parseInt(rawTokens, 10) || 0),
+      classesRemaining: typeof rawClasses === 'number' ? rawClasses : (parseInt(rawClasses, 10) || 16),
+      teacherId,
+      teacherName
+    }
+
     if (sessionIds.length === 0) {
-      return res.status(200).json({ upcomingSessions: [], completedSessions: [], totalTopics: 60 })
+      return res.status(200).json({ upcomingSessions: [], completedSessions: [], totalTopics: 60, studentProfile })
     }
 
     // 3. Construct filter for Sessions table using the found IDs
@@ -44,7 +69,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       fetchFromAirtable('Sessions', `filterByFormula=${seenFilter}&sort[0][field]=Scheduled%20Date%2FTime&sort[0][direction]=asc&maxRecords=50`)
     ])
 
-    // Resolve topic details for completed sessions
+    // Resolve topic details for sessions
     const resolveTopics = async (records: any[], isUpcoming = false) => {
       return Promise.all(records.map(async (r) => {
         const topicId = ((r.fields['Curriculum Topic'] as string[]) ?? [])[0] ?? null
@@ -55,10 +80,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         if (topicId) {
           const topic = await fetchAirtableRecord('Curriculum Topics', topicId)
           topicOrder = topic?.fields?.['Order'] as number ?? null
-          
+          topicName = (topic?.fields?.['Topic Name'] || topic?.fields?.['Title']) as string ?? null
+
           if (!isUpcoming) {
-            topicName = topic?.fields?.['Topic Name'] as string ?? null
-            
             const rawCache = (topic?.fields?.['Cached Slides'] || topic?.fields?.['fldiMYojT06KFHPBj']) as string | undefined
             if (rawCache) {
               try { cachedSlides = JSON.parse(rawCache) } catch (e) {}
@@ -72,7 +96,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           status: r.fields['Status'],
           topicId: topicId,
           topicOrder: topicOrder,
-          topicName: isUpcoming ? null : topicName,
+          topicName: topicName,
           cachedSlides: cachedSlides,
           isHoliday: !!r.fields['Is Holiday'],
           holidayConfirmedTeacher: !!r.fields['Holiday Confirmed (Teacher)'],
@@ -109,7 +133,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(200).json({ 
       upcomingSessions, 
       completedSessions,
-      totalTopics
+      totalTopics,
+      studentProfile
     })
   } catch (err: any) {
     return res.status(500).json({ error: 'Error al cargar sesiones', detail: err.message })

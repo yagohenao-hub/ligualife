@@ -3,7 +3,8 @@ import {
   fetchAirtableRecord, 
   createAirtableRecord, 
   patchAirtableRecord, 
-  findAirtableRecords 
+  findAirtableRecords,
+  deleteAirtableRecord
 } from '@/lib/airtable'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -50,6 +51,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (curriculumTopics.length === 0) {
       return res.status(404).json({ error: 'No se encontraron temas en el currículo' })
+    }
+
+    const cleanupStudentSessions = async (sid: string) => {
+      try {
+        const participants = await findAirtableRecords('Session Participants', `FIND('${sid}', ARRAYJOIN({Student}, ',')) > 0`)
+        for (const p of participants) {
+          const sessId = Array.isArray(p.fields['Session']) ? p.fields['Session'][0] : p.fields['Session']
+          if (sessId) {
+            await deleteAirtableRecord('Sessions', sessId).catch(() => {})
+          }
+          await deleteAirtableRecord('Session Participants', p.id).catch(() => {})
+        }
+      } catch (e) {
+        console.warn('Error al limpiar sesiones de estudiante:', e)
+      }
     }
 
     // ----------------------------------------------------
@@ -118,6 +134,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(400).json({ error: 'classNumber debe ser un número entero >= 1' })
       }
 
+      await cleanupStudentSessions(studentId)
+
       const sessionsToCreate = targetClassNum - 1
       const createdSessions = []
       const now = new Date()
@@ -150,6 +168,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const currentTopicIndex = (targetClassNum - 1) % curriculumTopics.length
       const currentTopic = curriculumTopics[currentTopicIndex]
 
+      // Schedule upcoming session for target class
+      const upcomingDate = new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000)
+      const upcomingSession = await createAirtableRecord('Sessions', {
+        'Teacher': [teacherId],
+        'Scheduled Date/Time': upcomingDate.toISOString(),
+        'Status': 'Scheduled',
+        'Session Name': `Clase ${targetClassNum}: ${currentTopic.fields['Topic Name'] || currentTopic.fields['Title']} — ${studentName}`,
+        'Curriculum Topic': [currentTopic.id]
+      })
+
+      await createAirtableRecord('Session Participants', {
+        'Session': [upcomingSession.id],
+        'Student': [studentId]
+      })
+
       await patchAirtableRecord('Students', studentId, {
         'Current Topic': [currentTopic.id],
         'ClassesRemaining': parseInt(classesRemaining, 10)
@@ -158,7 +191,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(200).json({
         success: true,
         action: 'set_class',
-        message: `Se estableció la posición del alumno en la Clase #${targetClassNum}. Se simularon ${sessionsToCreate} clases anteriores vistas.`,
+        message: `Se estableció la posición del alumno en la Clase #${targetClassNum}. Se simularon ${sessionsToCreate} clases anteriores vistas y la Clase #${targetClassNum} programada.`,
         student: studentName,
         currentClassNumber: targetClassNum,
         currentTopicAssigned: currentTopic.fields['Topic Name'] || currentTopic.fields['Title'],
@@ -251,7 +284,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // ACTION: RESET PROGRESS (Resetear a Clase 1)
     // ----------------------------------------------------
     if (action === 'reset') {
+      await cleanupStudentSessions(studentId)
+
       const firstTopic = curriculumTopics[0]
+      const upcomingDate = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000)
+      const upcomingSession = await createAirtableRecord('Sessions', {
+        'Teacher': [teacherId],
+        'Scheduled Date/Time': upcomingDate.toISOString(),
+        'Status': 'Scheduled',
+        'Session Name': `Clase 1: ${firstTopic.fields['Topic Name'] || firstTopic.fields['Title']} — ${studentName}`,
+        'Curriculum Topic': [firstTopic.id]
+      })
+
+      await createAirtableRecord('Session Participants', {
+        'Session': [upcomingSession.id],
+        'Student': [studentId]
+      })
+
       await patchAirtableRecord('Students', studentId, {
         'Current Topic': [firstTopic.id],
         'ClassesRemaining': 16,
