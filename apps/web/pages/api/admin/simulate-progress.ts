@@ -41,16 +41,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const studentName = student?.fields?.['FullName'] || student?.fields?.['Full Name'] || 'Estudiante de Prueba'
     const teacherId = reqTeacherId || student?.fields?.['Teacher']?.[0] || 'recTestnj8qdi'
 
-    // 2. Fetch Curriculum Topics
-    const curriculumTopics = await findAirtableRecords('Curriculum Topics', '1=1')
+    // 2. Fetch Curriculum Topics (Estrictamente General English Course)
+    const allTopics = await findAirtableRecords('Curriculum Topics', '1=1')
+    const curriculumTopics = allTopics.filter(t => {
+      const cur = (t.fields['Curriculum'] || '').toString()
+      return cur.includes('General English Course')
+    })
     curriculumTopics.sort((a, b) => {
-      const orderA = (a.fields['Order'] as number) || 0
-      const orderB = (b.fields['Order'] as number) || 0
+      const orderA = parseInt((a.fields['Order'] as any) || '0', 10)
+      const orderB = parseInt((b.fields['Order'] as any) || '0', 10)
       return orderA - orderB
     })
 
     if (curriculumTopics.length === 0) {
-      return res.status(404).json({ error: 'No se encontraron temas en el currículo' })
+      return res.status(404).json({ error: 'No se encontraron temas en el currículo General' })
     }
 
     const cleanupStudentSessions = async (sid: string) => {
@@ -278,6 +282,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           message: '❌ Sesión marcada como cancelada'
         })
       }
+    }
+
+    // ----------------------------------------------------
+    // ACTION: SET PLAN & TOKENS (Configurar Clases Pagas & Tokens)
+    // ----------------------------------------------------
+    if (action === 'set_plan_and_tokens') {
+      const { planClasses = 8, tokens = 0 } = (req.method === 'POST' ? req.body : req.query) as any
+      const validClasses = parseInt(planClasses, 10) || 8
+      const validTokens = parseInt(tokens, 10) >= 0 ? parseInt(tokens, 10) : 0
+
+      await patchAirtableRecord('Students', studentId, {
+        'ClassesRemaining': validClasses,
+        'Tokens de Reposición': validTokens,
+        'Tokens': validTokens
+      })
+
+      return res.status(200).json({
+        success: true,
+        action: 'set_plan_and_tokens',
+        message: `Plan actualizado para ${studentName}: Saldo de ${validClasses} clases pagas y ${validTokens} tokens de reposición.`,
+        classesRemaining: validClasses,
+        tokens: validTokens
+      })
     }
 
     // ----------------------------------------------------

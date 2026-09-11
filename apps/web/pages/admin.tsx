@@ -158,11 +158,15 @@ export default function AdminPage() {
   const [targetClassNum, setTargetClassNum] = useState('5')
   const [manualTeacherId, setManualTeacherId] = useState('')
   const [manualDate, setManualDate] = useState('')
+  const [planClasses, setPlanClasses] = useState('8')
+  const [simTokens, setSimTokens] = useState('0')
 
   function openSimulator(s: Student) {
     setSimulatorStudent(s)
     setSimulatorResult(null)
     setTargetClassNum('5')
+    setPlanClasses(String(s.classesRemaining || 8))
+    setSimTokens(String(s.tokens || 0))
     setManualTeacherId(teachers[0]?.id || '')
     const defaultDate = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000)
     setManualDate(defaultDate.toISOString().slice(0, 16))
@@ -1903,10 +1907,52 @@ export default function AdminPage() {
                 </div>
               </div>
 
-              {/* Action 3: Assign Manual Class */}
+              {/* Action 3: Set Plan Classes & Tokens */}
               <div style={{ marginBottom: '1.25rem', paddingBottom: '1rem', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
                 <div className={styles.fieldLabel} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <span>📅</span> 3. Asignación Manual de Clase (Consumo de Token/Crédito)
+                  <span>💳</span> 3. Paquete de Clases Pagas & Tokens (4, 8 o 12 clases)
+                </div>
+                <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', margin: '0.2rem 0 0.6rem' }}>
+                  Configura directamente el saldo de clases disponibles del plan contratado (1, 2 o 3 clases/semana) y sus tokens de reposición reales.
+                </p>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: '0.5rem', alignItems: 'flex-end' }}>
+                  <div>
+                    <label style={{ fontSize: '0.75rem', opacity: 0.7 }}>Saldo de Clases</label>
+                    <select className={styles.fieldInput} value={planClasses} onChange={e => setPlanClasses(e.target.value)}>
+                      <option value="4">4 Clases (1 clase/sem)</option>
+                      <option value="8">8 Clases (2 clases/sem)</option>
+                      <option value="12">12 Clases (3 clases/sem)</option>
+                      <option value="16">16 Clases (Paquete 2 meses)</option>
+                      <option value="2">2 Clases (Alerta renovación)</option>
+                      <option value="1">1 Clase (Alerta renovación)</option>
+                      <option value="0">0 Clases (Agotado)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '0.75rem', opacity: 0.7 }}>Tokens de Reposición</label>
+                    <input 
+                      type="number" 
+                      min="0" 
+                      className={styles.fieldInput} 
+                      value={simTokens} 
+                      onChange={e => setSimTokens(e.target.value)} 
+                    />
+                  </div>
+                  <button 
+                    className={styles.addBtnSecondary}
+                    style={{ borderColor: '#10b981', color: '#10b981', height: '38px' }}
+                    onClick={() => runSimulatorAction('set_plan_and_tokens', { planClasses, tokens: simTokens })}
+                    disabled={simulatorLoading}
+                  >
+                    Guardar Saldo
+                  </button>
+                </div>
+              </div>
+
+              {/* Action 4: Assign Manual Class */}
+              <div style={{ marginBottom: '1.25rem', paddingBottom: '1rem', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                <div className={styles.fieldLabel} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span>📅</span> 4. Asignación Manual de Clase (Consumo de Token/Crédito)
                 </div>
                 <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', margin: '0.2rem 0 0.6rem' }}>
                   Agenda una lección futura para este estudiante descontando 1 crédito de su saldo.

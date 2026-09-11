@@ -89,6 +89,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             if (rawCache) {
               try { cachedSlides = JSON.parse(rawCache) } catch (e) {}
             }
+            // Si el tema no tiene diapositivas precargadas en DB, generar slides interactivas estructuradas
+            if (!cachedSlides && topic) {
+              const formula = (topic.fields?.['LDS_Formula'] || topic.fields?.['LDSFormula'] || 'Subject + Time Word + Action') as string
+              const context = (topic.fields?.['AI_Context'] || topic.fields?.['AIContext'] || 'Práctica conversacional y fluidez') as string
+              const title = topicName || `Clase ${topicOrder || ''}`
+
+              cachedSlides = [
+                {
+                  title: `🎯 ${title} — Concepto Clave`,
+                  content: `<p>Bienvenido al material de <b>${title}</b>. En esta lección trabajamos la estructura del inglés natural:</p><p style="padding: 10px; background: rgba(124, 58, 237, 0.1); border-left: 4px solid #7c3aed; border-radius: 4px;"><b>Patrón Mental:</b> ${formula}</p>`
+                },
+                {
+                  title: `⚡ Aplicación Práctica`,
+                  content: `<p><b>Enfoque comunicativo:</b> ${context}</p><ul><li>Usa la <i>Palabra de Tiempo</i> correcta para situar el momento de la acción.</li><li>Mantén la estructura limpia sin traducciones literales desde el español.</li></ul>`
+                },
+                {
+                  title: `🚀 Reto de Dominio`,
+                  content: `<p>Practica armando 2 oraciones en voz alta o escríbeselas a tu <b>Pocket Coach</b> en WhatsApp para recibir feedback inmediato.</p>`
+                }
+              ]
+            }
           }
         }
 
@@ -112,8 +133,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       resolveTopics(completed, false),
     ])
 
-    // ── Total topics in the database (default 60) ───────────────────────────
-    const totalTopics = 60
+    // ── Total topics in the database (General English Course: 60 temas) ─────
+    let totalTopics = 60
+    try {
+      const curTopics = await findAirtableRecords('Curriculum Topics', `FIND('General English Course', {Curriculum}) > 0`)
+      if (curTopics && curTopics.length > 0) {
+        totalTopics = curTopics.length
+      }
+    } catch {}
 
     return res.status(200).json({ 
       upcomingSessions, 
