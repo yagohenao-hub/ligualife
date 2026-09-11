@@ -199,23 +199,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // -------------------------------------------------------------
     let thread = threadCache.get(cleanDigits) || [];
     
-    // Si la memoria en caché expiró (más de 1.5 horas), limpiar
+    // Manejo de expiración en memoria caché (más de 90 minutos de inactividad -> reseteo natural)
     if (thread.length > 0 && now - thread[thread.length - 1].time > 90 * 60 * 1000) {
       thread = [];
-    }
-
-    // Si la memoria local está vacía, intentar hidratar desde Notes del estudiante
-    let existingNotes = '';
-    if (studentRec?.fields?.Notes) {
-      existingNotes = studentRec.fields.Notes.toString();
-      if (thread.length === 0 && existingNotes.includes('[CHAT_THREAD]:')) {
-        try {
-          const match = existingNotes.match(/\[CHAT_THREAD\]:\s*(\[[^\]]+\])/);
-          if (match && match[1]) {
-            thread = JSON.parse(match[1]);
-          }
-        } catch (e) {}
-      }
     }
 
     // Compactar historial: tomar últimos 4 mensajes y truncar texto a 140 chars
@@ -276,27 +262,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Enviar respuesta por WhatsApp con simulación de escritura humana
     await EvolutionAPI.sendText(phone, aiResponseText);
 
-    // Actualizar historial de la conversación (mantener últimos 4 mensajes con texto recortado)
+    // Actualizar historial en memoria volátil (mantener últimos 4 mensajes con texto recortado)
+    // Cero escrituras en la base de datos para no gastar I/O ni sobreescribir notas
     const truncatedInput = textContent.slice(0, 140);
     const truncatedAi = aiResponseText.slice(0, 140);
     thread.push({ role: 'user', text: truncatedInput, time: now });
     thread.push({ role: 'model', text: truncatedAi, time: Date.now() });
     if (thread.length > 4) thread = thread.slice(-4);
     threadCache.set(cleanDigits, thread);
-
-    // Persistir el hilo en Notes sin destruir datos previos (intereses o notas de asesor)
-    if (studentId) {
-      const cleanExistingNotes = existingNotes
-        .replace(/\[CHAT_THREAD\]:\s*\[[^\]]+\]/g, '')
-        .replace(/\s+/g, ' ')
-        .trim();
-      const compactThreadStr = JSON.stringify(thread.map((t: any) => ({ role: t.role, text: t.text })));
-      const notesWithThread = cleanExistingNotes 
-        ? `${cleanExistingNotes} | [CHAT_THREAD]: ${compactThreadStr}`
-        : `[CHAT_THREAD]: ${compactThreadStr}`;
-
-      await patchAirtableRecord('Students', studentId, { Notes: notesWithThread }).catch(() => {});
-    }
 
     return res.status(200).json({ success: true, mode: 'conversational', model: usedModel });
 
