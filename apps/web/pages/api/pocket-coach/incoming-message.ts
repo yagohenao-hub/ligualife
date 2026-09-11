@@ -65,16 +65,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       setTimeout(() => processedMessageIds.delete(key.id), 120000); // 2 minutos de expiración
     }
 
-    // Extraer texto (conversation, extendedTextMessage o mensaje de audio)
+    // Extraer texto (conversation, extendedTextMessage, imagen/documento o mensaje de audio)
     const isAudio = Boolean(messageData.audioMessage || messageData.message?.audioMessage);
+    const isImage = Boolean(messageData.imageMessage || messageData.message?.imageMessage || messageData.documentMessage || messageData.message?.documentMessage);
     let textContent = messageData.conversation || 
                       messageData.extendedTextMessage?.text || 
                       messageData.message?.conversation || 
                       messageData.message?.extendedTextMessage?.text || 
+                      messageData.imageMessage?.caption ||
+                      messageData.message?.imageMessage?.caption ||
+                      messageData.documentMessage?.caption ||
+                      messageData.message?.documentMessage?.caption ||
                       messageData.text || '';
                       
     if (isAudio && !textContent.trim()) {
       textContent = '[Nota de Voz / Audio del estudiante]';
+    } else if (isImage && !textContent.trim()) {
+      textContent = 'comprobante de pago enviado';
     }
 
     if (!textContent.trim()) {

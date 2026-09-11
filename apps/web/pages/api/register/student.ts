@@ -41,6 +41,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(400).json({ error: 'Por favor ingresa tu nombre completo (al menos dos nombres/apellidos)' })
   }
 
+  // Normalize phone number to guarantee country code for WhatsApp (57 for Colombia)
+  let cleanPhone = phoneDigits
+  if (cleanPhone.length === 10 && cleanPhone.startsWith('3')) {
+    cleanPhone = '57' + cleanPhone
+  }
+
   try {
     // Generate unique PIN (checked against Students AND Teachers, retry up to 10 times)
     let pin = ''
@@ -57,14 +63,33 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const fields: Record<string, unknown> = {
+      "Full Name": fullName,
+      "FullName": fullName,
+      "Email": email,
+      "Phone": cleanPhone,
+      "PIN": pin,
+      "Timezone": timezone || 'America/Bogota',
+      "Status": "Active",
+      "Age Range": ageRange,
+      "ageRange": ageRange,
+      "Goal": goalId ? [goalId] : [],
+      "Interests": Array.isArray(interests) ? interests.join(',') : '',
+      "interests": Array.isArray(interests) ? interests : [],
+      "Availability": typeof availability === 'string' ? availability : JSON.stringify(availability || []),
+      "availability": availability,
+      "Open to Group Classes": openToGroups ?? false,
+      "openToGroups": openToGroups ?? false,
+      "Tokens de Reposición": 0,
+      "Tokens": 0,
+      // Legacy Airtable IDs mapping as fallback
       "fldbdDNucZwILRMwO": fullName,
       "fldxAsAn6aQDHRR9U": email,
-      "fldu8P3X4o9P4V9dn": phone,
+      "fldu8P3X4o9P4V9dn": cleanPhone,
       "fld1Vi2ti4xdraYyo": ageRange,
       "fld6HZD7X8hzgGCUX": goalId ? [goalId] : [],
       "fldTfNhYtykGeDx1x": Array.isArray(interests) ? interests : [],
       "fldmPdharKvZzqsMq": availability,
-      "fldXUKKO28Wr1dN76": "Pending",
+      "fldXUKKO28Wr1dN76": "Active",
       "flddBUJK1K42KKsJv": openToGroups,
       "fldsq1cfz7OnxNfm9": timezone || 'America/Bogota',
       "fld3C6vGWEA7RR1LM": pin
@@ -75,9 +100,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       record = await createAirtableRecord('Students', fields)
     } catch (err: any) {
       console.warn('Primer intento de crear estudiante falló:', err)
-      if (fields["fld6HZD7X8hzgGCUX"] && (fields["fld6HZD7X8hzgGCUX"] as any[]).length > 0) {
+      if (fields["Goal"] && (fields["Goal"] as any[]).length > 0) {
         console.warn('Reintentando sin el campo Goal/Objetivo...')
-        const coreFields = { ...fields, "fld6HZD7X8hzgGCUX": [] }
+        const coreFields = { ...fields, "Goal": [], "fld6HZD7X8hzgGCUX": [] }
         record = await createAirtableRecord('Students', coreFields)
       } else {
         throw err
@@ -87,7 +112,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Enviar mensaje de bienvenida vía WhatsApp (Pocket Coach)
     try {
       const welcomeMessage = `¡Hola ${fullName.split(' ')[0]}! 🎉 Bienvenido/a a LinguaLife.\n\nSoy tu *Pocket Coach*, tu tutor personal de inteligencia artificial.\n\nTu registro se ha completado exitosamente. Tu PIN de acceso a la plataforma es: *${pin}*\n\nPor favor envía el comprobante de pago a tu asesor para activar tu cuenta y agendar tus primeras clases.\n\n¡Estoy aquí para ayudarte a dominar el inglés! 🚀`;
-      await EvolutionAPI.sendText(phone, welcomeMessage);
+      await EvolutionAPI.sendText(cleanPhone, welcomeMessage);
     } catch (wpError) {
       console.error('Error enviando mensaje de bienvenida por WhatsApp:', wpError);
       // No bloqueamos el registro exitoso si WhatsApp falla

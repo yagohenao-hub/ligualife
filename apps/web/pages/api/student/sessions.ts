@@ -112,25 +112,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       resolveTopics(completed, false),
     ])
 
-    // ── Dynamically count total topics from the student's goal curriculum ──────
-    let totalTopics = 0
-    try {
-      const goalIds = (student.fields['Goal'] as string[]) ?? []
-      const goalId = goalIds[0]
-      if (goalId) {
-        // Find curricula linked to this goal
-        const curriculaRes = await fetchFromAirtable(
-          'Curriculum Topics',
-          `filterByFormula=${encodeURIComponent(`FIND('${goalId}', ARRAYJOIN({Goal (link)}, ',')) > 0`)}&fields[]=Order`
-        )
-        totalTopics = (curriculaRes.records ?? []).length
-      }
-    } catch {
-      // non-fatal: fall back to completed + upcoming count
-      totalTopics = upcomingSessions.length + completedSessions.length || 1
-    }
-    if (totalTopics === 0) totalTopics = upcomingSessions.length + completedSessions.length || 1
-    // ───────────────────────────────────────────────────────────────────────────
+    // ── Total topics in the database (default 60) ───────────────────────────
+    const totalTopics = 60
 
     return res.status(200).json({ 
       upcomingSessions, 

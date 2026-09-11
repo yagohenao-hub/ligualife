@@ -41,7 +41,7 @@ export default function StudentDashboardPage() {
   const [selectedTopic, setSelectedTopic] = useState<StudentSession | null>(null)
   const [teacherAvail, setTeacherAvail] = useState<boolean[][]>([])
   const [redeemMsg, setRedeemMsg] = useState<string | null>(null)
-  const [courseTotal, setCourseTotal] = useState(58)
+  const [courseTotal, setCourseTotal] = useState(60)
   const [calSelectedDate, setCalSelectedDate] = useState<Date | null>(null)
 
   const [showScheduleModal, setShowScheduleModal] = useState(false)
@@ -395,19 +395,6 @@ export default function StudentDashboardPage() {
               )
             })}
           </section>
-
-          {/* Current Topic Indicator (Next Upcoming) */}
-          {upcoming.length > 0 && !loading && (
-            <section className={styles.card} style={{ border: '1px solid rgba(16, 185, 129, 0.3)', background: 'linear-gradient(180deg, rgba(16, 185, 129, 0.05) 0%, transparent 100%)' }}>
-              <h2 className={styles.sectionTitle}>🎯 Tema en Progreso</h2>
-              <div style={{ fontSize: '1.1rem', fontWeight: 500, color: '#f8fafc', marginBottom: '0.5rem' }}>
-                {upcoming.find(s => s.topicName && !s.isHoliday)?.topicName || 'Próxima lección'}
-              </div>
-              <p className={styles.empty} style={{ margin: 0 }}>
-                Prepárate para esta clase. Tu profesor utilizará el <em>Filtro Colombiano</em> para enfocar tu aprendizaje.
-              </p>
-            </section>
-          )}
 
           {/* Tokens */}
           <section className={styles.card}>

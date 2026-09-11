@@ -165,17 +165,17 @@ export async function createDBRecord(table: string, fields: Record<string, any>)
 
   if (dbTable === 'students') {
     row = {
-      "Full Name": fields.FullName || fields.Name || fields['Full Name'],
-      "Email": fields.Email,
-      "Phone": fields.Phone,
-      "Timezone": fields.timezone || 'America/Bogota',
-      "PIN": fields.PIN || fields.Pin,
-      "Status": fields.Status || 'Active',
-      "Age Range": fields.ageRange,
-      "Interests": Array.isArray(fields.interests) ? fields.interests.join(',') : '',
-      "Availability": typeof fields.availability === 'string' ? fields.availability : JSON.stringify(fields.availability || []),
-      "Open to Group Classes": fields.openToGroups || false,
-      "Tokens de Reposición": fields.Tokens || 0
+      "Full Name": fields['Full Name'] || fields.FullName || fields.fullName || fields.Name || fields.name || fields['fldbdDNucZwILRMwO'] || null,
+      "Email": fields.Email || fields.email || fields['fldxAsAn6aQDHRR9U'] || null,
+      "Phone": fields.Phone || fields.phone || fields['fldu8P3X4o9P4V9dn'] || null,
+      "Timezone": fields.Timezone || fields.timezone || fields['fldsq1cfz7OnxNfm9'] || 'America/Bogota',
+      "PIN": fields.PIN || fields.pin || fields.Pin || fields['fld3C6vGWEA7RR1LM'] || null,
+      "Status": fields.Status || fields.status || fields['fldXUKKO28Wr1dN76'] || 'Active',
+      "Age Range": fields['Age Range'] || fields.ageRange || fields['fld1Vi2ti4xdraYyo'] || null,
+      "Interests": Array.isArray(fields.interests) ? fields.interests.join(',') : (fields.Interests || fields['fldTfNhYtykGeDx1x'] || ''),
+      "Availability": typeof fields.availability === 'string' ? fields.availability : (typeof fields['Availability'] === 'string' ? fields['Availability'] : JSON.stringify(fields.availability || [])),
+      "Open to Group Classes": fields['Open to Group Classes'] ?? fields.openToGroups ?? fields.openToGroupClasses ?? false,
+      "Tokens de Reposición": fields['Tokens de Reposición'] ?? fields.Tokens ?? fields.tokens ?? 0
     }
   } else if (dbTable === 'teachers') {
     row = {
