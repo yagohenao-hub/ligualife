@@ -154,7 +154,7 @@ REGLAS CRÍTICAS DE CONVERSACIÓN HUMANA:
 export function buildWelcomeMessage(studentName: string): string {
   return `¡Hola, ${studentName}! 👋 Soy tu *Pocket Coach de LinguaLife*.
 
-Estaré acompañándote de lunes a viernes con micro-píldoras de 20 segundos para potenciar tu inglés profesional sin interrumpir tu rutina diaria.
+Estaré acompañándote todos los días con micro-píldoras de 20 segundos para potenciar tu inglés profesional sin interrumpir tu rutina diaria.
 
 📱 *Un paso clave para estar siempre conectados:*
 Por favor *guarda este número en tus contactos de WhatsApp* como *Pocket Coach LinguaLife*.

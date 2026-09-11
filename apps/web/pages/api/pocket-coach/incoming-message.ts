@@ -194,30 +194,35 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // -------------------------------------------------------------
-    // 4. HISTORIAL DE CONVERSACIÓN MULTI-TURN (ANTI-REPETICIÓN DE SALUDOS)
+    // 4. HISTORIAL DE CONVERSACIÓN COMPACTO & EFICIENTE (MEMORIA RECIENTE)
+    // Reducido a 4 turnos y truncado a 140 chars para max performance y ahorro de tokens
     // -------------------------------------------------------------
     let thread = threadCache.get(cleanDigits) || [];
     
-    // Si la memoria en caché expiró (más de 3 horas), limpiar
-    if (thread.length > 0 && now - thread[thread.length - 1].time > 3 * 60 * 60 * 1000) {
+    // Si la memoria en caché expiró (más de 1.5 horas), limpiar
+    if (thread.length > 0 && now - thread[thread.length - 1].time > 90 * 60 * 1000) {
       thread = [];
     }
 
     // Si la memoria local está vacía, intentar hidratar desde Notes del estudiante
-    if (thread.length === 0 && studentRec?.fields?.Notes) {
-      const notesStr = studentRec.fields.Notes.toString();
-      if (notesStr.includes('[CHAT_THREAD]:')) {
+    let existingNotes = '';
+    if (studentRec?.fields?.Notes) {
+      existingNotes = studentRec.fields.Notes.toString();
+      if (thread.length === 0 && existingNotes.includes('[CHAT_THREAD]:')) {
         try {
-          const jsonStr = notesStr.split('[CHAT_THREAD]:')[1].split('\n')[0].trim();
-          thread = JSON.parse(jsonStr);
+          const match = existingNotes.match(/\[CHAT_THREAD\]:\s*(\[[^\]]+\])/);
+          if (match && match[1]) {
+            thread = JSON.parse(match[1]);
+          }
         } catch (e) {}
       }
     }
 
-    // Construir string de historial para el prompt
-    const formattedHistory = thread.slice(-6).map((m: { role: 'user' | 'model'; text: string }) => {
+    // Compactar historial: tomar últimos 4 mensajes y truncar texto a 140 chars
+    const compactHistory = thread.slice(-4).map((m: { role: 'user' | 'model'; text: string }) => {
       const author = m.role === 'user' ? cleanFirstName : 'Coach';
-      return `${author}: "${m.text}"`;
+      const safeText = (m.text || '').replace(/\s+/g, ' ').slice(0, 140);
+      return `${author}: "${safeText}"`;
     }).join('\n');
 
     console.log(`[Pocket Coach] Conversando con ${cleanFirstName} (${phone}). Mensajes previos en hilo: ${thread.length}`);
@@ -226,38 +231,74 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const conversationalPrompt = buildConversationalPrompt(
       cleanFirstName,
       textContent,
-      formattedHistory,
+      compactHistory,
       currentTopicTitle,
       ldsFormula
     );
 
-    const model = genAI.getGenerativeModel({
-      model: 'gemini-3.5-flash',
-      generationConfig: {
-        temperature: 0.8,
-        topP: 0.95,
-      }
-    });
+    // CASCADA DE MODELOS ULTRA LIVIANOS Y ECONÓMICOS
+    // Prioridad: gemini-3.1-flash-lite -> gemini-3.5-flash-lite -> gemini-flash-lite-latest -> gemini-3.5-flash
+    const liteModelCandidates = [
+      'gemini-3.1-flash-lite',
+      'gemini-3.5-flash-lite',
+      'gemini-flash-lite-latest',
+      'gemini-3.5-flash'
+    ];
 
-    const result = await model.generateContent(conversationalPrompt);
-    const aiResponseText = result.response.text().trim();
+    let aiResponseText = '';
+    let usedModel = '';
+
+    for (const modelName of liteModelCandidates) {
+      try {
+        const selectedModel = genAI.getGenerativeModel({
+          model: modelName,
+          generationConfig: {
+            temperature: 0.75,
+            topP: 0.95,
+            maxOutputTokens: 250,
+          }
+        });
+        const result = await selectedModel.generateContent(conversationalPrompt);
+        aiResponseText = result.response.text().trim();
+        usedModel = modelName;
+        break;
+      } catch (genErr: any) {
+        console.warn(`[Pocket Coach] Falló modelo ${modelName}:`, genErr?.message || genErr);
+      }
+    }
+
+    if (!aiResponseText) {
+      throw new Error('No se pudo generar respuesta con ninguno de los modelos de IA livianos.');
+    }
+
+    console.log(`[Pocket Coach] Respuesta generada con modelo económico [${usedModel}]`);
 
     // Enviar respuesta por WhatsApp con simulación de escritura humana
     await EvolutionAPI.sendText(phone, aiResponseText);
 
-    // Actualizar historial de la conversación (mantener últimos 8 mensajes)
-    thread.push({ role: 'user', text: textContent, time: now });
-    thread.push({ role: 'model', text: aiResponseText, time: Date.now() });
-    if (thread.length > 8) thread = thread.slice(-8);
+    // Actualizar historial de la conversación (mantener últimos 4 mensajes con texto recortado)
+    const truncatedInput = textContent.slice(0, 140);
+    const truncatedAi = aiResponseText.slice(0, 140);
+    thread.push({ role: 'user', text: truncatedInput, time: now });
+    thread.push({ role: 'model', text: truncatedAi, time: Date.now() });
+    if (thread.length > 4) thread = thread.slice(-4);
     threadCache.set(cleanDigits, thread);
 
-    // Persistir el hilo en Notes para que sobreviva reinicios
+    // Persistir el hilo en Notes sin destruir datos previos (intereses o notas de asesor)
     if (studentId) {
-      const notesWithThread = `[CHAT_THREAD]: ${JSON.stringify(thread.slice(-6))}`;
+      const cleanExistingNotes = existingNotes
+        .replace(/\[CHAT_THREAD\]:\s*\[[^\]]+\]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+      const compactThreadStr = JSON.stringify(thread.map((t: any) => ({ role: t.role, text: t.text })));
+      const notesWithThread = cleanExistingNotes 
+        ? `${cleanExistingNotes} | [CHAT_THREAD]: ${compactThreadStr}`
+        : `[CHAT_THREAD]: ${compactThreadStr}`;
+
       await patchAirtableRecord('Students', studentId, { Notes: notesWithThread }).catch(() => {});
     }
 
-    return res.status(200).json({ success: true, mode: 'conversational' });
+    return res.status(200).json({ success: true, mode: 'conversational', model: usedModel });
 
   } catch (error: any) {
     console.error('Error procesando el webhook de WhatsApp:', error);

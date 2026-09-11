@@ -53,13 +53,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     }
 
-    const model = genAI.getGenerativeModel({
-      model: 'gemini-3.5-flash',
-      generationConfig: {
-        temperature: 0.85,
-        topP: 0.95,
-      }
-    });
+    // JITTER DE ARRANQUE ALEATORIO:
+    // Si la llamada proviene del cron automático de Vercel (GET), introducir un retraso aleatorio
+    // de entre 5 y 120 segundos para que nunca coincida exactamente al mismo segundo exacto
+    const isCronTrigger = req.method === 'GET';
+    if (isCronTrigger && !req.query.immediate) {
+      const initialJitterMs = 5000 + Math.floor(Math.random() * 115000);
+      console.log(`[Dispatch Cron] Aplicando jitter anti-patrón de ${Math.round(initialJitterMs / 1000)}s antes de iniciar envíos...`);
+      await new Promise(r => setTimeout(r, initialJitterMs));
+    }
 
     const results = [];
 
@@ -114,47 +116,65 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           aiContext = randomB2.context;
         }
 
-        // Generar el micro-reto en formato estructurado (sin revelar la respuesta en el mensaje al alumno)
+        // Generar el micro-reto en formato estructurado
         const prompt = buildDispatchPrompt(studentName, topicTitle, ldsFormula, aiContext, interests);
-        let geminiResult: any;
-        let attempts = 0;
-        let currentModel = model;
+        
+        // Cascada de modelos livianos y económicos
+        const liteModelCandidates = [
+          'gemini-3.1-flash-lite',
+          'gemini-3.5-flash-lite',
+          'gemini-flash-lite-latest',
+          'gemini-3.5-flash'
+        ];
 
-        while (attempts < 3) {
+        let messageToSend = '';
+        let usedModel = '';
+
+        for (const modelName of liteModelCandidates) {
           try {
-            attempts++;
-            geminiResult = await currentModel.generateContent(prompt);
+            const m = genAI.getGenerativeModel({
+              model: modelName,
+              generationConfig: {
+                temperature: 0.85,
+                topP: 0.95,
+                maxOutputTokens: 400
+              }
+            });
+            const geminiResult = await m.generateContent(prompt);
+            messageToSend = geminiResult.response.text().trim();
+            usedModel = modelName;
             break;
           } catch (e: any) {
-            console.warn(`[Gemini Attempt ${attempts} Failed]:`, e?.message || e);
-            if (attempts < 3) {
-              await new Promise(r => setTimeout(r, attempts * 2000));
-              if (attempts === 2) {
-                currentModel = genAI.getGenerativeModel({ model: 'gemini-flash-latest' });
-              }
-            } else {
-              throw e;
-            }
+            console.warn(`[Dispatch] Intento con modelo ${modelName} falló:`, e?.message || e);
           }
         }
 
-        const messageToSend = geminiResult.response.text().trim();
+        if (!messageToSend) {
+          throw new Error('No se pudo generar el contenido con ninguno de los modelos disponibles.');
+        }
 
         // Enviar el micro-drop autocontenido con simulación humana
         const evoRes = await EvolutionAPI.sendText(phone, messageToSend);
-        console.log(`[Dispatch] Micro-drop enviado a ${studentName} (${phone}):`, evoRes?.key?.id || 'OK');
+        console.log(`[Dispatch] Micro-drop enviado a ${studentName} (${phone}) usando [${usedModel}]:`, evoRes?.key?.id || 'OK');
 
-        // Registrar el último envío en Notes para historial
-        const notesContent = `[LAST_DROP]: ${topicTitle} | ${new Date().toISOString()}`;
+        // Registrar el último envío en Notes preservando información anterior (intereses, etc.)
+        const currentNotes = (student.fields.Notes || '').toString();
+        const cleanNotesWithoutDrop = currentNotes.replace(/\[LAST_DROP\]:[^|]+\|[^|]+/g, '').trim();
+        const dropStamp = `[LAST_DROP]: ${topicTitle} | ${new Date().toISOString()}`;
+        const updatedNotes = cleanNotesWithoutDrop 
+          ? `${cleanNotesWithoutDrop} | ${dropStamp}`
+          : dropStamp;
+
         await patchAirtableRecord('Students', studentId, {
-          Notes: notesContent
+          Notes: updatedNotes
         }).catch(err => console.warn(`[Dispatch] No se pudo guardar contexto en Notes de ${studentId}:`, err.message));
 
-        results.push({ student: studentName, phone, status: 'sent' });
+        results.push({ student: studentName, phone, status: 'sent', model: usedModel });
 
-        // JITTER HUMANO: Pausa variable entre 4 y 8 segundos entre envíos para simular actividad humana
+        // JITTER HUMANO ENTRE ALUMNOS: Pausa variable entre 4 y 9 segundos para simular actividad humana realista
         if (i < activeStudents.length - 1) {
-          const jitterDelay = 4000 + Math.floor(Math.random() * 4000);
+          const jitterDelay = 4000 + Math.floor(Math.random() * 5000);
+          console.log(`[Dispatch] Esperando ${Math.round(jitterDelay/1000)}s antes del próximo envío para proteger reputación...`);
           await new Promise(r => setTimeout(r, jitterDelay));
         }
 

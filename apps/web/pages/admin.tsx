@@ -377,6 +377,27 @@ export default function AdminPage() {
     alert(`¡Se activó el Pocket Coach para ${valid.length} alumnos!`)
   }
 
+  async function triggerManualDispatch() {
+    if (!confirm('¿Deseas disparar ahora el envío de Micro-Drops del Pocket Coach a los alumnos activos?')) return
+    try {
+      const res = await fetch('/api/pocket-coach/dispatch?immediate=true', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${ADMIN_TOKEN}`
+        }
+      })
+      const data = await res.json()
+      if (res.ok && data.success) {
+        alert(`¡Despacho completado! Procesados: ${data.processed?.length || 0} estudiantes.`)
+      } else {
+        alert(`Aviso de despacho: ${data.error || data.message || 'Verifica el log del servidor'}`)
+      }
+    } catch (e: any) {
+      alert(`Error disparando despacho: ${e.message}`)
+    }
+  }
+
   async function adjustTokens(s: Student, delta: number) {
     const newTokens = Math.max(0, s.tokens + delta)
     await fetch('/api/admin/students', {
@@ -997,6 +1018,14 @@ export default function AdminPage() {
                     title="Activa el Pocket Coach para todos los estudiantes con número de WhatsApp válido"
                   >
                     🤖 Activar Pocket Coach Global
+                  </button>
+                  <button 
+                    className={styles.addBtn} 
+                    style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)', border: 'none' }}
+                    onClick={triggerManualDispatch}
+                    title="Dispara inmediatamente el envío del Micro-Drop a los alumnos activos"
+                  >
+                    ⚡ Enviar Micro-Drop Manual
                   </button>
                   <button className={styles.addBtn} onClick={openCreateStudent}>+ Nuevo Alumno</button>
                   <button className={styles.addBtnSecondary} onClick={() => { setLinkForm({ studentIds: [], teacherId: '', notes: '', selectedDays: [], selectedTimes: {} }); setShowLinkModal(true); }}>🔗 Vincular Grupo</button>
