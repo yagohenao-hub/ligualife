@@ -53,16 +53,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     }
 
-    // JITTER DE ARRANQUE ALEATORIO:
-    // Si la llamada proviene del cron automático de Vercel (GET), introducir un retraso aleatorio
-    // de entre 5 y 120 segundos para que nunca coincida exactamente al mismo segundo exacto
-    const isCronTrigger = req.method === 'GET';
-    if (isCronTrigger && !req.query.immediate) {
-      const initialJitterMs = 5000 + Math.floor(Math.random() * 115000);
-      console.log(`[Dispatch Cron] Aplicando jitter anti-patrón de ${Math.round(initialJitterMs / 1000)}s antes de iniciar envíos...`);
-      await new Promise(r => setTimeout(r, initialJitterMs));
-    }
-
+    // Iniciar despacho inmediatamente para cumplir con la ventana de ejecución de Serverless Vercel
     const results = [];
 
     // Banco variado de temas ejecutivos B1-C1
