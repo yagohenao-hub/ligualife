@@ -1103,6 +1103,50 @@
   line-height: 1.4;
 }
 
+.seriesCardFull {
+  grid-column: 1 / -1;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-glass);
+  border-radius: 14px;
+  padding: 1.5rem;
+}
+
+.infoTooltipHover {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  margin-left: 0.5rem;
+  cursor: help;
+}
+
+.infoTooltipHover .infoTooltipBox {
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #18181b;
+  border: 1px solid var(--border-glass);
+  color: var(--text-primary);
+  font-size: 0.75rem;
+  padding: 0.6rem 0.85rem;
+  border-radius: 8px;
+  width: 250px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+  visibility: hidden;
+  opacity: 0;
+  transition: all 0.2s;
+  z-index: 20;
+  pointer-events: none;
+  line-height: 1.45;
+  text-align: left;
+}
+
+.infoTooltipHover:hover .infoTooltipBox {
+  visibility: visible;
+  opacity: 1;
+  bottom: 140%;
+}
+
 /* ══════════════════════════════════════════════════════
    SECCIÓN COMING SOON (MÓDULOS EN DESARROLLO)
    ══════════════════════════════════════════════════════ */
@@ -1116,60 +1160,96 @@
 
 .comingSoonGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1rem;
-  margin-top: 1rem;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  margin-top: 1.25rem;
 }
 
 .comingItem {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  padding: 1.15rem;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 1.5rem;
   position: relative;
   overflow: hidden;
-  opacity: 0.85;
-  transition: all 0.2s;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
 .comingItem:hover {
-  opacity: 1;
-  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(124, 58, 237, 0.4);
   transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+
+.comingItem::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent);
+  animation: shineComing 6s infinite;
+}
+
+@keyframes shineComing {
+  0% { left: -100%; }
+  20% { left: 100%; }
+  100% { left: 100%; }
 }
 
 .comingHeader {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.75rem;
 }
 
 .comingIcon {
-  font-size: 1.5rem;
+  font-size: 1.75rem;
 }
 
 .comingBadge {
   background: rgba(245, 158, 11, 0.12);
   border: 1px solid rgba(245, 158, 11, 0.3);
   color: #fbbf24;
-  font-size: 0.65rem;
+  font-size: 0.7rem;
   font-weight: 700;
-  padding: 0.15rem 0.5rem;
+  padding: 0.25rem 0.75rem;
   border-radius: 50px;
   text-transform: uppercase;
   letter-spacing: 0.06em;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.comingPulse {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #fbbf24;
+  animation: pulseDot 1.5s infinite;
+}
+
+@keyframes pulseDot {
+  0% { transform: scale(0.9); opacity: 0.4; }
+  50% { transform: scale(1.3); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.4; }
 }
 
 .comingTitle {
-  font-size: 0.95rem;
+  font-size: 1.15rem;
   font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: 0.35rem;
+  margin-bottom: 0.45rem;
 }
 
 .comingDesc {
-  font-size: 0.78rem;
+  font-size: 0.88rem;
   color: var(--text-secondary);
-  line-height: 1.45;
+  line-height: 1.6;
 }
+
 

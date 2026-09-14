@@ -391,8 +391,16 @@ export default function StudentDashboardPage() {
         {/* === Progress Bar === */}
         <div className={styles.progressCard}>
           <div className={styles.progressHeader}>
-            <span className={styles.progressLabel}>🎯 Progreso Integral & Maestría</span>
-            <span className={styles.progressPct}>{completedCount} de {courseTotal} temas · {combinedPct}%</span>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <span className={styles.progressLabel}>🎯 Progreso General</span>
+              <span className={styles.infoTooltipHover}>
+                <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>ⓘ</span>
+                <span className={styles.infoTooltipBox}>
+                  Calculado combinando los temas vistos en clase (70%) con tu nivel de platinado acumulado en repasos (30%).
+                </span>
+              </span>
+            </div>
+            <span className={styles.progressPct}>{combinedPct}%</span>
           </div>
           <div className={styles.progressTrack}>
             <div className={styles.progressFill} style={{ width: `${combinedPct}%` }} />
@@ -401,18 +409,6 @@ export default function StudentDashboardPage() {
             <span>{completedCount} temas vistos (70%) + nivel de platinado acumulado (30%)</span>
             {combinedPct >= 90 && <span className={styles.badge}>💎 ¡Nivel Maestro Platino!</span>}
             {combinedPct >= 50 && combinedPct < 90 && <span className={styles.badge}>🏆 ¡Gran avance!</span>}
-          </div>
-          
-          <div style={{ marginTop: '1.5rem', padding: '1rem', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div>
-              <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Saldo de Clases Disponibles</div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 600, color: '#10b981' }}>{profile.classesRemaining ?? 0} clases</div>
-            </div>
-            {(profile.classesRemaining ?? 0) <= 2 && (
-              <div style={{ fontSize: '0.8rem', color: '#fbbf24', background: 'rgba(251, 191, 36, 0.1)', padding: '0.5rem 1rem', borderRadius: '8px' }}>
-                ⚠️ Paquete por terminar. ¡Hora de renovar!
-              </div>
-            )}
           </div>
         </div>
 
@@ -438,18 +434,8 @@ export default function StudentDashboardPage() {
                     </div>
                     {s.topicName && <div className={styles.sessionTopic}>{s.topicName}</div>}
                     {isSkipped && (
-                      <div className={styles.holidayAlert}>
-                        ⚠️ Clase cancelada por festivo.
-                        <button 
-                          className={styles.holidayConfirmBtn}
-                          onClick={() => handleConfirmHoliday(s)}
-                          disabled={s.holidayConfirmedStudent}
-                        >
-                          {s.holidayConfirmedStudent ? '✓ Confirmado por ti' : 'Ver clase de todos modos'}
-                        </button>
-                        <div className={styles.holidayStatusText}>
-                          Estado: {s.holidayConfirmedTeacher ? '✅ Profesor confirmó' : '⏳ Profesor pendiente'}
-                        </div>
+                      <div className={styles.skippedNote}>
+                        🏖️ Día festivo. Esta clase se reprogramará automáticamente.
                       </div>
                     )}
                   </div>
@@ -492,14 +478,14 @@ export default function StudentDashboardPage() {
             )}
           </section>
 
-          {/* Series Request Section */}
-          <section className={styles.card}>
+          {/* Series Request Section - Full Width */}
+          <section className={styles.seriesCardFull}>
             <h2 className={styles.sectionTitle}>🎬 Actividad de Serie</h2>
-            <p className={styles.empty}>¿Viendo una serie nueva? Pídenos una actividad pedagógica (1 por semana).</p>
+            <p className={styles.empty}>¿Viendo una serie nueva? Pídenos una actividad pedagógica adaptada a tu nivel (1 por semana).</p>
             <div className={styles.seriesRequestBox}>
               <input
                 className={styles.seriesInput}
-                placeholder="Nombre de la serie..."
+                placeholder="Nombre de la serie que estás viendo..."
                 value={seriesName}
                 onChange={e => setSeriesName(e.target.value)}
                 disabled={seriesLoading}
@@ -509,7 +495,7 @@ export default function StudentDashboardPage() {
                 onClick={handleSeriesRequest}
                 disabled={seriesLoading || !seriesName.trim()}
               >
-                {seriesLoading ? '...' : 'Solicitar'}
+                {seriesLoading ? '...' : 'Solicitar Actividad'}
               </button>
             </div>
             {seriesMsg && (
@@ -539,9 +525,16 @@ export default function StudentDashboardPage() {
         {/* === Completed Topics === */}
         <section className={styles.topicsCard}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-            <h2 className={styles.sectionTitle} style={{ margin: 0 }}>✅ Temas & Rango de Maestría</h2>
-            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-              <span>🪵 Madera ➔ 🪨 Hierro ➔ 🥉 Bronce ➔ 🥈 Plata ➔ 🥇 Oro ➔ 💎 Platino</span>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <h2 className={styles.sectionTitle} style={{ margin: 0 }}>📚 Repasa lo que has visto</h2>
+              <span className={styles.infoTooltipHover}>
+                <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>ⓘ</span>
+                <span className={styles.infoTooltipBox}>
+                  <strong>Escala de Maestría:</strong><br />
+                  🪵 Madera ➔ 🪨 Hierro ➔ 🥉 Bronce ➔ 🥈 Plata ➔ 🥇 Oro ➔ 💎 Platino.<br />
+                  Genera ejercicios interactivos cada 12 horas para subir el rango de cada tema y mejorar tu progreso general.
+                </span>
+              </span>
             </div>
           </div>
           {loading && <div className="spinner" />}
@@ -576,10 +569,13 @@ export default function StudentDashboardPage() {
             <div>
               <h2 className={styles.sectionTitle} style={{ margin: 0 }}>🚀 Próximamente en LinguaLife</h2>
               <p className={styles.sub} style={{ marginTop: '0.2rem' }}>
-                Nuevas herramientas inmersivas y sistema de logros actualmente en laboratorio para nuestros estudiantes.
+                Nuevas herramientas inmersivas y sistema de logros actualmente en desarrollo activo.
               </p>
             </div>
-            <span className={styles.comingBadge}>En Desarrollo</span>
+            <span className={styles.comingBadge}>
+              <span className={styles.comingPulse} />
+              En Desarrollo
+            </span>
           </div>
 
           <div className={styles.comingSoonGrid}>
@@ -589,43 +585,43 @@ export default function StudentDashboardPage() {
                 <span className={styles.comingBadge}>Logros</span>
               </div>
               <div className={styles.comingTitle}>Sistema de Logros & Recompensas</div>
-              <div className={styles.comingDesc}>Desbloquea clases extra, medallas de constancia y recompensas exclusivas al platinar temas y completar retos.</div>
+              <div className={styles.comingDesc}>Medallas de constancia, hitos de fluidez y recompensas al platinar temas y completar retos continuos.</div>
             </div>
 
             <div className={styles.comingItem}>
               <div className={styles.comingHeader}>
                 <span className={styles.comingIcon}>🌆</span>
-                <span className={styles.comingBadge}>Próximamente</span>
+                <span className={styles.comingBadge}>Inmersión</span>
               </div>
               <div className={styles.comingTitle}>Interactive Scene Explorer</div>
-              <div className={styles.comingDesc}>Exploración espacial de vocabulario en escenas 3D interactivas con pronunciación nativa y contexto real.</div>
+              <div className={styles.comingDesc}>Exploración visual e interactiva en escenarios cotidianos 2D con vocabulario contextual y pronunciación paso a paso.</div>
             </div>
 
             <div className={styles.comingItem}>
               <div className={styles.comingHeader}>
                 <span className={styles.comingIcon}>📚</span>
-                <span className={styles.comingBadge}>Próximamente</span>
+                <span className={styles.comingBadge}>Lectura</span>
               </div>
               <div className={styles.comingTitle}>Libros Bilingües & Readers</div>
-              <div className={styles.comingDesc}>Lecturas graduadas con traducción contextual instantánea a un clic y audio narrado por nativos.</div>
+              <div className={styles.comingDesc}>Lecturas graduadas con traducción contextual instantánea al hacer clic en cualquier párrafo o palabra desconocida.</div>
             </div>
 
             <div className={styles.comingItem}>
               <div className={styles.comingHeader}>
                 <span className={styles.comingIcon}>📺</span>
-                <span className={styles.comingBadge}>Próximamente</span>
+                <span className={styles.comingBadge}>Audiovisual</span>
               </div>
               <div className={styles.comingTitle}>Banco de Videos Nativos</div>
-              <div className={styles.comingDesc}>Clips de audio real seleccionados por nivel para entrenar el oído con acentos reales del mundo anglosajón.</div>
+              <div className={styles.comingDesc}>Colección curada de videos reales de la web y YouTube clasificados por nivel para acostumbrar tu oído a la velocidad cotidiana.</div>
             </div>
 
             <div className={styles.comingItem}>
               <div className={styles.comingHeader}>
                 <span className={styles.comingIcon}>🗂️</span>
-                <span className={styles.comingBadge}>Próximamente</span>
+                <span className={styles.comingBadge}>Repetición Activa</span>
               </div>
-              <div className={styles.comingTitle}>Vocabulary Practicer</div>
-              <div className={styles.comingDesc}>Algoritmo de repetición espaciada (SRS) inteligente para fijar frases y phrasal verbs en tu memoria a largo plazo.</div>
+              <div className={styles.comingTitle}>Vocabulary Practicer (Flashcards)</div>
+              <div className={styles.comingDesc}>Tarjetas interactivas de repaso basadas en las escenas visuales y tus clases para afianzar vocabulario a largo plazo.</div>
             </div>
           </div>
         </section>

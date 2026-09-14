@@ -193,14 +193,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       } catch {}
     }
 
-    // ── Total topics in the database (General English Course: 60 temas) ─────
-    let totalTopics = 60
-    try {
-      const curTopics = await findAirtableRecords('Curriculum Topics', `FIND('General English Course', {Curriculum}) > 0`)
-      if (curTopics && curTopics.length > 0) {
-        totalTopics = curTopics.length
-      }
-    } catch {}
+    // ── Total topics oficial (General English Course: 60 temas) ─────────
+    const totalTopics = 60
 
     return res.status(200).json({ 
       upcomingSessions, 
