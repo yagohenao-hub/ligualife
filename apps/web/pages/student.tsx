@@ -391,27 +391,57 @@ export default function StudentDashboardPage() {
           </button>
         </div>
 
-        {/* === Progress Bar === */}
-        <div className={styles.progressCard}>
-          <div className={styles.progressHeader}>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <span className={styles.progressLabel}>🎯 Progreso General</span>
-              <span className={styles.infoTooltipHover}>
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>ⓘ</span>
-                <span className={styles.infoTooltipBox}>
-                  Calculado combinando los temas vistos en clase (70%) con tu nivel de platinado acumulado en repasos (30%).
-                </span>
-              </span>
+        {/* === Cockpit Progress Card (Border Beam Luminous) === */}
+        <div className={`${styles.progressCard} borderBeam`}>
+          <div className={styles.progressTopRow}>
+            <div className={styles.cockpitStatusBadge}>
+              <span className={styles.statusLiveDot} />
+              <span>General English · 60 Temas</span>
             </div>
-            <span className={styles.progressPct}>{combinedPct}%</span>
+            {combinedPct >= 90 ? (
+              <span className={styles.badgeGold}>💎 Nivel Maestro Platino</span>
+            ) : combinedPct >= 50 ? (
+              <span className={styles.badgeGold}>🏆 Nivel Avanzado</span>
+            ) : (
+              <span className={styles.badgeGold}>⚡ Ruta Activa</span>
+            )}
           </div>
+
+          <div className={styles.cockpitMainGrid}>
+            <div>
+              <div className={styles.cockpitPct}>{combinedPct}<span className={styles.pctSign}>%</span></div>
+              <div className={styles.cockpitLabel}>
+                <span>Progreso Integral</span>
+                <span className={styles.infoTooltipHover}>
+                  <span className={styles.infoIcon}>ⓘ</span>
+                  <span className={styles.infoTooltipBox}>
+                    Calculado combinando los temas vistos en clase (70%) con tu nivel de platinado acumulado en repasos (30%).
+                  </span>
+                </span>
+              </div>
+            </div>
+
+            <div className={styles.cockpitPillsCol}>
+              <div className={styles.cockpitPill}>
+                <span className={styles.cockpitPillIcon}>📚</span>
+                <div className={styles.cockpitPillText}>
+                  <span className={styles.cockpitPillTitle}>{completedCount} de {courseTotal} clases vistas</span>
+                  <span className={styles.cockpitPillSub}>70% de peso en tu avance</span>
+                </div>
+              </div>
+
+              <div className={styles.cockpitPill}>
+                <span className={styles.cockpitPillIcon}>💎</span>
+                <div className={styles.cockpitPillText}>
+                  <span className={styles.cockpitPillTitle}>Maestría acumulada</span>
+                  <span className={styles.cockpitPillSub}>30% de peso en tu avance</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div className={styles.progressTrack}>
             <div className={styles.progressFill} style={{ width: `${combinedPct}%` }} />
-          </div>
-          <div className={styles.progressMeta}>
-            <span>{completedCount} temas vistos (70%) + nivel de platinado acumulado (30%)</span>
-            {combinedPct >= 90 && <span className={styles.badge}>💎 ¡Nivel Maestro Platino!</span>}
-            {combinedPct >= 50 && combinedPct < 90 && <span className={styles.badge}>🏆 ¡Gran avance!</span>}
           </div>
         </div>
 
@@ -557,7 +587,7 @@ export default function StudentDashboardPage() {
                   title={`Tema #${s.topicOrder}: ${s.topicName} — Rango: ${tierCfg.name} (${tierCfg.stars})`}
                 >
                   <span className={styles.tierBadge}>{tierCfg.icon}</span>
-                  <span className={styles.topicNum}>{s.topicOrder ?? '–'}</span>
+                  <span className={styles.topicNum}>{s.topicOrder ? String(s.topicOrder).padStart(2, '0') : '–'}</span>
                   <span className={styles.topicName}>{s.topicName ?? 'Clase completada'}</span>
                   {s.cachedSlides && <span className={styles.viewSlides} style={{ marginLeft: '4px' }}>📖</span>}
                 </button>

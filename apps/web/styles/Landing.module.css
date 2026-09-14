@@ -276,35 +276,43 @@
 }
 
 .sectionTag {
-  color: #34d399;
-  font-size: 0.825rem;
+  font-family: var(--font-mono);
+  color: #fbbf24;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  box-shadow: inset 0 1px 0 rgba(254, 240, 138, 0.2);
+  padding: 0.3rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  margin-bottom: 0.5rem;
-  display: block;
+  letter-spacing: 0.08em;
+  margin-bottom: 1rem;
+  display: inline-block;
 }
 
 .sectionTitle {
-  font-size: 2.35rem;
+  font-family: var(--font-display);
+  font-size: 2.85rem;
   font-weight: 800;
   letter-spacing: -0.03em;
   margin-bottom: 1rem;
+  line-height: 1.15;
 }
 
 .sectionSubtitle {
-  font-size: 1.05rem;
-  color: #9ca3af;
-  line-height: 1.55;
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
 }
 
 /* Simulator Mockup Window */
 .simulatorCard {
-  background: rgba(18, 18, 24, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--surface-1);
+  border: 1px solid var(--border-subtle);
   border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+  box-shadow: var(--bevel-top), 0 25px 60px -12px rgba(0, 0, 0, 0.8);
   display: grid;
   grid-template-columns: 1fr 1.1fr;
   min-height: 540px;
@@ -312,7 +320,7 @@
 
 .simControls {
   padding: 2.25rem;
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  border-right: 1px solid var(--border-subtle);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -324,56 +332,62 @@
 
 .simLabel {
   display: block;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #d4d4d8;
-  margin-bottom: 0.6rem;
+  font-family: var(--font-heading);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
 }
 
 .simPillGrid {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.6rem;
 }
 
 .simPill {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #a1a1aa;
-  padding: 0.45rem 0.85rem;
-  border-radius: 8px;
-  font-size: 0.8rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border-subtle);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  color: var(--text-secondary);
+  padding: 0.5rem 0.95rem;
+  border-radius: 10px;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s var(--ease-spring);
 }
 
 .simPill:hover {
-  border-color: rgba(124, 58, 237, 0.4);
-  color: #e4e4e7;
+  border-color: rgba(245, 158, 11, 0.4);
+  color: var(--text-primary);
+  transform: translateY(-1px);
 }
 
 .simPillActive {
-  background: rgba(124, 58, 237, 0.2);
-  border-color: #7c3aed;
-  color: #c4b5fd;
-  font-weight: 600;
+  background: rgba(245, 158, 11, 0.12);
+  border-color: #f59e0b;
+  box-shadow: inset 0 1px 0 rgba(254, 240, 138, 0.3), 0 0 12px var(--accent-amber-glow);
+  color: #fef08a;
+  font-weight: 700;
 }
 
 .simInput {
   width: 100%;
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid var(--border-subtle);
   color: #fff;
-  padding: 0.75rem 1rem;
-  border-radius: 10px;
-  font-size: 0.9rem;
+  padding: 0.85rem 1.1rem;
+  border-radius: 12px;
+  font-size: 0.92rem;
   outline: none;
-  transition: border 0.2s ease;
+  transition: all 0.25s var(--ease-spring);
 }
 
 .simInput:focus {
-  border-color: #7c3aed;
+  border-color: #f59e0b;
+  box-shadow: 0 0 16px var(--accent-amber-glow);
 }
 
 /* WhatsApp Phone Viewport */
@@ -476,18 +490,23 @@
 }
 
 .botTranslation {
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: #53bdeb;
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #38bdf8;
+  line-height: 1.4;
 }
 
 .botFormulaBox {
-  background: rgba(0, 0, 0, 0.3);
-  border-left: 3px solid #7c3aed;
-  padding: 0.6rem 0.85rem;
-  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.45);
+  border-left: 3px solid #f59e0b;
+  border-radius: 6px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  padding: 0.75rem 1rem;
+  font-family: var(--font-mono);
   font-size: 0.8rem;
-  color: #d1d5db;
+  color: #fef08a;
+  line-height: 1.45;
 }
 
 .botAudioBtn {

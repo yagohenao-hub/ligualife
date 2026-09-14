@@ -85,7 +85,7 @@ export function PocketCoachSimulator() {
           </p>
         </div>
 
-        <div className={styles.simulatorCard}>
+        <div className={`${styles.simulatorCard} borderBeam`}>
           {/* Controls side */}
           <div className={styles.simControls}>
             <div>
