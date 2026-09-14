@@ -145,6 +145,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       'd9782e46-fbd3-4dc5-8f1b-12872550309b', // Nicolas Iván Polo Lara
       'f8227ed6-8e8a-4694-a70b-d1de3301734a', // Santiago (Santi.mon)
       'eaa81235-349d-410e-8860-1b536cd8b2f7', // Sebastian Vélez
+      '2ce10e96-f820-42ca-b30b-3ba99061c260', // Jose Yepes
       'recStudent1'                           // Mock / ID de prueba
     ]
 

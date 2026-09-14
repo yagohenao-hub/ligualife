@@ -1,17 +1,46 @@
 :root {
-  --bg-primary: #0a0a0f;
-  --bg-secondary: #13131a;
-  --bg-glass: rgba(255, 255, 255, 0.05);
-  --border-glass: rgba(255, 255, 255, 0.1);
-  --text-primary: #f0f0f5;
-  --text-secondary: #8888aa;
+  /* ── Background & Surfaces (Obsidian Layering) ── */
+  --bg-primary: #08090c;
+  --bg-secondary: #0d0f15;
+  --surface-0: #0d0f15;
+  --surface-1: #13161f;
+  --surface-2: #1a1e2b;
+  --surface-3: #24293a;
+  --bg-glass: rgba(19, 22, 31, 0.75);
+
+  /* ── Borders & Bevel Highlights ── */
+  --border-glass: rgba(255, 255, 255, 0.08);
+  --border-subtle: rgba(255, 255, 255, 0.07);
+  --border-highlight: rgba(255, 255, 255, 0.15);
+  --border-amber: rgba(245, 158, 11, 0.4);
+  --bevel-top: inset 0 1px 0 rgba(255, 255, 255, 0.09);
+
+  /* ── Typography Palette ── */
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+
+  /* ── Accent Colors (Warm Studio Craft) ── */
+  --accent-amber: #f59e0b;
+  --accent-amber-hover: #d97706;
+  --accent-amber-glow: rgba(245, 158, 11, 0.25);
+
   --accent-purple: #7c3aed;
-  --accent-blue: #3b82f6;
+  --accent-indigo: #6366f1;
+  --accent-indigo-glow: rgba(99, 102, 241, 0.2);
+  --accent-blue: #38bdf8;
   --accent-green: #10b981;
-  --accent-red: #ef4444;
-  --accent: var(--accent-purple);
-  --font-heading: 'Outfit', sans-serif;
-  --font-body: 'Inter', sans-serif;
+  --accent-red: #f43f5e;
+  --accent: var(--accent-amber);
+
+  /* ── Typography System ── */
+  --font-heading: 'Plus Jakarta Sans', 'Outfit', sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* ── Motion & Physics ── */
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-snappy: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 * {
@@ -25,21 +54,33 @@ html, body {
   color: var(--text-primary);
   font-family: var(--font-body);
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
+/* ── Tactile Glass & Surfaces ── */
 .glass {
-  background: var(--bg-glass);
-  border: 1px solid var(--border-glass);
+  background: var(--surface-1);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--bevel-top), 0 8px 32px rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-radius: 16px;
 }
 
+.font-heading {
+  font-family: var(--font-heading);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
 .spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid var(--border-glass);
-  border-top-color: var(--accent-purple);
+  width: 36px;
+  height: 36px;
+  border: 3px solid rgba(255, 255, 255, 0.08);
+  border-top-color: var(--accent-amber);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   margin: 2rem auto;
@@ -50,10 +91,10 @@ html, body {
 }
 
 .error-message {
-  color: var(--accent-red);
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  border-radius: 8px;
+  color: #fca5a5;
+  background: rgba(244, 63, 94, 0.1);
+  border: 1px solid rgba(244, 63, 94, 0.25);
+  border-radius: 10px;
   padding: 0.75rem 1rem;
   font-size: 0.875rem;
 }

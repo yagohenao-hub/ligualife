@@ -100,26 +100,29 @@ export default function StudentDashboardPage() {
     setLoading(false)
   }
 
-  async function handleTrainTopic(topicOrder: number) {
-    if (!profile) return
-    setTrainingLoading(true)
+  async function handleOpenTopicModal(session: StudentSession) {
+    setSelectedTopic(session)
+    setPracticeCards([])
     setCooldownMsg(null)
+    const order = session.topicOrder ?? 0
+    if (!profile || !order) return
+    
+    // Subida automática de maestría con cooldown de 12 horas al entrar a la lección
     try {
       const res = await fetch('/api/student/topic-mastery', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ studentId: profile.id, topicOrder })
+        body: JSON.stringify({ studentId: profile.id, topicOrder: order })
       })
       const data = await res.json()
       if (data.ok) {
         setMasteryMap(data.masteryMap)
+        setCooldownMsg(`🎉 ¡Subiste de rango en este tema! Podrás subir nuevamente en 12 horas si vuelves a repasar.`)
       } else if (data.cooldownActive) {
-        setCooldownMsg(`⏳ Podrás subir a tu siguiente rango en ${data.remainingText}. ¡Repasa el material mientras tanto!`)
+        setCooldownMsg(`⏳ Si vuelves a repasar en ${data.remainingText}, vas a subir la maestría en este tema.`)
       }
     } catch {
-      setCooldownMsg('Error al registrar entrenamiento')
-    } finally {
-      setTrainingLoading(false)
+      // Silencioso para no bloquear la lectura de slides
     }
   }
 
@@ -550,7 +553,7 @@ export default function StudentDashboardPage() {
                 <button
                   key={s.id}
                   className={`${styles.topicChip} ${tierCfg.class} ${s.cachedSlides ? styles.topicClickable : ''}`}
-                  onClick={() => s.cachedSlides && setSelectedTopic(s)}
+                  onClick={() => s.cachedSlides && handleOpenTopicModal(s)}
                   title={`Tema #${s.topicOrder}: ${s.topicName} — Rango: ${tierCfg.name} (${tierCfg.stars})`}
                 >
                   <span className={styles.tierBadge}>{tierCfg.icon}</span>
@@ -665,7 +668,7 @@ export default function StudentDashboardPage() {
                         Nivel {currentTier} de 6 — {tierCfg.name}
                       </div>
                       <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                        {currentTier === 6 ? '¡Lección platinada al 100%!' : 'Entrena esta lección cada 12h para subir de rango.'}
+                        {currentTier === 6 ? '¡Lección platinada al 100%!' : 'La maestría de este tema se actualiza automáticamente al repasar.'}
                       </div>
                     </div>
                   </div>
@@ -678,16 +681,6 @@ export default function StudentDashboardPage() {
                     >
                       {practiceLoading ? '⚡ Generando...' : '⚡ Practicar con IA'}
                     </button>
-
-                    {currentTier < 6 && (
-                      <button
-                        className={styles.trainBtn}
-                        onClick={() => handleTrainTopic(order)}
-                        disabled={trainingLoading}
-                      >
-                        {trainingLoading ? '...' : '⭐ Subir Rango'}
-                      </button>
-                    )}
                   </div>
                 </div>
 
