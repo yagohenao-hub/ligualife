@@ -55,6 +55,16 @@ export default function StudentDashboardPage() {
   const [seriesLoading, setSeriesLoading] = useState(false)
   const [seriesMsg, setSeriesMsg] = useState<{ text: string; type: 'success' | 'error' } | null>(null)
 
+  // Mastery / Platinado State (6 Tiers)
+  const [masteryMap, setMasteryMap] = useState<Record<number, { tier: number; lastTrainedAt: string }>>({})
+  const [trainingLoading, setTrainingLoading] = useState(false)
+  const [cooldownMsg, setCooldownMsg] = useState<string | null>(null)
+
+  // AI Practice Cards State
+  const [practiceCards, setPracticeCards] = useState<any[]>([])
+  const [practiceLoading, setPracticeLoading] = useState(false)
+  const [revealedSolutions, setRevealedSolutions] = useState<Record<number, boolean>>({})
+
   useEffect(() => {
     const raw = sessionStorage.getItem('ll_student')
     if (!raw) { router.replace('/login'); return }
@@ -78,6 +88,7 @@ export default function StudentDashboardPage() {
       setUpcoming(data.upcomingSessions ?? [])
       setCompleted(data.completedSessions ?? [])
       if (data.totalTopics) setCourseTotal(data.totalTopics)
+      if (data.masteryMap) setMasteryMap(data.masteryMap)
       if (data.studentProfile) {
         setProfile(prev => {
           const updated = { ...(prev || {}), ...data.studentProfile }
@@ -87,6 +98,66 @@ export default function StudentDashboardPage() {
       }
     }
     setLoading(false)
+  }
+
+  async function handleTrainTopic(topicOrder: number) {
+    if (!profile) return
+    setTrainingLoading(true)
+    setCooldownMsg(null)
+    try {
+      const res = await fetch('/api/student/topic-mastery', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ studentId: profile.id, topicOrder })
+      })
+      const data = await res.json()
+      if (data.ok) {
+        setMasteryMap(data.masteryMap)
+      } else if (data.cooldownActive) {
+        setCooldownMsg(`⏳ Podrás subir a tu siguiente rango en ${data.remainingText}. ¡Repasa el material mientras tanto!`)
+      }
+    } catch {
+      setCooldownMsg('Error al registrar entrenamiento')
+    } finally {
+      setTrainingLoading(false)
+    }
+  }
+
+  async function handleGeneratePractice(topic: StudentSession) {
+    setPracticeLoading(true)
+    setPracticeCards([])
+    setRevealedSolutions({})
+    try {
+      const res = await fetch('/api/student/generate-practice', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          studentName: profile?.name,
+          topicName: topic.topicName,
+          level: 'B1'
+        })
+      })
+      const data = await res.json()
+      if (data.cards) {
+        setPracticeCards(data.cards)
+      }
+    } catch {
+      alert('Error al generar tarjetas de práctica')
+    } finally {
+      setPracticeLoading(false)
+    }
+  }
+
+  function getTierConfig(tier: number) {
+    switch (tier) {
+      case 2: return { name: 'Hierro', icon: '🪨', class: styles.tier2, stars: '★★☆☆☆☆' }
+      case 3: return { name: 'Bronce', icon: '🥉', class: styles.tier3, stars: '★★★☆☆☆' }
+      case 4: return { name: 'Plata', icon: '🥈', class: styles.tier4, stars: '★★★★☆☆' }
+      case 5: return { name: 'Oro', icon: '🥇', class: styles.tier5, stars: '★★★★★☆' }
+      case 6: return { name: 'Platino', icon: '💎', class: styles.tier6, stars: '★★★★★★' }
+      case 1:
+      default: return { name: 'Madera', icon: '🪵', class: styles.tier1, stars: '★☆☆☆☆☆' }
+    }
   }
 
   async function handleReschedule(session: StudentSession) {
@@ -279,7 +350,15 @@ export default function StudentDashboardPage() {
   }
 
   const completedCount = completed.length
-  const progressPct = courseTotal > 0 ? Math.round((completedCount / courseTotal) * 100) : 0
+  // Cálculo de Progreso Enriquecido: 70% por completar clases + 30% por platinado de temas
+  const classProgress = courseTotal > 0 ? (completedCount / courseTotal) : 0
+  const maxMasteryPoints = courseTotal * 6
+  let earnedMasteryPoints = 0
+  for (let i = 1; i <= courseTotal; i++) {
+    earnedMasteryPoints += (masteryMap[i]?.tier || 1)
+  }
+  const masteryProgress = maxMasteryPoints > 0 ? (earnedMasteryPoints / maxMasteryPoints) : 0
+  const combinedPct = Math.min(100, Math.round((classProgress * 0.7 + masteryProgress * 0.3) * 100))
 
   if (!profile) return null
 
@@ -312,15 +391,16 @@ export default function StudentDashboardPage() {
         {/* === Progress Bar === */}
         <div className={styles.progressCard}>
           <div className={styles.progressHeader}>
-            <span className={styles.progressLabel}>🎯 Tu Progreso</span>
-            <span className={styles.progressPct}>{completedCount} tema{completedCount !== 1 ? 's' : ''} completado{completedCount !== 1 ? 's' : ''}</span>
+            <span className={styles.progressLabel}>🎯 Progreso Integral & Maestría</span>
+            <span className={styles.progressPct}>{completedCount} de {courseTotal} temas · {combinedPct}%</span>
           </div>
           <div className={styles.progressTrack}>
-            <div className={styles.progressFill} style={{ width: `${progressPct}%` }} />
+            <div className={styles.progressFill} style={{ width: `${combinedPct}%` }} />
           </div>
           <div className={styles.progressMeta}>
-            {progressPct}% del camino recorrido
-            {progressPct >= 50 && <span className={styles.badge}>🏆 ¡Más de la mitad!</span>}
+            <span>{completedCount} temas vistos (70%) + nivel de platinado acumulado (30%)</span>
+            {combinedPct >= 90 && <span className={styles.badge}>💎 ¡Nivel Maestro Platino!</span>}
+            {combinedPct >= 50 && combinedPct < 90 && <span className={styles.badge}>🏆 ¡Gran avance!</span>}
           </div>
           
           <div style={{ marginTop: '1.5rem', padding: '1rem', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -458,60 +538,226 @@ export default function StudentDashboardPage() {
 
         {/* === Completed Topics === */}
         <section className={styles.topicsCard}>
-          <h2 className={styles.sectionTitle}>✅ Temas Completados</h2>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+            <h2 className={styles.sectionTitle} style={{ margin: 0 }}>✅ Temas & Rango de Maestría</h2>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+              <span>🪵 Madera ➔ 🪨 Hierro ➔ 🥉 Bronce ➔ 🥈 Plata ➔ 🥇 Oro ➔ 💎 Platino</span>
+            </div>
+          </div>
           {loading && <div className="spinner" />}
           {!loading && completed.length === 0 && (
             <p className={styles.empty}>Aún no has completado ningún tema. ¡Tu primera clase marcará el inicio de tu camino!</p>
           )}
           <div className={styles.topicsGrid}>
-            {[...completed].sort((a,b) => (a.topicOrder ?? 0) - (b.topicOrder ?? 0)).map((s) => (
-              <button
-                key={s.id}
-                className={`${styles.topicChip} ${s.cachedSlides ? styles.topicClickable : ''}`}
-                onClick={() => s.cachedSlides && setSelectedTopic(s)}
-                title={s.cachedSlides ? 'Ver material de esta clase' : undefined}
-              >
-                <span className={styles.topicNum}>{s.topicOrder ?? '–'}</span>
-                <span className={styles.topicName}>{s.topicName ?? 'Clase completada'}</span>
-                {s.cachedSlides && <span className={styles.viewSlides}>📖</span>}
-              </button>
-            ))}
+            {[...completed].sort((a,b) => (a.topicOrder ?? 0) - (b.topicOrder ?? 0)).map((s) => {
+              const currentTier = masteryMap[s.topicOrder ?? 0]?.tier || 1
+              const tierCfg = getTierConfig(currentTier)
+
+              return (
+                <button
+                  key={s.id}
+                  className={`${styles.topicChip} ${tierCfg.class} ${s.cachedSlides ? styles.topicClickable : ''}`}
+                  onClick={() => s.cachedSlides && setSelectedTopic(s)}
+                  title={`Tema #${s.topicOrder}: ${s.topicName} — Rango: ${tierCfg.name} (${tierCfg.stars})`}
+                >
+                  <span className={styles.tierBadge}>{tierCfg.icon}</span>
+                  <span className={styles.topicNum}>{s.topicOrder ?? '–'}</span>
+                  <span className={styles.topicName}>{s.topicName ?? 'Clase completada'}</span>
+                  {s.cachedSlides && <span className={styles.viewSlides} style={{ marginLeft: '4px' }}>📖</span>}
+                </button>
+              )
+            })}
+          </div>
+        </section>
+
+        {/* === Próximamente en LinguaLife (Laboratorio en Desarrollo) === */}
+        <section className={styles.comingSoonCard}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <h2 className={styles.sectionTitle} style={{ margin: 0 }}>🚀 Próximamente en LinguaLife</h2>
+              <p className={styles.sub} style={{ marginTop: '0.2rem' }}>
+                Nuevas herramientas inmersivas y sistema de logros actualmente en laboratorio para nuestros estudiantes.
+              </p>
+            </div>
+            <span className={styles.comingBadge}>En Desarrollo</span>
+          </div>
+
+          <div className={styles.comingSoonGrid}>
+            <div className={styles.comingItem}>
+              <div className={styles.comingHeader}>
+                <span className={styles.comingIcon}>🏆</span>
+                <span className={styles.comingBadge}>Logros</span>
+              </div>
+              <div className={styles.comingTitle}>Sistema de Logros & Recompensas</div>
+              <div className={styles.comingDesc}>Desbloquea clases extra, medallas de constancia y recompensas exclusivas al platinar temas y completar retos.</div>
+            </div>
+
+            <div className={styles.comingItem}>
+              <div className={styles.comingHeader}>
+                <span className={styles.comingIcon}>🌆</span>
+                <span className={styles.comingBadge}>Próximamente</span>
+              </div>
+              <div className={styles.comingTitle}>Interactive Scene Explorer</div>
+              <div className={styles.comingDesc}>Exploración espacial de vocabulario en escenas 3D interactivas con pronunciación nativa y contexto real.</div>
+            </div>
+
+            <div className={styles.comingItem}>
+              <div className={styles.comingHeader}>
+                <span className={styles.comingIcon}>📚</span>
+                <span className={styles.comingBadge}>Próximamente</span>
+              </div>
+              <div className={styles.comingTitle}>Libros Bilingües & Readers</div>
+              <div className={styles.comingDesc}>Lecturas graduadas con traducción contextual instantánea a un clic y audio narrado por nativos.</div>
+            </div>
+
+            <div className={styles.comingItem}>
+              <div className={styles.comingHeader}>
+                <span className={styles.comingIcon}>📺</span>
+                <span className={styles.comingBadge}>Próximamente</span>
+              </div>
+              <div className={styles.comingTitle}>Banco de Videos Nativos</div>
+              <div className={styles.comingDesc}>Clips de audio real seleccionados por nivel para entrenar el oído con acentos reales del mundo anglosajón.</div>
+            </div>
+
+            <div className={styles.comingItem}>
+              <div className={styles.comingHeader}>
+                <span className={styles.comingIcon}>🗂️</span>
+                <span className={styles.comingBadge}>Próximamente</span>
+              </div>
+              <div className={styles.comingTitle}>Vocabulary Practicer</div>
+              <div className={styles.comingDesc}>Algoritmo de repetición espaciada (SRS) inteligente para fijar frases y phrasal verbs en tu memoria a largo plazo.</div>
+            </div>
           </div>
         </section>
       </div>
 
       {/* === Material Modal === */}
-      {selectedTopic && selectedTopic.cachedSlides && (
-        <div className={styles.modalOverlay} onClick={() => setSelectedTopic(null)}>
-          <div className={styles.modal} onClick={e => e.stopPropagation()}>
-            <div className={styles.modalHeader}>
-              <span>Material de Clase: {selectedTopic.topicName}</span>
-              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                <button 
-                  className={styles.pdfBtnSmall} 
-                  onClick={() => downloadSlidesPDF(selectedTopic)}
-                  title="Descargar como PDF"
-                >
-                  ⬇ PDF
-                </button>
-                <button className={styles.modalClose} onClick={() => setSelectedTopic(null)}>✕</button>
+      {selectedTopic && selectedTopic.cachedSlides && (() => {
+        const order = selectedTopic.topicOrder ?? 0
+        const currentTier = masteryMap[order]?.tier || 1
+        const tierCfg = getTierConfig(currentTier)
+
+        return (
+          <div className={styles.modalOverlay} onClick={() => { setSelectedTopic(null); setPracticeCards([]); setCooldownMsg(null) }}>
+            <div className={styles.modal} onClick={e => e.stopPropagation()}>
+              <div className={styles.modalHeader}>
+                <div>
+                  <span style={{ fontWeight: 700 }}>Material de Clase: {selectedTopic.topicName}</span>
+                  <div style={{ fontSize: '0.8rem', color: '#f59e0b', marginTop: '0.2rem' }}>
+                    Rango Actual: {tierCfg.icon} <strong>{tierCfg.name}</strong> ({tierCfg.stars})
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                  <button 
+                    className={styles.pdfBtnSmall} 
+                    onClick={() => downloadSlidesPDF(selectedTopic)}
+                    title="Descargar como PDF"
+                  >
+                    ⬇ PDF
+                  </button>
+                  <button className={styles.modalClose} onClick={() => { setSelectedTopic(null); setPracticeCards([]); setCooldownMsg(null) }}>✕</button>
+                </div>
+              </div>
+              
+              <div className={styles.slidesContainer}>
+                {/* Barra de Acción de Maestría & Práctica IA */}
+                <div className={styles.masteryBarWrap}>
+                  <div className={styles.masteryStatus}>
+                    <span style={{ fontSize: '1.5rem' }}>{tierCfg.icon}</span>
+                    <div>
+                      <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#fff' }}>
+                        Nivel {currentTier} de 6 — {tierCfg.name}
+                      </div>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                        {currentTier === 6 ? '¡Lección platinada al 100%!' : 'Entrena esta lección cada 12h para subir de rango.'}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                    <button
+                      className={styles.aiPracticeBtn}
+                      onClick={() => handleGeneratePractice(selectedTopic)}
+                      disabled={practiceLoading}
+                    >
+                      {practiceLoading ? '⚡ Generando...' : '⚡ Practicar con IA'}
+                    </button>
+
+                    {currentTier < 6 && (
+                      <button
+                        className={styles.trainBtn}
+                        onClick={() => handleTrainTopic(order)}
+                        disabled={trainingLoading}
+                      >
+                        {trainingLoading ? '...' : '⭐ Subir Rango'}
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {cooldownMsg && (
+                  <div style={{ padding: '0.75rem 1rem', background: 'rgba(245, 158, 11, 0.1)', border: '1px solid rgba(245, 158, 11, 0.3)', borderRadius: '8px', color: '#fbbf24', fontSize: '0.82rem', textAlign: 'center' }}>
+                    {cooldownMsg}
+                  </div>
+                )}
+
+                {/* Tarjetas de Práctica Generadas con IA */}
+                {practiceCards.length > 0 && (
+                  <div className={styles.practiceSection}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <h4 style={{ margin: 0, color: '#a78bfa', fontSize: '0.95rem' }}>🎯 Set de Práctica Ágil con IA</h4>
+                      <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Estudio autónomo</span>
+                    </div>
+
+                    <div className={styles.practiceCardsGrid}>
+                      {practiceCards.map((card: any) => {
+                        const isRevealed = revealedSolutions[card.id]
+
+                        return (
+                          <div key={card.id} className={styles.practiceCard}>
+                            <div>
+                              <span className={styles.practiceBadge}>{card.type}</span>
+                              <div className={styles.practicePrompt}>{card.prompt}</div>
+                              {card.hint && <div className={styles.practiceHint}>💡 Pista: {card.hint}</div>}
+                            </div>
+
+                            <div>
+                              <button
+                                className={styles.revealBtn}
+                                onClick={() => setRevealedSolutions(prev => ({ ...prev, [card.id]: !prev[card.id] }))}
+                              >
+                                {isRevealed ? 'Ocultar Solución' : 'Ver Solución & Explicación'}
+                              </button>
+
+                              {isRevealed && (
+                                <div className={styles.solutionBox}>
+                                  <div className={styles.solutionText}>✓ {card.solution}</div>
+                                  <div className={styles.explanationText}>{card.explanation}</div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Diapositivas de la Clase */}
+                {selectedTopic.cachedSlides.map((slide, idx) => (
+                  <div key={idx} className={styles.slidePage}>
+                    <h3 className={styles.slideTitle}>{slide.title}</h3>
+                    <div 
+                      className={styles.slideContent} 
+                      dangerouslySetInnerHTML={{ __html: slide.content }} 
+                    />
+                  </div>
+                ))}
               </div>
             </div>
-            
-            <div className={styles.slidesContainer}>
-              {selectedTopic.cachedSlides.map((slide, idx) => (
-                <div key={idx} className={styles.slidePage}>
-                  <h3 className={styles.slideTitle}>{slide.title}</h3>
-                  <div 
-                    className={styles.slideContent} 
-                    dangerouslySetInnerHTML={{ __html: slide.content }} 
-                  />
-                </div>
-              ))}
-            </div>
           </div>
-        </div>
-      )}
+        )
+      })()}
 
       {/* === Token Redemption Modal === */}
       {showTokenModal && (() => {

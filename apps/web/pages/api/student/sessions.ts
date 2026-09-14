@@ -128,10 +128,70 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }))
     }
 
-    const [upcomingSessions, completedSessions] = await Promise.all([
+    let [upcomingSessions, completedSessions] = await Promise.all([
       resolveTopics(upcoming, true),
       resolveTopics(completed, false),
     ])
+
+    // ── Alumnos Antiguos: Habilitar los 60 temas completados con slides ──────
+    const SENIOR_STUDENT_IDS = [
+      '04ded1af-37a7-49ee-a976-307ee9509fa9', // Laura
+      '27454176-ebd0-4628-8e4d-36fd262f54c5', // Paulina Uribe Giraldo
+      '5f4e7cb9-050f-4c97-b53e-d6de66a9e9b0', // Romario
+      '7c5250a8-c0a6-463b-8897-5471aa6dc721', // Yuliana Higuita Osorio
+      'a16d8bc8-68d1-4d86-bc04-22388287ffb6', // Beatriz Orozco
+      'ae949b77-bc5e-4e8e-aa14-5da184f9b551', // Lucia uribe giraldo
+      'd1c9de5a-a225-4b2c-8ab6-7283dd6e0ecc', // Cristina Zabala
+      'd9782e46-fbd3-4dc5-8f1b-12872550309b', // Nicolas Iván Polo Lara
+      'f8227ed6-8e8a-4694-a70b-d1de3301734a', // Santiago (Santi.mon)
+      'eaa81235-349d-410e-8860-1b536cd8b2f7', // Sebastian Vélez
+      'recStudent1'                           // Mock / ID de prueba
+    ]
+
+    const isSeniorStudent = SENIOR_STUDENT_IDS.includes(studentId) || (student.fields['Notes'] || '').includes('SENIOR_STUDENT')
+
+    if (isSeniorStudent) {
+      try {
+        const allTopics = await findAirtableRecords('Curriculum Topics', "NOT({Order} = '')")
+        const generalTopics = allTopics
+          .filter((t: any) => ((t.fields['Curriculum'] || '') as string).includes('General English Course'))
+          .sort((a: any, b: any) => parseInt(a.fields['Order'] || '0', 10) - parseInt(b.fields['Order'] || '0', 10))
+
+        if (generalTopics.length > 0) {
+          completedSessions = generalTopics.map((t: any) => {
+            let slides: any[] | null = null
+            try {
+              if (t.fields['Cached Slides']) slides = JSON.parse(t.fields['Cached Slides'])
+            } catch {}
+
+            return {
+              id: `senior-${t.id}`,
+              date: new Date().toISOString(),
+              status: 'Seen',
+              topicId: t.id,
+              topicOrder: parseInt(t.fields['Order'] || '0', 10),
+              topicName: t.fields['Topic Name'] || t.fields['Title'] || `Tema ${t.fields['Order']}`,
+              cachedSlides: slides,
+              isHoliday: false,
+              holidayConfirmedTeacher: false,
+              holidayConfirmedStudent: false
+            }
+          })
+        }
+      } catch (e) {
+        console.error('Error inyectando temas antiguos:', e)
+      }
+    }
+
+    // ── Parsear progreso de platinado desde Notes del estudiante ─────────────
+    let masteryMap: Record<number, { tier: number; lastTrainedAt: string }> = {}
+    const notesStr = (student.fields['Notes'] as string) || ''
+    const marker = '=== MASTERY_PROGRESS_JSON ==='
+    if (notesStr.includes(marker)) {
+      try {
+        masteryMap = JSON.parse(notesStr.split(marker)[1].trim())
+      } catch {}
+    }
 
     // ── Total topics in the database (General English Course: 60 temas) ─────
     let totalTopics = 60
@@ -146,7 +206,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       upcomingSessions, 
       completedSessions,
       totalTopics,
-      studentProfile
+      studentProfile,
+      masteryMap
     })
   } catch (err: any) {
     return res.status(500).json({ error: 'Error al cargar sesiones', detail: err.message })

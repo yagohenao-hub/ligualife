@@ -860,3 +860,316 @@
   font-size: 0.7rem;
   opacity: 0.8;
 }
+
+/* ══════════════════════════════════════════════════════
+   SISTEMA DE PLATINADO & RANGOS DE MAESTRÍA (6 NIVELES)
+   ══════════════════════════════════════════════════════ */
+.tierBadge {
+  font-size: 0.85rem;
+  margin-right: 0.15rem;
+}
+
+/* Nivel 1: Madera (Visto en clase) */
+.tier1 {
+  background: rgba(140, 90, 50, 0.12);
+  border: 1px solid rgba(180, 120, 70, 0.4);
+  color: #d7b596;
+}
+.tier1:hover {
+  border-color: rgba(200, 140, 90, 0.7);
+  box-shadow: 0 0 10px rgba(140, 90, 50, 0.3);
+}
+
+/* Nivel 2: Piedra / Hierro */
+.tier2 {
+  background: rgba(120, 130, 145, 0.14);
+  border: 1px solid rgba(160, 175, 195, 0.45);
+  color: #cbd5e1;
+}
+.tier2:hover {
+  border-color: rgba(200, 215, 235, 0.8);
+  box-shadow: 0 0 12px rgba(160, 175, 195, 0.35);
+}
+
+/* Nivel 3: Bronce */
+.tier3 {
+  background: rgba(190, 100, 30, 0.14);
+  border: 1px solid rgba(215, 125, 45, 0.55);
+  color: #fdba74;
+}
+.tier3:hover {
+  border-color: rgba(245, 145, 60, 0.85);
+  box-shadow: 0 0 14px rgba(215, 125, 45, 0.4);
+}
+
+/* Nivel 4: Plata */
+.tier4 {
+  background: rgba(200, 215, 230, 0.16);
+  border: 1px solid rgba(225, 235, 245, 0.65);
+  color: #f1f5f9;
+  box-shadow: 0 0 8px rgba(225, 235, 245, 0.2);
+}
+.tier4:hover {
+  border-color: #ffffff;
+  box-shadow: 0 0 16px rgba(240, 245, 255, 0.5);
+}
+
+/* Nivel 5: Oro */
+.tier5 {
+  background: rgba(245, 158, 11, 0.18);
+  border: 1.5px solid #f59e0b;
+  color: #fef08a;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.3);
+}
+.tier5:hover {
+  border-color: #fbbf24;
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.6);
+  transform: translateY(-2px);
+}
+
+/* Nivel 6: Platino (Maestría Total) */
+.tier6 {
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(168, 85, 247, 0.25));
+  border: 1.5px solid #38bdf8;
+  color: #e0f2fe;
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.45), 0 0 24px rgba(168, 85, 247, 0.3);
+  animation: pulsePlatinum 3s infinite alternate;
+}
+.tier6:hover {
+  border-color: #7dd3fc;
+  box-shadow: 0 0 24px rgba(56, 189, 248, 0.7), 0 0 32px rgba(168, 85, 247, 0.5);
+  transform: translateY(-2px) scale(1.02);
+}
+
+@keyframes pulsePlatinum {
+  0% { border-color: #38bdf8; box-shadow: 0 0 12px rgba(56, 189, 248, 0.3); }
+  100% { border-color: #c084fc; box-shadow: 0 0 20px rgba(168, 85, 247, 0.5); }
+}
+
+/* ══════════════════════════════════════════════════════
+   BARRA DE ENTRENAMIENTO & MODAL ACTIONS
+   ══════════════════════════════════════════════════════ */
+.masteryBarWrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-glass);
+  border-radius: 12px;
+  padding: 0.85rem 1.25rem;
+  margin-bottom: 1.25rem;
+  gap: 1rem;
+}
+
+.masteryStatus {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.trainBtn {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  border: none;
+  border-radius: 8px;
+  color: #000;
+  font-weight: 700;
+  font-size: 0.82rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 10px rgba(245, 158, 11, 0.3);
+  white-space: nowrap;
+}
+.trainBtn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.45);
+}
+.trainBtn:disabled {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.aiPracticeBtn {
+  background: linear-gradient(135deg, #7c3aed, #6366f1);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.82rem;
+  padding: 0.5rem 1.1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 12px rgba(124, 58, 237, 0.35);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.aiPracticeBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(124, 58, 237, 0.5);
+}
+
+/* ══════════════════════════════════════════════════════
+   TARJETAS DE PRÁCTICA INTELIGENTE CON IA
+   ══════════════════════════════════════════════════════ */
+.practiceSection {
+  margin-top: 1.5rem;
+  border-top: 1px solid var(--border-glass);
+  padding-top: 1.5rem;
+}
+
+.practiceCardsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.practiceCard {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-glass);
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.practiceBadge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  background: rgba(124, 58, 237, 0.15);
+  color: #c4b5fd;
+  margin-bottom: 0.6rem;
+  width: fit-content;
+}
+
+.practicePrompt {
+  font-size: 0.92rem;
+  color: #fff;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.practiceHint {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  margin-bottom: 1rem;
+}
+
+.revealBtn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-glass);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.35rem 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+}
+.revealBtn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.solutionBox {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  background: rgba(34, 197, 94, 0.08);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  border-radius: 8px;
+}
+
+.solutionText {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #4ade80;
+  margin-bottom: 0.25rem;
+}
+
+.explanationText {
+  font-size: 0.78rem;
+  color: #cbd5e1;
+  line-height: 1.4;
+}
+
+/* ══════════════════════════════════════════════════════
+   SECCIÓN COMING SOON (MÓDULOS EN DESARROLLO)
+   ══════════════════════════════════════════════════════ */
+.comingSoonCard {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  padding: 1.5rem;
+  margin-top: 2rem;
+}
+
+.comingSoonGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.comingItem {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 1.15rem;
+  position: relative;
+  overflow: hidden;
+  opacity: 0.85;
+  transition: all 0.2s;
+}
+.comingItem:hover {
+  opacity: 1;
+  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateY(-2px);
+}
+
+.comingHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.comingIcon {
+  font-size: 1.5rem;
+}
+
+.comingBadge {
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #fbbf24;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 50px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.comingTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.35rem;
+}
+
+.comingDesc {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
