@@ -55,14 +55,6 @@ export default function DirectLoginPage() {
           <p className={styles.subtitle}>Introduce tu PIN para acceder al portal</p>
           {error && <div className={styles.errorMessage}>{error}</div>}
           <PinInput onSubmit={handlePin} loading={loading} />
-          <div style={{ marginTop: '2rem', textAlign: 'center' }}>
-            <a 
-              href="/" 
-              style={{ color: '#a1a1aa', fontSize: '0.85rem', textDecoration: 'none' }}
-            >
-              ← Volver a la página principal
-            </a>
-          </div>
         </div>
       </div>
     </>

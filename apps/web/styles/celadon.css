@@ -1,0 +1,490 @@
+/*
+  Celadon Design System & Claymorphism Engine (tm-633-celadon)
+  Integrated into LinguaLife with full Light Mode & Dark Mode
+*/
+
+/* ── Saleva Pure Dark Tokens directly on :root (Light Mode Removed) ── */
+:root {
+  --canvas: var(--bg-primary, #0a0e17);
+  --plate: var(--surface-1, #141b2d);
+  --plate-2: var(--surface-2, #1b243b);
+  --sunk: #0b0f19;
+  --ink: #f8fafc;
+  --ink-2: #94a3b8;
+  --jade: #10b981;
+  --jade-ink: #34d399;
+  --coral: #f43f5e;
+  --sky: #38bdf8;
+  --amber: #f59e0b;
+  --line: rgba(255, 255, 255, 0.08);
+  --bar: 84px;
+  --r: 24px;
+  --r-sm: 16px;
+  --shell: 1180px;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Clay & Depth Physics (Saleva Dark Glass) */
+  --clay: 0 16px 36px -12px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  --clay-sm: 0 8px 20px -8px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  --well: inset 0 2px 6px rgba(0, 0, 0, 0.5);
+
+  /* Flat Gloss Lighting */
+  --gloss: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+  --gloss-plate: linear-gradient(180deg, #161f33 0%, #121828 100%);
+  --gloss-down: linear-gradient(180deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.2) 100%);
+  --gloss-jade: linear-gradient(135deg, #10b981 0%, #047857 100%);
+  --gloss-jade-down: linear-gradient(135deg, #047857 0%, #064e3b 100%);
+  --gloss-purple: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+  --gloss-purple-down: linear-gradient(135deg, #6d28d9 0%, #5b21b6 100%);
+  --gloss-amber: linear-gradient(135deg, #10b981 0%, #047857 100%);
+  --gloss-amber-down: linear-gradient(135deg, #047857 0%, #064e3b 100%);
+
+  /* Lips & Lifts */
+  --lip: inset 0 1px 0 0 rgba(255, 255, 255, 0.1), inset 0 -1px 0 0 rgba(0, 0, 0, 0.5);
+  --lip-jade: inset 0 1px 0 0 rgba(255, 255, 255, 0.3), inset 0 -1px 0 0 rgba(0, 0, 0, 0.5);
+  --lip-purple: inset 0 1px 0 0 rgba(255, 255, 255, 0.3), inset 0 -1px 0 0 rgba(0, 0, 0, 0.5);
+  --lip-amber: inset 0 1px 0 0 rgba(255, 255, 255, 0.3), inset 0 -1px 0 0 rgba(0, 0, 0, 0.5);
+  --lift: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --lift-hi: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --lift-jade: 0 4px 18px rgba(16, 185, 129, 0.4);
+  --lift-jade-hi: 0 8px 26px rgba(16, 185, 129, 0.5);
+  --lift-purple: 0 4px 18px rgba(139, 92, 246, 0.4);
+  --lift-purple-hi: 0 8px 26px rgba(139, 92, 246, 0.5);
+
+  /* Specular Sweeps */
+  --sheen: linear-gradient(100deg, rgba(255, 255, 255, 0) 36%, rgba(255, 255, 255, 0.18) 48%, rgba(255, 255, 255, 0) 61%);
+  --sheen-soft: linear-gradient(100deg, rgba(255, 255, 255, 0) 36%, rgba(255, 255, 255, 0.12) 48%, rgba(255, 255, 255, 0) 61%);
+  --sink: 0 1px 2px rgba(0, 0, 0, 0.3);
+
+  /* Ambient Blooms */
+  --bg-blooms: 
+    radial-gradient(40vw 35vw at 90% 12%, rgba(16, 185, 129, 0.08), transparent 70%),
+    radial-gradient(45vw 40vw at 10% 85%, rgba(14, 165, 233, 0.06), transparent 70%);
+}
+
+/* ── Celadon Primitives ── */
+.cel-clay {
+  background: var(--gloss-plate);
+  background-color: var(--plate);
+  border-radius: var(--r);
+  box-shadow: var(--clay);
+  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+}
+
+.cel-clay-sm {
+  background: var(--gloss-plate);
+  background-color: var(--plate);
+  border-radius: var(--r-sm);
+  box-shadow: var(--clay-sm);
+}
+
+.cel-well {
+  background: var(--sunk);
+  border-radius: 99px;
+  box-shadow: var(--well);
+}
+
+/* ── Celadon Interactive Buttons with Specular Sweep ── */
+.cel-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 13px 26px;
+  border: 0;
+  border-radius: 99px;
+  cursor: pointer;
+  text-decoration: none;
+  font-family: 'Albert Sans', 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  background-image: var(--sheen), var(--gloss);
+  background-size: 240% 100%, 100% 100%;
+  background-position: -135% 0, 0 0;
+  background-repeat: no-repeat;
+  color: var(--ink);
+  box-shadow: var(--lift), var(--lip);
+  transition: box-shadow 0.24s var(--ease), transform 0.24s var(--ease), background-image 0.16s linear, background-position 0s;
+}
+
+.cel-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--lift-hi), var(--lip);
+  background-position: 135% 0, 0 0;
+  transition: box-shadow 0.24s var(--ease), transform 0.24s var(--ease), background-position 0.85s var(--ease);
+}
+
+.cel-btn:active {
+  transform: translateY(1px);
+  background-image: var(--sheen), var(--gloss-down);
+  box-shadow: var(--sink);
+}
+
+.cel-btn:focus-visible {
+  outline: 3px solid var(--jade-ink);
+  outline-offset: 3px;
+}
+
+.cel-btn.solid,
+.cel-btn.mint,
+.cel-btn.primary {
+  background-image: var(--sheen-soft), var(--gloss-jade);
+  color: #FFFFFF !important;
+  font-weight: 700;
+  box-shadow: var(--lift-jade), var(--lip-jade);
+}
+
+[data-theme="dark"] .cel-btn.solid,
+.dark .cel-btn.solid,
+[data-theme="dark"] .cel-btn.mint,
+.dark .cel-btn.mint,
+[data-theme="dark"] .cel-btn.primary,
+.dark .cel-btn.primary {
+  color: #FFFFFF !important;
+}
+
+.cel-btn.solid:hover,
+.cel-btn.mint:hover,
+.cel-btn.primary:hover {
+  box-shadow: var(--lift-jade-hi), var(--lip-jade);
+  transform: translateY(-1px);
+}
+
+.cel-btn.solid:active,
+.cel-btn.mint:active,
+.cel-btn.primary:active {
+  background-image: var(--sheen-soft), var(--gloss-jade-down);
+  box-shadow: 0 1px 2px -1px rgba(4, 120, 87, 0.4), inset 0 2px 6px 0 rgba(4, 120, 87, 0.34);
+  transform: scale(0.98);
+}
+
+.cel-btn.secondary {
+  background: var(--surface-1);
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--lift);
+}
+
+.cel-btn.secondary:hover {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+.cel-btn.purple {
+  background-image: var(--sheen-soft), var(--gloss-purple);
+  color: #FFFFFF !important;
+  box-shadow: var(--lift-purple), var(--lip-purple);
+}
+
+.cel-btn.purple:hover {
+  box-shadow: var(--lift-purple-hi), var(--lip-purple);
+}
+
+.cel-btn.purple:active {
+  background-image: var(--sheen-soft), var(--gloss-purple-down);
+  box-shadow: 0 1px 2px -1px rgba(76, 29, 149, 0.4), inset 0 2px 6px 0 rgba(76, 29, 149, 0.35);
+}
+
+.cel-btn.wide {
+  width: 100%;
+}
+
+/* ── Celadon Badges & Pills ── */
+.cel-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 18px 7px 10px;
+  border-radius: 99px;
+  font-size: 0.84rem;
+  font-weight: 500;
+  color: var(--ink-2);
+  background: var(--gloss);
+  box-shadow: var(--lift), var(--lip);
+}
+
+.cel-pill b {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 99px;
+  background: var(--gloss-jade);
+  color: #0E3A2E;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  box-shadow: 0 6px 10px -7px rgba(42, 122, 98, 0.9), var(--lip-jade);
+}
+
+.cel-pill.amber b {
+  background: var(--gloss-amber);
+  color: #451A03;
+  box-shadow: 0 6px 10px -7px rgba(217, 119, 6, 0.9), var(--lip-amber);
+}
+
+.cel-eyebrow {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--jade-ink);
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.cel-eyebrow::before {
+  content: "";
+  width: 22px;
+  height: 5px;
+  border-radius: 99px;
+  background: var(--jade);
+  box-shadow: inset 0 -2px 3px rgba(35, 45, 60, 0.2);
+}
+
+/* ── Celadon Interactive Stave / Accordion ── */
+.cel-slabrow {
+  display: flex;
+  gap: 12px;
+  margin-top: 40px;
+  height: 480px;
+  min-width: 0;
+}
+
+.cel-stave {
+  position: relative;
+  flex: 0 1 98px;
+  min-width: 0;
+  overflow: hidden;
+  cursor: pointer;
+  border-radius: 26px;
+  background: linear-gradient(163deg, var(--plate-2), var(--sunk));
+  box-shadow: 0 18px 30px -18px rgba(35, 45, 60, 0.4), var(--lip);
+  transition: flex-grow 0.58s var(--ease), transform 0.3s var(--ease), background-color 0.5s linear;
+}
+
+.cel-stave.open {
+  flex-grow: 1;
+  cursor: default;
+  background-image: var(--gloss-plate);
+  background-color: var(--plate);
+}
+
+.cel-stave:not(.open):hover {
+  transform: translateY(-5px);
+}
+
+.cel-spine {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 26px 0 28px;
+  transition: opacity 0.28s var(--ease);
+}
+
+.cel-stave.open .cel-spine {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.cel-spine .pip {
+  width: 16px;
+  height: 16px;
+  border-radius: 99px;
+  flex: 0 0 auto;
+  box-shadow: 0 4px 7px -4px rgba(35, 45, 60, 0.7), var(--lip);
+}
+
+.cel-spine .st {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  white-space: nowrap;
+  font-size: 0.96rem;
+  font-weight: 600;
+  color: var(--ink-2);
+  letter-spacing: 0.005em;
+}
+
+.cel-bodywrap {
+  position: absolute;
+  inset: 0;
+}
+
+.cel-body {
+  width: 100%;
+  min-width: 380px;
+  height: 100%;
+  padding: 38px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  opacity: 0;
+  transform: translateY(12px);
+  pointer-events: none;
+  transition: opacity 0.42s var(--ease) 0.16s, transform 0.42s var(--ease) 0.16s;
+}
+
+.cel-stave.open .cel-body {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+/* ── Celadon Chips & Integrations ── */
+.cel-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.cel-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 20px;
+  border-radius: 99px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  background: var(--gloss);
+  box-shadow: var(--lift), var(--lip);
+  color: var(--ink);
+  transition: transform 0.26s var(--ease), box-shadow 0.26s var(--ease);
+}
+
+.cel-chip:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--lift-hi), var(--lip);
+}
+
+.cel-chip i {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  box-shadow: inset 0 -2px 3px rgba(35, 45, 60, 0.3), inset 0 2px 2px rgba(255, 255, 255, 0.55);
+}
+
+/* ── Celadon Theme Switcher Toggle ── */
+.cel-theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 99px;
+  background: var(--gloss);
+  box-shadow: var(--lift), var(--lip);
+  border: 0;
+  cursor: pointer;
+  color: var(--ink);
+  font-family: 'Albert Sans', 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+
+.cel-theme-toggle:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--lift-hi), var(--lip);
+}
+
+.cel-theme-toggle:active {
+  transform: translateY(1px);
+  box-shadow: var(--sink);
+}
+
+/* ── Celadon FAQ Accordion ── */
+.cel-faq {
+  max-width: 800px;
+  margin: 36px auto 0;
+  display: grid;
+  gap: 14px;
+}
+
+.cel-q {
+  border-radius: 22px;
+  background: var(--gloss-plate);
+  background-color: var(--plate);
+  box-shadow: var(--clay-sm);
+  cursor: pointer;
+  transition: box-shadow 0.3s var(--ease), transform 0.2s var(--ease);
+}
+
+.cel-qh {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 22px 24px;
+}
+
+.cel-qh h3 {
+  font-size: 1.1rem;
+  flex: 1 1 auto;
+  font-family: 'Albert Sans', 'Outfit', sans-serif;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.cel-plus {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 auto;
+  border-radius: 99px;
+  background: var(--sunk);
+  box-shadow: var(--well);
+  position: relative;
+}
+
+.cel-plus::before,
+.cel-plus::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  background: var(--ink);
+  border-radius: 99px;
+  transition: transform 0.32s var(--ease), opacity 0.2s;
+}
+
+.cel-plus::before {
+  width: 13px;
+  height: 2.4px;
+  transform: translate(-50%, -50%);
+}
+
+.cel-plus::after {
+  width: 2.4px;
+  height: 13px;
+  transform: translate(-50%, -50%);
+}
+
+.cel-q.open .cel-plus::after {
+  transform: translate(-50%, -50%) rotate(90deg);
+  opacity: 0;
+}
+
+.cel-qb {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.38s var(--ease);
+}
+
+.cel-q.open .cel-qb {
+  grid-template-rows: 1fr;
+}
+
+.cel-qb > div {
+  overflow: hidden;
+}
+
+.cel-qb p {
+  padding: 0 24px 24px;
+  color: var(--ink-2);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}

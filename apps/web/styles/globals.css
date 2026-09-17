@@ -5,50 +5,62 @@
 }
 
 :root {
-  /* ── Background & Surfaces (Obsidian Layering) ── */
-  --bg-primary: #08090c;
-  --bg-secondary: #0d0f15;
-  --surface-0: #0d0f15;
-  --surface-1: #12151e;
-  --surface-2: #181c28;
-  --surface-3: #222838;
-  --bg-glass: rgba(18, 21, 30, 0.85);
+  /* ── Dark Mode Tokens (LinguaLife Deep Obsidian & Cozy Minimal Tech Glass) ── */
+  --bg-primary: #090d16;
+  --bg-secondary: #0e1424;
+  --surface-0: rgba(13, 19, 32, 0.45);
+  --surface-1: rgba(18, 26, 44, 0.42);
+  --surface-2: rgba(26, 37, 60, 0.38);
+  --surface-3: rgba(36, 50, 80, 0.35);
+  --bg-glass: rgba(16, 24, 40, 0.40);
 
   /* ── Borders & Bevel Highlights ── */
   --border-glass: rgba(255, 255, 255, 0.08);
-  --border-subtle: rgba(255, 255, 255, 0.07);
-  --border-highlight: rgba(255, 255, 255, 0.16);
-  --border-amber: rgba(245, 158, 11, 0.4);
-  --bevel-top: inset 0 1px 0 rgba(255, 255, 255, 0.09);
+  --border-subtle: rgba(255, 255, 255, 0.10);
+  --border-highlight: rgba(16, 185, 129, 0.35);
+  --bevel-top: inset 0 1px 0 rgba(255, 255, 255, 0.14);
 
   /* ── Typography Palette ── */
   --text-primary: #f8fafc;
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
 
-  /* ── Accent Colors (Warm Studio Craft) ── */
-  --accent-amber: #f59e0b;
-  --accent-amber-hover: #d97706;
-  --accent-amber-glow: rgba(245, 158, 11, 0.25);
+  /* ── Official Brand Colors: Verde Menta Hero ── */
+  --accent-primary: #10b981;
+  --accent-primary-hover: #059669;
+  --accent-primary-glow: rgba(16, 185, 129, 0.3);
 
-  --accent-purple: #7c3aed;
-  --accent-indigo: #6366f1;
-  --accent-indigo-glow: rgba(99, 102, 241, 0.2);
-  --accent-blue: #38bdf8;
-  --accent-green: #10b981;
+  --accent-mint: #10b981;
+  --accent-emerald: #10b981;
+  --accent-jade: #10b981;
+  --accent-blue: #0ea5e9;
+  --accent-blue-glow: rgba(14, 165, 233, 0.25);
+  --accent-purple: #8b5cf6;
+  --accent-amber: #f59e0b;
   --accent-red: #f43f5e;
-  --accent: var(--accent-amber);
+  --accent: var(--accent-primary);
 
   /* ── Typography System ── */
-  --font-display: 'Syne', sans-serif;
-  --font-heading: 'Plus Jakarta Sans', 'Outfit', sans-serif;
-  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: 'Outfit', 'Syne', sans-serif;
+  --font-heading: 'Plus Jakarta Sans', 'Albert Sans', 'Outfit', sans-serif;
+  --font-body: 'Albert Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
   /* ── Motion & Physics ── */
   --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-snappy: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ── Ambient Background Overlay: Cozy Tech Glows (Emerald, Warm Amber, Indigo) ── */
+  --bg-blooms: 
+    radial-gradient(65vw 55vh at 85% 10%, rgba(16, 185, 129, 0.14), transparent 70%),
+    radial-gradient(60vw 60vh at 10% 35%, rgba(14, 165, 233, 0.12), transparent 70%),
+    radial-gradient(55vw 55vh at 75% 80%, rgba(139, 92, 246, 0.10), transparent 70%),
+    radial-gradient(45vw 45vh at 30% 90%, rgba(245, 158, 11, 0.08), transparent 70%),
+    radial-gradient(40vw 35vh at 50% 50%, rgba(16, 185, 129, 0.06), transparent 60%);
 }
+
+/* ── Dark Mode Only (Light Mode Removed) ── */
+/* All views are locked to pure Saleva-inspired dark obsidian and luminous mint */
 
 * {
   margin: 0;
@@ -57,27 +69,49 @@
 }
 
 html, body {
-  background: var(--bg-primary);
+  background-color: #060911;
+  background-image: 
+    linear-gradient(180deg, rgba(6, 9, 17, 0.65) 0%, rgba(6, 9, 17, 0.74) 35%, rgba(6, 9, 17, 0.88) 100%),
+    url('/bg-cozy-lowpoly-pixel.jpg');
+  background-size: cover;
+  background-position: center top;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
   color: var(--text-primary);
   font-family: var(--font-body);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   position: relative;
+  overflow-x: hidden;
+  transition: background-color 0.3s var(--ease-spring), color 0.3s var(--ease-spring);
 }
 
-/* ── Ambient Mathematical Grid & Noise Overlay ── */
+/* ── Cozy Ambient Atmospheric Auroras & Glows ── */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
-  background-image: 
-    radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
-    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(245, 158, 11, 0.08), transparent);
-  background-size: 32px 32px, 100% 100%;
+  background-image: var(--bg-blooms);
+  filter: blur(75px);
+  opacity: 0.5;
   pointer-events: none;
   z-index: 0;
+  animation: cozyAtmosphereFloat 26s ease-in-out infinite alternate;
 }
+
+/* ── Fine Minimal Pixel Dither Texture Overlay ── */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 16px 16px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+
 
 /* ── Global Selection & Scrollbar ── */
 ::selection {

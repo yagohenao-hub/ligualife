@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import styles from '@/styles/Landing.module.css'
+import { Sparkles, Lightbulb, Play, Volume2, Clock, Target, BookOpen, ArrowRight } from 'lucide-react'
 
 interface SamplePrompt {
   id: string
@@ -81,7 +82,7 @@ export function PocketCoachSimulator() {
           <span className={styles.sectionTag}>Demostración Interactiva</span>
           <h2 className={styles.sectionTitle}>Prueba tu Pocket Coach en Tiempo Real</h2>
           <p className={styles.sectionSubtitle}>
-            Selecciona una frase cotidiana o escribe la tuya. Observa cómo la IA de LinguaLife desglosa la estructura LDS, sugiere vocabulario B2 y te enseña la pronunciación perfecta.
+            Selecciona una frase cotidiana o escribe la tuya. Observa cómo la IA de LinguaLife desglosa la estructura lógica, sugiere vocabulario B2 y te enseña la pronunciación en contexto.
           </p>
         </div>
 
@@ -108,12 +109,12 @@ export function PocketCoachSimulator() {
                 <label className={styles.simLabel}>2. Frase en Español que deseas expresar:</label>
                 <div 
                   style={{ 
-                    background: 'rgba(255,255,255,0.04)', 
-                    border: '1px solid rgba(255,255,255,0.1)', 
+                    background: 'var(--surface-2)', 
+                    border: '1px solid var(--border-subtle)', 
                     padding: '0.9rem', 
-                    borderRadius: '10px',
+                    borderRadius: '12px',
                     fontSize: '0.9rem',
-                    color: '#e4e4e7',
+                    color: 'var(--text-primary)',
                     marginBottom: '1rem'
                   }}
                 >
@@ -136,12 +137,16 @@ export function PocketCoachSimulator() {
               </div>
             </div>
 
-            <div style={{ paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-              <p style={{ fontSize: '0.8rem', color: '#a1a1aa', marginBottom: '0.75rem' }}>
-                💡 En tu WhatsApp real, podrás enviar audios de voz y recibir correcciones personalizadas todos los días.
-              </p>
-              <Link href="/register/student" className={styles.btnPrimary} style={{ width: '100%', justifyContent: 'center' }}>
-                Activar mi Pocket Coach Real ✨
+            <div style={{ paddingTop: '1rem', borderTop: '1px solid var(--border-subtle)' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', marginBottom: '0.85rem' }}>
+                <Lightbulb size={16} color="var(--accent-amber)" style={{ flexShrink: 0, marginTop: '2px' }} />
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: 0 }}>
+                  En tu WhatsApp real, podrás enviar audios de voz y recibir correcciones personalizadas todos los días.
+                </p>
+              </div>
+              <Link href="/register/student" className={styles.btnPrimary} style={{ width: '100%', justifyContent: 'center', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span>Activar mi Pocket Coach Real</span>
+                <ArrowRight size={16} />
               </Link>
             </div>
           </div>
@@ -151,7 +156,7 @@ export function PocketCoachSimulator() {
             <div className={styles.chatHeader}>
               <div className={styles.avatar}>LL</div>
               <div className={styles.chatHeaderInfo}>
-                <div className={styles.chatName}>LinguaLife Pocket Coach 🟢</div>
+                <div className={styles.chatName}>LinguaLife Pocket Coach</div>
                 <div className={styles.chatStatus}>
                   <span className={styles.statusDot}></span>
                   {isTyping ? 'escribiendo respuesta...' : 'en línea en WhatsApp'}
@@ -165,13 +170,15 @@ export function PocketCoachSimulator() {
               </div>
 
               {isTyping ? (
-                <div className={styles.msgBot} style={{ fontStyle: 'italic', color: '#888' }}>
-                  ⏳ Generando corrección LDS y análisis fonético...
+                <div className={styles.msgBot} style={{ fontStyle: 'italic', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <Clock size={15} />
+                  <span>Generando corrección y análisis fonético...</span>
                 </div>
               ) : (
                 <div className={styles.msgBot}>
-                  <div className={styles.botHeaderTag}>
-                    🎯 Expressing in B2 English ({selectedSample.topicLesson})
+                  <div className={styles.botHeaderTag} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+                    <Target size={13} />
+                    <span>Expressing in B2 English ({selectedSample.topicLesson})</span>
                   </div>
 
                   <div className={styles.botTranslation}>
@@ -179,23 +186,37 @@ export function PocketCoachSimulator() {
                   </div>
 
                   <div className={styles.botFormulaBox}>
-                    <strong>📐 Estructura LDS:</strong> <br />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.2rem' }}>
+                      <BookOpen size={13} color="var(--accent-primary)" />
+                      <strong>Estructura de la Oración:</strong>
+                    </div>
                     {selectedSample.ldsFormula}
                   </div>
 
                   <div>
-                    <span style={{ fontSize: '0.75rem', color: '#9ca3af', display: 'block', marginBottom: '0.3rem' }}>
-                      🗣️ Pronunciación Fonética Guiada:
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block', marginBottom: '0.3rem' }}>
+                      Pronunciación Fonética Guiada:
                     </span>
-                    <div style={{ fontSize: '0.825rem', color: '#a78bfa', fontStyle: 'italic', marginBottom: '0.6rem' }}>
+                    <div style={{ fontSize: '0.825rem', color: 'var(--accent-primary)', fontStyle: 'italic', marginBottom: '0.6rem' }}>
                       "{selectedSample.pronunciation}"
                     </div>
 
                     <button
                       onClick={() => playAudio(selectedSample.b2Expression)}
                       className={styles.botAudioBtn}
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
                     >
-                      {isPlayingAudio ? '🔊 Reproduciendo Audio...' : '▶ Escuchar Pronunciación B2'}
+                      {isPlayingAudio ? (
+                        <>
+                          <Volume2 size={15} />
+                          <span>Reproduciendo Audio...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Play size={14} fill="currentColor" />
+                          <span>Escuchar Pronunciación B2</span>
+                        </>
+                      )}
                     </button>
                   </div>
                 </div>

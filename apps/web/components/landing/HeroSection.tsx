@@ -1,12 +1,14 @@
 import Link from 'next/link'
 import styles from '@/styles/Landing.module.css'
+import { Zap, ArrowRight, Play, Sparkles, CheckCircle2, ShieldCheck } from 'lucide-react'
 
 export function HeroSection() {
   return (
     <section className={styles.hero}>
       <div className={styles.container}>
-        <div className={styles.heroBadge}>
-          ⚡ Método Garantizado • Clases 1-a-1 + IA en WhatsApp
+        <div className={styles.heroBadge} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+          <Zap size={14} color="#F59E0B" />
+          <span>Método Garantizado • Clases 1-a-1 + IA en WhatsApp</span>
         </div>
 
         <h1 className={styles.heroTitle}>
@@ -19,11 +21,13 @@ export function HeroSection() {
         </p>
 
         <div className={styles.heroCtas}>
-          <Link href="/register/student" className={`${styles.btnPrimary} ${styles.btnHeroLarge}`}>
-            Comenzar mi Transformación a B2 🚀
+          <Link href="/register/student" className={`${styles.btnPrimary} ${styles.btnHeroLarge}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.6rem' }}>
+            <span>Comenzar mi Transformación a B2</span>
+            <ArrowRight size={18} />
           </Link>
-          <a href="#simulador" className={`${styles.btnSecondary} ${styles.btnHeroLarge}`}>
-            Probar Pocket Coach en Vivo 👇
+          <a href="#simulador" className={`${styles.btnSecondary} ${styles.btnHeroLarge}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.6rem' }}>
+            <Play size={16} fill="currentColor" />
+            <span>Probar Pocket Coach en Vivo</span>
           </a>
         </div>
 

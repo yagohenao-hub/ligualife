@@ -85,7 +85,7 @@ export async function fetchFromDB(table: string, params = ''): Promise<any> {
 
     const pinMatch = decoded.match(/\{PIN\}\s*=\s*'([^']*)'/) || decoded.match(/\{PIN\}\s*=\s*"([^"]*)"/)
     if (pinMatch) {
-      query = query.eq('PIN', pinMatch[1])
+      query = query.ilike('PIN', pinMatch[1])
     }
 
     const emailMatch = decoded.match(/\{Email\}\s*=\s*'([^']*)'/)

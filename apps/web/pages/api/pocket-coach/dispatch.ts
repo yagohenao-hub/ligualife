@@ -79,7 +79,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const student = activeStudents[i];
       try {
         const studentId = student.id;
-        const studentName = student.fields.FullName || student.fields.Name || student.fields['Full Name'] || 'Estudiante';
+        const studentName = (student.fields.FullName || student.fields.Name || student.fields['Full Name'] || 'Estudiante').toString().trim();
+        const studentFirstName = studentName.split(/\s+/)[0] || 'Estudiante';
         const phone = student.fields.Phone;
         const interests = student.fields.Interests || '';
 
@@ -107,8 +108,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           aiContext = randomB2.context;
         }
 
-        // Generar el micro-reto en formato estructurado
-        const prompt = buildDispatchPrompt(studentName, topicTitle, ldsFormula, aiContext, interests);
+        // Generar el micro-reto en formato estructurado asegurando solo el primer nombre de pila
+        const prompt = buildDispatchPrompt(studentFirstName, topicTitle, ldsFormula, aiContext, interests);
         
         // Cascada de modelos livianos y económicos
         const liteModelCandidates = [

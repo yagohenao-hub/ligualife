@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { fetchFromAirtable, fetchAirtableRecord, findAirtableRecords } from '@/lib/airtable'
+import { supabase } from '@/lib/supabaseClient'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' })
@@ -184,14 +185,51 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     }
 
-    // ── Parsear progreso de platinado desde Notes del estudiante ─────────────
-    let masteryMap: Record<number, { tier: number; lastTrainedAt: string }> = {}
+    // ── Parsear progreso de platinado (dual-read: student_topic_progress + Notes fallback) ─────────────
+    let masteryMap: Record<number, { tier: number; tierName?: string; streak?: number; lastTrainedAt: string }> = {}
     const notesStr = (student.fields['Notes'] as string) || ''
     const marker = '=== MASTERY_PROGRESS_JSON ==='
     if (notesStr.includes(marker)) {
       try {
         masteryMap = JSON.parse(notesStr.split(marker)[1].trim())
       } catch {}
+    }
+
+    try {
+      const { data: dbProgress } = await supabase
+        .from('student_topic_progress')
+        .select('*')
+        .eq('Student', student.id)
+
+      if (dbProgress && dbProgress.length > 0) {
+        const TIER_MAP: Record<string, number> = {
+          'Bronze': 1,
+          'Silver': 2,
+          'Gold': 3,
+          'Diamond': 4,
+          'Platinum': 5
+        }
+        for (const row of dbProgress) {
+          const tNum = parseInt(row['Curriculum Topic'], 10)
+          if (!isNaN(tNum)) {
+            const status = row['Status'] || ''
+            const calculatedTier = TIER_MAP[status] || 0
+            let notesObj: any = {}
+            try {
+              notesObj = row['Notes'] ? JSON.parse(row['Notes']) : {}
+            } catch {}
+
+            masteryMap[tNum] = {
+              tier: Math.max(calculatedTier, notesObj.tier || 0, masteryMap[tNum]?.tier || 0),
+              tierName: status || notesObj.tierName,
+              streak: Math.max(notesObj.streak || 0, masteryMap[tNum]?.streak || 0),
+              lastTrainedAt: row['Completed At'] || masteryMap[tNum]?.lastTrainedAt || ''
+            }
+          }
+        }
+      }
+    } catch (dbErr) {
+      console.warn('Error leyendo student_topic_progress:', dbErr)
     }
 
     // ── Total topics oficial (General English Course: 60 temas) ─────────

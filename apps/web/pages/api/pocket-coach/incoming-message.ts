@@ -115,11 +115,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     let currentTopicTitle = 'Inglés General y Negocios';
     let ldsFormula = 'Sujeto + Palabra de Tiempo + Acción';
 
-    if (last10) {
-      const students = await findAirtableRecords('Students', `FIND('${last10}', {Phone}) > 0`).catch(() => []);
+    if (cleanDigits) {
+      // Buscar en Airtable por últimos 10 dígitos o por número completo
+      const filterFormula = cleanDigits.length >= 10
+        ? `OR(FIND('${last10}', {Phone}) > 0, FIND('${cleanDigits}', {Phone}) > 0)`
+        : `FIND('${cleanDigits}', {Phone}) > 0`;
+      const students = await findAirtableRecords('Students', filterFormula).catch(() => []);
       if (students.length > 0) {
         studentRec = students[0];
-        const rawDbName = (studentRec.fields.FullName || studentRec.fields['Full Name'] || studentRec.fields.Name || '').trim();
+        const rawDbName = (studentRec.fields.FullName || studentRec.fields['Full Name'] || studentRec.fields.Name || '').toString().trim();
         
         // Si el nombre en la BD es una prueba/mock, usar el pushName real de WhatsApp
         if (rawDbName && !rawDbName.toLowerCase().startsWith('mock') && !rawDbName.toLowerCase().startsWith('dummy')) {
@@ -138,15 +142,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             ldsFormula = (topic.fields['LDS_Formula'] ?? topic.fields['LDSFormula'] ?? ldsFormula) as string;
           }
         }
-      } else if (pushName) {
-        studentName = pushName;
       }
-    } else if (pushName) {
-      studentName = pushName;
     }
 
-    // Extraer solo el primer nombre de pila para mayor naturalidad (ej: "Santiago M Henao" -> "Santiago")
-    const cleanFirstName = studentName.trim().split(' ')[0] || 'Estudiante';
+    // -------------------------------------------------------------
+    // BLINDAJE: PERSONA NO REGISTRADA EN BASE DE DATOS
+    // Si la persona NO es un estudiante registrado en Airtable:
+    // NUNCA actuar como Pocket Coach ni responder en inglés.
+    // Enviar un mensaje genérico cordial avisando que un asesor se comunicará y salir de inmediato.
+    // -------------------------------------------------------------
+    if (!studentRec) {
+      console.log(`[Unregistered User] Número ${phone} (${cleanDigits}) no registrado en base de datos. Enviando mensaje genérico de atención.`);
+      const genericAdvisorMsg = `¡Hola! 👋 Gracias por comunicarte con LinguaLife.\n\nHemos recibido tu mensaje. En breve uno de nuestros asesores se pondrá en contacto contigo por este medio para atender tu solicitud.\n\n¡Que tengas un excelente día!`;
+      await EvolutionAPI.sendText(phone, genericAdvisorMsg).catch((err) => {
+        console.error('[EvolutionAPI] Error enviando mensaje a usuario no registrado:', err);
+      });
+      return res.status(200).json({ status: 'Persona no registrada - Mensaje genérico enviado y finalizado' });
+    }
+
+    // Extraer estrictamente el primer nombre de pila para mayor naturalidad (ej: "Santiago M Henao" -> "Santiago")
+    const cleanFirstName = studentName.trim().split(/\s+/)[0] || 'Estudiante';
 
     const cleanInput = textContent.trim().toLowerCase();
 
