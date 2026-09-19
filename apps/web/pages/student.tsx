@@ -22,6 +22,7 @@ import {
   HelpCircle, 
   Info, 
   Play, 
+  ArrowLeft,
   ArrowRight, 
   LogOut, 
   Layers, 
@@ -167,6 +168,13 @@ export default function StudentDashboardPage() {
       return
     }
     setProfile(p)
+    // Instant cache read for masteryMap so tiers never flicker or vanish
+    try {
+      const cached = localStorage.getItem(`ll_mastery_${p.id}`)
+      if (cached) {
+        setMasteryMap(JSON.parse(cached))
+      }
+    } catch {}
     loadSessions(p.id)
   }, [])
 
@@ -178,7 +186,12 @@ export default function StudentDashboardPage() {
       setUpcoming(data.upcomingSessions ?? [])
       setCompleted(data.completedSessions ?? [])
       if (data.totalTopics) setCourseTotal(data.totalTopics)
-      if (data.masteryMap) setMasteryMap(data.masteryMap)
+      if (data.masteryMap) {
+        setMasteryMap(data.masteryMap)
+        try {
+          localStorage.setItem(`ll_mastery_${sid}`, JSON.stringify(data.masteryMap))
+        } catch {}
+      }
       if (data.studentProfile) {
         setProfile(prev => {
           const updated = { ...(prev || {}), ...data.studentProfile }
@@ -190,7 +203,54 @@ export default function StudentDashboardPage() {
     setLoading(false)
   }
 
-  async function handleOpenTopicModal(session: StudentSession) {
+  // ── Bloqueo de Scroll del Body al abrir cualquier Modal (Previene Scroll Bleed) ──
+  const isAnyModalOpen = Boolean(selectedTopic || showTokenModal || showScheduleModal || showRateModal || showTriviaModal)
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return
+    if (isAnyModalOpen) {
+      const originalOverflow = document.body.style.overflow
+      const originalTouchAction = document.body.style.touchAction
+      document.body.style.overflow = 'hidden'
+      document.body.style.touchAction = 'none'
+      return () => {
+        document.body.style.overflow = originalOverflow
+        document.body.style.touchAction = originalTouchAction
+      }
+    }
+  }, [isAnyModalOpen])
+
+  // ── Listener Tecla Escape para Cerrar Modales ──
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        if (showTriviaModal) setShowTriviaModal(false)
+        else if (selectedTopic) closeTopicModal()
+        else if (showTokenModal) setShowTokenModal(false)
+        else if (showScheduleModal) setShowScheduleModal(false)
+        else if (showRateModal) setShowRateModal(false)
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [showTriviaModal, selectedTopic, showTokenModal, showScheduleModal, showRateModal])
+
+  // ── Cerrar Modal de Tema y limpiar Query Param sin recargar ──
+  const closeTopicModal = useCallback(() => {
+    setSelectedTopic(null)
+    setPracticeDoc(null)
+    setPracticeCards([])
+    setCooldownMsg(null)
+    setPracticeLimitNotice(null)
+    if (router.query.topic) {
+      const nextQuery = { ...router.query }
+      delete nextQuery.topic
+      router.push({ pathname: '/student', query: nextQuery }, undefined, { shallow: true })
+    }
+  }, [router])
+
+  // ── Abrir Modal de Tema y Sincronizar URL (Shallow Routing para botón Atrás) ──
+  const handleOpenTopicModal = useCallback(async (session: StudentSession, updateUrl = true) => {
     setSelectedTopic(session)
     setPracticeDoc(null)
     setPracticeCards([])
@@ -198,6 +258,20 @@ export default function StudentDashboardPage() {
     setPracticeLimitNotice(null)
     setPracticeLimitInfo(checkPracticeLimit())
     const order = session.topicOrder ?? 0
+
+    // Restaurar guía de práctica previa si ya se generó para este tema
+    try {
+      const cachedDoc = sessionStorage.getItem(`ll_practice_${order}`)
+      if (cachedDoc) setPracticeDoc(JSON.parse(cachedDoc))
+      const cachedCards = sessionStorage.getItem(`ll_practice_cards_${order}`)
+      if (cachedCards) setPracticeCards(JSON.parse(cachedCards))
+    } catch {}
+
+    // Sincroniza query param ?topic=X para que el botón atrás del celular cierre el modal
+    if (updateUrl && order && router.query.topic !== String(order)) {
+      router.push({ pathname: '/student', query: { ...router.query, topic: order } }, undefined, { shallow: true })
+    }
+
     if (!profile || !order) return
     
     // Subida de maestría: Si está en Nivel 0, el primer clic lo convierte en Nivel 1 (Madera)
@@ -210,8 +284,10 @@ export default function StudentDashboardPage() {
       const data = await res.json()
       if (data.ok) {
         setMasteryMap(data.masteryMap)
+        try {
+          localStorage.setItem(`ll_mastery_${profile.id}`, JSON.stringify(data.masteryMap))
+        } catch {}
         if (data.promotedFromZero) {
-          // Sin aviso de inicio de repaso
           setCooldownMsg(null)
         } else {
           setCooldownMsg(`¡Subiste de rango en este tema! Podrás subir nuevamente en 12 horas si vuelves a repasar.`)
@@ -222,7 +298,63 @@ export default function StudentDashboardPage() {
     } catch {
       // Silencioso para no bloquear la lectura de slides
     }
-  }
+  }, [profile, router, checkPracticeLimit])
+
+  const handleOpenTrivia = useCallback((order: number, cleanTitle: string) => {
+    setActiveTriviaTopic({
+      order: order || 1,
+      name: cleanTitle
+    })
+    setShowTriviaModal(true)
+    if (router.query.trivia !== '1') {
+      router.push({
+        pathname: '/student',
+        query: { ...router.query, topic: order, trivia: '1' }
+      }, undefined, { shallow: true })
+    }
+  }, [router])
+
+  const handleCloseTrivia = useCallback(() => {
+    setShowTriviaModal(false)
+    if (router.query.trivia) {
+      const nextQuery = { ...router.query }
+      delete nextQuery.trivia
+      router.push({ pathname: '/student', query: nextQuery }, undefined, { shallow: true })
+    }
+  }, [router])
+
+  // ── Sincronizar Estado cuando el usuario pulsa Atrás en el navegador/celular o desliza desde el borde ──
+  useEffect(() => {
+    if (!router.isReady) return
+    const topicParam = router.query.topic
+    const triviaParam = router.query.trivia
+
+    if (topicParam) {
+      const order = Number(topicParam)
+      const found = completed.find(s => s.topicOrder === order) || upcoming.find(s => s.topicOrder === order)
+      if (found && (!selectedTopic || selectedTopic.topicOrder !== order)) {
+        handleOpenTopicModal(found, false)
+      }
+
+      // Sincronizar estado de trivia según URL
+      if (triviaParam === '1') {
+        const cleanTitle = (found?.topicName || `Tema ${order}`).replace(/\s*\([^)]*\)/g, '').trim()
+        setActiveTriviaTopic({ order, name: cleanTitle })
+        setShowTriviaModal(true)
+      } else {
+        setShowTriviaModal(false)
+      }
+    } else {
+      setShowTriviaModal(false)
+      if (selectedTopic) {
+        setSelectedTopic(null)
+        setPracticeDoc(null)
+        setPracticeCards([])
+        setCooldownMsg(null)
+        setPracticeLimitNotice(null)
+      }
+    }
+  }, [router.isReady, router.query.topic, router.query.trivia, completed, upcoming])
 
   async function handleGeneratePractice(topic: StudentSession) {
     const limit = checkPracticeLimit()
@@ -249,9 +381,15 @@ export default function StudentDashboardPage() {
       const data = await res.json()
       if (data.activities) {
         setPracticeDoc(data)
+        try {
+          sessionStorage.setItem(`ll_practice_${topic.topicOrder}`, JSON.stringify(data))
+        } catch {}
         recordPracticeUsage()
       } else if (data.cards) {
         setPracticeCards(data.cards)
+        try {
+          sessionStorage.setItem(`ll_practice_cards_${topic.topicOrder}`, JSON.stringify(data.cards))
+        } catch {}
         recordPracticeUsage()
       }
     } catch {
@@ -744,6 +882,40 @@ export default function StudentDashboardPage() {
                   <p className={styles.empty}>Aún no has completado ningún tema. ¡Tu primera clase marcará el inicio de tu camino!</p>
                 )}
 
+                {/* Banner Gráfico Permanente de Tiers & Racha de Maestría */}
+                <div className={styles.tierStatusBanner}>
+                  <div className={styles.tierStatusItem}>
+                    <span className={styles.tierStatusBadge} style={{ color: '#ea580c' }}>
+                      <Award size={13} color="#ea580c" /> Bronze
+                    </span>
+                    <span className={styles.tierStatusDesc}>Racha 5+</span>
+                  </div>
+                  <div className={styles.tierStatusItem}>
+                    <span className={styles.tierStatusBadge} style={{ color: '#94a3b8' }}>
+                      <Shield size={13} color="#94a3b8" /> Silver
+                    </span>
+                    <span className={styles.tierStatusDesc}>Racha 10+</span>
+                  </div>
+                  <div className={styles.tierStatusItem}>
+                    <span className={styles.tierStatusBadge} style={{ color: '#f59e0b' }}>
+                      <Trophy size={13} color="#f59e0b" /> Gold
+                    </span>
+                    <span className={styles.tierStatusDesc}>Racha 15+</span>
+                  </div>
+                  <div className={styles.tierStatusItem}>
+                    <span className={styles.tierStatusBadge} style={{ color: '#38bdf8' }}>
+                      <Gem size={13} color="#38bdf8" /> Diamond
+                    </span>
+                    <span className={styles.tierStatusDesc}>Racha 20+</span>
+                  </div>
+                  <div className={styles.tierStatusItem}>
+                    <span className={styles.tierStatusBadge} style={{ color: '#10b981' }}>
+                      <Crown size={13} color="#10b981" /> Platinum
+                    </span>
+                    <span className={styles.tierStatusDesc}>Racha 25+</span>
+                  </div>
+                </div>
+
                 <div className={styles.topicsGrid}>
                   {displayedTopics.map((s) => {
                     // Empieza en Nivel 0 (Nada absoluto / Sin rango) por defecto
@@ -1016,7 +1188,7 @@ export default function StudentDashboardPage() {
         </section>
       </div>
 
-      {/* === Modal de Repaso: Diapositiva Única de Concepto Esencial (Sin Scroll) === */}
+      {/* === Modal de Repaso: Diapositiva Única de Concepto Esencial (Sin Scroll Bleed & Mobile Optimized) === */}
       {selectedTopic && (() => {
         const order = selectedTopic.topicOrder ?? 0
         const currentTier = masteryMap[order]?.tier ?? 0
@@ -1025,57 +1197,81 @@ export default function StudentDashboardPage() {
         const cleanTitle = (selectedTopic.topicName || summary.title).replace(/\s*\([^)]*\)/g, '').trim()
 
         return (
-          <div className={styles.modalOverlay} onClick={() => { setSelectedTopic(null); setPracticeDoc(null); setPracticeCards([]); setCooldownMsg(null); setPracticeLimitNotice(null) }}>
+          <div className={styles.modalOverlay} onClick={closeTopicModal} role="dialog" aria-modal="true">
             <div className={styles.modal} onClick={e => e.stopPropagation()}>
-              <div className={styles.modalHeader}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+              
+              {/* Top Navigation Bar: Sticky con Volver, Título y Cerrar */}
+              <div className={styles.modalNavHeader}>
+                <button
+                  type="button"
+                  className={styles.modalBackBtn}
+                  onClick={closeTopicModal}
+                  aria-label="Volver al temario"
+                >
+                  <ArrowLeft size={18} />
+                  <span>Volver</span>
+                </button>
+
+                <div className={styles.modalTitleWrap}>
                   <span className={styles.tierBadge} style={{ borderColor: tierCfg.color, color: tierCfg.color }}>
                     {tierCfg.icon}
                   </span>
-                  <span style={{ fontWeight: 800, fontSize: '1.05rem', color: '#ffffff' }}>
-                    Tema #{order}: {cleanTitle}
-                  </span>
+                  <div className={styles.modalTitleText}>
+                    <span className={styles.modalTopicOrder}>Tema #{order}</span>
+                    <span className={styles.modalCleanTitle}>{cleanTitle}</span>
+                  </div>
                 </div>
-                <div style={{ display: 'flex', gap: '0.65rem', alignItems: 'center' }}>
-                  <button
-                    type="button"
-                    className={styles.aiTriviaBtn}
-                    onClick={() => {
-                      setActiveTriviaTopic({
-                        order: order || 1,
-                        name: cleanTitle
-                      })
-                      setShowTriviaModal(true)
-                    }}
-                    title="Entrenar con la Trivia Infinita de este tema específico"
-                  >
-                    <Flame size={15} color="#fde047" />
-                    <span>Trivia Infinita</span>
-                  </button>
-                  <button
-                    type="button"
-                    className={styles.aiPracticeBtn}
-                    onClick={() => handleGeneratePractice(selectedTopic)}
-                    disabled={practiceLoading}
-                    title="Generar guía de estudio intensiva (3 actividades x 5 puntos)"
-                  >
-                    <Zap size={15} />
-                    <span>
-                      {practiceLoading ? 'Diseñando Guía...' : 'Estudiar con IA'}
-                    </span>
-                  </button>
-                  <button className={styles.modalClose} onClick={() => { setSelectedTopic(null); setPracticeDoc(null); setPracticeCards([]); setCooldownMsg(null); setPracticeLimitNotice(null) }}>
-                    <X size={18} />
-                  </button>
-                </div>
+
+                <button
+                  type="button"
+                  className={styles.modalCloseBtn}
+                  onClick={closeTopicModal}
+                  aria-label="Cerrar ventana"
+                >
+                  <X size={20} />
+                </button>
               </div>
+
+              {/* Action Bar: Botonera ergonómica para Trivia e IA (sin encimarse en celular) */}
+              <div className={styles.modalActionBar}>
+                <button
+                  type="button"
+                  className={styles.aiTriviaBtn}
+                  onClick={() => handleOpenTrivia(order || 1, cleanTitle)}
+                  title="Entrenar con la Trivia Infinita de este tema específico"
+                >
+                  <Flame size={17} color="#fde047" />
+                  <span>Trivia Infinita</span>
+                </button>
+
+                <button
+                  type="button"
+                  className={styles.aiPracticeBtn}
+                  onClick={() => handleGeneratePractice(selectedTopic)}
+                  disabled={practiceLoading}
+                  title="Generar guía de estudio intensiva (3 actividades x 5 puntos)"
+                >
+                  <Zap size={17} />
+                  <span>
+                    {practiceLoading ? 'Diseñando Guía...' : 'Estudiar con IA'}
+                  </span>
+                </button>
+              </div>
+
+              {/* Mensaje de maestría o enfriamiento */}
+              {cooldownMsg && (
+                <div className={styles.cooldownBanner}>
+                  <Sparkles size={15} color="var(--accent-primary)" />
+                  <span>{cooldownMsg}</span>
+                </div>
+              )}
               
               <div className={styles.slidesContainer}>
 
-                {/* Aviso explicativo solo cuando la persona intenta y agotó su cupo */}
+                {/* Aviso explicativo cuando agota su cupo de práctica */}
                 {practiceLimitNotice && (
-                  <div style={{ padding: '0.75rem 1rem', background: 'rgba(245, 158, 11, 0.08)', border: '1px solid rgba(245, 158, 11, 0.25)', borderRadius: '10px', color: 'var(--accent-amber)', fontSize: '0.82rem', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-                    <Clock size={15} />
+                  <div className={styles.limitNoticeBanner}>
+                    <Clock size={16} />
                     <span>{practiceLimitNotice}</span>
                   </div>
                 )}
@@ -1088,8 +1284,8 @@ export default function StudentDashboardPage() {
                         <Target size={20} color="var(--accent-primary)" />
                         <div>
                           <div className={styles.docTitle}>{practiceDoc.documentTitle || `Guía Pedagógica: ${cleanTitle}`}</div>
-                          <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                            3 actividades pedagógicas enfocadas • 15 puntos de dominio
+                          <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
+                            3 actividades pedagógicas enfocadas
                           </span>
                         </div>
                       </div>
@@ -1099,10 +1295,9 @@ export default function StudentDashboardPage() {
                       <div key={act.id} className={styles.activityCard}>
                         <div className={styles.activityHeader}>
                           <div className={styles.activityTitle}>
-                            <Zap size={15} color="var(--accent-primary)" />
+                            <Zap size={16} color="var(--accent-primary)" />
                             <span>{act.title}</span>
                           </div>
-                          <span style={{ fontSize: '0.72rem', color: 'var(--accent-primary)', fontWeight: 700 }}>5 puntos</span>
                         </div>
                         <div className={styles.activityInstruction}>{act.instruction}</div>
 
@@ -1115,11 +1310,11 @@ export default function StudentDashboardPage() {
                               <div key={itemKey} className={styles.itemRow}>
                                 <div className={styles.itemPromptRow}>
                                   <span className={styles.itemNum}>#{idx + 1}</span>
-                                  <span>{item.prompt}</span>
+                                  <span className={styles.itemPromptText}>{item.prompt}</span>
                                 </div>
                                 {item.hint && (
                                   <div className={styles.itemHint}>
-                                    <Sparkles size={12} color="var(--accent-amber)" />
+                                    <Sparkles size={13} color="var(--accent-amber)" />
                                     <span>Pista: {item.hint}</span>
                                   </div>
                                 )}
@@ -1134,7 +1329,7 @@ export default function StudentDashboardPage() {
                                   {isRevealed && (
                                     <div className={styles.solutionRevealBox}>
                                       <div className={styles.solutionCorrect}>
-                                        <Check size={14} />
+                                        <Check size={16} />
                                         <span>{item.solution}</span>
                                       </div>
                                       <div className={styles.solutionWhy}>{item.explanation}</div>
@@ -1153,11 +1348,7 @@ export default function StudentDashboardPage() {
                 {/* === Diapositiva Única y Compacta de Repaso (Single Essential Slide) === */}
                 <div className={styles.summarySlideCard}>
                   <div className={styles.summarySlideHeader}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                      <span className={styles.summaryPhaseBadge}>Fase: {summary.phase}</span>
-                      <span className={styles.summaryLevelBadge}>{summary.level}</span>
-                    </div>
-                    <span style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: 600 }}>
+                    <span className={styles.summaryHeaderTitle}>
                       Ficha Esencial de Repaso
                     </span>
                   </div>
@@ -1166,7 +1357,7 @@ export default function StudentDashboardPage() {
                     {/* 1. ¿De qué se trata? */}
                     <div className={styles.summaryBlock}>
                       <div className={styles.summaryBlockTitle}>
-                        <Target size={16} color="#38bdf8" />
+                        <Target size={18} color="#38bdf8" />
                         <span>1. ¿De qué se trata el tema?</span>
                       </div>
                       <p className={styles.summaryBlockDesc}>
@@ -1177,7 +1368,7 @@ export default function StudentDashboardPage() {
                     {/* 2. La Forma Correcta (Estructura LEGO) */}
                     <div className={styles.summaryBlock}>
                       <div className={styles.summaryBlockTitle}>
-                        <Sparkles size={16} color="#10b981" />
+                        <Sparkles size={18} color="#10b981" />
                         <span>2. La Forma Correcta de Hacerlo</span>
                       </div>
                       <div className={styles.legoBlocksRow}>
@@ -1191,14 +1382,16 @@ export default function StudentDashboardPage() {
                         ))}
                       </div>
                       <p className={styles.summaryBlockSub}>
-                        {summary.correctMethod}
+                        {summary.correctMethod.includes('—')
+                          ? summary.correctMethod.split('—').slice(1).join('—').trim()
+                          : summary.correctMethod}
                       </p>
                     </div>
 
                     {/* 3. Ejemplos en Acción */}
                     <div className={styles.summaryBlock}>
                       <div className={styles.summaryBlockTitle}>
-                        <BookOpen size={16} color="#a855f7" />
+                        <BookOpen size={18} color="#a855f7" />
                         <span>3. Ejemplos en Acción</span>
                       </div>
                       <div className={styles.examplesList}>
@@ -1214,24 +1407,36 @@ export default function StudentDashboardPage() {
                     {/* 4. Errores Comunes & Trampas del Español */}
                     <div className={styles.summaryBlock}>
                       <div className={styles.summaryBlockTitle}>
-                        <AlertCircle size={16} color="#f59e0b" />
+                        <AlertCircle size={18} color="#f59e0b" />
                         <span>4. Errores Comunes a Evitar</span>
                       </div>
                       <div className={styles.mistakeCompareBox}>
                         <div className={styles.mistakeWrong}>
                           <span className={styles.mistakeLabelWrong}>❌ Evita:</span>
-                          <span>"{summary.commonMistake.wrong}"</span>
+                          <span className={styles.mistakeText}>"{summary.commonMistake.wrong}"</span>
                         </div>
                         <div className={styles.mistakeRight}>
                           <span className={styles.mistakeLabelRight}>✅ Lo correcto:</span>
-                          <span>"{summary.commonMistake.correct}"</span>
+                          <span className={styles.mistakeText}>"{summary.commonMistake.correct}"</span>
                         </div>
                       </div>
-                      <p className={styles.summaryBlockSub} style={{ marginTop: '0.45rem' }}>
+                      <p className={styles.summaryBlockSub} style={{ marginTop: '0.65rem' }}>
                         {summary.commonMistake.explanation}
                       </p>
                     </div>
                   </div>
+                </div>
+
+                {/* Botón final visible para salir cómodamente al llegar al pie */}
+                <div className={styles.modalBottomAction}>
+                  <button
+                    type="button"
+                    className={styles.modalBottomReturnBtn}
+                    onClick={closeTopicModal}
+                  >
+                    <ArrowLeft size={16} />
+                    <span>Volver al Dashboard de Temas</span>
+                  </button>
                 </div>
               </div>
             </div>
@@ -1243,7 +1448,7 @@ export default function StudentDashboardPage() {
       {showTriviaModal && activeTriviaTopic && (
         <InfiniteTriviaModal
           isOpen={showTriviaModal}
-          onClose={() => setShowTriviaModal(false)}
+          onClose={handleCloseTrivia}
           topicOrder={activeTriviaTopic.order}
           topicName={activeTriviaTopic.name}
           studentProfile={profile}

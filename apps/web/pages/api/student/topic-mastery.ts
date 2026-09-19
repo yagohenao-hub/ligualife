@@ -62,8 +62,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       else if (streak >= 10) targetTier = Math.max(targetTier, 2); // Silver
       else if (streak >= 5) targetTier = Math.max(targetTier, 1); // Bronze
     } else {
-      // Incrementar 1 tier si no se especificó streak
-      targetTier = Math.min(5, currentMastery.tier + 1);
+      // Solo promover a Rango 1 (Bronze) en el primer repaso; los rangos 2+ requieren racha
+      if (currentMastery.tier === 0) {
+        targetTier = 1;
+      } else {
+        targetTier = currentMastery.tier;
+      }
     }
 
     const tierName = TIER_NAMES[targetTier] || 'Unranked';
@@ -80,7 +84,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const updatedNotes = baseNotes ? `${baseNotes}\n\n${marker}\n${JSON.stringify(masteryMap)}` : `${marker}\n${JSON.stringify(masteryMap)}`;
     await supabase.from('students').update({ Notes: updatedNotes }).eq('id', studentId);
 
-    // 2. Dual-write to normalized public.student_topic_progress
+    // 2. Dual-write to normalized public.student_topic_progress sin duplicados
     const studentTopicKey = `${studentId}_${topicOrder}`;
     const progressPayload = {
       'Student + Topic': studentTopicKey,
@@ -96,18 +100,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       })
     };
 
-    // Check if record exists in student_topic_progress
-    const { data: existingProgress } = await supabase
+    // Check existing records in student_topic_progress and deduplicate
+    const { data: existingProgressList } = await supabase
       .from('student_topic_progress')
       .select('id')
-      .eq('Student + Topic', studentTopicKey)
-      .maybeSingle();
+      .eq('Student + Topic', studentTopicKey);
 
-    if (existingProgress?.id) {
+    if (existingProgressList && existingProgressList.length > 0) {
       await supabase
         .from('student_topic_progress')
         .update(progressPayload)
-        .eq('id', existingProgress.id);
+        .eq('id', existingProgressList[0].id);
+
+      // Limpiar duplicados si hubiesen
+      if (existingProgressList.length > 1) {
+        const extraIds = existingProgressList.slice(1).map(r => r.id);
+        await supabase
+          .from('student_topic_progress')
+          .delete()
+          .in('id', extraIds);
+      }
     } else {
       await supabase
         .from('student_topic_progress')

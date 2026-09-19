@@ -68,13 +68,14 @@ export function InfiniteTriviaModal({
   const [showHistory, setShowHistory] = useState(false)
   const [isRefilling, setIsRefilling] = useState(false)
   const [milestoneNotice, setMilestoneNotice] = useState<string | null>(null)
-  const [isMuted, setIsMuted] = useState(false)
+  const [isMuted, setIsMuted] = useState(true)
   const [showConfetti, setShowConfetti] = useState(false)
   const [currentTierName, setCurrentTierName] = useState<string>('Unranked')
 
   // Track recent contexts to avoid repetitive questions from Gemini
   const recentContextsRef = useRef<string[]>([])
   const autoAdvanceTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const inactivityTimerRef = useRef<NodeJS.Timeout | null>(null)
 
   // Clear auto-advance timer on unmount or question shift
   const clearAutoAdvanceTimer = useCallback(() => {
@@ -84,11 +85,53 @@ export function InfiniteTriviaModal({
     }
   }, [])
 
+  // Inactivity auto-close timer (2 minutes / 120 seconds of zero touch/interaction)
+  const resetInactivityTimer = useCallback(() => {
+    if (inactivityTimerRef.current) {
+      clearTimeout(inactivityTimerRef.current)
+    }
+    inactivityTimerRef.current = setTimeout(() => {
+      clearAutoAdvanceTimer()
+      soundEngine.stopAmbientLoop()
+      onClose()
+    }, 120000)
+  }, [clearAutoAdvanceTimer, onClose])
+
+  useEffect(() => {
+    if (!isOpen) {
+      if (inactivityTimerRef.current) clearTimeout(inactivityTimerRef.current)
+      return
+    }
+    resetInactivityTimer()
+    const handleActivity = () => resetInactivityTimer()
+    window.addEventListener('pointerdown', handleActivity)
+    window.addEventListener('keydown', handleActivity)
+    return () => {
+      if (inactivityTimerRef.current) clearTimeout(inactivityTimerRef.current)
+      window.removeEventListener('pointerdown', handleActivity)
+      window.removeEventListener('keydown', handleActivity)
+    }
+  }, [isOpen, resetInactivityTimer])
+
   useEffect(() => {
     return () => {
       clearAutoAdvanceTimer()
+      if (inactivityTimerRef.current) clearTimeout(inactivityTimerRef.current)
     }
   }, [clearAutoAdvanceTimer])
+
+  // Lock body scroll when trivia modal is active
+  useEffect(() => {
+    if (!isOpen || typeof document === 'undefined') return
+    const prevOverflow = document.body.style.overflow
+    const prevTouchAction = document.body.style.touchAction
+    document.body.style.overflow = 'hidden'
+    document.body.style.touchAction = 'none'
+    return () => {
+      document.body.style.overflow = prevOverflow
+      document.body.style.touchAction = prevTouchAction
+    }
+  }, [isOpen])
 
   // Load saved stats from localStorage on mount / topic change
   useEffect(() => {
@@ -222,6 +265,11 @@ export function InfiniteTriviaModal({
   // Advance to next question
   const handleNext = useCallback(() => {
     clearAutoAdvanceTimer()
+
+    // Ensure no button retains lingering focus or active states on next question
+    if (typeof document !== 'undefined' && document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur()
+    }
 
     if (queue.length === 0) {
       refillQuestions()
@@ -375,6 +423,21 @@ export function InfiniteTriviaModal({
         {/* Top Header & Metrics Bar */}
         <header className={styles.header}>
           <div className={styles.headerLeft}>
+            <button
+              type="button"
+              className={styles.triviaBackBtn}
+              onClick={() => {
+                clearAutoAdvanceTimer();
+                soundEngine.stopAmbientLoop();
+                onClose();
+              }}
+              title="Volver a la lección"
+              aria-label="Volver"
+            >
+              <ArrowLeft size={18} />
+              <span>Volver</span>
+            </button>
+
             <span className={styles.topicTag}>
               <Sparkles size={14} />
               <span>Tema #{topicOrder}: {cleanTopicName}</span>
@@ -433,21 +496,6 @@ export function InfiniteTriviaModal({
                 <span>Últimas 3 ({history.length})</span>
               </button>
             )}
-
-            {/* Cerrar modal */}
-            <button
-              type="button"
-              className={styles.iconBtn}
-              onClick={() => {
-                clearAutoAdvanceTimer();
-                soundEngine.stopAmbientLoop();
-                onClose();
-              }}
-              title="Cerrar trivia"
-              aria-label="Cerrar"
-            >
-              <X size={18} />
-            </button>
           </div>
         </header>
 
@@ -535,7 +583,7 @@ export function InfiniteTriviaModal({
 
               return (
                 <button
-                  key={idx}
+                  key={`${currentQuestion.id || currentQuestion.question}-${idx}`}
                   type="button"
                   className={optClass}
                   onClick={() => handleSelectOption(idx)}

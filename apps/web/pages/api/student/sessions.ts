@@ -201,7 +201,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         .select('*')
         .eq('Student', student.id)
 
-      if (dbProgress && dbProgress.length > 0) {
         const TIER_MAP: Record<string, number> = {
           'Bronze': 1,
           'Silver': 2,
@@ -209,7 +208,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           'Diamond': 4,
           'Platinum': 5
         }
-        for (const row of dbProgress) {
+        const TIER_NAMES_REV: Record<number, string> = {
+          1: 'Bronze',
+          2: 'Silver',
+          3: 'Gold',
+          4: 'Diamond',
+          5: 'Platinum'
+        }
+        for (const row of (dbProgress || [])) {
           const tNum = parseInt(row['Curriculum Topic'], 10)
           if (!isNaN(tNum)) {
             const status = row['Status'] || ''
@@ -219,15 +225,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               notesObj = row['Notes'] ? JSON.parse(row['Notes']) : {}
             } catch {}
 
+            const existing = masteryMap[tNum]
+            const highestTier = Math.max(calculatedTier, notesObj.tier || 0, existing?.tier || 0)
+            const highestStreak = Math.max(notesObj.streak || 0, existing?.streak || 0)
+            const resolvedTierName = TIER_NAMES_REV[highestTier] || status || existing?.tierName || 'Unranked'
+
             masteryMap[tNum] = {
-              tier: Math.max(calculatedTier, notesObj.tier || 0, masteryMap[tNum]?.tier || 0),
-              tierName: status || notesObj.tierName,
-              streak: Math.max(notesObj.streak || 0, masteryMap[tNum]?.streak || 0),
-              lastTrainedAt: row['Completed At'] || masteryMap[tNum]?.lastTrainedAt || ''
+              tier: highestTier,
+              tierName: resolvedTierName,
+              streak: highestStreak,
+              lastTrainedAt: row['Completed At'] || row['created_at'] || existing?.lastTrainedAt || ''
             }
           }
         }
-      }
     } catch (dbErr) {
       console.warn('Error leyendo student_topic_progress:', dbErr)
     }

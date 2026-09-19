@@ -26,12 +26,12 @@ export const CURRICULUM_SUMMARY_CATALOG: Record<number, TopicSummaryData> = {
     "title": "The Universal Idea",
     "phase": "Installer",
     "level": "A1 - Beginner",
-    "concept": "Aprende la ley fundamental que rige todo el inglés: cómo expresar cualquier idea usando un sujeto, una palabra de tiempo y una acción en forma base.",
-    "correctMethod": "Sujeto + Palabra de Tiempo + Acción (Base) — Estructura atómica: Actor + Temporalidad + Acción. Modales fijos (Will, Can, Would).",
+    "concept": "Aprende la ley fundamental que rige todo el inglés: cómo expresar cualquier idea uniendo quién lo hace, el momento en el tiempo y la acción en su forma más pura.",
+    "correctMethod": "Estructura: Actor + Temporalidad + Acción. Por ejemplo con modales directos (Will, Can, Would) donde la acción nunca cambia de forma.",
     "structureBlocks": [
-      "Sujeto",
+      "Protagonista",
       "Palabra de Tiempo",
-      "Acción (Base)"
+      "Acción Base"
     ],
     "examples": [
       {
@@ -48,9 +48,9 @@ export const CURRICULUM_SUMMARY_CATALOG: Record<number, TopicSummaryData> = {
       }
     ],
     "commonMistake": {
-      "explanation": "Omitir el sujeto en inglés (\"Is raining\", \"Can do\"). En español el sujeto es tácito, en inglés es obligatorio.",
-      "wrong": "Is raining",
-      "correct": "Can do"
+      "explanation": "Omitir el sujeto en inglés (\"It is raining\", no \"Is raining\"). En español el sujeto puede ser tácito, en inglés siempre es indispensable.",
+      "wrong": "Is raining outside",
+      "correct": "It is raining outside"
     }
   },
   "2": {
@@ -153,7 +153,7 @@ export const CURRICULUM_SUMMARY_CATALOG: Record<number, TopicSummaryData> = {
     "title": "Negative Architecture",
     "phase": "Installer",
     "level": "A2 - Elementary",
-    "concept": "Aprende la fórmula universal para negar cualquier idea en inglés uniendo la palabra de tiempo con el operador de negación.",
+    "concept": "Aprende la regla universal para negar cualquier idea en inglés uniendo la palabra de tiempo con el operador de negación.",
     "correctMethod": "Sujeto + Palabra de Tiempo + Not + Acción Base — Negación universal: Se niega pegando Not a la Palabra de Tiempo (Don't, Didn't, Won't, Can't, Shouldn't).",
     "structureBlocks": [
       "Sujeto",
@@ -1453,7 +1453,7 @@ export const CURRICULUM_SUMMARY_CATALOG: Record<number, TopicSummaryData> = {
     "title": "Business & Negotiation: The Proformas",
     "phase": "Negotiator",
     "level": "B2 - Upper Intermediate",
-    "concept": "Habla el lenguaje de los negocios internacionales: domina las fórmulas y proformas estándar para cerrar acuerdos y contratos.",
+    "concept": "Habla el lenguaje de los negocios internacionales: domina las estructuras y proformas estándar para cerrar acuerdos y contratos.",
     "correctMethod": "Proformas: Subject to approval | In accordance with | We propose that + Subjuntivo — Estructuras estándar de ofertas comerciales, cotizaciones, acuerdos de confidencialidad y cláusulas de servicio.",
     "structureBlocks": [
       "Proformas: Subject to approval | In accordance with | We propose that",
