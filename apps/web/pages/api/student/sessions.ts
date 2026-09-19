@@ -144,9 +144,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       'ae949b77-bc5e-4e8e-aa14-5da184f9b551', // Lucia uribe giraldo
       'd1c9de5a-a225-4b2c-8ab6-7283dd6e0ecc', // Cristina Zabala
       'd9782e46-fbd3-4dc5-8f1b-12872550309b', // Nicolas Iván Polo Lara
-      'f8227ed6-8e8a-4694-a70b-d1de3301734a', // Santiago (Santi.mon)
+      'f8227ed6-8e8a-4694-a70b-d1de3301734a', // Santiago
+      'b1068664-4e67-4070-a564-8ac8a1f629bb', // Santiago Montes
       'eaa81235-349d-410e-8860-1b536cd8b2f7', // Sebastian Vélez
       '2ce10e96-f820-42ca-b30b-3ba99061c260', // Jose Yepes
+      'bb02d2cb-710e-4bea-b657-099bb0bb211b', // Isabela Restrepo
       'recStudent1'                           // Mock / ID de prueba
     ]
 
