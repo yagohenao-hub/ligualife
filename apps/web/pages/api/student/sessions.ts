@@ -54,8 +54,28 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       teacherName
     }
 
-    if (sessionIds.length === 0) {
-      return res.status(200).json({ upcomingSessions: [], completedSessions: [], totalTopics: 60, studentProfile })
+    // ── Alumnos Antiguos: Habilitar los 60 temas completados con slides ──────
+    const SENIOR_STUDENT_IDS = [
+      '04ded1af-37a7-49ee-a976-307ee9509fa9', // Laura
+      '27454176-ebd0-4628-8e4d-36fd262f54c5', // Paulina Uribe Giraldo
+      '5f4e7cb9-050f-4c97-b53e-d6de66a9e9b0', // Romario
+      '7c5250a8-c0a6-463b-8897-5471aa6dc721', // Yuliana Higuita Osorio
+      'a16d8bc8-68d1-4d86-bc04-22388287ffb6', // Beatriz Orozco
+      'ae949b77-bc5e-4e8e-aa14-5da184f9b551', // Lucia uribe giraldo
+      'd1c9de5a-a225-4b2c-8ab6-7283dd6e0ecc', // Cristina Zabala
+      'd9782e46-fbd3-4dc5-8f1b-12872550309b', // Nicolas Iván Polo Lara
+      'f8227ed6-8e8a-4694-a70b-d1de3301734a', // Santiago
+      'b1068664-4e67-4070-a564-8ac8a1f629bb', // Santiago Montes
+      'eaa81235-349d-410e-8860-1b536cd8b2f7', // Sebastian Vélez
+      '2ce10e96-f820-42ca-b30b-3ba99061c260', // Jose Yepes
+      'bb02d2cb-710e-4bea-b657-099bb0bb211b', // Isabela Restrepo
+      'recStudent1'                           // Mock / ID de prueba
+    ]
+
+    const isSeniorStudent = SENIOR_STUDENT_IDS.includes(studentId) || (student.fields['Notes'] || '').includes('SENIOR_STUDENT')
+
+    if (sessionIds.length === 0 && !isSeniorStudent) {
+      return res.status(200).json({ upcomingSessions: [], completedSessions: [], totalTopics: 60, studentProfile, masteryMap: {} })
     }
 
     // 3. Fetch all sessions for these session IDs directly and filter in memory
@@ -133,26 +153,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       resolveTopics(upcoming, true),
       resolveTopics(completed, false),
     ])
-
-    // ── Alumnos Antiguos: Habilitar los 60 temas completados con slides ──────
-    const SENIOR_STUDENT_IDS = [
-      '04ded1af-37a7-49ee-a976-307ee9509fa9', // Laura
-      '27454176-ebd0-4628-8e4d-36fd262f54c5', // Paulina Uribe Giraldo
-      '5f4e7cb9-050f-4c97-b53e-d6de66a9e9b0', // Romario
-      '7c5250a8-c0a6-463b-8897-5471aa6dc721', // Yuliana Higuita Osorio
-      'a16d8bc8-68d1-4d86-bc04-22388287ffb6', // Beatriz Orozco
-      'ae949b77-bc5e-4e8e-aa14-5da184f9b551', // Lucia uribe giraldo
-      'd1c9de5a-a225-4b2c-8ab6-7283dd6e0ecc', // Cristina Zabala
-      'd9782e46-fbd3-4dc5-8f1b-12872550309b', // Nicolas Iván Polo Lara
-      'f8227ed6-8e8a-4694-a70b-d1de3301734a', // Santiago
-      'b1068664-4e67-4070-a564-8ac8a1f629bb', // Santiago Montes
-      'eaa81235-349d-410e-8860-1b536cd8b2f7', // Sebastian Vélez
-      '2ce10e96-f820-42ca-b30b-3ba99061c260', // Jose Yepes
-      'bb02d2cb-710e-4bea-b657-099bb0bb211b', // Isabela Restrepo
-      'recStudent1'                           // Mock / ID de prueba
-    ]
-
-    const isSeniorStudent = SENIOR_STUDENT_IDS.includes(studentId) || (student.fields['Notes'] || '').includes('SENIOR_STUDENT')
 
     if (isSeniorStudent) {
       try {
