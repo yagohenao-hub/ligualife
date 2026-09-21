@@ -4,6 +4,7 @@ import Head from 'next/head'
 import styles from '@/styles/StudentDashboard.module.css'
 import { LinguaLifeLogo } from '@/components/LinguaLifeLogo'
 import { InfiniteTriviaModal } from '@/components/InfiniteTriviaModal'
+import { ShortReadingModal } from '@/components/ShortReadingModal'
 import { getTopicSummary } from '@/lib/curriculum-summary'
 import { 
   AlertCircle,
@@ -38,7 +39,8 @@ import {
   Video,
   ChevronLeft,
   ChevronRight,
-  CircleDot
+  CircleDot,
+  Volume2
 } from 'lucide-react'
 
 const DAYS_SHORT = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
@@ -117,6 +119,9 @@ export default function StudentDashboardPage() {
   // Infinite Scroll Trivia Mini-App Modal State
   const [showTriviaModal, setShowTriviaModal] = useState(false)
   const [activeTriviaTopic, setActiveTriviaTopic] = useState<{ order: number; name: string; ldsFormula?: string; commonMistake?: string } | null>(null)
+
+  // Short Reading Modal State
+  const [activeReadingTopic, setActiveReadingTopic] = useState<{ order: number; name: string } | null>(null)
 
   // Verifica y gestiona el límite de 3 prácticas de IA cada 12 horas
   const checkPracticeLimit = useCallback(() => {
@@ -203,20 +208,21 @@ export default function StudentDashboardPage() {
     setLoading(false)
   }
 
-  // ── Bloqueo de Scroll del Body al abrir cualquier Modal (Previene Scroll Bleed) ──
-  const isAnyModalOpen = Boolean(selectedTopic || showTokenModal || showScheduleModal || showRateModal || showTriviaModal)
+  // ── Bloqueo de Scroll del Body al abrir cualquier Modal (Previene Scroll Bleed & Freeze) ──
+  const isAnyModalOpen = Boolean(selectedTopic || showTokenModal || showScheduleModal || showRateModal || showTriviaModal || activeReadingTopic)
 
   useEffect(() => {
     if (typeof document === 'undefined') return
     if (isAnyModalOpen) {
-      const originalOverflow = document.body.style.overflow
-      const originalTouchAction = document.body.style.touchAction
       document.body.style.overflow = 'hidden'
       document.body.style.touchAction = 'none'
-      return () => {
-        document.body.style.overflow = originalOverflow
-        document.body.style.touchAction = originalTouchAction
-      }
+    } else {
+      document.body.style.overflow = ''
+      document.body.style.touchAction = ''
+    }
+    return () => {
+      document.body.style.overflow = ''
+      document.body.style.touchAction = ''
     }
   }, [isAnyModalOpen])
 
@@ -225,6 +231,7 @@ export default function StudentDashboardPage() {
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') {
         if (showTriviaModal) setShowTriviaModal(false)
+        else if (activeReadingTopic) setActiveReadingTopic(null)
         else if (selectedTopic) closeTopicModal()
         else if (showTokenModal) setShowTokenModal(false)
         else if (showScheduleModal) setShowScheduleModal(false)
@@ -233,7 +240,7 @@ export default function StudentDashboardPage() {
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [showTriviaModal, selectedTopic, showTokenModal, showScheduleModal, showRateModal])
+  }, [showTriviaModal, activeReadingTopic, selectedTopic, showTokenModal, showScheduleModal, showRateModal])
 
   // ── Cerrar Modal de Tema y limpiar Query Param sin recargar ──
   const closeTopicModal = useCallback(() => {
@@ -316,36 +323,75 @@ export default function StudentDashboardPage() {
 
   const handleCloseTrivia = useCallback(() => {
     setShowTriviaModal(false)
-    if (router.query.trivia) {
+    if (router.query.trivia || router.query.topic) {
       const nextQuery = { ...router.query }
       delete nextQuery.trivia
+      delete nextQuery.topic
       router.push({ pathname: '/student', query: nextQuery }, undefined, { shallow: true })
     }
   }, [router])
+
+  const handleOpenShortReading = useCallback((order: number, cleanTitle: string) => {
+    setActiveReadingTopic({ order, name: cleanTitle })
+    if (router.query.reading !== '1' || router.query.topic !== String(order)) {
+      router.push({
+        pathname: '/student',
+        query: { ...router.query, topic: order, reading: '1' }
+      }, undefined, { shallow: true })
+    }
+  }, [router])
+
+  const handleCloseShortReading = useCallback(() => {
+    setActiveReadingTopic(null)
+    if (router.query.reading || router.query.topic) {
+      const nextQuery = { ...router.query }
+      delete nextQuery.reading
+      delete nextQuery.topic
+      router.push({ pathname: '/student', query: nextQuery }, undefined, { shallow: true })
+    }
+  }, [router])
+
+  const handleOpenPractice = useCallback((session: StudentSession) => {
+    handleOpenTopicModal(session)
+    handleGeneratePractice(session)
+  }, [handleOpenTopicModal])
 
   // ── Sincronizar Estado cuando el usuario pulsa Atrás en el navegador/celular o desliza desde el borde ──
   useEffect(() => {
     if (!router.isReady) return
     const topicParam = router.query.topic
     const triviaParam = router.query.trivia
+    const readingParam = router.query.reading
 
     if (topicParam) {
       const order = Number(topicParam)
       const found = completed.find(s => s.topicOrder === order) || upcoming.find(s => s.topicOrder === order)
-      if (found && (!selectedTopic || selectedTopic.topicOrder !== order)) {
-        handleOpenTopicModal(found, false)
+      const cleanTitle = (found?.topicName || `Tema ${order}`).replace(/\s*\([^)]*\)/g, '').trim()
+
+      // Si no es trivia ni reading, sincronizar modal de diapositiva
+      if (readingParam !== '1' && triviaParam !== '1') {
+        if (found && (!selectedTopic || selectedTopic.topicOrder !== order)) {
+          handleOpenTopicModal(found, false)
+        }
       }
 
       // Sincronizar estado de trivia según URL
       if (triviaParam === '1') {
-        const cleanTitle = (found?.topicName || `Tema ${order}`).replace(/\s*\([^)]*\)/g, '').trim()
         setActiveTriviaTopic({ order, name: cleanTitle })
         setShowTriviaModal(true)
       } else {
         setShowTriviaModal(false)
       }
+
+      // Sincronizar estado de reading según URL
+      if (readingParam === '1') {
+        setActiveReadingTopic({ order, name: cleanTitle })
+      } else {
+        setActiveReadingTopic(null)
+      }
     } else {
       setShowTriviaModal(false)
+      setActiveReadingTopic(null)
       if (selectedTopic) {
         setSelectedTopic(null)
         setPracticeDoc(null)
@@ -354,7 +400,7 @@ export default function StudentDashboardPage() {
         setPracticeLimitNotice(null)
       }
     }
-  }, [router.isReady, router.query.topic, router.query.trivia, completed, upcoming])
+  }, [router.isReady, router.query.topic, router.query.trivia, router.query.reading, completed, upcoming])
 
   async function handleGeneratePractice(topic: StudentSession) {
     const limit = checkPracticeLimit()
@@ -916,31 +962,74 @@ export default function StudentDashboardPage() {
                   </div>
                 </div>
 
-                <div className={styles.topicsGrid}>
+                <div className={styles.topicsList}>
                   {displayedTopics.map((s) => {
                     // Empieza en Nivel 0 (Nada absoluto / Sin rango) por defecto
-                    const currentTier = masteryMap[s.topicOrder ?? 0]?.tier ?? 0
+                    const order = s.topicOrder ?? 0
+                    const currentTier = masteryMap[order]?.tier ?? 0
                     const tierCfg = getTierConfig(currentTier)
+                    const cleanTitle = (s.topicName || `Tema #${order}`).replace(/\s*\([^)]*\)/g, '').trim()
 
                     return (
-                      <button
-                        key={s.id}
-                        className={`${styles.topicChip} ${tierCfg.class} ${s.cachedSlides ? styles.topicClickable : ''}`}
-                        onClick={() => s.cachedSlides && handleOpenTopicModal(s)}
-                        title={`Tema #${s.topicOrder}: ${s.topicName} — Rango: ${tierCfg.name} (${tierCfg.desc})`}
-                        style={{ display: 'inline-flex', alignItems: 'center', gap: '0.55rem', borderColor: tierCfg.color }}
+                      <div 
+                        key={s.id} 
+                        className={`${styles.topicRowCapsule} ${tierCfg.class}`}
+                        style={{ borderColor: tierCfg.color }}
                       >
-                        <span className={styles.tierBadge}>{tierCfg.icon}</span>
-                        <span className={styles.topicNum} style={{ borderColor: `${tierCfg.color}77`, color: tierCfg.color }}>
-                          {s.topicOrder ? String(s.topicOrder).padStart(2, '0') : '–'}
-                        </span>
-                        <span className={styles.topicName}>{s.topicName ?? 'Clase completada'}</span>
-                        {s.cachedSlides && (
-                          <span className={styles.viewSlides} style={{ marginLeft: 'auto', opacity: 0.8, display: 'inline-flex', alignItems: 'center' }}>
-                            <BookOpen size={13} />
+                        <div className={styles.topicRowInfo}>
+                          <span className={styles.tierBadge}>{tierCfg.icon}</span>
+                          <span className={styles.topicNum} style={{ borderColor: `${tierCfg.color}77`, color: tierCfg.color }}>
+                            {s.topicOrder ? String(s.topicOrder).padStart(2, '0') : '–'}
                           </span>
-                        )}
-                      </button>
+                          <span className={styles.topicName}>{s.topicName ?? 'Clase completada'}</span>
+                        </div>
+
+                        <div className={styles.topicRowActions}>
+                          {/* 1. Botón Resumen (a la izquierda) */}
+                          <button
+                            type="button"
+                            className={`${styles.topicActionBtn} ${styles.btnResumen}`}
+                            onClick={() => handleOpenTopicModal(s)}
+                            title="Ver diapositiva y resumen del concepto esencial"
+                          >
+                            <BookOpen size={14} />
+                            <span>Resumen</span>
+                          </button>
+
+                          {/* 2. Botón Estudiar con IA */}
+                          <button
+                            type="button"
+                            className={`${styles.topicActionBtn} ${styles.btnAi}`}
+                            onClick={() => handleOpenPractice(s)}
+                            title="Generar guía de práctica intensiva con IA"
+                          >
+                            <Zap size={14} />
+                            <span>Estudiar con IA</span>
+                          </button>
+
+                          {/* 3. Botón Trivia */}
+                          <button
+                            type="button"
+                            className={`${styles.topicActionBtn} ${styles.btnTrivia}`}
+                            onClick={() => handleOpenTrivia(order || 1, cleanTitle)}
+                            title="Entrenar con la Trivia Infinita de este tema"
+                          >
+                            <Flame size={14} color="#fde047" />
+                            <span>Trivia</span>
+                          </button>
+
+                          {/* 4. Botón Short Reading */}
+                          <button
+                            type="button"
+                            className={`${styles.topicActionBtn} ${styles.btnReading}`}
+                            onClick={() => handleOpenShortReading(order || 1, cleanTitle)}
+                            title="Escuchar y leer micro-lectura de 100 palabras con audio"
+                          >
+                            <Volume2 size={14} />
+                            <span>Short Reading</span>
+                          </button>
+                        </div>
+                      </div>
                     )
                   })}
                 </div>
@@ -1232,32 +1321,6 @@ export default function StudentDashboardPage() {
                 </button>
               </div>
 
-              {/* Action Bar: Botonera ergonómica para Trivia e IA (sin encimarse en celular) */}
-              <div className={styles.modalActionBar}>
-                <button
-                  type="button"
-                  className={styles.aiTriviaBtn}
-                  onClick={() => handleOpenTrivia(order || 1, cleanTitle)}
-                  title="Entrenar con la Trivia Infinita de este tema específico"
-                >
-                  <Flame size={17} color="#fde047" />
-                  <span>Trivia Infinita</span>
-                </button>
-
-                <button
-                  type="button"
-                  className={styles.aiPracticeBtn}
-                  onClick={() => handleGeneratePractice(selectedTopic)}
-                  disabled={practiceLoading}
-                  title="Generar guía de estudio intensiva (3 actividades x 5 puntos)"
-                >
-                  <Zap size={17} />
-                  <span>
-                    {practiceLoading ? 'Diseñando Guía...' : 'Estudiar con IA'}
-                  </span>
-                </button>
-              </div>
-
               {/* Mensaje de maestría o enfriamiento */}
               {cooldownMsg && (
                 <div className={styles.cooldownBanner}>
@@ -1426,18 +1489,6 @@ export default function StudentDashboardPage() {
                     </div>
                   </div>
                 </div>
-
-                {/* Botón final visible para salir cómodamente al llegar al pie */}
-                <div className={styles.modalBottomAction}>
-                  <button
-                    type="button"
-                    className={styles.modalBottomReturnBtn}
-                    onClick={closeTopicModal}
-                  >
-                    <ArrowLeft size={16} />
-                    <span>Volver al Dashboard de Temas</span>
-                  </button>
-                </div>
               </div>
             </div>
           </div>
@@ -1455,6 +1506,16 @@ export default function StudentDashboardPage() {
           onMasteryUpgrade={(updatedMap) => {
             setMasteryMap(updatedMap)
           }}
+        />
+      )}
+
+      {/* === Modal Interactivo: Short Reading con Audio TTS & IA === */}
+      {activeReadingTopic && (
+        <ShortReadingModal
+          topicOrder={activeReadingTopic.order}
+          topicName={activeReadingTopic.name}
+          studentName={profile?.name}
+          onClose={handleCloseShortReading}
         />
       )}
 

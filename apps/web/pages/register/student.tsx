@@ -158,7 +158,7 @@ export default function StudentRegistration() {
                 className={styles.input}
                 value={formData.fullName}
                 onChange={e => setFormData({...formData, fullName: e.target.value})}
-                placeholder="Ej. Santiago Montes"
+                placeholder="Ej. Valentina Ríos"
                 required
               />
               {formData.fullName && formData.fullName.trim().split(/\s+/).length < 2 && (
@@ -173,7 +173,7 @@ export default function StudentRegistration() {
                 type="email"
                 value={formData.email}
                 onChange={e => setFormData({...formData, email: e.target.value})}
-                placeholder="santiago@ejemplo.com"
+                placeholder="valentina@ejemplo.com"
               />
             </div>
 

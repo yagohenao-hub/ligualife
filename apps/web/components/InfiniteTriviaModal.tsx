@@ -68,7 +68,7 @@ export function InfiniteTriviaModal({
   const [showHistory, setShowHistory] = useState(false)
   const [isRefilling, setIsRefilling] = useState(false)
   const [milestoneNotice, setMilestoneNotice] = useState<string | null>(null)
-  const [isMuted, setIsMuted] = useState(true)
+  const [isMusicOn, setIsMusicOn] = useState(false)
   const [showConfetti, setShowConfetti] = useState(false)
   const [currentTierName, setCurrentTierName] = useState<string>('Unranked')
 
@@ -120,18 +120,15 @@ export function InfiniteTriviaModal({
     }
   }, [clearAutoAdvanceTimer])
 
-  // Lock body scroll when trivia modal is active
+  // Limpieza garantizada de bloqueo de scroll en el body al desmontar
   useEffect(() => {
-    if (!isOpen || typeof document === 'undefined') return
-    const prevOverflow = document.body.style.overflow
-    const prevTouchAction = document.body.style.touchAction
-    document.body.style.overflow = 'hidden'
-    document.body.style.touchAction = 'none'
     return () => {
-      document.body.style.overflow = prevOverflow
-      document.body.style.touchAction = prevTouchAction
+      if (typeof document !== 'undefined') {
+        document.body.style.overflow = ''
+        document.body.style.touchAction = ''
+      }
     }
-  }, [isOpen])
+  }, [])
 
   // Load saved stats from localStorage on mount / topic change
   useEffect(() => {
@@ -254,12 +251,9 @@ export function InfiniteTriviaModal({
     }
   }, [])
 
-  const handleToggleSound = useCallback(() => {
-    const muted = soundEngine.toggleMute()
-    setIsMuted(muted)
-    if (!muted) {
-      soundEngine.startAmbientLoop()
-    }
+  const handleToggleMusic = useCallback(() => {
+    const isPlaying = soundEngine.toggleMusic()
+    setIsMusicOn(isPlaying)
   }, [])
 
   // Advance to next question
@@ -473,15 +467,15 @@ export function InfiniteTriviaModal({
           </div>
 
           <div className={styles.headerActions}>
-            {/* Audio & Ambient Music Toggle */}
+            {/* Ambient Music Toggle (Los efectos de sonido de recompensa siempre están encendidos) */}
             <button
               type="button"
-              className={`${styles.soundToggleBtn} ${!isMuted ? styles.soundToggleActive : ''}`}
-              onClick={handleToggleSound}
-              title={isMuted ? 'Activar audio y música de concentración' : 'Silenciar audio'}
+              className={`${styles.soundToggleBtn} ${isMusicOn ? styles.soundToggleActive : ''}`}
+              onClick={handleToggleMusic}
+              title={isMusicOn ? 'Pausar música de fondo (los efectos de sonido siguen activos)' : 'Encender música de fondo relajante'}
             >
-              {isMuted ? <VolumeX size={15} /> : <Volume2 size={15} />}
-              <span>{isMuted ? 'Mudo' : 'Audio On'}</span>
+              {isMusicOn ? <Volume2 size={15} /> : <VolumeX size={15} />}
+              <span>{isMusicOn ? 'Música On' : 'Música Off'}</span>
             </button>
 
             {/* Botón de historial de las últimas 3 preguntas */}

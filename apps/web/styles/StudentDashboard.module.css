@@ -404,6 +404,108 @@
   transition: all 0.3s var(--ease-spring);
 }
 
+.topicsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+  width: 100%;
+}
+
+.topicRowCapsule {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: var(--surface-1);
+  border: 2px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 0.75rem 1.15rem;
+  transition: all 0.25s var(--ease-spring);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+.topicRowCapsule:hover {
+  background: rgba(255, 255, 255, 0.04);
+  transform: translateY(-1px);
+}
+
+.topicRowInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.topicRowActions {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-shrink: 0;
+}
+
+.topicActionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.42rem 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btnResumen {
+  background: rgba(56, 189, 248, 0.09);
+  border: 1px solid rgba(56, 189, 248, 0.28);
+  color: #38bdf8;
+}
+.btnResumen:hover {
+  background: rgba(56, 189, 248, 0.22);
+  border-color: #38bdf8;
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.btnAi {
+  background: rgba(168, 85, 247, 0.09);
+  border: 1px solid rgba(168, 85, 247, 0.28);
+  color: #c084fc;
+}
+.btnAi:hover {
+  background: rgba(168, 85, 247, 0.22);
+  border-color: #c084fc;
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.btnTrivia {
+  background: rgba(245, 158, 11, 0.09);
+  border: 1px solid rgba(245, 158, 11, 0.28);
+  color: #fbbf24;
+}
+.btnTrivia:hover {
+  background: rgba(245, 158, 11, 0.22);
+  border-color: #fbbf24;
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.btnReading {
+  background: rgba(16, 185, 129, 0.09);
+  border: 1px solid rgba(16, 185, 129, 0.28);
+  color: #34d399;
+}
+.btnReading:hover {
+  background: rgba(16, 185, 129, 0.22);
+  border-color: #34d399;
+  color: #fff;
+  transform: translateY(-1px);
+}
+
 .topicsGrid {
   display: flex;
   flex-wrap: wrap;
@@ -2468,6 +2570,31 @@
     min-height: 40px;
     margin-top: 0.4rem;
     order: 4;
+  }
+
+  /* Topic Rows & Actions on Mobile */
+  .topicRowCapsule {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    padding: 0.85rem;
+  }
+
+  .topicRowInfo {
+    width: 100%;
+  }
+
+  .topicRowActions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.45rem;
+  }
+
+  .topicActionBtn {
+    justify-content: center;
+    padding: 0.5rem 0.6rem;
+    font-size: 0.76rem;
   }
 
   /* Topic Chips on Mobile */

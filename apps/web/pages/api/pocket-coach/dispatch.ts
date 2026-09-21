@@ -3,6 +3,12 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import { findAirtableRecords, fetchAirtableRecord, patchAirtableRecord } from '@/lib/airtable';
 import { EvolutionAPI } from '@/lib/evolution';
 import { buildDispatchPrompt } from '@/lib/pocket-coach/prompt-engine';
+import {
+  checkShouldDispatch,
+  recordExecutionAndRollNextDay,
+  getScheduledDispatchState,
+  rollDiceForDate
+} from '@/lib/pocket-coach/scheduler';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
@@ -22,7 +28,38 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    // 0. Verificar el estado de conexión de WhatsApp antes de iniciar el ciclo
+    // 0. Si se solicita solo consultar o re-tirar el dado para la hora programada
+    if (req.query.status === 'true') {
+      const state = await getScheduledDispatchState();
+      return res.status(200).json({ success: true, schedule: state });
+    }
+
+    if (req.query.reroll === 'true') {
+      const rolled = rollDiceForDate();
+      const updated = await recordExecutionAndRollNextDay(0);
+      return res.status(200).json({
+        success: true,
+        message: `🎲 Dado re-lanzado con éxito para mañana: ${updated.nextTimeCOT}`,
+        schedule: updated
+      });
+    }
+
+    // 1. Validar la hora programada del dado (a menos que se fuerce con ?immediate=true o ?force=true)
+    const isImmediate = req.query.immediate === 'true' || req.query.force === 'true' || (req.body && req.body.immediate === true);
+    const scheduleCheck = await checkShouldDispatch(isImmediate);
+
+    if (!scheduleCheck.shouldDispatch) {
+      console.log(`[Dispatch] ${scheduleCheck.message}`);
+      return res.status(200).json({
+        success: true,
+        dispatched: false,
+        reason: scheduleCheck.reason,
+        message: scheduleCheck.message,
+        schedule: scheduleCheck.state
+      });
+    }
+
+    // 2. Verificar el estado de conexión de WhatsApp antes de iniciar el ciclo
     const conn = await EvolutionAPI.checkConnectionStatus();
     if (!conn.connected) {
       console.warn('[Dispatch] WhatsApp no está conectado (estado:', conn.state, '). Abortando despacho para proteger reputación.');
@@ -32,7 +69,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     }
 
-    // 1. Obtener estudiantes que tengan Status = Active Y Pocket Coach Status = Active
+    // 3. Obtener estudiantes que tengan Status = Active Y Pocket Coach Status = Active
     const allStudents = await findAirtableRecords('Students', "{Status} = 'Active'");
     
     // Filtrado estricto por Pocket Coach Status
@@ -176,7 +213,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     }
 
-    return res.status(200).json({ success: true, processed: results });
+    // 4. "Tirar el dado" para programar el despacho de mañana dentro del rango 8:30 AM - 6:00 PM COT
+    const successfulCount = results.filter(r => r.status === 'sent').length;
+    const nextSchedule = await recordExecutionAndRollNextDay(successfulCount);
+
+    return res.status(200).json({
+      success: true,
+      dispatched: true,
+      processed: results,
+      nextSchedule: {
+        tomorrowDate: nextSchedule.tomorrowDate,
+        nextTimeCOT: nextSchedule.nextTimeCOT,
+        nextScheduledISO: nextSchedule.nextScheduledISO,
+        dice: nextSchedule.dice
+      }
+    });
   } catch (error: any) {
     console.error('Error en el cron del Pocket Coach:', error);
     return res.status(500).json({ error: error.message });

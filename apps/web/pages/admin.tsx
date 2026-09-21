@@ -393,12 +393,26 @@ export default function AdminPage() {
       })
       const data = await res.json()
       if (res.ok && data.success) {
-        alert(`¡Despacho completado! Procesados: ${data.processed?.length || 0} estudiantes.`)
+        alert(`¡Despacho completado! Procesados: ${data.processed?.length || 0} estudiantes. Próximo despacho mañana: ${data.nextSchedule?.nextTimeCOT || 'programado'}`)
       } else {
         alert(`Aviso de despacho: ${data.error || data.message || 'Verifica el log del servidor'}`)
       }
     } catch (e: any) {
       alert(`Error disparando despacho: ${e.message}`)
+    }
+  }
+
+  async function rerollDiceSchedule() {
+    try {
+      const res = await fetch('/api/pocket-coach/dispatch?reroll=true')
+      const data = await res.json()
+      if (res.ok && data.success) {
+        alert(`🎲 ¡Dado re-lanzado! Próximo despacho programado para: ${data.schedule?.nextTimeCOT} (${data.schedule?.tomorrowDate})`)
+      } else {
+        alert(`Aviso: ${data.error || data.message || 'Error al re-tirar el dado'}`)
+      }
+    } catch (e: any) {
+      alert(`Error re-tirando el dado: ${e.message}`)
     }
   }
 
@@ -1030,6 +1044,14 @@ export default function AdminPage() {
                     title="Dispara inmediatamente el envío del Micro-Drop a los alumnos activos"
                   >
                     ⚡ Enviar Micro-Drop Manual
+                  </button>
+                  <button 
+                    className={styles.addBtn} 
+                    style={{ background: 'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)', border: 'none' }}
+                    onClick={rerollDiceSchedule}
+                    title="Tira el dado para sortear una nueva hora aleatoria para el despacho de mañana (8:30 AM - 6:00 PM COT)"
+                  >
+                    🎲 Re-tirar Dado
                   </button>
                   <button className={styles.addBtn} onClick={openCreateStudent}>+ Nuevo Alumno</button>
                   <button className={styles.addBtnSecondary} onClick={() => { setLinkForm({ studentIds: [], teacherId: '', notes: '', selectedDays: [], selectedTimes: {} }); setShowLinkModal(true); }}>🔗 Vincular Grupo</button>

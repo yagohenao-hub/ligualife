@@ -27,7 +27,6 @@ class SoundEngine {
    * Designed for immediate positive reinforcement.
    */
   public playRewardChime(): void {
-    if (this.isMuted) return;
     const ctx = this.getContext();
     if (!ctx) return;
 
@@ -60,7 +59,6 @@ class SoundEngine {
    * Rich brass/synth celebratory chord cadence with shimmer.
    */
   public playMilestoneFanfare(): void {
-    if (this.isMuted) return;
     const ctx = this.getContext();
     if (!ctx) return;
 
@@ -400,18 +398,22 @@ class SoundEngine {
     this.isAmbientPlaying = false;
   }
 
-  public toggleMute(): boolean {
-    this.isMuted = !this.isMuted;
-    if (this.isMuted) {
+  public toggleMusic(): boolean {
+    if (this.isAmbientPlaying) {
       this.stopAmbientLoop();
+      return false;
     } else {
       this.startAmbientLoop();
+      return true;
     }
-    return this.isMuted;
+  }
+
+  public toggleMute(): boolean {
+    return !this.toggleMusic();
   }
 
   public getMuted(): boolean {
-    return this.isMuted;
+    return !this.isAmbientPlaying;
   }
 
   public isAmbientActive(): boolean {
