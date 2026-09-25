@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Intensive Acceleration Program — Class Structure</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #090a0f;
+      --bg-card: rgba(18, 20, 30, 0.75);
+      --border-card: rgba(255, 255, 255, 0.08);
+      --accent-purple: #8b5cf6;
+      --accent-violet: #6d28d9;
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(109, 40, 217, 0.16) 0%, transparent 45%),
+        radial-gradient(circle at 85% 50%, rgba(16, 185, 129, 0.12) 0%, transparent 45%),
+        radial-gradient(circle at 20% 85%, rgba(245, 158, 11, 0.1) 0%, transparent 45%),
+        radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.8) 0%, transparent 100%);
+      background-attachment: fixed;
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding: 3rem 1.5rem 6rem;
+    }
+
+    .container {
+      max-width: 1140px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 5.5rem;
+    }
+
+    /* Section Wrapper */
+    .presentation-section {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent-purple);
+      margin-bottom: 0.85rem;
+    }
+
+    .eyebrow-emerald {
+      color: var(--accent-emerald);
+    }
+
+    .eyebrow-amber {
+      color: var(--accent-amber);
+    }
+
+    .title {
+      font-size: 2.85rem;
+      font-weight: 800;
+      line-height: 1.18;
+      letter-spacing: -0.03em;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #ffffff 40%, #cbd5e1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      line-height: 1.65;
+      max-width: 820px;
+      margin-bottom: 2.25rem;
+    }
+
+    /* Grids */
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.25rem;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    @media (max-width: 980px) {
+      .grid-4 { grid-template-columns: repeat(2, 1fr); }
+      .grid-3 { grid-template-columns: 1fr; }
+      .grid-2 { grid-template-columns: 1fr; }
+      .title { font-size: 2.2rem; }
+    }
+
+    @media (max-width: 640px) {
+      .grid-4 { grid-template-columns: 1fr; }
+      body { padding: 2rem 1rem 4rem; }
+    }
+
+    /* Cards */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 22px;
+      padding: 1.85rem;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+    }
+
+    .card:hover {
+      border-color: rgba(139, 92, 246, 0.35);
+      transform: translateY(-4px);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5);
+    }
+
+    .card-highlight {
+      border-color: rgba(139, 92, 246, 0.35);
+      background: linear-gradient(145deg, rgba(139, 92, 246, 0.08), rgba(15, 23, 42, 0.75));
+    }
+
+    .card-highlight::before {
+      background: linear-gradient(90deg, var(--accent-purple), var(--accent-violet));
+    }
+
+    .card-emerald {
+      border-color: rgba(16, 185, 129, 0.3);
+      background: linear-gradient(145deg, rgba(16, 185, 129, 0.08), rgba(15, 23, 42, 0.75));
+    }
+
+    .card-emerald::before {
+      background: linear-gradient(90deg, #10b981, #059669);
+    }
+
+    .card-amber {
+      border-color: rgba(245, 158, 11, 0.3);
+      background: linear-gradient(145deg, rgba(245, 158, 11, 0.08), rgba(15, 23, 42, 0.75));
+    }
+
+    .card-amber::before {
+      background: linear-gradient(90deg, #f59e0b, #d97706);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.15rem;
+    }
+
+    .card-badge {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      font-family: 'Space Grotesk', monospace;
+      letter-spacing: 0.04em;
+    }
+
+    .badge-purple {
+      background: rgba(139, 92, 246, 0.15);
+      color: #c4b5fd;
+      border: 1px solid rgba(139, 92, 246, 0.35);
+    }
+
+    .badge-emerald {
+      background: rgba(16, 185, 129, 0.15);
+      color: #6ee7b7;
+      border: 1px solid rgba(16, 185, 129, 0.35);
+    }
+
+    .badge-amber {
+      background: rgba(245, 158, 11, 0.15);
+      color: #fde68a;
+      border: 1px solid rgba(245, 158, 11, 0.35);
+    }
+
+    .card-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 0.6rem;
+    }
+
+    .card-desc {
+      font-size: 0.925rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+      margin-bottom: 1.25rem;
+    }
+
+    .pill-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      margin-top: auto;
+    }
+
+    .pill-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.65rem;
+      font-size: 0.875rem;
+      color: #cbd5e1;
+      line-height: 1.45;
+    }
+
+    .pill-icon {
+      font-size: 1rem;
+      margin-top: 1px;
+    }
+
+    /* 4x15 Blocks */
+    .block-step {
+      background: rgba(255, 255, 255, 0.035);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 16px;
+      padding: 1.35rem;
+      margin-bottom: 1rem;
+      transition: all 0.25s ease;
+    }
+
+    .block-step:hover {
+      background: rgba(255, 255, 255, 0.065);
+      border-color: rgba(139, 92, 246, 0.35);
+      transform: translateX(4px);
+    }
+
+    .step-time {
+      font-family: 'Space Grotesk', monospace;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--accent-purple);
+      margin-bottom: 0.4rem;
+      letter-spacing: 0.05em;
+    }
+
+    .step-heading {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 0.45rem;
+    }
+
+    .step-text {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+    }
+
+    .quote-box {
+      border-left: 3px solid var(--accent-emerald);
+      padding-left: 1.5rem;
+      margin-top: 2rem;
+      color: #cbd5e1;
+      font-style: italic;
+      font-size: 1.05rem;
+      line-height: 1.65;
+      background: rgba(16, 185, 129, 0.04);
+      padding: 1.25rem 1.5rem;
+      border-radius: 0 14px 14px 0;
+    }
+
+    /* Subtle divider */
+    .section-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- SECTION 1: The Weekly Architecture -->
+    <section class="presentation-section">
+      <div class="eyebrow">🚀 3-Month Acceleration Roadmap</div>
+      <h1 class="title">The Intensive Blueprint:<br>Weekly Architecture</h1>
+      <p class="subtitle">
+        A scientifically structured system designed to automate native reflexes, eradicate hesitation, and transition from high B2 to real-world C1/C2 mastery.
+      </p>
+
+      <div class="grid-4">
+        <!-- Live Class 1 -->
+        <div class="card card-highlight">
+          <div class="card-header">
+            <span class="card-badge badge-purple">LIVE CLASS 1</span>
+            <span style="font-size: 1.35rem;">⚡</span>
+          </div>
+          <h3 class="card-title">Individual Sprint</h3>
+          <p class="card-desc">High-speed retrieval & neuromuscular speech conditioning.</p>
+          <div class="pill-list">
+            <div class="pill-item"><span class="pill-icon">⏱️</span> 60 min (4x15 min blocks)</div>
+            <div class="pill-item"><span class="pill-icon">🧠</span> Active memory + pushed drills</div>
+          </div>
+        </div>
+
+        <!-- Live Class 2 -->
+        <div class="card card-highlight">
+          <div class="card-header">
+            <span class="card-badge badge-purple">LIVE CLASS 2</span>
+            <span style="font-size: 1.35rem;">🔥</span>
+          </div>
+          <h3 class="card-title">Structural Deep Dive</h3>
+          <p class="card-desc">Advanced discourse connectors & native nuance mastery.</p>
+          <div class="pill-list">
+            <div class="pill-item"><span class="pill-icon">⏱️</span> 60 min (4x15 min blocks)</div>
+            <div class="pill-item"><span class="pill-icon">🎯</span> Constrained output & live debate</div>
+          </div>
+        </div>
+
+        <!-- Live Class 3 -->
+        <div class="card card-emerald">
+          <div class="card-header">
+            <span class="card-badge badge-emerald">LIVE CLASS 3</span>
+            <span style="font-size: 1.35rem;">👥</span>
+          </div>
+          <h3 class="card-title">Clase con Roma</h3>
+          <p class="card-desc">Real-world immersion, dynamic roleplay & multi-speaker debates.</p>
+          <div class="pill-list">
+            <div class="pill-item"><span class="pill-icon">⏱️</span> 60 min interactive session</div>
+            <div class="pill-item"><span class="pill-icon">🎙️</span> Cross-debates & fast banter</div>
+          </div>
+        </div>
+
+        <!-- Day 4 -->
+        <div class="card card-amber">
+          <div class="card-header">
+            <span class="card-badge badge-amber">DAY 4 (SELF)</span>
+            <span style="font-size: 1.35rem;">📱</span>
+          </div>
+          <h3 class="card-title">Guided Studio</h3>
+          <p class="card-desc">Guided autonomous practice to lock memory between sessions.</p>
+          <div class="pill-list">
+            <div class="pill-item"><span class="pill-icon">⏱️</span> 45-50 min independent</div>
+            <div class="pill-item"><span class="pill-icon">🤖</span> AI Pocket Coach + Flashcards</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- SECTION 2: Individual Classes (4x15 Protocol) -->
+    <section class="presentation-section">
+      <div class="eyebrow">⚙️ Methodology: Classes 1 & 2</div>
+      <h1 class="title">The 4 x 15-Minute Protocol</h1>
+      <p class="subtitle">
+        Every individual class follows a strict 60-minute cognitive algorithm. Zero passive listening — 100% active neuromuscular production.
+      </p>
+
+      <div class="grid-2">
+        <div>
+          <!-- Block 1 -->
+          <div class="block-step">
+            <div class="step-time">MINUTES 00 - 15 • BLOCK 1</div>
+            <h4 class="step-heading">⚡ Active Memory & Retrieval Sprint</h4>
+            <p class="step-text">
+              Rapid-fire conversion of passive knowledge into active reflex. 10 to 12 target items fired at high velocity. Sub-3-second response constraint using interactive Flashcards.
+            </p>
+          </div>
+
+          <!-- Block 2 -->
+          <div class="block-step">
+            <div class="step-time">MINUTES 15 - 30 • BLOCK 2</div>
+            <h4 class="step-heading">🧩 Native Pattern Deconstruction</h4>
+            <p class="step-text">
+              Deconstructing 1 high-level structure, diplomatic nuance, or conversational transition that distinguishes a C1/C2 speaker. Eliminating literal translation habits on the spot.
+            </p>
+          </div>
+        </div>
+
+        <div>
+          <!-- Block 3 -->
+          <div class="block-step">
+            <div class="step-time">MINUTES 30 - 45 • BLOCK 3</div>
+            <h4 class="step-heading">🏋️ Pushed Production Under Constraints</h4>
+            <p class="step-text">
+              High-pressure scenario drills. Formulating complex arguments with strict lexical constraints (e.g. mandatory advanced connectors). Immediate recalibration if missed.
+            </p>
+          </div>
+
+          <!-- Block 4 -->
+          <div class="block-step">
+            <div class="step-time">MINUTES 45 - 60 • BLOCK 4</div>
+            <h4 class="step-heading">🎙️ Free Conversational Integration & Golden Feedback</h4>
+            <p class="step-text">
+              Spontaneous dialogue and professional debate. Real-time note-taking of micro-hesitations and rhythm, ending with a decisive 2-minute actionable feedback debrief.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- SECTION 3: Clase con Roma -->
+    <section class="presentation-section">
+      <div class="eyebrow eyebrow-emerald">👥 Couple's Session: Class 3</div>
+      <h1 class="title">Clase con Roma: Full Immersion</h1>
+      <p class="subtitle">
+        Simulating real-world group interaction, fast-paced arguments, and high-level conversational banter together with Roma.
+      </p>
+
+      <div class="grid-3">
+        <!-- Stage 1 -->
+        <div class="card card-emerald">
+          <div class="card-header">
+            <span class="card-badge badge-emerald">MIN 00 - 15</span>
+            <span style="font-size: 1.35rem;">☕</span>
+          </div>
+          <h3 class="card-title">Dynamic Warm-up</h3>
+          <p class="card-desc">Spontaneous reaction to provocative news, global dilemmas, or tech trends.</p>
+          <div class="pill-list">
+            <div class="pill-item"><span class="pill-icon">💡</span> Waking up spontaneous fluency</div>
+            <div class="pill-item"><span class="pill-icon">💬</span> Unfiltered personal opinions</div>
+          </div>
+        </div>
+
+        <!-- Stage 2 -->
+        <div class="card card-emerald">
+          <div class="card-header">
+            <span class="card-badge badge-emerald">MIN 15 - 40</span>
+            <span style="font-size: 1.35rem;">⚔️</span>
+          </div>
+          <h3 class="card-title">Cross-Debate & Roleplay</h3>
+          <p class="card-desc">Opposing viewpoints assigned to you and Roma in high-stakes simulations.</p>
+          <div class="pill-list">
+            <div class="pill-item"><span class="pill-icon">🥊</span> Budget & corporate negotiation</div>
+            <div class="pill-item"><span class="pill-icon">🛡️</span> Defending points with diplomatic nuance</div>
+          </div>
+        </div>
+
+        <!-- Stage 3 -->
+        <div class="card card-emerald">
+          <div class="card-header">
+            <span class="card-badge badge-emerald">MIN 40 - 60</span>
+            <span style="font-size: 1.35rem;">🥂</span>
+          </div>
+          <h3 class="card-title">High-Level Banter</h3>
+          <p class="card-desc">Mastering conversational grease, polite interruptions, and group flow.</p>
+          <div class="pill-list">
+            <div class="pill-item"><span class="pill-icon">✨</span> <i>"If I may jump in here..."</i></div>
+            <div class="pill-item"><span class="pill-icon">🔄</span> Holding the floor & multi-speaker flow</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="quote-box">
+        "Language is not learned in a vacuum. Learning alongside Roma doubles cognitive retention through social cues, emotional engagement, and dynamic conversational pressure."
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- SECTION 4: Day 4 Autonomous Practice -->
+    <section class="presentation-section">
+      <div class="eyebrow eyebrow-amber">📱 Sustainable Acceleration: Day 4</div>
+      <h1 class="title">Autonomous Guided Studio</h1>
+      <p class="subtitle">
+        Between live classes, your brain needs low-friction, high-impact reinforcement. LinguaLife's proprietary tools do the heavy lifting in 45-50 minutes.
+      </p>
+
+      <div class="grid-3">
+        <!-- Tool 1 -->
+        <div class="card card-amber">
+          <div class="card-header">
+            <span class="card-badge badge-amber">15 MINUTES</span>
+            <span style="font-size: 1.35rem;">🃏</span>
+          </div>
+          <h3 class="card-title">Spaced Flashcards</h3>
+          <p class="card-desc">Consolidating weekly packs: False Friends, Logical Connectors & Phrasal Verbs.</p>
+          <div class="pill-list">
+            <div class="pill-item"><span class="pill-icon">🧠</span> Zero forgetting curve</div>
+            <div class="pill-item"><span class="pill-icon">🔊</span> Built-in native audio pronunciation</div>
+          </div>
+        </div>
+
+        <!-- Tool 2 -->
+        <div class="card card-amber">
+          <div class="card-header">
+            <span class="card-badge badge-amber">20 MINUTES</span>
+            <span style="font-size: 1.35rem;">📖</span>
+          </div>
+          <h3 class="card-title">Interactive Reader</h3>
+          <p class="card-desc">Short, curated native articles with instant 1-click contextual lookup.</p>
+          <div class="pill-list">
+            <div class="pill-item"><span class="pill-icon">🔍</span> Absorbing collocations in context</div>
+            <div class="pill-item"><span class="pill-icon">⚡</span> Zero friction reading experience</div>
+          </div>
+        </div>
+
+        <!-- Tool 3 -->
+        <div class="card card-amber">
+          <div class="card-header">
+            <span class="card-badge badge-amber">15 MINUTES</span>
+            <span style="font-size: 1.35rem;">🤖</span>
+          </div>
+          <h3 class="card-title">AI Pocket Coach</h3>
+          <p class="card-desc">WhatsApp audio reflection mission with immediate pronunciation & grammar feedback.</p>
+          <div class="pill-list">
+            <div class="pill-item"><span class="pill-icon">🎙️</span> 2-3 minute voice memo challenges</div>
+            <div class="pill-item"><span class="pill-icon">🎯</span> Real-time automated calibration</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+</body>
+</html>

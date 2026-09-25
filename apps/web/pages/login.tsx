@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Head from 'next/head'
+import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { PinInput } from '@/components/PinInput'
 import { useAppContext } from '@/context/AppContext'
@@ -55,6 +56,35 @@ export default function DirectLoginPage() {
           <p className={styles.subtitle}>Introduce tu PIN para acceder al portal</p>
           {error && <div className={styles.errorMessage}>{error}</div>}
           <PinInput onSubmit={handlePin} loading={loading} />
+          
+          <div style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', alignItems: 'center' }}>
+            <Link 
+              href="/"
+              style={{
+                color: '#94a3b8',
+                fontSize: '0.85rem',
+                textDecoration: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+                transition: 'color 0.2s'
+              }}
+            >
+              ← Volver a la Landing Page
+            </Link>
+
+            <Link 
+              href="/register/student"
+              style={{
+                color: '#a78bfa',
+                fontSize: '0.85rem',
+                textDecoration: 'none',
+                fontWeight: 600
+              }}
+            >
+              ¿Aún no tienes cuenta? Regístrate aquí
+            </Link>
+          </div>
         </div>
       </div>
     </>

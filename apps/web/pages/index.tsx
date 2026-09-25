@@ -68,6 +68,30 @@ export default function HomeWorkInProgress() {
                 <span>👨‍🏫</span> Registro Profesores
               </Link>
             </div>
+
+            <Link 
+              href="/student/flashcards" 
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.5rem',
+                width: '100%',
+                padding: '0.85rem 1.25rem',
+                borderRadius: '12px',
+                background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.25) 0%, rgba(109, 40, 217, 0.4) 100%)',
+                border: '1px solid rgba(196, 181, 253, 0.45)',
+                color: '#FFFFFF',
+                textDecoration: 'none',
+                fontWeight: 700,
+                fontSize: '0.95rem',
+                boxShadow: '0 4px 16px rgba(124, 58, 237, 0.3)',
+                marginTop: '0.75rem',
+                cursor: 'pointer'
+              }}
+            >
+              <span>🃏</span> Explorar Flashcards Conceptuales (Beta) ↗
+            </Link>
           </div>
 
           {/* Footer branding */}

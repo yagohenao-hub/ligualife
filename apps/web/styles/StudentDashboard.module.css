@@ -2106,10 +2106,33 @@
   transform: scale(1.08);
 }
 
+.sectionCollapseBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text-secondary);
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.sectionCollapseBtn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+}
+
 .seriesFloatingBubble {
   position: absolute;
   top: calc(100% + 10px);
-  left: 0;
+  right: 0;
+  left: auto;
   z-index: 999;
   background: rgba(13, 19, 32, 0.96);
   backdrop-filter: blur(28px) saturate(160%);
@@ -2118,9 +2141,22 @@
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.75), 0 0 20px rgba(16, 185, 129, 0.15);
   border-radius: 16px;
   padding: 1.1rem 1.3rem;
-  width: 360px;
-  max-width: 85vw;
+  width: 340px;
+  max-width: calc(100vw - 2rem);
   animation: fadeIn 0.2s ease-out;
+}
+
+@media (max-width: 640px) {
+  .seriesFloatingBubble {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    right: auto;
+    transform: translate(-50%, -50%);
+    width: 90vw;
+    max-width: 340px;
+    z-index: 10000;
+  }
 }
 
 .seriesInfoPopoverTitle {
@@ -2854,6 +2890,381 @@
   }
 }
 
+/* ── Flashcards Dedicated Section ── */
+.flashcardsSection {
+  grid-column: 1 / -1;
+  background: var(--surface-1);
+  backdrop-filter: blur(28px) saturate(160%);
+  -webkit-backdrop-filter: blur(28px) saturate(160%);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--bevel-top), 0 14px 40px -4px rgba(0, 0, 0, 0.45);
+  border-radius: 18px;
+  padding: 1.75rem;
+  margin: 2rem 0;
+  transition: all 0.3s var(--ease-spring);
+}
 
+.flashcardsHeaderWrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
 
+.flashcardsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.15rem;
+}
+
+.flashcardPackCard {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 1.35rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-decoration: none;
+  transition: all 0.25s var(--ease-spring);
+  position: relative;
+  overflow: hidden;
+}
+
+.flashcardPackCard:hover {
+  transform: translateY(-2px);
+  border-color: rgba(167, 139, 250, 0.4);
+  background: rgba(124, 58, 237, 0.06);
+  box-shadow: 0 10px 28px -4px rgba(124, 58, 237, 0.25);
+}
+
+.flashcardPackBadge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  width: fit-content;
+  margin-bottom: 0.75rem;
+}
+
+.flashcardPackTitle {
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.45rem;
+  line-height: 1.35;
+}
+
+.flashcardPackSub {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 1.1rem;
+  flex: 1;
+}
+
+.flashcardPackMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 0.85rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  font-size: 0.775rem;
+  color: var(--text-muted);
+}
+
+.flashcardPackBtn {
+  font-size: 0.825rem;
+  font-weight: 600;
+  color: #c4b5fd;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: gap 0.2s;
+}
+
+.flashcardPackCard:hover .flashcardPackBtn {
+  gap: 0.6rem;
+  color: #fff;
+}
+
+/* ══════════════════════════════════════════════════════
+   MODAL TABS: RESUMEN vs ESTUDIAR CON IA
+   ══════════════════════════════════════════════════════ */
+.modalTabBar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: rgba(15, 23, 42, 0.85);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
+.modalTabBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary);
+  padding: 0.55rem 1.15rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modalTabBtn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.modalTabActive {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(109, 40, 217, 0.35)) !important;
+  border-color: rgba(139, 92, 246, 0.6) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 16px rgba(139, 92, 246, 0.3);
+}
+
+.tabBadgeCompleted {
+  background: rgba(16, 185, 129, 0.2);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #6ee7b7;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-family: monospace;
+}
+
+/* AI Loading State */
+.aiLoadingState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3.5rem 1.5rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 18px;
+  margin-top: 1rem;
+}
+
+.aiSpinner {
+  width: 44px;
+  height: 44px;
+  border: 3px solid rgba(139, 92, 246, 0.2);
+  border-top-color: #8b5cf6;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 1.25rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.aiLoadingTitle {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+}
+
+.aiLoadingSub {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  max-width: 420px;
+  line-height: 1.5;
+}
+
+/* Mental Gym Banner (Repaso Activo Mental) */
+.mentalGymBanner {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.12), rgba(30, 27, 75, 0.45));
+  border: 1px solid rgba(168, 85, 247, 0.35);
+  border-radius: 14px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.mentalGymHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+
+.mentalGymTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #f3e8ff;
+  letter-spacing: -0.01em;
+}
+
+.mentalGymDesc {
+  font-size: 0.84rem;
+  color: #cbd5e1;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.mentalGymDesc strong {
+  color: #a7f3d0;
+}
+
+.mentalGymDesc em {
+  color: #fef08a;
+  font-style: normal;
+  font-weight: 600;
+}
+
+/* Mixed Category Badges & Item Meta Row */
+.itemMetaRow {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 0.5rem;
+}
+
+.mixedCategoryBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+}
+
+.badgePattern {
+  background: rgba(56, 189, 248, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  color: #7dd3fc;
+}
+
+.badgeTrap {
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: #fcd34d;
+}
+
+.badgeSprint {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #6ee7b7;
+}
+
+/* Blank Slot Pill (cleanly replaces [___] with a dedicated mental drill token) */
+.blankSlotBadge {
+  display: inline-block;
+  padding: 0.1rem 0.55rem;
+  margin: 0 0.25rem;
+  background: rgba(139, 92, 246, 0.18);
+  border: 1.5px dashed rgba(167, 139, 250, 0.55);
+  border-radius: 6px;
+  color: #c4b5fd;
+  font-family: monospace;
+  font-weight: 700;
+  font-size: 0.86rem;
+  letter-spacing: 0.04em;
+  user-select: none;
+  vertical-align: middle;
+}
+
+/* Item Action Row */
+.itemActionRow {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* Resumen Bottom CTA */
+.resumenBottomCta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(15, 23, 42, 0.6));
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 16px;
+  margin-top: 1.5rem;
+}
+
+.ctaTitle {
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 0.25rem;
+}
+
+.ctaSubtitle {
+  font-size: 0.825rem;
+  color: var(--text-secondary);
+}
+
+.ctaPracticeBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+  border: 1px solid rgba(167, 139, 250, 0.4);
+  color: #ffffff;
+  padding: 0.65rem 1.25rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 0 16px rgba(139, 92, 246, 0.35);
+  transition: all 0.2s ease;
+}
+
+.ctaPracticeBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 22px rgba(139, 92, 246, 0.55);
+}
+
+.emptyPracticeCard {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.emptyPracticeCard h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.emptyPracticeCard p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  max-width: 440px;
+  line-height: 1.5;
+}
 

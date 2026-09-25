@@ -1,28 +1,38 @@
 import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { FlashcardViewer } from '@/components/FlashcardViewer'
 import { getAllFlashcardPacks, fetchFlashcardPacksFromServer, FlashcardPack } from '@/lib/flashcards'
 import styles from '@/styles/Landing.module.css'
 
 export default function StudentFlashcardsPage() {
+  const router = useRouter()
   const [packs, setPacks] = useState<FlashcardPack[]>([])
   const [selectedPack, setSelectedPack] = useState<FlashcardPack | undefined>(undefined)
 
   useEffect(() => {
+    const qPackId = router.query.packId as string | undefined
     const list = getAllFlashcardPacks()
     setPacks(list)
     if (list.length > 0) {
-      setSelectedPack(list[0])
+      const match = qPackId ? list.find(p => p.id === qPackId) : list[0]
+      setSelectedPack(match || list[0])
     }
 
     fetchFlashcardPacksFromServer().then(fresh => {
       if (fresh && fresh.length > 0) {
         setPacks(fresh)
-        setSelectedPack(prev => fresh.find(p => p.id === prev?.id) || fresh[0])
+        setSelectedPack(prev => {
+          if (qPackId) {
+            const byQuery = fresh.find(p => p.id === qPackId)
+            if (byQuery) return byQuery
+          }
+          return fresh.find(p => p.id === prev?.id) || fresh[0]
+        })
       }
     })
-  }, [])
+  }, [router.query.packId])
 
   return (
     <>
@@ -37,9 +47,6 @@ export default function StudentFlashcardsPage() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               <Link href="/student" style={{ color: '#a1a1aa', textDecoration: 'none', fontSize: '0.9rem' }}>
                 ← Portal de Alumno
-              </Link>
-              <Link href="/student/interactive-scene" style={{ color: '#6ee7b7', background: 'rgba(16, 185, 129, 0.15)', border: '1px solid rgba(16, 185, 129, 0.3)', textDecoration: 'none', fontSize: '0.825rem', padding: '0.3rem 0.8rem', borderRadius: '8px', fontWeight: 600 }}>
-                🖼️ Ir a Escenas Interactivas
               </Link>
             </div>
 

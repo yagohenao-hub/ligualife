@@ -93,6 +93,16 @@ export function ShortReadingModal({
     }
   }, [topicOrder, topicName, studentName])
 
+  // Bloquear scroll del fondo cuando la ventana modal está abierta
+  useEffect(() => {
+    document.body.style.overflow = 'hidden'
+    document.body.style.touchAction = 'none'
+    return () => {
+      document.body.style.overflow = ''
+      document.body.style.touchAction = ''
+    }
+  }, [])
+
   // Detener audio al cerrar o desmontar
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -297,11 +307,6 @@ export function ShortReadingModal({
                       1x
                     </button>
                   </div>
-                </div>
-
-                <div className={styles.wordCounter}>
-                  <span className={styles.wordCountNum}>{reading.wordCount}</span>
-                  <span className={styles.wordCountLabel}>palabras (máx 100)</span>
                 </div>
               </div>
 

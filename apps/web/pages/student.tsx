@@ -1,11 +1,13 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
+import Link from 'next/link'
 import styles from '@/styles/StudentDashboard.module.css'
 import { LinguaLifeLogo } from '@/components/LinguaLifeLogo'
 import { InfiniteTriviaModal } from '@/components/InfiniteTriviaModal'
 import { ShortReadingModal } from '@/components/ShortReadingModal'
 import { getTopicSummary } from '@/lib/curriculum-summary'
+import { getFriendlyTopicName } from '@/lib/friendly-topics'
 import { 
   AlertCircle,
   BookOpen, 
@@ -39,6 +41,8 @@ import {
   Video,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
+  ChevronUp,
   CircleDot,
   Volume2
 } from 'lucide-react'
@@ -70,6 +74,99 @@ interface StudentProfile {
   teacherName: string | null
 }
 
+// ── Helpers para Repaso Mental y Sanitización de Prompts ──
+function sanitizeItemPrompt(prompt: string, solution?: string): string {
+  if (!prompt) return ''
+  let cleaned = prompt
+  if (solution) {
+    const sol = solution.trim()
+    // 1. Quitar solución exacta si aparece tras [___]
+    const solEscaped = sol.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    cleaned = cleaned.replace(new RegExp(`\\[___\\]\\s+${solEscaped}\\b`, 'gi'), '[___]')
+
+    // 2. Quitar palabras individuales de la solución si se colaron tras [___]
+    const words = sol.split(/\s+/).map(w => w.trim()).filter(w => w.length >= 2)
+    for (const w of words) {
+      const wEscaped = w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+      cleaned = cleaned.replace(new RegExp(`\\[___\\]\\s+${wEscaped}\\b`, 'gi'), '[___]')
+    }
+  }
+  return cleaned
+}
+
+function renderPromptWithBlank(prompt: string) {
+  if (!prompt.includes('[___]')) {
+    return <span>{prompt}</span>
+  }
+  const parts = prompt.split('[___]')
+  return (
+    <span>
+      {parts.map((part, i) => (
+        <span key={i}>
+          {part}
+          {i < parts.length - 1 && (
+            <span className={styles.blankSlotBadge} title="Espacio para responder en tu mente">
+              ( ... )
+            </span>
+          )}
+        </span>
+      ))}
+    </span>
+  )
+}
+
+interface MixedPracticeItem {
+  itemKey: string
+  category: 'pattern' | 'trap' | 'sprint'
+  categoryLabel: string
+  prompt: string
+  hint?: string
+  solution: string
+  explanation: string
+}
+
+function getMixedPracticeItems(activities: any[]): MixedPracticeItem[] {
+  if (!activities || !Array.isArray(activities)) return []
+
+  const actMap: Record<number, { category: 'pattern' | 'trap' | 'sprint'; label: string }> = {
+    1: { category: 'pattern', label: 'Deduce la Forma' },
+    2: { category: 'trap', label: 'Detecta la Trampa' },
+    3: { category: 'sprint', label: 'Traducción Ágil' }
+  }
+
+  const itemsByAct = activities.map((act, actIdx) => {
+    const actId = act.id || actIdx + 1
+    const meta = actMap[actId] || (
+      act.title?.toLowerCase().includes('pattern') ? actMap[1] :
+      act.title?.toLowerCase().includes('trap') ? actMap[2] :
+      actMap[3] || { category: 'pattern', label: act.title || 'Ejercicio' }
+    )
+    return (act.items || []).map((it: any, itemIdx: number) => ({
+      itemKey: it.id || `act-${actId}-${itemIdx}`,
+      category: meta.category,
+      categoryLabel: meta.label,
+      prompt: sanitizeItemPrompt(it.prompt || '', it.solution || ''),
+      hint: it.hint,
+      solution: it.solution,
+      explanation: it.explanation
+    }))
+  })
+
+  // Intercalar actividades (round-robin: 1 de patrón, 1 de trampa, 1 de sprint...)
+  const mixed: MixedPracticeItem[] = []
+  const maxLen = Math.max(...itemsByAct.map(list => list.length), 0)
+
+  for (let i = 0; i < maxLen; i++) {
+    for (let a = 0; a < itemsByAct.length; a++) {
+      if (itemsByAct[a][i]) {
+        mixed.push(itemsByAct[a][i])
+      }
+    }
+  }
+
+  return mixed
+}
+
 export default function StudentDashboardPage() {
   const router = useRouter()
   const [profile, setProfile] = useState<StudentProfile | null>(null)
@@ -98,7 +195,6 @@ export default function StudentDashboardPage() {
 
   // Mastery / Platinado State (6 Tiers + Tier 0 Nada Absoluto)
   const [masteryMap, setMasteryMap] = useState<Record<number, { tier: number; lastTrainedAt: string }>>({})
-  const [cooldownMsg, setCooldownMsg] = useState<string | null>(null)
 
   // Topics Pagination State (5 per page default)
   const [topicPage, setTopicPage] = useState(1)
@@ -122,6 +218,15 @@ export default function StudentDashboardPage() {
 
   // Short Reading Modal State
   const [activeReadingTopic, setActiveReadingTopic] = useState<{ order: number; name: string } | null>(null)
+
+  // Modal de Tema: Pestaña Activa ('resumen' o 'ia')
+  const [topicModalTab, setTopicModalTab] = useState<'resumen' | 'ia'>('resumen')
+
+  // Estado de secciones desplegables / abatibles
+  const [isProgressCollapsed, setIsProgressCollapsed] = useState(false)
+  const [isClassesCollapsed, setIsClassesCollapsed] = useState(false)
+  const [isTopicsCollapsed, setIsTopicsCollapsed] = useState(false)
+  const [isSeriesCollapsed, setIsSeriesCollapsed] = useState(false)
 
   // Verifica y gestiona el límite de 3 prácticas de IA cada 12 horas
   const checkPracticeLimit = useCallback(() => {
@@ -247,7 +352,6 @@ export default function StudentDashboardPage() {
     setSelectedTopic(null)
     setPracticeDoc(null)
     setPracticeCards([])
-    setCooldownMsg(null)
     setPracticeLimitNotice(null)
     if (router.query.topic) {
       const nextQuery = { ...router.query }
@@ -257,21 +361,21 @@ export default function StudentDashboardPage() {
   }, [router])
 
   // ── Abrir Modal de Tema y Sincronizar URL (Shallow Routing para botón Atrás) ──
-  const handleOpenTopicModal = useCallback(async (session: StudentSession, updateUrl = true) => {
+  const handleOpenTopicModal = useCallback(async (session: StudentSession, updateUrl = true, initialTab: 'resumen' | 'ia' = 'resumen') => {
     setSelectedTopic(session)
-    setPracticeDoc(null)
-    setPracticeCards([])
-    setCooldownMsg(null)
+    setTopicModalTab(initialTab)
     setPracticeLimitNotice(null)
     setPracticeLimitInfo(checkPracticeLimit())
     const order = session.topicOrder ?? 0
 
-    // Restaurar guía de práctica previa si ya se generó para este tema
+    // Restaurar guía de práctica previa si ya se generó para este tema (en sessionStorage o localStorage)
     try {
-      const cachedDoc = sessionStorage.getItem(`ll_practice_${order}`)
+      const cachedDoc = sessionStorage.getItem(`ll_practice_${order}`) || localStorage.getItem(`ll_practice_${order}`)
       if (cachedDoc) setPracticeDoc(JSON.parse(cachedDoc))
-      const cachedCards = sessionStorage.getItem(`ll_practice_cards_${order}`)
+      else setPracticeDoc(null)
+      const cachedCards = sessionStorage.getItem(`ll_practice_cards_${order}`) || localStorage.getItem(`ll_practice_cards_${order}`)
       if (cachedCards) setPracticeCards(JSON.parse(cachedCards))
+      else setPracticeCards([])
     } catch {}
 
     // Sincroniza query param ?topic=X para que el botón atrás del celular cierre el modal
@@ -281,7 +385,7 @@ export default function StudentDashboardPage() {
 
     if (!profile || !order) return
     
-    // Subida de maestría: Si está en Nivel 0, el primer clic lo convierte en Nivel 1 (Madera)
+    // Subida de maestría: registrar estudio/repaso inmediatamente al entrar
     try {
       const res = await fetch('/api/student/topic-mastery', {
         method: 'POST',
@@ -289,18 +393,11 @@ export default function StudentDashboardPage() {
         body: JSON.stringify({ studentId: profile.id, topicOrder: order })
       })
       const data = await res.json()
-      if (data.ok) {
+      if (data.ok && data.masteryMap) {
         setMasteryMap(data.masteryMap)
         try {
           localStorage.setItem(`ll_mastery_${profile.id}`, JSON.stringify(data.masteryMap))
         } catch {}
-        if (data.promotedFromZero) {
-          setCooldownMsg(null)
-        } else {
-          setCooldownMsg(`¡Subiste de rango en este tema! Podrás subir nuevamente en 12 horas si vuelves a repasar.`)
-        }
-      } else if (data.cooldownActive) {
-        setCooldownMsg(`Si vuelves a repasar en ${data.remainingText}, vas a subir la maestría en este tema.`)
       }
     } catch {
       // Silencioso para no bloquear la lectura de slides
@@ -352,8 +449,16 @@ export default function StudentDashboardPage() {
   }, [router])
 
   const handleOpenPractice = useCallback((session: StudentSession) => {
-    handleOpenTopicModal(session)
-    handleGeneratePractice(session)
+    handleOpenTopicModal(session, true, 'ia')
+    const order = session.topicOrder ?? 0
+    let hasCached = false
+    try {
+      const cached = sessionStorage.getItem(`ll_practice_${order}`) || localStorage.getItem(`ll_practice_${order}`)
+      if (cached) hasCached = true
+    } catch {}
+    if (!hasCached) {
+      handleGeneratePractice(session)
+    }
   }, [handleOpenTopicModal])
 
   // ── Sincronizar Estado cuando el usuario pulsa Atrás en el navegador/celular o desliza desde el borde ──
@@ -396,13 +501,23 @@ export default function StudentDashboardPage() {
         setSelectedTopic(null)
         setPracticeDoc(null)
         setPracticeCards([])
-        setCooldownMsg(null)
         setPracticeLimitNotice(null)
       }
     }
   }, [router.isReady, router.query.topic, router.query.trivia, router.query.reading, completed, upcoming])
 
   async function handleGeneratePractice(topic: StudentSession) {
+    const order = topic.topicOrder ?? 0
+
+    // Si ya existe en caché, cargarla al instante
+    try {
+      const cached = sessionStorage.getItem(`ll_practice_${order}`) || localStorage.getItem(`ll_practice_${order}`)
+      if (cached) {
+        setPracticeDoc(JSON.parse(cached))
+        return
+      }
+    } catch {}
+
     const limit = checkPracticeLimit()
     if (!limit.allowed) {
       setPracticeLimitNotice(`Has alcanzado el límite de 3 guías de estudio cada 12 horas. Tu próximo ciclo se renovará en ${limit.remainingText}.`)
@@ -411,8 +526,6 @@ export default function StudentDashboardPage() {
     setPracticeLimitNotice(null)
 
     setPracticeLoading(true)
-    setPracticeDoc(null)
-    setPracticeCards([])
     setRevealedSolutions({})
     try {
       const res = await fetch('/api/student/generate-practice', {
@@ -428,18 +541,20 @@ export default function StudentDashboardPage() {
       if (data.activities) {
         setPracticeDoc(data)
         try {
-          sessionStorage.setItem(`ll_practice_${topic.topicOrder}`, JSON.stringify(data))
+          sessionStorage.setItem(`ll_practice_${order}`, JSON.stringify(data))
+          localStorage.setItem(`ll_practice_${order}`, JSON.stringify(data))
         } catch {}
         recordPracticeUsage()
       } else if (data.cards) {
         setPracticeCards(data.cards)
         try {
-          sessionStorage.setItem(`ll_practice_cards_${topic.topicOrder}`, JSON.stringify(data.cards))
+          sessionStorage.setItem(`ll_practice_cards_${order}`, JSON.stringify(data.cards))
+          localStorage.setItem(`ll_practice_cards_${order}`, JSON.stringify(data.cards))
         } catch {}
         recordPracticeUsage()
       }
     } catch {
-      alert('Error al generar la guía de práctica con IA')
+      console.warn('Error al generar la guía de práctica')
     } finally {
       setPracticeLoading(false)
     }
@@ -694,163 +809,195 @@ export default function StudentDashboardPage() {
               <span className={styles.statusLiveDot} />
               <span>Progreso general</span>
             </div>
-            {combinedPct >= 90 ? (
-              <span className={styles.badgeGold} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
-                <Crown size={14} />
-                <span>Nivel Maestro Platino</span>
-              </span>
-            ) : combinedPct >= 50 ? (
-              <span className={styles.badgeGold} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
-                <Trophy size={14} />
-                <span>Nivel Avanzado</span>
-              </span>
-            ) : (
-              <span className={styles.badgeGold} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
-                <Zap size={14} />
-                <span>Ruta Activa</span>
-              </span>
-            )}
-          </div>
-
-          {/* Porcentaje Centrado y Grande (Sin subtítulo) */}
-          <div className={styles.cockpitCenterWrap}>
-            <div className={styles.cockpitPctCentered}>
-              {combinedPct}<span className={styles.pctSign}>%</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              {combinedPct >= 90 ? (
+                <span className={styles.badgeGold} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <Crown size={14} />
+                  <span>Nivel Maestro Platino</span>
+                </span>
+              ) : combinedPct >= 50 ? (
+                <span className={styles.badgeGold} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <Trophy size={14} />
+                  <span>Nivel Avanzado</span>
+                </span>
+              ) : (
+                <span className={styles.badgeGold} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <Zap size={14} />
+                  <span>Ruta Activa</span>
+                </span>
+              )}
+              <button
+                type="button"
+                className={styles.sectionCollapseBtn}
+                onClick={() => setIsProgressCollapsed(prev => !prev)}
+                title={isProgressCollapsed ? "Desplegar progreso" : "Plegar progreso"}
+              >
+                {isProgressCollapsed ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
+              </button>
             </div>
           </div>
 
-          {/* Barra de Experiencia Gruesa e Interactiva con Haz de Luz Dinámico */}
-          <div 
-            className={styles.progressTrackInteractive}
-            onClick={() => setShowExpDetails(prev => !prev)}
-            title="Haz clic para ver/ocultar el desglose de experiencia"
-          >
-            <div className={styles.progressFillThick} style={{ width: `${combinedPct}%` }} />
-          </div>
-
-          {/* Desglose de Experiencia Interactivo (Aparece al hacer clic en la barra) */}
-          {showExpDetails && (
-            <div className={styles.expDetailsDrawer}>
-              <div className={styles.cockpitPill}>
-                <span className={styles.cockpitPillIcon} style={{ color: 'var(--accent-primary)' }}>
-                  <BookOpen size={18} />
-                </span>
-                <div className={styles.cockpitPillText}>
-                  <span className={styles.cockpitPillTitle}>{completedCount} de {courseTotal} temas completados</span>
-                  <span className={styles.cockpitPillSub}>Ponderación de 60% en tu avance de clases</span>
+          {!isProgressCollapsed && (
+            <>
+              {/* Porcentaje Centrado y Grande (Sin subtítulo) */}
+              <div className={styles.cockpitCenterWrap}>
+                <div className={styles.cockpitPctCentered}>
+                  {combinedPct}<span className={styles.pctSign}>%</span>
                 </div>
               </div>
 
-              <div className={styles.cockpitPill}>
-                <span className={styles.cockpitPillIcon} style={{ color: 'var(--accent-emerald)' }}>
-                  <Crown size={18} />
-                </span>
-                <div className={styles.cockpitPillText}>
-                  <span className={styles.cockpitPillTitle}>{diamondOrPlatinumCount} de {courseTotal} temas en Diamond o Platinum</span>
-                  <span className={styles.cockpitPillSub}>Ponderación de 40% (solo rangos Diamond y Platinum avanzan tu barra)</span>
-                </div>
+              {/* Barra de Experiencia Gruesa e Interactiva con Haz de Luz Dinámico */}
+              <div 
+                className={styles.progressTrackInteractive}
+                onClick={() => setShowExpDetails(prev => !prev)}
+                title="Haz clic para ver/ocultar el desglose de experiencia"
+              >
+                <div className={styles.progressFillThick} style={{ width: `${combinedPct}%` }} />
               </div>
-            </div>
+
+              {/* Desglose de Experiencia Interactivo (Aparece al hacer clic en la barra) */}
+              {showExpDetails && (
+                <div className={styles.expDetailsDrawer}>
+                  <div className={styles.cockpitPill}>
+                    <span className={styles.cockpitPillIcon} style={{ color: 'var(--accent-primary)' }}>
+                      <BookOpen size={18} />
+                    </span>
+                    <div className={styles.cockpitPillText}>
+                      <span className={styles.cockpitPillTitle}>{completedCount} de {courseTotal} temas completados</span>
+                      <span className={styles.cockpitPillSub}>Ponderación de 60% en tu avance de clases</span>
+                    </div>
+                  </div>
+
+                  <div className={styles.cockpitPill}>
+                    <span className={styles.cockpitPillIcon} style={{ color: 'var(--accent-emerald)' }}>
+                      <Crown size={18} />
+                    </span>
+                    <div className={styles.cockpitPillText}>
+                      <span className={styles.cockpitPillTitle}>{diamondOrPlatinumCount} de {courseTotal} temas en Diamond o Platinum</span>
+                      <span className={styles.cockpitPillSub}>Ponderación de 40% (solo rangos Diamond y Platinum avanzan tu barra)</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </>
           )}
+        </div>
+
+        {/* === Header Row: Clases & Agenda === */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '1.5rem 0 0.75rem' }}>
+          <h2 className={styles.sectionTitle} style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Calendar size={18} color="var(--accent-primary)" />
+            <span>Clases & Horario</span>
+          </h2>
+          <button
+            type="button"
+            className={styles.sectionCollapseBtn}
+            onClick={() => setIsClassesCollapsed(prev => !prev)}
+            title={isClassesCollapsed ? "Desplegar clases y horario" : "Plegar clases y horario"}
+          >
+            {isClassesCollapsed ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
+          </button>
         </div>
 
         {/* === Grid Row: Próximas Clases & Tokens === */}
-        <div className={styles.grid}>
+        {!isClassesCollapsed && (
+          <div className={styles.grid}>
 
-          {/* Próximas Clases */}
-          <section className={styles.card}>
-            <h2 className={styles.sectionTitle} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Calendar size={18} color="var(--accent-primary)" />
-              <span>Próximas Clases</span>
-            </h2>
-            {loading && <div className="spinner" />}
-            {!loading && upcoming.length === 0 && (
-              <p className={styles.empty}>No tienes clases programadas próximamente.</p>
-            )}
-            {!loading && upcoming.map(s => {
-              const isSkipped = s.isHoliday && s.status === 'Canceled'
-              return (
-                <div key={s.id} className={`${styles.sessionRow} ${isSkipped ? styles.skipped : ''}`}>
-                  <div className={styles.sessionDot} />
-                  <div className={styles.sessionInfo}>
-                    <div className={styles.sessionDateRow}>
-                      <div className={styles.sessionDate}>{formatDate(s.date)}</div>
-                      {s.isHoliday && <span className={styles.holidayBadge}>Festivo</span>}
+            {/* Próximas Clases */}
+            <section className={styles.card}>
+              <h3 className={styles.sectionTitle} style={{ fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Calendar size={16} color="var(--accent-primary)" />
+                <span>Próximas Clases</span>
+              </h3>
+              {loading && <div className="spinner" />}
+              {!loading && upcoming.length === 0 && (
+                <p className={styles.empty}>No tienes clases programadas próximamente.</p>
+              )}
+              {!loading && upcoming.map(s => {
+                const isSkipped = s.isHoliday && s.status === 'Canceled'
+                return (
+                  <div key={s.id} className={`${styles.sessionRow} ${isSkipped ? styles.skipped : ''}`}>
+                    <div className={styles.sessionDot} />
+                    <div className={styles.sessionInfo}>
+                      <div className={styles.sessionDateRow}>
+                        <div className={styles.sessionDate}>{formatDate(s.date)}</div>
+                        {s.isHoliday && <span className={styles.holidayBadge}>Festivo</span>}
+                      </div>
+                      {s.topicName && <div className={styles.sessionTopic}>{s.topicName}</div>}
+                      {isSkipped && (
+                        <div className={styles.skippedNote} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                          <Clock size={14} />
+                          <span>Día festivo. Esta clase se reprogramará automáticamente.</span>
+                        </div>
+                      )}
                     </div>
-                    {s.topicName && <div className={styles.sessionTopic}>{s.topicName}</div>}
-                    {isSkipped && (
-                      <div className={styles.skippedNote} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                        <Clock size={14} />
-                        <span>Día festivo. Esta clase se reprogramará automáticamente.</span>
+                    {!isSkipped && (
+                      <div className={styles.rescheduleWrap}>
+                        <div className={styles.infoTooltipWrap}>
+                          <span className={styles.infoIcon} style={{ display: 'inline-flex', alignItems: 'center' }}>
+                            <Info size={13} />
+                          </span>
+                          <div className={styles.tooltipText}>
+                            Si reagendas, la sesión se moverá para usar 1 token y el temario avanzará. Permitiendo reagendar hasta 24h antes.
+                          </div>
+                        </div>
+                        <button
+                          className={styles.rescheduleBtn}
+                          onClick={() => handleReschedule(s)}
+                          disabled={rescheduling === s.id}
+                          title="Reagendar esta clase"
+                          style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+                        >
+                          {rescheduling === s.id ? '...' : <RotateCcw size={14} />}
+                        </button>
                       </div>
                     )}
                   </div>
-                  {!isSkipped && (
-                    <div className={styles.rescheduleWrap}>
-                      <div className={styles.infoTooltipWrap}>
-                        <span className={styles.infoIcon} style={{ display: 'inline-flex', alignItems: 'center' }}>
-                          <Info size={13} />
-                        </span>
-                        <div className={styles.tooltipText}>
-                          Si reagendas, la sesión se moverá para usar 1 token y el temario avanzará. Permitiendo reagendar hasta 24h antes.
-                        </div>
-                      </div>
-                      <button
-                        className={styles.rescheduleBtn}
-                        onClick={() => handleReschedule(s)}
-                        disabled={rescheduling === s.id}
-                        title="Reagendar esta clase"
-                        style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
-                      >
-                        {rescheduling === s.id ? '...' : <RotateCcw size={14} />}
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )
-            })}
-          </section>
-
-          {/* Tokens de Reposición */}
-          <section className={styles.card}>
-            <h2 className={styles.sectionTitle} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Award size={18} color="var(--accent-amber)" />
-              <span>Tokens de Reposición</span>
-            </h2>
-            <div className={styles.tokenBalance}>
-              <span className={styles.tokenCount}>{profile.tokens}</span>
-              <span className={styles.tokenLabel}>{profile.tokens === 1 ? 'token disponible' : 'tokens disponibles'}</span>
-            </div>
-            {profile.tokens > 0 ? (
-              <button className={styles.redeemBtn} onClick={openTokenModal} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-                <span>Agendar Clase Extra</span>
-                <ArrowRight size={16} />
-              </button>
-            ) : (
-              <p className={styles.empty}>Cuando reagendes una clase con anticipación, tu token aparecerá aquí para agendar tu sesión de reposición.</p>
-            )}
-          </section>
-
-          {/* Rate Teacher Card */}
-          {profile.teacherId && (
-            <section className={styles.card}>
-              <h2 className={styles.sectionTitle} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Star size={18} color="var(--accent-amber)" />
-                <span>Calificar a {profile.teacherName ?? 'tu Profesor'}</span>
-              </h2>
-              <p className={styles.empty}>Tu opinión ayuda a mejorar la experiencia de todos. ¿Cómo ha sido tu experiencia?</p>
-              <button
-                className={styles.redeemBtn}
-                style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
-                onClick={() => setShowRateModal(true)}
-              >
-                <Star size={16} fill="currentColor" />
-                <span>Dejar una Calificación</span>
-              </button>
+                )
+              })}
             </section>
-          )}
 
-        </div>
+            {/* Tokens de Reposición */}
+            <section className={styles.card}>
+              <h3 className={styles.sectionTitle} style={{ fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Award size={16} color="var(--accent-amber)" />
+                <span>Tokens de Reposición</span>
+              </h3>
+              <div className={styles.tokenBalance}>
+                <span className={styles.tokenCount}>{profile.tokens}</span>
+                <span className={styles.tokenLabel}>{profile.tokens === 1 ? 'token disponible' : 'tokens disponibles'}</span>
+              </div>
+              {profile.tokens > 0 ? (
+                <button className={styles.redeemBtn} onClick={openTokenModal} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                  <span>Agendar Clase Extra</span>
+                  <ArrowRight size={16} />
+                </button>
+              ) : (
+                <p className={styles.empty}>Cuando reagendes una clase con anticipación, tu token aparecerá aquí para agendar tu sesión de reposición.</p>
+              )}
+            </section>
+
+            {/* Rate Teacher Card */}
+            {profile.teacherId && (
+              <section className={styles.card}>
+                <h3 className={styles.sectionTitle} style={{ fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <Star size={16} color="var(--accent-amber)" />
+                  <span>Calificar a {profile.teacherName ?? 'tu Profesor'}</span>
+                </h3>
+                <p className={styles.empty}>Tu opinión ayuda a mejorar la experiencia de todos. ¿Cómo ha sido tu experiencia?</p>
+                <button
+                  className={styles.redeemBtn}
+                  style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
+                  onClick={() => setShowRateModal(true)}
+                >
+                  <Star size={16} fill="currentColor" />
+                  <span>Dejar una Calificación</span>
+                </button>
+              </section>
+            )}
+
+          </div>
+        )}
 
         {/* === Completed Topics: Repasa lo que has visto (Paginado a 5 por página) === */}
         <section className={styles.topicsCard}>
@@ -872,171 +1019,278 @@ export default function StudentDashboardPage() {
                     </div>
                   </div>
 
-                  {/* Botonera de Paginación Inteligente */}
-                  {sortedCompleted.length > TOPICS_PER_PAGE && (
-                    <div className={styles.paginationControls}>
-                      <button
-                        className={styles.pageBtn}
-                        disabled={showAllTopics || currentPage <= 1}
-                        onClick={() => setTopicPage(p => Math.max(1, p - 1))}
-                        title="Página anterior"
-                      >
-                        <ChevronLeft size={14} />
-                        <span>Anterior</span>
-                      </button>
-
-                      <div className={styles.pageSelectWrap}>
-                        <span>Pág.</span>
-                        <select
-                          className={styles.pageSelect}
-                          value={currentPage}
-                          disabled={showAllTopics}
-                          onChange={e => setTopicPage(Number(e.target.value))}
-                          aria-label="Cambiar número de página"
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    {/* Botonera de Paginación Inteligente */}
+                    {sortedCompleted.length > TOPICS_PER_PAGE && !isTopicsCollapsed && (
+                      <div className={styles.paginationControls}>
+                        <button
+                          className={styles.pageBtn}
+                          disabled={showAllTopics || currentPage <= 1}
+                          onClick={() => setTopicPage(p => Math.max(1, p - 1))}
+                          title="Página anterior"
                         >
-                          {Array.from({ length: totalPages }, (_, i) => i + 1).map(num => (
-                            <option key={num} value={num}>
-                              {num} de {totalPages}
-                            </option>
-                          ))}
-                        </select>
+                          <ChevronLeft size={14} />
+                          <span>Anterior</span>
+                        </button>
+
+                        <div className={styles.pageSelectWrap}>
+                          <span>Pág.</span>
+                          <select
+                            className={styles.pageSelect}
+                            value={currentPage}
+                            disabled={showAllTopics}
+                            onChange={e => setTopicPage(Number(e.target.value))}
+                            aria-label="Cambiar número de página"
+                          >
+                            {Array.from({ length: totalPages }, (_, i) => i + 1).map(num => (
+                              <option key={num} value={num}>
+                                {num} de {totalPages}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+
+                        <button
+                          className={styles.pageBtn}
+                          disabled={showAllTopics || currentPage >= totalPages}
+                          onClick={() => setTopicPage(p => Math.min(totalPages, p + 1))}
+                          title="Página siguiente"
+                        >
+                          <span>Siguiente</span>
+                          <ChevronRight size={14} />
+                        </button>
+
+                        <button
+                          className={styles.toggleAllBtn}
+                          onClick={() => setShowAllTopics(prev => !prev)}
+                          title={showAllTopics ? "Mostrar 5 por página" : "Mostrar todos los temas a la vez"}
+                        >
+                          {showAllTopics ? "Ver 5 por página" : `Mostrar todo (${sortedCompleted.length})`}
+                        </button>
                       </div>
+                    )}
 
-                      <button
-                        className={styles.pageBtn}
-                        disabled={showAllTopics || currentPage >= totalPages}
-                        onClick={() => setTopicPage(p => Math.min(totalPages, p + 1))}
-                        title="Página siguiente"
-                      >
-                        <span>Siguiente</span>
-                        <ChevronRight size={14} />
-                      </button>
+                    <button
+                      type="button"
+                      className={styles.sectionCollapseBtn}
+                      onClick={() => setIsTopicsCollapsed(prev => !prev)}
+                      title={isTopicsCollapsed ? "Desplegar temas" : "Plegar temas"}
+                    >
+                      {isTopicsCollapsed ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
+                    </button>
+                  </div>
+                </div>
 
-                      <button
-                        className={styles.toggleAllBtn}
-                        onClick={() => setShowAllTopics(prev => !prev)}
-                        title={showAllTopics ? "Mostrar 5 por página" : "Mostrar todos los temas a la vez"}
-                      >
-                        {showAllTopics ? "Ver 5 por página" : `Mostrar todo (${sortedCompleted.length})`}
-                      </button>
+                {!isTopicsCollapsed && (
+                  <>
+                    {loading && <div className="spinner" />}
+                    {!loading && sortedCompleted.length === 0 && (
+                      <p className={styles.empty}>Aún no has completado ningún tema. ¡Tu primera clase marcará el inicio de tu camino!</p>
+                    )}
+
+                    {/* Banner Gráfico Permanente de Tiers & Racha de Maestría */}
+                    <div className={styles.tierStatusBanner}>
+                      <div className={styles.tierStatusItem}>
+                        <span className={styles.tierStatusBadge} style={{ color: '#ea580c' }}>
+                          <Award size={13} color="#ea580c" /> Bronze
+                        </span>
+                        <span className={styles.tierStatusDesc}>Racha 5+</span>
+                      </div>
+                      <div className={styles.tierStatusItem}>
+                        <span className={styles.tierStatusBadge} style={{ color: '#94a3b8' }}>
+                          <Shield size={13} color="#94a3b8" /> Silver
+                        </span>
+                        <span className={styles.tierStatusDesc}>Racha 10+</span>
+                      </div>
+                      <div className={styles.tierStatusItem}>
+                        <span className={styles.tierStatusBadge} style={{ color: '#f59e0b' }}>
+                          <Trophy size={13} color="#f59e0b" /> Gold
+                        </span>
+                        <span className={styles.tierStatusDesc}>Racha 15+</span>
+                      </div>
+                      <div className={styles.tierStatusItem}>
+                        <span className={styles.tierStatusBadge} style={{ color: '#38bdf8' }}>
+                          <Gem size={13} color="#38bdf8" /> Diamond
+                        </span>
+                        <span className={styles.tierStatusDesc}>Racha 20+</span>
+                      </div>
+                      <div className={styles.tierStatusItem}>
+                        <span className={styles.tierStatusBadge} style={{ color: '#10b981' }}>
+                          <Crown size={13} color="#10b981" /> Platinum
+                        </span>
+                        <span className={styles.tierStatusDesc}>Racha 25+</span>
+                      </div>
                     </div>
-                  )}
-                </div>
 
-                {loading && <div className="spinner" />}
-                {!loading && sortedCompleted.length === 0 && (
-                  <p className={styles.empty}>Aún no has completado ningún tema. ¡Tu primera clase marcará el inicio de tu camino!</p>
+                    <div className={styles.topicsList}>
+                      {displayedTopics.map((s) => {
+                        // Empieza en Nivel 0 (Nada absoluto / Sin rango) por defecto
+                        const order = s.topicOrder ?? 0
+                        const currentTier = masteryMap[order]?.tier ?? 0
+                        const tierCfg = getTierConfig(currentTier)
+                        const cleanTitle = (s.topicName || `Tema ${order}`).replace(/\s*\([^)]*\)/g, '').trim()
+
+                        return (
+                          <div 
+                            key={s.id} 
+                            className={`${styles.topicRowCapsule} ${tierCfg.class}`}
+                            style={{ borderColor: tierCfg.color }}
+                          >
+                            <div className={styles.topicRowInfo}>
+                              <span className={styles.tierBadge}>{tierCfg.icon}</span>
+                              <span className={styles.topicNum} style={{ borderColor: `${tierCfg.color}77`, color: tierCfg.color }}>
+                                {s.topicOrder ? String(s.topicOrder).padStart(2, '0') : '–'}
+                              </span>
+                              <span className={styles.topicName}>{s.topicName ?? 'Clase completada'}</span>
+                            </div>
+
+                            <div className={styles.topicRowActions}>
+                              {/* 1. Botón Resumen (a la izquierda) */}
+                              <button
+                                type="button"
+                                className={`${styles.topicActionBtn} ${styles.btnResumen}`}
+                                onClick={() => handleOpenTopicModal(s, true, 'resumen')}
+                                title="Ver diapositiva y resumen del concepto esencial"
+                              >
+                                <BookOpen size={14} />
+                                <span>Resumen</span>
+                              </button>
+
+                              {/* 2. Botón Repaso */}
+                              <button
+                                type="button"
+                                className={`${styles.topicActionBtn} ${styles.btnAi}`}
+                                onClick={() => handleOpenPractice(s)}
+                                title="Sesión de repaso mental con 15 ejercicios"
+                              >
+                                <Zap size={14} />
+                                <span>Repaso</span>
+                              </button>
+
+                              {/* 3. Botón Trivia */}
+                              <button
+                                type="button"
+                                className={`${styles.topicActionBtn} ${styles.btnTrivia}`}
+                                onClick={() => handleOpenTrivia(order || 1, cleanTitle)}
+                                title="Entrenar con la Trivia Infinita de este tema"
+                              >
+                                <Flame size={14} color="#fde047" />
+                                <span>Trivia</span>
+                              </button>
+
+                              {/* 4. Botón Short Reading */}
+                              <button
+                                type="button"
+                                className={`${styles.topicActionBtn} ${styles.btnReading}`}
+                                onClick={() => handleOpenShortReading(order || 1, cleanTitle)}
+                                title="Escuchar y leer micro-lectura pedagógica con audio"
+                              >
+                                <Volume2 size={14} />
+                                <span>Short Reading</span>
+                              </button>
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </>
                 )}
-
-                {/* Banner Gráfico Permanente de Tiers & Racha de Maestría */}
-                <div className={styles.tierStatusBanner}>
-                  <div className={styles.tierStatusItem}>
-                    <span className={styles.tierStatusBadge} style={{ color: '#ea580c' }}>
-                      <Award size={13} color="#ea580c" /> Bronze
-                    </span>
-                    <span className={styles.tierStatusDesc}>Racha 5+</span>
-                  </div>
-                  <div className={styles.tierStatusItem}>
-                    <span className={styles.tierStatusBadge} style={{ color: '#94a3b8' }}>
-                      <Shield size={13} color="#94a3b8" /> Silver
-                    </span>
-                    <span className={styles.tierStatusDesc}>Racha 10+</span>
-                  </div>
-                  <div className={styles.tierStatusItem}>
-                    <span className={styles.tierStatusBadge} style={{ color: '#f59e0b' }}>
-                      <Trophy size={13} color="#f59e0b" /> Gold
-                    </span>
-                    <span className={styles.tierStatusDesc}>Racha 15+</span>
-                  </div>
-                  <div className={styles.tierStatusItem}>
-                    <span className={styles.tierStatusBadge} style={{ color: '#38bdf8' }}>
-                      <Gem size={13} color="#38bdf8" /> Diamond
-                    </span>
-                    <span className={styles.tierStatusDesc}>Racha 20+</span>
-                  </div>
-                  <div className={styles.tierStatusItem}>
-                    <span className={styles.tierStatusBadge} style={{ color: '#10b981' }}>
-                      <Crown size={13} color="#10b981" /> Platinum
-                    </span>
-                    <span className={styles.tierStatusDesc}>Racha 25+</span>
-                  </div>
-                </div>
-
-                <div className={styles.topicsList}>
-                  {displayedTopics.map((s) => {
-                    // Empieza en Nivel 0 (Nada absoluto / Sin rango) por defecto
-                    const order = s.topicOrder ?? 0
-                    const currentTier = masteryMap[order]?.tier ?? 0
-                    const tierCfg = getTierConfig(currentTier)
-                    const cleanTitle = (s.topicName || `Tema #${order}`).replace(/\s*\([^)]*\)/g, '').trim()
-
-                    return (
-                      <div 
-                        key={s.id} 
-                        className={`${styles.topicRowCapsule} ${tierCfg.class}`}
-                        style={{ borderColor: tierCfg.color }}
-                      >
-                        <div className={styles.topicRowInfo}>
-                          <span className={styles.tierBadge}>{tierCfg.icon}</span>
-                          <span className={styles.topicNum} style={{ borderColor: `${tierCfg.color}77`, color: tierCfg.color }}>
-                            {s.topicOrder ? String(s.topicOrder).padStart(2, '0') : '–'}
-                          </span>
-                          <span className={styles.topicName}>{s.topicName ?? 'Clase completada'}</span>
-                        </div>
-
-                        <div className={styles.topicRowActions}>
-                          {/* 1. Botón Resumen (a la izquierda) */}
-                          <button
-                            type="button"
-                            className={`${styles.topicActionBtn} ${styles.btnResumen}`}
-                            onClick={() => handleOpenTopicModal(s)}
-                            title="Ver diapositiva y resumen del concepto esencial"
-                          >
-                            <BookOpen size={14} />
-                            <span>Resumen</span>
-                          </button>
-
-                          {/* 2. Botón Estudiar con IA */}
-                          <button
-                            type="button"
-                            className={`${styles.topicActionBtn} ${styles.btnAi}`}
-                            onClick={() => handleOpenPractice(s)}
-                            title="Generar guía de práctica intensiva con IA"
-                          >
-                            <Zap size={14} />
-                            <span>Estudiar con IA</span>
-                          </button>
-
-                          {/* 3. Botón Trivia */}
-                          <button
-                            type="button"
-                            className={`${styles.topicActionBtn} ${styles.btnTrivia}`}
-                            onClick={() => handleOpenTrivia(order || 1, cleanTitle)}
-                            title="Entrenar con la Trivia Infinita de este tema"
-                          >
-                            <Flame size={14} color="#fde047" />
-                            <span>Trivia</span>
-                          </button>
-
-                          {/* 4. Botón Short Reading */}
-                          <button
-                            type="button"
-                            className={`${styles.topicActionBtn} ${styles.btnReading}`}
-                            onClick={() => handleOpenShortReading(order || 1, cleanTitle)}
-                            title="Escuchar y leer micro-lectura de 100 palabras con audio"
-                          >
-                            <Volume2 size={14} />
-                            <span>Short Reading</span>
-                          </button>
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
               </>
             )
           })()}
         </section>
+
+        {/* === Full Width Card: Flashcards Conceptuales (Mini-App de Vocabulario) - Oculto Temporalmente === */}
+        {false && (
+          <section className={styles.flashcardsSection}>
+            <div className={styles.flashcardsHeaderWrap}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.35rem' }}>
+                  <Layers size={22} color="var(--accent-purple, #a855f7)" />
+                  <h2 className={styles.sectionTitle} style={{ margin: 0 }}>
+                    Flashcards Conceptuales
+                  </h2>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700, padding: '0.2rem 0.6rem', borderRadius: '999px', background: 'rgba(168, 85, 247, 0.15)', color: '#c084fc', border: '1px solid rgba(168, 85, 247, 0.3)' }}>
+                    Nuevo
+                  </span>
+                </div>
+                <p className={styles.empty} style={{ margin: 0, fontSize: '0.85rem' }}>
+                  Aprende vocabulario sin traducir 1 a 1: familias de palabras, trampas del español, conectores lógicos y situaciones reales.
+                </p>
+              </div>
+            </div>
+
+            <div className={styles.flashcardsGrid}>
+              {/* 1. Falsos Cognados */}
+              <Link href="/student/flashcards?packId=false-friends-pack" className={styles.flashcardPackCard}>
+                <div>
+                  <div className={styles.flashcardPackTitle}>Falsos Cognados</div>
+                  <div className={styles.flashcardPackSub}>
+                    Palabras que parecen decir una cosa en español pero significan algo diferente (Actually, Eventually, Realize...).
+                  </div>
+                </div>
+                <div className={styles.flashcardPackMeta}>
+                  <span>8 Tarjetas • A2-B2</span>
+                  <span className={styles.flashcardPracticarBtn}>
+                    <span>Practicar</span>
+                    <ArrowRight size={14} />
+                  </span>
+                </div>
+              </Link>
+
+              {/* 2. Conectores Lógicos */}
+              <Link href="/student/flashcards?packId=logical-connectors-pack" className={styles.flashcardPackCard}>
+                <div>
+                  <div className={styles.flashcardPackTitle}>Conectores Lógicos</div>
+                  <div className={styles.flashcardPackSub}>
+                    Frases de transición y muletillas naturales para enlazar argumentos sin parecer un robot (To be fair, Speaking of which...).
+                  </div>
+                </div>
+                <div className={styles.flashcardPackMeta}>
+                  <span>8 Tarjetas • B1-C1</span>
+                  <span className={styles.flashcardPracticarBtn}>
+                    <span>Practicar</span>
+                    <ArrowRight size={14} />
+                  </span>
+                </div>
+              </Link>
+
+              {/* 3. Gimnasio & Fitness */}
+              <Link href="/student/flashcards?packId=gym-fitness-pack" className={styles.flashcardPackCard}>
+                <div>
+                  <div className={styles.flashcardPackTitle}>Gimnasio & Fitness</div>
+                  <div className={styles.flashcardPackSub}>
+                    Verbos de acción, pesas y frases de entrenamiento con mapa interactivo y situaciones reales.
+                  </div>
+                </div>
+                <div className={styles.flashcardPackMeta}>
+                  <span>8 Tarjetas • A2-B2</span>
+                  <span className={styles.flashcardPracticarBtn}>
+                    <span>Practicar</span>
+                    <ArrowRight size={14} />
+                  </span>
+                </div>
+              </Link>
+
+              {/* 4. Familia de DRAW */}
+              <Link href="/student/flashcards?packId=draw-family-pack" className={styles.flashcardPackCard}>
+                <div>
+                  <div className={styles.flashcardPackTitle}>Familia de "DRAW"</div>
+                  <div className={styles.flashcardPackSub}>
+                    Morfología y colocaciones de la raíz Draw: withdraw, drawback, draw attention, draw a blank, overdraw.
+                  </div>
+                </div>
+                <div className={styles.flashcardPackMeta}>
+                  <span>12 Tarjetas • B1-B2</span>
+                  <span className={styles.flashcardPracticarBtn}>
+                    <span>Practicar</span>
+                    <ArrowRight size={14} />
+                  </span>
+                </div>
+              </Link>
+            </div>
+          </section>
+        )}
 
         {/* === Full Width Card: Actividad de Serie === */}
         <section className={styles.seriesCardFull} style={{ margin: '2rem 0' }}>
@@ -1081,37 +1335,51 @@ export default function StudentDashboardPage() {
                 )}
               </div>
             </div>
-          </div>
-          <p className={styles.empty} style={{ marginBottom: '1.25rem', marginTop: '0.4rem' }}>
-            ¿Estás viendo una serie? Pídenos una actividad pedagógica.
-          </p>
-          <div className={styles.seriesRequestBox}>
-            <input
-              className={styles.seriesInput}
-              placeholder="Escribe el nombre de la serie que estás viendo..."
-              value={seriesName}
-              onChange={e => setSeriesName(e.target.value)}
-              disabled={seriesLoading}
-            />
-            <button 
-              className={styles.seriesBtn} 
-              onClick={handleSeriesRequest}
-              disabled={seriesLoading || !seriesName.trim()}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
+
+            <button
+              type="button"
+              className={styles.sectionCollapseBtn}
+              onClick={() => setIsSeriesCollapsed(prev => !prev)}
+              title={isSeriesCollapsed ? "Desplegar actividad de serie" : "Plegar actividad de serie"}
             >
-              {seriesLoading ? 'Enviando...' : (
-                <>
-                  <span>Solicitar Actividad</span>
-                  <ArrowRight size={15} />
-                </>
-              )}
+              {isSeriesCollapsed ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
             </button>
           </div>
-          {seriesMsg && (
-            <div className={`${styles.seriesMsg} ${seriesMsg.type === 'error' ? styles.seriesError : styles.seriesSuccess}`} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <CheckCircle2 size={16} />
-              <span>{seriesMsg.text}</span>
-            </div>
+
+          {!isSeriesCollapsed && (
+            <>
+              <p className={styles.empty} style={{ marginBottom: '1.25rem', marginTop: '0.4rem' }}>
+                ¿Estás viendo una serie? Pídenos una actividad pedagógica.
+              </p>
+              <div className={styles.seriesRequestBox}>
+                <input
+                  className={styles.seriesInput}
+                  placeholder="Escribe el nombre de la serie que estás viendo..."
+                  value={seriesName}
+                  onChange={e => setSeriesName(e.target.value)}
+                  disabled={seriesLoading}
+                />
+                <button 
+                  className={styles.seriesBtn} 
+                  onClick={handleSeriesRequest}
+                  disabled={seriesLoading || !seriesName.trim()}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
+                >
+                  {seriesLoading ? 'Enviando...' : (
+                    <>
+                      <span>Solicitar Actividad</span>
+                      <ArrowRight size={15} />
+                    </>
+                  )}
+                </button>
+              </div>
+              {seriesMsg && (
+                <div className={`${styles.seriesMsg} ${seriesMsg.type === 'error' ? styles.seriesError : styles.seriesSuccess}`} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <CheckCircle2 size={16} />
+                  <span>{seriesMsg.text}</span>
+                </div>
+              )}
+            </>
           )}
         </section>
 
@@ -1163,15 +1431,19 @@ export default function StudentDashboardPage() {
             </div>
 
             {/* 2. Vocabulary Practicer (Flashcards) */}
-            <div className={styles.comingItem}>
+            <Link 
+              href="/student/flashcards"
+              className={styles.comingItem}
+              style={{ textDecoration: 'none', cursor: 'pointer' }}
+            >
               <div>
                 <div className={styles.comingHeader}>
                   <span className={styles.comingIcon} style={{ color: 'var(--accent-purple)' }}>
                     <Layers size={20} />
                   </span>
-                  <span className={styles.comingBadge}>
-                    <span className={styles.comingPulse} />
-                    <span>Pronto</span>
+                  <span className={styles.comingBadge} style={{ background: 'rgba(124, 58, 237, 0.2)', color: '#c4b5fd', borderColor: 'rgba(124, 58, 237, 0.4)' }}>
+                    <span className={styles.comingPulse} style={{ background: '#a78bfa' }} />
+                    <span>Beta Disponible ↗</span>
                   </span>
                 </div>
 
@@ -1188,18 +1460,22 @@ export default function StudentDashboardPage() {
                 <div className={styles.comingTitle}>Vocabulary Practicer (Flashcards)</div>
                 <div className={styles.comingDesc}>Tarjetas interactivas de repaso 3D con repetición espaciada y pronunciación nativa para consolidar vocabulario.</div>
               </div>
-            </div>
+            </Link>
 
             {/* 3. Interactive Scene Explorer */}
-            <div className={styles.comingItem}>
+            <Link 
+              href="/student/interactive-scene"
+              className={styles.comingItem}
+              style={{ textDecoration: 'none', cursor: 'pointer' }}
+            >
               <div>
                 <div className={styles.comingHeader}>
                   <span className={styles.comingIcon} style={{ color: 'var(--accent-blue)' }}>
                     <Compass size={20} />
                   </span>
-                  <span className={styles.comingBadge}>
-                    <span className={styles.comingPulse} />
-                    <span>Pronto</span>
+                  <span className={styles.comingBadge} style={{ background: 'rgba(59, 130, 246, 0.2)', color: '#93c5fd', borderColor: 'rgba(59, 130, 246, 0.4)' }}>
+                    <span className={styles.comingPulse} style={{ background: '#60a5fa' }} />
+                    <span>Beta Disponible ↗</span>
                   </span>
                 </div>
 
@@ -1216,7 +1492,7 @@ export default function StudentDashboardPage() {
                 <div className={styles.comingTitle}>Interactive Scene Explorer</div>
                 <div className={styles.comingDesc}>Escenarios visuales interactivos 2D con vocabulario situacional, audios contextuales y práctica guiada paso a paso.</div>
               </div>
-            </div>
+            </Link>
 
             {/* 4. Banco de Videos Nativos */}
             <div className={styles.comingItem}>
@@ -1321,14 +1597,32 @@ export default function StudentDashboardPage() {
                 </button>
               </div>
 
-              {/* Mensaje de maestría o enfriamiento */}
-              {cooldownMsg && (
-                <div className={styles.cooldownBanner}>
-                  <Sparkles size={15} color="var(--accent-primary)" />
-                  <span>{cooldownMsg}</span>
-                </div>
-              )}
-              
+              {/* Tab Selector: Ficha de Resumen vs Repaso */}
+              <div className={styles.modalTabBar}>
+                <button
+                  type="button"
+                  className={`${styles.modalTabBtn} ${topicModalTab === 'resumen' ? styles.modalTabActive : ''}`}
+                  onClick={() => setTopicModalTab('resumen')}
+                >
+                  <BookOpen size={16} />
+                  <span>Ficha de Resumen</span>
+                </button>
+
+                <button
+                  type="button"
+                  className={`${styles.modalTabBtn} ${topicModalTab === 'ia' ? styles.modalTabActive : ''}`}
+                  onClick={() => {
+                    setTopicModalTab('ia')
+                    if (!practiceDoc && !practiceLoading) {
+                      handleGeneratePractice(selectedTopic)
+                    }
+                  }}
+                >
+                  <Zap size={16} />
+                  <span>Repaso</span>
+                </button>
+              </div>
+
               <div className={styles.slidesContainer}>
 
                 {/* Aviso explicativo cuando agota su cupo de práctica */}
@@ -1339,56 +1633,92 @@ export default function StudentDashboardPage() {
                   </div>
                 )}
 
-                {/* Documento Estructurado de Práctica (3 Actividades x 5 Puntos) - Si se activa con IA */}
-                {practiceDoc && practiceDoc.activities && (
-                  <div className={styles.practiceDoc}>
-                    <div className={styles.practiceDocHeader}>
-                      <div className={styles.docTitleRow}>
-                        <Target size={20} color="var(--accent-primary)" />
-                        <div>
-                          <div className={styles.docTitle}>{practiceDoc.documentTitle || `Guía Pedagógica: ${cleanTitle}`}</div>
-                          <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
-                            3 actividades pedagógicas enfocadas
-                          </span>
+                {/* ═══ VISTA 1: REPASO (15 RETOS MEZCLADOS + GIMNASIO MENTAL) ═══ */}
+                {topicModalTab === 'ia' && (
+                  <div>
+                    {/* Estado de Carga con Animación */}
+                    {practiceLoading && (
+                      <div className={styles.aiLoadingState}>
+                        <div className={styles.aiSpinner} />
+                        <div className={styles.aiLoadingTitle}>Generando tu Sesión de Repaso...</div>
+                        <div className={styles.aiLoadingSub}>
+                          Estructurando 15 retos mezclados: Fill the Pattern, Spot the Trap y Reverse Sprint para <b>{cleanTitle}</b>.
                         </div>
                       </div>
-                    </div>
+                    )}
 
-                    {practiceDoc.activities.map((act: any) => (
-                      <div key={act.id} className={styles.activityCard}>
-                        <div className={styles.activityHeader}>
-                          <div className={styles.activityTitle}>
-                            <Zap size={16} color="var(--accent-primary)" />
-                            <span>{act.title}</span>
+                    {/* Guía Pedagógica Completa con Ejercicios Mezclados */}
+                    {!practiceLoading && practiceDoc && practiceDoc.activities && (() => {
+                      const mixedItems = getMixedPracticeItems(practiceDoc.activities)
+
+                      return (
+                        <div className={styles.practiceDoc}>
+                          {/* Banner explicativo del Gimnasio Mental */}
+                          <div className={styles.mentalGymBanner}>
+                            <div className={styles.mentalGymHeader}>
+                              <Sparkles size={18} color="#c084fc" />
+                              <span className={styles.mentalGymTitle}>Gimnasio Mental de Repaso</span>
+                            </div>
+                            <p className={styles.mentalGymDesc}>
+                              <strong>Sin escribir:</strong> Lee cada reto y responde mentalmente en menos de <strong>3 segundos</strong>. Luego pulsa <em>"Ver Solución"</em> para comprobar tu agilidad y reflejo inmediato.
+                            </p>
                           </div>
-                        </div>
-                        <div className={styles.activityInstruction}>{act.instruction}</div>
 
-                        <div className={styles.itemsList}>
-                          {act.items?.map((item: any, idx: number) => {
-                            const isRevealed = revealedSolutions[item.id || `${act.id}-${idx}`]
-                            const itemKey = item.id || `${act.id}-${idx}`
+                          <div className={styles.practiceDocHeader}>
+                            <div className={styles.docTitleRow}>
+                              <Target size={20} color="var(--accent-primary)" />
+                              <div>
+                                <div className={styles.docTitle}>{practiceDoc.documentTitle || `Sesión de Repaso: ${cleanTitle}`}</div>
+                                <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
+                                  15 retos rápidos mezclados para consolidar agilidad y reflejos automáticos
+                                </span>
+                              </div>
+                            </div>
+                          </div>
 
-                            return (
-                              <div key={itemKey} className={styles.itemRow}>
-                                <div className={styles.itemPromptRow}>
-                                  <span className={styles.itemNum}>#{idx + 1}</span>
-                                  <span className={styles.itemPromptText}>{item.prompt}</span>
-                                </div>
-                                {item.hint && (
-                                  <div className={styles.itemHint}>
-                                    <Sparkles size={13} color="var(--accent-amber)" />
-                                    <span>Pista: {item.hint}</span>
+                          <div className={styles.itemsList}>
+                            {mixedItems.map((item, idx) => {
+                              const itemKey = item.itemKey
+                              const isRevealed = revealedSolutions[itemKey]
+
+                              return (
+                                <div key={itemKey} className={styles.itemRow}>
+                                  <div className={styles.itemMetaRow}>
+                                    <span className={styles.itemNum}>#{idx + 1}</span>
+                                    <span className={`${styles.mixedCategoryBadge} ${
+                                      item.category === 'pattern' ? styles.badgePattern :
+                                      item.category === 'trap' ? styles.badgeTrap : styles.badgeSprint
+                                    }`}>
+                                      {item.category === 'pattern' && <Layers size={12} />}
+                                      {item.category === 'trap' && <AlertCircle size={12} />}
+                                      {item.category === 'sprint' && <Zap size={12} />}
+                                      <span>{item.categoryLabel}</span>
+                                    </span>
                                   </div>
-                                )}
-                                <div>
-                                  <button
-                                    type="button"
-                                    className={styles.solutionToggleBtn}
-                                    onClick={() => setRevealedSolutions(prev => ({ ...prev, [itemKey]: !prev[itemKey] }))}
-                                  >
-                                    {isRevealed ? 'Ocultar Solución' : 'Ver Solución & Explicación'}
-                                  </button>
+
+                                  <div className={styles.itemPromptRow}>
+                                    <span className={styles.itemPromptText}>
+                                      {renderPromptWithBlank(item.prompt)}
+                                    </span>
+                                  </div>
+
+                                  {item.hint && (
+                                    <div className={styles.itemHint}>
+                                      <Sparkles size={13} color="var(--accent-amber)" />
+                                      <span>Pista: {item.hint}</span>
+                                    </div>
+                                  )}
+
+                                  <div className={styles.itemActionRow}>
+                                    <button
+                                      type="button"
+                                      className={styles.solutionToggleBtn}
+                                      onClick={() => setRevealedSolutions(prev => ({ ...prev, [itemKey]: !prev[itemKey] }))}
+                                    >
+                                      {isRevealed ? 'Ocultar Solución' : 'Ver Solución & Explicación'}
+                                    </button>
+                                  </div>
+
                                   {isRevealed && (
                                     <div className={styles.solutionRevealBox}>
                                       <div className={styles.solutionCorrect}>
@@ -1399,96 +1729,138 @@ export default function StudentDashboardPage() {
                                     </div>
                                   )}
                                 </div>
-                              </div>
-                            )
-                          })}
+                              )
+                            })}
+                          </div>
                         </div>
+                      )
+                    })()}
+
+                    {/* Estado Vacío si aún no se ha generado */}
+                    {!practiceLoading && !practiceDoc && (
+                      <div className={styles.emptyPracticeCard}>
+                        <Zap size={34} color="#a855f7" />
+                        <h3>Sesión de Repaso Activo</h3>
+                        <p>Genera 15 retos rápidos mezclados con pistas y explicaciones para fijar <b>{cleanTitle}</b> en tu memoria.</p>
+                        <button
+                          type="button"
+                          className={styles.ctaPracticeBtn}
+                          onClick={() => handleGeneratePractice(selectedTopic)}
+                        >
+                          <Sparkles size={16} />
+                          <span>Iniciar Repaso (15 Retos)</span>
+                        </button>
                       </div>
-                    ))}
+                    )}
                   </div>
                 )}
 
-                {/* === Diapositiva Única y Compacta de Repaso (Single Essential Slide) === */}
-                <div className={styles.summarySlideCard}>
-                  <div className={styles.summarySlideHeader}>
-                    <span className={styles.summaryHeaderTitle}>
-                      Ficha Esencial de Repaso
-                    </span>
-                  </div>
+                {/* ═══ VISTA 2: FICHA ESENCIAL DE REPASO (CONCEPTO, LEGO, EJEMPLOS Y TRAMPAS) ═══ */}
+                {topicModalTab === 'resumen' && (
+                  <div>
+                    <div className={styles.summarySlideCard}>
+                      <div className={styles.summarySlideHeader}>
+                        <span className={styles.summaryHeaderTitle}>
+                          Ficha Esencial de Repaso
+                        </span>
+                      </div>
 
-                  <div className={styles.summaryGrid}>
-                    {/* 1. ¿De qué se trata? */}
-                    <div className={styles.summaryBlock}>
-                      <div className={styles.summaryBlockTitle}>
-                        <Target size={18} color="#38bdf8" />
-                        <span>1. ¿De qué se trata el tema?</span>
-                      </div>
-                      <p className={styles.summaryBlockDesc}>
-                        {summary.concept}
-                      </p>
-                    </div>
-
-                    {/* 2. La Forma Correcta (Estructura LEGO) */}
-                    <div className={styles.summaryBlock}>
-                      <div className={styles.summaryBlockTitle}>
-                        <Sparkles size={18} color="#10b981" />
-                        <span>2. La Forma Correcta de Hacerlo</span>
-                      </div>
-                      <div className={styles.legoBlocksRow}>
-                        {summary.structureBlocks.map((blk, i) => (
-                          <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
-                            <span className={styles.legoBlock}>{blk}</span>
-                            {i < summary.structureBlocks.length - 1 && (
-                              <span className={styles.legoPlus}>+</span>
-                            )}
-                          </span>
-                        ))}
-                      </div>
-                      <p className={styles.summaryBlockSub}>
-                        {summary.correctMethod.includes('—')
-                          ? summary.correctMethod.split('—').slice(1).join('—').trim()
-                          : summary.correctMethod}
-                      </p>
-                    </div>
-
-                    {/* 3. Ejemplos en Acción */}
-                    <div className={styles.summaryBlock}>
-                      <div className={styles.summaryBlockTitle}>
-                        <BookOpen size={18} color="#a855f7" />
-                        <span>3. Ejemplos en Acción</span>
-                      </div>
-                      <div className={styles.examplesList}>
-                        {summary.examples.map((ex, i) => (
-                          <div key={i} className={styles.exampleItem}>
-                            <div className={styles.exampleEn}>"{ex.en}"</div>
-                            <div className={styles.exampleEs}>→ {ex.es}</div>
+                      <div className={styles.summaryGrid}>
+                        {/* 1. ¿De qué se trata? */}
+                        <div className={styles.summaryBlock}>
+                          <div className={styles.summaryBlockTitle}>
+                            <Target size={18} color="#38bdf8" />
+                            <span>1. ¿De qué se trata el tema?</span>
                           </div>
-                        ))}
+                          <p className={styles.summaryBlockDesc}>
+                            {summary.concept}
+                          </p>
+                        </div>
+
+                        {/* 2. La Forma Correcta (Estructura LEGO) */}
+                        <div className={styles.summaryBlock}>
+                          <div className={styles.summaryBlockTitle}>
+                            <Sparkles size={18} color="#10b981" />
+                            <span>2. La Forma Correcta de Hacerlo</span>
+                          </div>
+                          <div className={styles.legoBlocksRow}>
+                            {summary.structureBlocks.map((blk, i) => (
+                              <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+                                <span className={styles.legoBlock}>{blk}</span>
+                                {i < summary.structureBlocks.length - 1 && (
+                                  <span className={styles.legoPlus}>+</span>
+                                )}
+                              </span>
+                            ))}
+                          </div>
+                          <p className={styles.summaryBlockSub}>
+                            {summary.correctMethod.includes('—')
+                              ? summary.correctMethod.split('—').slice(1).join('—').trim()
+                              : summary.correctMethod}
+                          </p>
+                        </div>
+
+                        {/* 3. Ejemplos en Acción */}
+                        <div className={styles.summaryBlock}>
+                          <div className={styles.summaryBlockTitle}>
+                            <BookOpen size={18} color="#a855f7" />
+                            <span>3. Ejemplos en Acción</span>
+                          </div>
+                          <div className={styles.examplesList}>
+                            {summary.examples.map((ex, i) => (
+                              <div key={i} className={styles.exampleItem}>
+                                <div className={styles.exampleEn}>"{ex.en}"</div>
+                                <div className={styles.exampleEs}>→ {ex.es}</div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* 4. Errores Comunes & Trampas del Español */}
+                        <div className={styles.summaryBlock}>
+                          <div className={styles.summaryBlockTitle}>
+                            <AlertCircle size={18} color="#f59e0b" />
+                            <span>4. Errores Comunes a Evitar</span>
+                          </div>
+                          <div className={styles.mistakeCompareBox}>
+                            <div className={styles.mistakeWrong}>
+                              <span className={styles.mistakeLabelWrong}>❌ Evita:</span>
+                              <span className={styles.mistakeText}>"{summary.commonMistake.wrong}"</span>
+                            </div>
+                            <div className={styles.mistakeRight}>
+                              <span className={styles.mistakeLabelRight}>✅ Lo correcto:</span>
+                              <span className={styles.mistakeText}>"{summary.commonMistake.correct}"</span>
+                            </div>
+                          </div>
+                          <p className={styles.summaryBlockSub} style={{ marginTop: '0.65rem' }}>
+                            {summary.commonMistake.explanation}
+                          </p>
+                        </div>
                       </div>
                     </div>
 
-                    {/* 4. Errores Comunes & Trampas del Español */}
-                    <div className={styles.summaryBlock}>
-                      <div className={styles.summaryBlockTitle}>
-                        <AlertCircle size={18} color="#f59e0b" />
-                        <span>4. Errores Comunes a Evitar</span>
+                    {/* Llamado a la Acción para pasar a la práctica */}
+                    <div className={styles.resumenBottomCta}>
+                      <div>
+                        <div className={styles.ctaTitle}>¿Listo para practicar este tema?</div>
+                        <div className={styles.ctaSubtitle}>Pon a prueba tus reflejos con 15 ejercicios interactivos y soluciones explicadas.</div>
                       </div>
-                      <div className={styles.mistakeCompareBox}>
-                        <div className={styles.mistakeWrong}>
-                          <span className={styles.mistakeLabelWrong}>❌ Evita:</span>
-                          <span className={styles.mistakeText}>"{summary.commonMistake.wrong}"</span>
-                        </div>
-                        <div className={styles.mistakeRight}>
-                          <span className={styles.mistakeLabelRight}>✅ Lo correcto:</span>
-                          <span className={styles.mistakeText}>"{summary.commonMistake.correct}"</span>
-                        </div>
-                      </div>
-                      <p className={styles.summaryBlockSub} style={{ marginTop: '0.65rem' }}>
-                        {summary.commonMistake.explanation}
-                      </p>
+                      <button
+                        type="button"
+                        className={styles.ctaPracticeBtn}
+                        onClick={() => {
+                          setTopicModalTab('ia')
+                          if (!practiceDoc && !practiceLoading) {
+                            handleGeneratePractice(selectedTopic)
+                          }
+                        }}
+                      >
+                        <Zap size={16} />
+                        <span>Ir a Repaso (15 Retos) →</span>
+                      </button>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
           </div>

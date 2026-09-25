@@ -2,6 +2,8 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { fetchFromAirtable, fetchAirtableRecord, findAirtableRecords } from '@/lib/airtable'
 import { supabase } from '@/lib/supabaseClient'
 
+import { getFriendlyTopicName } from '@/lib/friendly-topics'
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' })
 
@@ -67,6 +69,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       'f8227ed6-8e8a-4694-a70b-d1de3301734a', // Santiago
       'b1068664-4e67-4070-a564-8ac8a1f629bb', // Santiago Montes
       'eaa81235-349d-410e-8860-1b536cd8b2f7', // Sebastian Vélez
+      '34dcce09-3593-497c-8366-cdd9c4d6385e', // Santiago Martinez
       '2ce10e96-f820-42ca-b30b-3ba99061c260', // Jose Yepes
       'bb02d2cb-710e-4bea-b657-099bb0bb211b', // Isabela Restrepo
       'recStudent1'                           // Mock / ID de prueba
@@ -155,6 +158,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     ])
 
     if (isSeniorStudent) {
+      // Los alumnos antiguos que ya cursaron todo el temario ven sus próximas clases como sesiones de práctica
+      upcomingSessions = upcomingSessions.map(s => ({
+        ...s,
+        topicOrder: null,
+        topicId: null as any,
+        topicName: 'Sesión de práctica conversacional'
+      }))
+
       try {
         const allTopics = await findAirtableRecords('Curriculum Topics', "NOT({Order} = '')")
         const generalTopics = allTopics
@@ -168,13 +179,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               if (t.fields['Cached Slides']) slides = JSON.parse(t.fields['Cached Slides'])
             } catch {}
 
+            const rawOrder = parseInt(t.fields['Order'] || '0', 10)
+            const rawTitle = t.fields['Topic Name'] || t.fields['Title'] || `Tema ${t.fields['Order']}`
+
             return {
               id: `senior-${t.id}`,
               date: new Date().toISOString(),
               status: 'Seen',
               topicId: t.id,
-              topicOrder: parseInt(t.fields['Order'] || '0', 10),
-              topicName: t.fields['Topic Name'] || t.fields['Title'] || `Tema ${t.fields['Order']}`,
+              topicOrder: rawOrder,
+              topicName: rawTitle,
               cachedSlides: slides,
               isHoliday: false,
               holidayConfirmedTeacher: false,

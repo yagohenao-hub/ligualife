@@ -167,41 +167,7 @@ export function FlashcardViewer({ pack: customPack }: FlashcardViewerProps) {
           </p>
         </div>
 
-        {/* Mode Switcher Buttons */}
-        <div style={{ display: 'flex', gap: '0.5rem', background: 'rgba(255,255,255,0.05)', padding: '0.3rem', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.1)' }}>
-          <button
-            onClick={() => setMode('cards')}
-            style={{
-              background: mode === 'cards' ? 'linear-gradient(135deg, #7c3aed, #2563eb)' : 'transparent',
-              color: '#fff',
-              border: 'none',
-              padding: '0.45rem 0.9rem',
-              borderRadius: '8px',
-              fontWeight: 700,
-              fontSize: '0.8rem',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease'
-            }}
-          >
-            🃏 Flashcards
-          </button>
-          <button
-            onClick={() => setMode('scene')}
-            style={{
-              background: mode === 'scene' ? 'linear-gradient(135deg, #10b981, #059669)' : 'transparent',
-              color: '#fff',
-              border: 'none',
-              padding: '0.45rem 0.9rem',
-              borderRadius: '8px',
-              fontWeight: 700,
-              fontSize: '0.8rem',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease'
-            }}
-          >
-            🖼️ Escena Interactiva
-          </button>
-        </div>
+        {/* Mode Switcher Buttons — Oculto temporalmente */}
       </div>
 
       {mode === 'scene' ? (
@@ -255,15 +221,30 @@ export function FlashcardViewer({ pack: customPack }: FlashcardViewerProps) {
               className={`${styles.cardInner} ${isFlipped ? styles.cardFlipped : ''}`}
               onClick={() => setIsFlipped(!isFlipped)}
             >
-              {/* FRONT OF CARD (ONLY IMAGE - NO SPOILER TEXT) */}
+              {/* FRONT OF CARD (IMAGE WITH SUPERIMPOSED WORD & AUDIO BUTTON) */}
               <div className={`${styles.cardFace} ${styles.cardFront}`}>
                 <img
                   src={currentCard.imageSrc}
-                  alt="Flashcard Visual Concept"
+                  alt={currentCard.word}
                   className={styles.cardFrontImage}
                 />
+
+                {/* Superimposed Word & Audio Pronunciation Button */}
+                <div className={styles.cardFrontOverlayBadge}>
+                  <span className={styles.cardFrontWordText}>{currentCard.word}</span>
+                  <button
+                    type="button"
+                    className={styles.cardFrontAudioBtn}
+                    onClick={(e) => handlePlayAudio(e, currentCard.word)}
+                    title={`Escuchar pronunciación de "${currentCard.word}"`}
+                    aria-label={`Escuchar pronunciación de ${currentCard.word}`}
+                  >
+                    🔊
+                  </button>
+                </div>
+
                 <div className={styles.cardFrontHint}>
-                  👆 Haz clic para voltear y descubrir el concepto
+                  👆 Clic para voltear y ver definición en inglés & traducción
                 </div>
               </div>
 
