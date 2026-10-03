@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 1: Passive Voice and Some Phrasal Verbs | LinguaLife</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Warm Beige / Sand / Bone Palette (Más notorio y cálido) */
+      --bg-page: #f1ebd9;           /* Beige cálido notorio, tipo papel libro premium */
+      --bg-surface: #fdfbf7;        /* Superficie marfil cálida */
+      --bg-surface-subtle: #faf6ed; /* Fondo sutil para tarjetas */
+      --bg-inner: #e8dfcd;          /* Fondos secundarios de tablas y citas */
+      
+      --border-warm: #dcd0ba;       /* Borde arena / beige definido */
+      --border-accent: #c9baa1;     /* Borde acentuado */
+
+      /* Typography */
+      --text-main: #231f1a;         /* Carbón cálido profundo */
+      --text-muted: #574e44;        /* Café grisáceo legible */
+      --text-dim: #7f7364;          /* Terciario cálido */
+      --font-main: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+
+      /* Pastel Mnemonic Palette */
+      --p-cyan-bg: #d9f0fc;         /* Distancing & Pasiva institucional */
+      --p-cyan-text: #02659c;
+      --p-cyan-border: #a8dcf7;
+
+      --p-amber-bg: #fdecc4;        /* Partícula OFF & Phrasal Verbs */
+      --p-amber-text: #8c3b00;
+      --p-amber-border: #fcd58b;
+
+      --p-violet-bg: #e8e1fc;       /* Estructuras y números */
+      --p-violet-text: #5e1ec9;
+      --p-violet-border: #cebef7;
+
+      --p-rose-bg: #fddde2;         /* Vicios literales B2 / Alerta */
+      --p-rose-text: #960f33;
+      --p-rose-border: #f9bcc7;
+
+      --p-mint-bg: #cbf6de;         /* Reflejo nativo C1 */
+      --p-mint-text: #045a42;
+      --p-mint-border: #99ecc0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body.clean-mode .action-bar,
+    body[data-clean="true"] .action-bar {
+      display: none !important;
+    }
+    body[data-clean="true"] .document-container,
+    body.clean-mode .document-container {
+      margin: 20px auto 40px;
+    }
+
+    /* Print & Floating Action Bar */
+    .action-bar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(241, 235, 217, 0.94);
+      backdrop-filter: blur(12px);
+      padding: 12px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1.5px solid var(--border-warm);
+      box-shadow: 0 2px 10px rgba(50, 40, 25, 0.04);
+    }
+
+    .brand-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: -0.01em;
+    }
+
+    .btn-print {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      background: var(--text-main);
+      color: #faf7f0;
+      border: 1px solid var(--text-main);
+      box-shadow: 0 2px 8px rgba(35, 31, 26, 0.15);
+      transition: all 0.2s ease;
+    }
+
+    .btn-print:hover {
+      background: #3d352b;
+      transform: translateY(-1px);
+    }
+
+    /* Document Sheet */
+    .document-container {
+      max-width: 860px;
+      margin: 32px auto 60px;
+      background: var(--bg-surface);
+      padding: 52px 60px;
+      border-radius: 18px;
+      border: 1.5px solid var(--border-warm);
+      box-shadow: 0 10px 30px rgba(55, 45, 30, 0.05), 0 1px 3px rgba(55, 45, 30, 0.03);
+    }
+
+    /* Header */
+    .doc-header {
+      padding-bottom: 22px;
+      margin-bottom: 30px;
+      border-bottom: 2px solid var(--border-warm);
+    }
+
+    .doc-title {
+      font-size: 30px;
+      font-weight: 800;
+      color: var(--text-main);
+      letter-spacing: -0.03em;
+      line-height: 1.25;
+    }
+
+    /* Headings & Pagination Guards */
+    h2.section-heading {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin: 36px 0 18px;
+      padding-bottom: 10px;
+      border-bottom: 1.5px solid var(--border-warm);
+      letter-spacing: -0.02em;
+      break-after: avoid;
+      page-break-after: avoid;
+    }
+
+    .heading-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: var(--p-violet-bg);
+      color: var(--p-violet-text);
+      border: 1px solid var(--p-violet-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      flex-shrink: 0;
+    }
+
+    h3.subheading {
+      font-size: 15.5px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin: 24px 0 10px;
+      break-after: avoid;
+      page-break-after: avoid;
+    }
+
+    p {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 14px;
+    }
+
+    /* Smart Content Blocks (Previene que los encabezados queden huérfanos) */
+    .content-block {
+      margin-bottom: 22px;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    /* Pastel Callouts */
+    .callout {
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin: 16px 0 20px;
+      font-size: 13.5px;
+      line-height: 1.6;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .callout-cyan {
+      background: var(--p-cyan-bg);
+      border: 1.5px solid var(--p-cyan-border);
+      color: #074668;
+    }
+
+    .callout-title {
+      font-weight: 800;
+      font-size: 14px;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--p-cyan-text);
+    }
+
+    /* Comparison Grids */
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin: 16px 0;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .comp-card {
+      border-radius: 12px;
+      padding: 15px 18px;
+      font-size: 13px;
+    }
+
+    .comp-card.bad {
+      background: var(--p-rose-bg);
+      border: 1.5px solid var(--p-rose-border);
+    }
+
+    .comp-card.bad .comp-label {
+      color: var(--p-rose-text);
+      font-weight: 800;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 5px;
+    }
+
+    .comp-card.good {
+      background: var(--p-mint-bg);
+      border: 1.5px solid var(--p-mint-border);
+    }
+
+    .comp-card.good .comp-label {
+      color: var(--p-mint-text);
+      font-weight: 800;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 5px;
+    }
+
+    .comp-card code {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      font-weight: 600;
+      display: block;
+      color: var(--text-main);
+      margin-top: 4px;
+    }
+
+    .comp-card .note {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 5px;
+    }
+
+    /* Tables */
+    .table-wrapper {
+      margin: 14px 0 20px;
+      border: 1.5px solid var(--border-warm);
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--bg-surface);
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13px;
+    }
+
+    th {
+      background: var(--bg-inner);
+      padding: 10px 14px;
+      font-weight: 800;
+      color: var(--text-main);
+      border-bottom: 1.5px solid var(--border-warm);
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border-warm);
+      color: var(--text-muted);
+      vertical-align: middle;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Pastel Badges */
+    .tag {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+    }
+
+    .tag-amber {
+      background: var(--p-amber-bg);
+      color: var(--p-amber-text);
+      border: 1px solid var(--p-amber-border);
+    }
+
+    .tag-cyan {
+      background: var(--p-cyan-bg);
+      color: var(--p-cyan-text);
+      border: 1px solid var(--p-cyan-border);
+    }
+
+    .tag-violet {
+      background: var(--p-violet-bg);
+      color: var(--p-violet-text);
+      border: 1px solid var(--p-violet-border);
+    }
+
+    code {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      color: var(--text-main);
+    }
+
+    /* Task Boxes */
+    .task-box {
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border-warm);
+      border-radius: 14px;
+      padding: 24px;
+      margin: 22px 0;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .task-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1.5px solid var(--border-warm);
+    }
+
+    .task-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .task-badge {
+      background: var(--p-violet-bg);
+      color: var(--p-violet-text);
+      border: 1px solid var(--p-violet-border);
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 100px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .reading-passage {
+      background: var(--bg-inner);
+      border-left: 4px solid var(--p-cyan-text);
+      padding: 18px 22px;
+      border-radius: 0 10px 10px 0;
+      font-size: 14.5px;
+      line-height: 1.7;
+      color: var(--text-main);
+      font-style: italic;
+      margin: 14px 0 10px;
+    }
+
+    .reading-passage b {
+      color: #8c3b00;
+      background: rgba(253, 236, 196, 0.6);
+      padding: 1px 4px;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+
+    .writing-prompt {
+      background: var(--bg-inner);
+      border: 1.5px dashed var(--border-accent);
+      border-radius: 10px;
+      padding: 18px 22px;
+      font-size: 14.5px;
+      color: var(--text-main);
+      line-height: 1.75;
+      margin: 14px 0 6px;
+      font-style: italic;
+    }
+
+    /* Print Formatting: Elimina saltos raros y llena la hoja de beige cálido */
+    @page {
+      size: A4 portrait;
+      margin: 12mm 14mm;
+    }
+
+    @media print {
+      html, body {
+        background-color: var(--bg-page) !important;
+        color: var(--text-main) !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      .action-bar {
+        display: none !important;
+      }
+
+      .document-container {
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background-color: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+      }
+
+      /* Evita que los encabezados queden solos al fondo de una página */
+      h2, h3, .subheading, .section-heading {
+        break-after: avoid !important;
+        page-break-after: avoid !important;
+      }
+
+      .content-block, .task-box, .table-wrapper, .comparison-grid, .callout {
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+      }
+
+      table, tr, td, th {
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+      }
+
+      /* Salto intencional y limpio justo antes de las Tareas */
+      .section-tasks {
+        break-before: page;
+        page-break-before: always;
+        padding-top: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating Print Bar -->
+  <div class="action-bar">
+    <div class="brand-title">LinguaLife &bull; Material de Clase &bull; Laura</div>
+    <button class="btn-print" onclick="window.print()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+      Descargar en PDF
+    </button>
+  </div>
+
+  <div class="document-container">
+
+    <!-- Header -->
+    <header class="doc-header">
+      <h1 class="doc-title">Week 1: Passive Voice and Some Phrasal Verbs</h1>
+    </header>
+
+    <!-- SECCIÓN 1: RESUMEN DE LO QUE VIMOS -->
+    <section>
+      <h2 class="section-heading">
+        <span class="heading-num">01</span>
+        Resumen Estratégico de la Sesión
+      </h2>
+
+      <div class="callout callout-cyan">
+        <div class="callout-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>
+          El Enfoque: Dejar de Traducir el "Se", "Toca" y "Nos / Me"
+        </div>
+        En español solemos depender del <i>"se"</i> impersonal (<i>se cayó el proyecto</i>), el indirecto (<i>nos dijeron que esperáramos</i>) o la fórmula <i>"toca"</i>. En un nivel C1 ejecutivo, la voz pasiva no es gramática abstracta: es <b>despersonalización de problemas, distanciamiento institucional y protección del equipo</b>.
+      </div>
+
+      <!-- 1. Distancing -->
+      <div class="content-block">
+        <h3 class="subheading">1. Despersonalización de Conflictos ("Corporate Shielding")</h3>
+        <p>Evitar culpar a personas con <i>"You"</i> o incriminar al equipo innecesariamente con <i>"We"</i>. El foco se traslada al proceso o al objeto:</p>
+
+        <div class="comparison-grid">
+          <div class="comp-card bad">
+            <div class="comp-label">Vicio B2 (Literal / Apunta con el dedo)</div>
+            <code>"You made a mistake in the invoice, so we have a problem."</code>
+            <div class="note">Agresivo y confrontacional con el interlocutor.</div>
+          </div>
+          <div class="comp-card good">
+            <div class="comp-label">Reflejo C1 (Pasiva Institucional)</div>
+            <code>"A mistake was made in the invoice; a discrepancy has been identified."</code>
+            <div class="note">El error existe en el vacío; se orienta hacia la solución.</div>
+          </div>
+        </div>
+
+        <div class="comparison-grid">
+          <div class="comp-card bad">
+            <div class="comp-label">Vicio B2 (Asumir culpa innecesaria)</div>
+            <code>"Our IT team lost your data during the migration."</code>
+            <div class="note">Pone un blanco directo en la espalda de tu equipo.</div>
+          </div>
+          <div class="comp-card good">
+            <div class="comp-label">Reflejo C1 (Blindaje Corporativo)</div>
+            <code>"Some data was temporarily misplaced during the migration."</code>
+            <div class="note">Protege institucionalmente sin ocultar el estado real.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Impersonal vs Personal Passive -->
+      <div class="content-block">
+        <h3 class="subheading">2. Reporte de Rumores y Proyecciones (Impersonal vs. Personal Passive)</h3>
+        <p>La marca del nivel C1/C2 radica en poner al sujeto real al inicio conectado con un infinitivo (<i>to be / to have done</i>), en lugar de arrancar siempre con un rígido <i>"It is..."</i>:</p>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Dimensión</th>
+                <th>Estructura B2 (Rígida / Libro)</th>
+                <th>Estructura C1/C2 (Personal / Ágil)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><b>Proyección / Futuro</b></td>
+                <td><code>It is expected that sales will drop.</code></td>
+                <td><code><b>Sales are expected to drop.</b></code></td>
+              </tr>
+              <tr>
+                <td><b>Rumor Ejecutivo</b></td>
+                <td><code>It is rumored that the CEO is stepping down.</code></td>
+                <td><code><b>The CEO is rumored to step down.</b></code></td>
+              </tr>
+              <tr>
+                <td><b>Evento Pasado (Perfect Infinitive)</b></td>
+                <td><code>It was reported that the company lost millions.</code></td>
+                <td><code><b>The company is reported to have lost millions.</b></code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 3. Partícula OFF -->
+      <div class="content-block">
+        <h3 class="subheading">3. Lógica y Decodificación Mental de los Phrasal Verbs con "OFF"</h3>
+        <p>La partícula <span class="tag tag-amber">OFF</span> siempre representa una imagen espacial de <b>desconexión, separación forzada, alejamiento en el tiempo o retiro de la línea activa</b>:</p>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Phrasal Verb</th>
+                <th>Verbo Base + OFF</th>
+                <th>Decodificación Lógica (Imagen Mental)</th>
+                <th>Ejemplo en Pasiva</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="tag tag-amber">Call off</span></td>
+                <td>Call (anunciar) + Off (desconectar)</td>
+                <td>Emitir la orden verbal de apagar/cancelar un evento definitivamente.</td>
+                <td><i>"The pilot project was <b>called off</b> at the last minute."</i></td>
+              </tr>
+              <tr>
+                <td><span class="tag tag-amber">Put off</span></td>
+                <td>Put (colocar) + Off (lejos del presente)</td>
+                <td>Tomar un pendiente de hoy y colocarlo lejos en el tiempo (aplazar).</td>
+                <td><i>"The meeting had to be <b>put off</b> until tomorrow."</i></td>
+              </tr>
+              <tr>
+                <td><span class="tag tag-amber">Lay off</span></td>
+                <td>Lay (posar/descansar) + Off (de nómina)</td>
+                <td>Poner en reposo el contrato de alguien por recortes de presupuesto.</td>
+                <td><i>"A lot of people are being <b>laid off</b> this quarter."</i></td>
+              </tr>
+              <tr>
+                <td><span class="tag tag-amber">Rip off</span></td>
+                <td>Rip (arrancar) + Off (separación violenta)</td>
+                <td>Arrancar violentamente dinero o valor injustamente (estafar/tumbar).</td>
+                <td><i>"I was <b>ripped off</b> with that contract."</i></td>
+              </tr>
+              <tr>
+                <td><span class="tag tag-amber">Pay off</span></td>
+                <td>Pay (pagar) + Off (cerrar la cuenta)</td>
+                <td>Cuando el esfuerzo o inversión da sus frutos y salda la apuesta.</td>
+                <td><i>"All the hard work finally <b>paid off</b>."</i></td>
+              </tr>
+              <tr>
+                <td><span class="tag tag-amber">Back off</span></td>
+                <td>Back (espalda) + Off (alejamiento)</td>
+                <td>Reducir la presión o dar espacio en una negociación difícil.</td>
+                <td><i>"The audit team was asked to <b>back off</b>."</i></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 4. Otros Phrasal Verbs -->
+      <div class="content-block">
+        <h3 class="subheading">4. Otros Phrasal Verbs Clave</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Verbo Frasal</th>
+                <th>Lógica Espacial</th>
+                <th>Uso en Voz Pasiva</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="tag tag-cyan">Sort out</span></td>
+                <td>Sacar (out) una a una las piezas del desorden para clasificarlas (sort).</td>
+                <td><i>"The issue is currently being <b>sorted out</b>."</i></td>
+              </tr>
+              <tr>
+                <td><span class="tag tag-cyan">Iron out</span></td>
+                <td>Pasar la plancha (iron) sobre las arrugas hasta dejar la superficie lisa.</td>
+                <td><i>"A few details still need to be <b>ironed out</b>."</i></td>
+              </tr>
+              <tr>
+                <td><span class="tag tag-cyan">Turn down</span></td>
+                <td>Girar un papel boca abajo (down) como símbolo de rechazo corporativo.</td>
+                <td><i>"The proposal was <b>turned down</b>."</i></td>
+              </tr>
+              <tr>
+                <td><span class="tag tag-cyan">Leave out of the loop</span></td>
+                <td>Quedar físicamente fuera del círculo (loop) donde fluye la información.</td>
+                <td><i>"I was completely <b>left out of the loop</b>."</i></td>
+              </tr>
+              <tr>
+                <td><span class="tag tag-cyan">Point out</span></td>
+                <td>Apuntar con el dedo para que el detalle salga a la luz de todos.</td>
+                <td><i>"The mistake was <b>pointed out</b> immediately."</i></td>
+              </tr>
+              <tr>
+                <td><span class="tag tag-cyan">Hand in</span></td>
+                <td>Pasar el reporte de tu mano hacia el contenedor de la autoridad.</td>
+                <td><i>"The report must be <b>handed in</b> today."</i></td>
+              </tr>
+              <tr>
+                <td><span class="tag tag-cyan">Burn out</span></td>
+                <td>Consumir todo el combustible hasta el vacío (agotamiento total).</td>
+                <td><i>"I am completely <b>burned out</b> from the overtime."</i></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 5. Banco de conversión rápida -->
+      <div class="content-block">
+        <h3 class="subheading">5. Matriz de Conversión (Del Español Natural a la Pasiva C1)</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Estímulo en Español (El "Disparo")</th>
+                <th>Respuesta Exacta en Pasiva C1</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>"Se nos cayó el proyecto a última hora."</td>
+                <td><code>The project was called off at the last minute.</code></td>
+              </tr>
+              <tr>
+                <td>"Ya le están metiendo mano al problema / cuadrándolo."</td>
+                <td><code>The issue is being sorted out.</code></td>
+              </tr>
+              <tr>
+                <td>"Tocó aplazar la reunión para mañana."</td>
+                <td><code>The meeting had to be put off until tomorrow.</code></td>
+              </tr>
+              <tr>
+                <td>"Todavía toca pulir unos detallitos sueltos."</td>
+                <td><code>A few details still need to be ironed out.</code></td>
+              </tr>
+              <tr>
+                <td>"Me dejaron por fuera de la copia de ese correo."</td>
+                <td><code>I was left out of the loop.</code></td>
+              </tr>
+              <tr>
+                <td>"Llegué a la cita y me pusieron a esperar casi una hora."</td>
+                <td><code>I was kept waiting for almost an hour. (o I was told to wait)</code></td>
+              </tr>
+              <tr>
+                <td>"Todo pinta a que las ventas se van a ir al piso este mes."</td>
+                <td><code>Sales are expected to drop this month.</code></td>
+              </tr>
+              <tr>
+                <td>"Por ahí suena el chisme de que el director suelta el cargo."</td>
+                <td><code>The director is rumored to step down.</code></td>
+              </tr>
+              <tr>
+                <td>"Sí, la embarramos duro en ese proceso." (Despersonalizado)</td>
+                <td><code>Mistakes were made during the process.</code></td>
+              </tr>
+              <tr>
+                <td>"Nos rebotaron la propuesta / echaron para atrás el negocio."</td>
+                <td><code>The proposal was turned down.</code></td>
+              </tr>
+              <tr>
+                <td>"Están sacando a un montón de gente por recortes."</td>
+                <td><code>A lot of people are being laid off.</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 2: TAREAS ASIGNADAS (Inicia en página limpia en PDF) -->
+    <section class="section-tasks">
+      <h2 class="section-heading">
+        <span class="heading-num">02</span>
+        Tareas Prácticas
+      </h2>
+
+      <!-- TAREA 1 -->
+      <div class="task-box">
+        <div class="task-header">
+          <div class="task-title">Tarea 1: Análisis del "Cortocircuito Hispano"</div>
+          <span class="task-badge">Deconstrucción</span>
+        </div>
+
+        <p>
+          Lee el siguiente texto corporativo. Este pasaje está cargado de estructuras donde la mente hispanohablante suele tropezar e intentar traducir de forma literal, delatando su acento gramatical.
+        </p>
+        <p>
+          <b>Tu objetivo:</b> Realiza un análisis identificando las estructuras clave (causativas, pasivas institucionales, preposiciones y verbos frasales), explicando <b>cómo lo diría típicamente un hispanohablante</b> y <b>cuál es la razón o matiz por el que el nativo ejecutivo prefiere formularlo de esta manera</b>.
+        </p>
+
+        <div class="reading-passage">
+          "This is the office where I <b>get all my work done</b>. As a director, I rarely do the heavy lifting myself; instead, I <b>have my team iron out</b> the daily details. Whenever a crisis hits, I <b>expect it to be sorted out</b> before it reaches my desk. It’s <b>reported to be</b> a stressful environment, but that’s exactly the kind of pressure I <b>thrive on</b>. The clients we <b>cater to</b> demand perfection, and we <b>can't afford to have any proposals turned down</b>. If mistakes are made, they are pointed out immediately so we can get the project back on track."
+        </div>
+      </div>
+
+      <!-- TAREA 2 -->
+      <div class="task-box">
+        <div class="task-header">
+          <div class="task-title">Tarea 2: Traducción Inversa Ejecutiva</div>
+          <span class="task-badge">Producción Activa</span>
+        </div>
+
+        <p>
+          Traduce el siguiente párrafo cotidiano al inglés de nivel C1. El reto consiste en <b>romper las fórmulas automáticas del español</b> (<i>"alcanzaron a", "toca", "nos dijeron que", "tenía cuadrado", "quedé muerta"</i>) y reemplazarlas con las estructuras pasivas, causativas y los phrasal verbs que consolidamos en clase.
+        </p>
+
+        <div class="writing-prompt">
+          "Al final sí alcanzaron a arreglarnos el techo antes de la fiesta. A mí no me gusta estar pendiente de eso porque siempre hay que pulir mucha cosita. Igual nos tocó aplazar la comida porque a mi hermano le dijeron que se tenía que quedar otras dos horas en el trabajo. Lo bueno es que ya tenía cuadrado pa que nos hicieran el aseo apenas se fuera todo el mundo. Quedé muerta pero todo salió como quería y pasamos muy rico todo el fin de semana."
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    if (window.location.search.includes('clean')) {
+      document.body.classList.add('clean-mode');
+    }
+  </script>
+</body>
+</html>

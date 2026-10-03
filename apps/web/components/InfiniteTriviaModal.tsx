@@ -256,6 +256,26 @@ export function InfiniteTriviaModal({
     setIsMusicOn(isPlaying)
   }, [])
 
+  // Fallback seed question generator to prevent queue starvation or exact question repetition
+  const getFallbackSeed = useCallback(() => {
+    const seeds = getSeedQuestionsForTopic(
+      topicOrder,
+      topicName,
+      ldsFormula,
+      commonMistake,
+      grammarFocus
+    )
+    if (!seeds || seeds.length === 0) return null
+    // Pick seed that is not identical to current question
+    const available = seeds.filter(s => s.question !== currentQuestion?.question)
+    const pool = available.length > 0 ? available : seeds
+    const picked = pool[Math.floor(Math.random() * pool.length)]
+    return {
+      ...picked,
+      id: `${picked.id}-fallback-${Date.now()}-${Math.floor(Math.random() * 1000)}`
+    }
+  }, [topicOrder, topicName, ldsFormula, commonMistake, grammarFocus, currentQuestion?.question])
+
   // Advance to next question
   const handleNext = useCallback(() => {
     clearAutoAdvanceTimer()
@@ -265,18 +285,40 @@ export function InfiniteTriviaModal({
       document.activeElement.blur()
     }
 
-    if (queue.length === 0) {
-      refillQuestions()
+    let nextQ: TriviaQuestion | undefined
+    let remainingQueue = [...queue]
+
+    // 1. Try to find a non-duplicate question from queue
+    if (remainingQueue.length > 0) {
+      const nonDupIndex = remainingQueue.findIndex(q => q.question !== currentQuestion?.question)
+      if (nonDupIndex !== -1) {
+        nextQ = remainingQueue[nonDupIndex]
+        remainingQueue.splice(nonDupIndex, 1)
+      } else {
+        nextQ = remainingQueue.shift()
+      }
     }
-    const [nextQ, ...rest] = queue
+
+    // 2. If queue was empty or only had identical questions, generate fallback seed
+    if (!nextQ) {
+      const fb = getFallbackSeed()
+      if (fb) nextQ = fb
+    }
+
     if (nextQ) {
       setCurrentQuestion(nextQ)
-      setQueue(rest)
+      setQueue(remainingQueue)
     }
+
     setSelectedOption(null)
     setIsAnswered(false)
     setMilestoneNotice(null)
-  }, [queue, refillQuestions, clearAutoAdvanceTimer])
+
+    // Trigger background refill if queue is running low
+    if (remainingQueue.length < 3 && !isRefilling) {
+      refillQuestions()
+    }
+  }, [queue, currentQuestion?.question, getFallbackSeed, refillQuestions, isRefilling, clearAutoAdvanceTimer])
 
   // Answer selection handler
   const handleSelectOption = useCallback((index: number) => {
@@ -332,14 +374,20 @@ export function InfiniteTriviaModal({
       setStreak(0)
       setMilestoneNotice(null)
 
-      // Re-insert failed question 3 positions later in the queue (Spaced Mastery Loop)
+      // Re-insert failed question later in the queue (Spaced Mastery Loop)
       const clone: TriviaQuestion = {
         ...currentQuestion,
         id: `${currentQuestion.id}-retry-${Date.now()}`
       }
       setQueue(prev => {
         const next = [...prev]
-        const insertPos = Math.min(3, next.length)
+        if (next.length < 2) {
+          const fb = getFallbackSeed()
+          if (fb && fb.question !== currentQuestion.question) {
+            next.push(fb)
+          }
+        }
+        const insertPos = Math.min(3, Math.max(2, next.length))
         next.splice(insertPos, 0, clone)
         return next
       })

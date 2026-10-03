@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { FlashcardPack, FlashcardItem, getAllFlashcardPacks, fetchFlashcardPacksFromServer } from '@/lib/flashcards'
+import { FlashcardPack, FlashcardItem, getAllFlashcardPacks, fetchFlashcardPacksFromServer, FLASHCARD_CATEGORIES } from '@/lib/flashcards'
 import { InteractiveSceneViewer } from '@/components/InteractiveSceneViewer'
 import { InteractiveScene } from '@/lib/interactive-scenes'
 import styles from '@/styles/Flashcard.module.css'
@@ -131,7 +131,7 @@ export function FlashcardViewer({ pack: customPack }: FlashcardViewerProps) {
             <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#ffffff', margin: 0 }}>
               {activePack.title}
             </h3>
-            {packsList.length > 1 && !customPack && (
+            {packsList.length > 1 && (
               <select
                 value={activePack.id}
                 onChange={e => {
@@ -154,11 +154,19 @@ export function FlashcardViewer({ pack: customPack }: FlashcardViewerProps) {
                   cursor: 'pointer'
                 }}
               >
-                {packsList.map(p => (
-                  <option key={p.id} value={p.id} style={{ background: '#121218', color: '#fff' }}>
-                    Pack: {p.title}
-                  </option>
-                ))}
+                {FLASHCARD_CATEGORIES.map(category => {
+                  const catPacks = packsList.filter(p => p.category === category)
+                  if (catPacks.length === 0) return null
+                  return (
+                    <optgroup key={category} label={category} style={{ background: '#1c1b29', color: '#c4b5fd', fontWeight: 700 }}>
+                      {catPacks.map(p => (
+                        <option key={p.id} value={p.id} style={{ background: '#121218', color: '#fff', fontWeight: 500 }}>
+                          {p.title}
+                        </option>
+                      ))}
+                    </optgroup>
+                  )
+                })}
               </select>
             )}
           </div>

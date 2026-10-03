@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { TriviaQuestion } from '@/lib/trivia-seed'
+import { TriviaQuestion, getSeedQuestionsForTopic } from '@/lib/trivia-seed'
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY
 
@@ -145,27 +145,16 @@ ENTREGA TU RESPUESTA EXCLUSIVAMENTE EN FORMATO JSON VÁLIDO (sin texto antes ni 
       }
     }
 
-    // Si la API falla o no hay key, devolver fallback de alta calidad SIN nombres internos
-    const fallbackQuestion: TriviaQuestion = {
-      id: `fallback-${topicOrder}-${Date.now()}`,
-      topicOrder,
-      topicName: cleanTopicName,
-      question: '¿Cuál de las siguientes opciones expresa una idea en inglés de la forma más natural y correcta?',
-      options: [
-        'Respetar el orden natural del inglés sin omitir el pronombre ni los auxiliares',
-        'Omitir los auxiliares para intentar sonar más rápido',
-        'Traducir palabra por palabra calcando las frases del español',
-        'Conjugarse tanto el auxiliar como el verbo de acción a la vez'
-      ],
-      correctIndex: 0,
-      explanation: 'En inglés es fundamental mantener una estructura clara y directa sin omitir los pronombres ni alterar la posición de los auxiliares.',
-      trapExplanation: `Ten cuidado con ${commonMistake}.`,
-      archetype: 'spot_trap'
-    }
+    // Si la API falla o no hay key, devolver fallback de preguntas semilla variadas
+    const seeds = getSeedQuestionsForTopic(topicOrder, cleanTopicName, ldsFormula, commonMistake, grammarFocus)
+    const fallbackQuestions = seeds.map((s, idx) => ({
+      ...s,
+      id: `fallback-${topicOrder}-${idx}-${Date.now()}`
+    }))
 
     return res.status(200).json({
       ok: true,
-      questions: [fallbackQuestion]
+      questions: fallbackQuestions
     })
   } catch (error: any) {
     return res.status(500).json({ error: 'Error al generar preguntas de trivia', detail: error.message })

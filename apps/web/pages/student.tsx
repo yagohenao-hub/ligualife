@@ -8,6 +8,7 @@ import { InfiniteTriviaModal } from '@/components/InfiniteTriviaModal'
 import { ShortReadingModal } from '@/components/ShortReadingModal'
 import { getTopicSummary } from '@/lib/curriculum-summary'
 import { getFriendlyTopicName } from '@/lib/friendly-topics'
+import { BUILTIN_FLASHCARD_PACKS, FLASHCARD_CATEGORIES } from '@/lib/flashcards'
 import { 
   AlertCircle,
   BookOpen, 
@@ -1200,97 +1201,87 @@ export default function StudentDashboardPage() {
           })()}
         </section>
 
-        {/* === Full Width Card: Flashcards Conceptuales (Mini-App de Vocabulario) - Oculto Temporalmente === */}
-        {false && (
-          <section className={styles.flashcardsSection}>
-            <div className={styles.flashcardsHeaderWrap}>
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.35rem' }}>
-                  <Layers size={22} color="var(--accent-purple, #a855f7)" />
-                  <h2 className={styles.sectionTitle} style={{ margin: 0 }}>
-                    Flashcards Conceptuales
-                  </h2>
-                  <span style={{ fontSize: '0.75rem', fontWeight: 700, padding: '0.2rem 0.6rem', borderRadius: '999px', background: 'rgba(168, 85, 247, 0.15)', color: '#c084fc', border: '1px solid rgba(168, 85, 247, 0.3)' }}>
-                    Nuevo
-                  </span>
-                </div>
-                <p className={styles.empty} style={{ margin: 0, fontSize: '0.85rem' }}>
-                  Aprende vocabulario sin traducir 1 a 1: familias de palabras, trampas del español, conectores lógicos y situaciones reales.
-                </p>
+        {/* === Full Width Card: Flashcards Conceptuales (Mini-App de Vocabulario) === */}
+        <section className={styles.flashcardsSection}>
+          <div className={styles.flashcardsHeaderWrap}>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.35rem' }}>
+                <Layers size={22} color="var(--accent-purple, #a855f7)" />
+                <h2 className={styles.sectionTitle} style={{ margin: 0 }}>
+                  Flashcards Conceptuales
+                </h2>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, padding: '0.2rem 0.6rem', borderRadius: '999px', background: 'rgba(168, 85, 247, 0.15)', color: '#c084fc', border: '1px solid rgba(168, 85, 247, 0.3)' }}>
+                  Beta 0.2
+                </span>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, padding: '0.2rem 0.6rem', borderRadius: '999px', background: 'rgba(16, 185, 129, 0.15)', color: '#34d399', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
+                  8 Decks • 120 Tarjetas
+                </span>
               </div>
+              <p className={styles.empty} style={{ margin: 0, fontSize: '0.85rem' }}>
+                Aprende vocabulario sin traducir 1 a 1: vocabulario general, situaciones y lugares, familias conceptuales y verbos frasales.
+              </p>
             </div>
+            <a
+              href="/flashcards_vocabulary.csv"
+              download="flashcards_vocabulary.csv"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                fontSize: '0.8rem',
+                fontWeight: 600,
+                color: '#c4b5fd',
+                background: 'rgba(124, 58, 237, 0.12)',
+                border: '1px solid rgba(124, 58, 237, 0.3)',
+                padding: '0.4rem 0.85rem',
+                borderRadius: '8px',
+                textDecoration: 'none'
+              }}
+            >
+              <FileDown size={14} />
+              <span>Descargar CSV</span>
+            </a>
+          </div>
 
-            <div className={styles.flashcardsGrid}>
-              {/* 1. Falsos Cognados */}
-              <Link href="/student/flashcards?packId=false-friends-pack" className={styles.flashcardPackCard}>
-                <div>
-                  <div className={styles.flashcardPackTitle}>Falsos Cognados</div>
-                  <div className={styles.flashcardPackSub}>
-                    Palabras que parecen decir una cosa en español pero significan algo diferente (Actually, Eventually, Realize...).
-                  </div>
-                </div>
-                <div className={styles.flashcardPackMeta}>
-                  <span>8 Tarjetas • A2-B2</span>
-                  <span className={styles.flashcardPracticarBtn}>
-                    <span>Practicar</span>
-                    <ArrowRight size={14} />
+          {/* Categorías organizadas */}
+          {FLASHCARD_CATEGORIES.map(category => {
+            const categoryPacks = BUILTIN_FLASHCARD_PACKS.filter(p => p.category === category)
+            if (categoryPacks.length === 0) return null
+            return (
+              <div key={category} style={{ marginBottom: '1.75rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
+                  <span style={{ fontSize: '0.82rem', fontWeight: 800, color: '#e4e4e7', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    {category}
+                  </span>
+                  <span style={{ fontSize: '0.72rem', color: '#a1a1aa' }}>
+                    ({categoryPacks.length} {categoryPacks.length === 1 ? 'deck' : 'decks'} • {categoryPacks.reduce((acc, p) => acc + p.cards.length, 0)} tarjetas)
                   </span>
                 </div>
-              </Link>
-
-              {/* 2. Conectores Lógicos */}
-              <Link href="/student/flashcards?packId=logical-connectors-pack" className={styles.flashcardPackCard}>
-                <div>
-                  <div className={styles.flashcardPackTitle}>Conectores Lógicos</div>
-                  <div className={styles.flashcardPackSub}>
-                    Frases de transición y muletillas naturales para enlazar argumentos sin parecer un robot (To be fair, Speaking of which...).
-                  </div>
+                <div className={styles.flashcardsGrid}>
+                  {categoryPacks.map(pack => (
+                    <Link
+                      key={pack.id}
+                      href={`/student/flashcards?packId=${pack.id}`}
+                      className={styles.flashcardPackCard}
+                    >
+                      <div>
+                        <div className={styles.flashcardPackTitle}>{pack.title}</div>
+                        <div className={styles.flashcardPackSub}>{pack.subtitle}</div>
+                      </div>
+                      <div className={styles.flashcardPackMeta}>
+                        <span>{pack.cards.length} Tarjetas • {pack.level}</span>
+                        <span className={styles.flashcardPracticarBtn}>
+                          <span>Practicar</span>
+                          <ArrowRight size={14} />
+                        </span>
+                      </div>
+                    </Link>
+                  ))}
                 </div>
-                <div className={styles.flashcardPackMeta}>
-                  <span>8 Tarjetas • B1-C1</span>
-                  <span className={styles.flashcardPracticarBtn}>
-                    <span>Practicar</span>
-                    <ArrowRight size={14} />
-                  </span>
-                </div>
-              </Link>
-
-              {/* 3. Gimnasio & Fitness */}
-              <Link href="/student/flashcards?packId=gym-fitness-pack" className={styles.flashcardPackCard}>
-                <div>
-                  <div className={styles.flashcardPackTitle}>Gimnasio & Fitness</div>
-                  <div className={styles.flashcardPackSub}>
-                    Verbos de acción, pesas y frases de entrenamiento con mapa interactivo y situaciones reales.
-                  </div>
-                </div>
-                <div className={styles.flashcardPackMeta}>
-                  <span>8 Tarjetas • A2-B2</span>
-                  <span className={styles.flashcardPracticarBtn}>
-                    <span>Practicar</span>
-                    <ArrowRight size={14} />
-                  </span>
-                </div>
-              </Link>
-
-              {/* 4. Familia de DRAW */}
-              <Link href="/student/flashcards?packId=draw-family-pack" className={styles.flashcardPackCard}>
-                <div>
-                  <div className={styles.flashcardPackTitle}>Familia de "DRAW"</div>
-                  <div className={styles.flashcardPackSub}>
-                    Morfología y colocaciones de la raíz Draw: withdraw, drawback, draw attention, draw a blank, overdraw.
-                  </div>
-                </div>
-                <div className={styles.flashcardPackMeta}>
-                  <span>12 Tarjetas • B1-B2</span>
-                  <span className={styles.flashcardPracticarBtn}>
-                    <span>Practicar</span>
-                    <ArrowRight size={14} />
-                  </span>
-                </div>
-              </Link>
-            </div>
-          </section>
-        )}
+              </div>
+            )
+          })}
+        </section>
 
         {/* === Full Width Card: Actividad de Serie === */}
         <section className={styles.seriesCardFull} style={{ margin: '2rem 0' }}>

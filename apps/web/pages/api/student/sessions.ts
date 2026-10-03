@@ -59,6 +59,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // ── Alumnos Antiguos: Habilitar los 60 temas completados con slides ──────
     const SENIOR_STUDENT_IDS = [
       '04ded1af-37a7-49ee-a976-307ee9509fa9', // Laura
+      'c8246f59-ab69-4b8c-9504-87f0db6cf8c5', // Laura Arango
+      'd6545978-df2d-4991-8899-ebd53bbd22d9', // Andrés Restrepo Morales
       '27454176-ebd0-4628-8e4d-36fd262f54c5', // Paulina Uribe Giraldo
       '5f4e7cb9-050f-4c97-b53e-d6de66a9e9b0', // Romario
       '7c5250a8-c0a6-463b-8897-5471aa6dc721', // Yuliana Higuita Osorio

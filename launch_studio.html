@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LinguaLife Studio — Generador de Grid Instagram & Carrusel WhatsApp</title>
+  <!-- Google Fonts: Outfit, Plus Jakarta Sans, Inter, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <!-- html2canvas para exportación en alta resolución -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    :root {
+      /* Base System Tokens (DESIGN_SYSTEM.md) */
+      --dark-canvas: #090C10;
+      --dark-plate: #131822;
+      --dark-plate-2: #1A2130;
+      --dark-sunk: #0B0F16;
+      --dark-ink: #F1F5F9;
+      --dark-ink-2: #94A3B8;
+
+      --light-canvas: #E8EDF7;
+      --light-plate: #F3F6FD;
+      --light-plate-2: #EAF0FA;
+      --light-sunk: #DCE4F3;
+      --light-ink: #1E293B;
+      --light-ink-2: #64748B;
+
+      --jade: #34D399;
+      --jade-dark: #1B5E4A;
+      --amber: #F59E0B;
+      --amber-dark: #D97706;
+
+      --clay-dark: 0 22px 40px -20px rgba(0, 0, 0, 0.85), 0 8px 16px -10px rgba(0, 0, 0, 0.6), inset 1px 2px 3px 0 rgba(255, 255, 255, 0.12), inset -3px -5px 9px 0 rgba(0, 0, 0, 0.7);
+      --clay-light: 0 22px 38px -20px rgba(35, 45, 60, 0.36), 0 8px 16px -10px rgba(35, 45, 60, 0.18), inset 2px 3px 4px 0 rgba(255, 255, 255, 0.95), inset -3px -5px 9px 0 rgba(35, 45, 60, 0.09);
+
+      --lip-dark: inset 0 1px 0 0 rgba(255, 255, 255, 0.14), inset 0 -1px 0 0 rgba(0, 0, 0, 0.7);
+      --lip-light: inset 0 1px 0 0 rgba(255, 255, 255, 1), inset 0 -1px 0 0 rgba(35, 45, 60, 0.12);
+
+      --font-display: 'Outfit', sans-serif;
+      --font-heading: 'Plus Jakarta Sans', sans-serif;
+      --font-body: 'Inter', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #0B0E14;
+      color: #E2E8F0;
+      font-family: var(--font-body);
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    /* Header Bar */
+    header {
+      max-width: 1300px;
+      margin: 0 auto 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #151A24;
+      padding: 20px 28px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .brand-title {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-badge {
+      background: linear-gradient(135deg, var(--jade), #059669);
+      color: #052e16;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 99px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .actions-bar {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn {
+      background: #202738;
+      color: #F8FAFC;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-family: var(--font-heading);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn:hover {
+      background: #2D3748;
+      transform: translateY(-2px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--jade), #10B981);
+      color: #064E3B;
+      border: none;
+      box-shadow: 0 4px 16px rgba(52, 211, 153, 0.35);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #4ade80, var(--jade));
+      box-shadow: 0 6px 22px rgba(52, 211, 153, 0.5);
+    }
+
+    /* Tabs */
+    .tabs-container {
+      max-width: 1300px;
+      margin: 0 auto 24px;
+      display: flex;
+      gap: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 12px;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: #94A3B8;
+      font-family: var(--font-heading);
+      font-size: 16px;
+      font-weight: 600;
+      padding: 10px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+      background: #1E2638;
+      color: var(--jade);
+    }
+
+    /* Container */
+    .main-stage {
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+
+    /* Instagram 3x3 Grid */
+    .instagram-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-bottom: 60px;
+    }
+
+    /* WhatsApp Carousel Grid */
+    .carousel-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 60px;
+    }
+
+    /* Card Wrapper (Preview Scaled) */
+    .artboard-card {
+      background: #141923;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    }
+
+    .artboard-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: #94A3B8;
+      font-family: var(--font-mono);
+    }
+
+    .export-single-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: none;
+      color: #E2E8F0;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .export-single-btn:hover {
+      background: var(--jade);
+      color: #064E3B;
+    }
+
+    /* ─── CANVAS OFICIAL 1080x1080 (Scaled down for preview) ─── */
+    .canvas-post {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      border-radius: 16px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 32px;
+      user-select: none;
+      transition: transform 0.2s ease;
+    }
+
+    /* THEME DARK (Celadon Obsidian) */
+    .theme-dark {
+      background: radial-gradient(circle at 85% 15%, rgba(52, 211, 153, 0.12) 0%, transparent 45%),
+                  radial-gradient(circle at 15% 85%, rgba(245, 158, 11, 0.08) 0%, transparent 45%),
+                  var(--dark-canvas);
+      color: var(--dark-ink);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* THEME LIGHT (Celadon Pastel) */
+    .theme-light {
+      background: radial-gradient(circle at 85% 15%, rgba(124, 207, 176, 0.25) 0%, transparent 45%),
+                  radial-gradient(circle at 15% 85%, rgba(217, 119, 6, 0.12) 0%, transparent 45%),
+                  var(--light-canvas);
+      color: var(--light-ink);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    /* Post Header Elements */
+    .post-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .post-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 14px;
+      letter-spacing: -0.01em;
+    }
+
+    .brand-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--jade);
+      box-shadow: 0 0 10px var(--jade);
+    }
+
+    .theme-light .brand-dot {
+      background: #10B981;
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+    }
+
+    .post-tag {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 99px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .theme-dark .post-tag {
+      background: var(--dark-plate-2);
+      color: var(--jade);
+      box-shadow: var(--lip-dark);
+    }
+
+    .theme-light .post-tag {
+      background: var(--light-plate);
+      color: var(--jade-dark);
+      box-shadow: var(--lip-light);
+    }
+
+    /* Post Content Core */
+    .post-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 16px;
+      margin: 16px 0;
+    }
+
+    .title-display {
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+    }
+
+    .highlight-jade {
+      color: var(--jade);
+    }
+    .theme-light .highlight-jade {
+      color: #059669;
+    }
+
+    .highlight-amber {
+      color: var(--amber);
+    }
+
+    .subtitle-body {
+      font-size: 14px;
+      line-height: 1.45;
+      font-weight: 400;
+    }
+
+    .theme-dark .subtitle-body {
+      color: var(--dark-ink-2);
+    }
+    .theme-light .subtitle-body {
+      color: var(--light-ink-2);
+    }
+
+    /* Claymorphic Card Widget */
+    .clay-widget {
+      border-radius: 16px;
+      padding: 16px;
+      position: relative;
+    }
+
+    .theme-dark .clay-widget {
+      background: var(--dark-plate);
+      box-shadow: var(--clay-dark);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .theme-light .clay-widget {
+      background: var(--light-plate);
+      box-shadow: var(--clay-light);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+    }
+
+    /* Monospace Code Formula Block */
+    .formula-box {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 700;
+      padding: 12px 14px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .theme-dark .formula-box {
+      background: var(--dark-sunk);
+      color: #38BDF8;
+      border: 1px solid rgba(56, 189, 248, 0.2);
+    }
+
+    .theme-light .formula-box {
+      background: var(--light-sunk);
+      color: #0284C7;
+      border: 1px solid rgba(2, 132, 199, 0.2);
+    }
+
+    /* Chat Simulation Snippet */
+    .chat-bubble {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      margin-top: 6px;
+    }
+
+    .chat-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--jade), #059669);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: white;
+      font-weight: bold;
+    }
+
+    .chat-msg {
+      padding: 8px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      line-height: 1.35;
+      max-width: 85%;
+    }
+
+    .theme-dark .chat-msg {
+      background: #1B2433;
+      color: #E2E8F0;
+    }
+
+    .theme-light .chat-msg {
+      background: #FFFFFF;
+      color: #1E293B;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+
+    /* Post Footer */
+    .post-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 11px;
+    }
+
+    .theme-light .post-footer {
+      border-top-color: rgba(0, 0, 0, 0.08);
+    }
+
+    .post-handle {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--jade);
+    }
+
+    .theme-light .post-handle {
+      color: #059669;
+    }
+
+    .post-cta {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Toast Notification */
+    #toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: #10B981;
+      color: #064E3B;
+      padding: 14px 24px;
+      border-radius: 14px;
+      font-weight: 700;
+      box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+      display: none;
+      z-index: 9999;
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="brand-title">
+      <span>LinguaLife Studio</span>
+      <span class="brand-badge">LDS Launch Suite v2.0</span>
+    </div>
+    <div class="actions-bar">
+      <button class="btn" onclick="exportAllPosts()">📸 Exportar Todos a PNG</button>
+      <button class="btn btn-primary" onclick="window.open('CAMPAIGN_MARKETING_V1.md')">📄 Ver Plan de Campaña</button>
+    </div>
+  </header>
+
+  <!-- Tabs Navigation -->
+  <div class="tabs-container">
+    <button class="tab-btn active" onclick="switchTab('grid')">📷 Grid de Instagram (9 Posts en Ajedrez)</button>
+    <button class="tab-btn" onclick="switchTab('carousel')">💬 Carrusel de Cierre WhatsApp (4 Diapositivas)</button>
+  </div>
+
+  <main class="main-stage">
+    
+    <!-- ══════════════ SECCIÓN 1: GRID DE INSTAGRAM (3x3 AJEDREZ) ══════════════ -->
+    <div id="grid-view" class="instagram-grid">
+
+      <!-- POST 1 (Fila 1, Col 1 - OSCURO) -->
+      <div class="artboard-card">
+        <div class="artboard-meta">
+          <span>POST #01 (Carrusel Manifiesto)</span>
+          <button class="export-single-btn" onclick="exportPost('post-1', 'post-1-manifiesto.png')">PNG</button>
+        </div>
+        <div id="post-1" class="canvas-post theme-dark">
+          <div class="post-header">
+            <div class="post-brand"><span class="brand-dot"></span> LinguaLife</div>
+            <span class="post-tag">MANIFIESTO #01</span>
+          </div>
+          <div class="post-body">
+            <h1 class="title-display">¿Por qué llevas años <span class="highlight-amber">entendiendo</span> pero te congelas al <span class="highlight-jade">hablar</span>?</h1>
+            <p class="subtitle-body">No es falta de memoria. Es que te enseñaron a traducir 2.000 reglas obsoletas en lugar de entender la matemática lógica del inglés.</p>
+            <div class="formula-box">
+              <span>⚡ Error común: Traducir mentalmente en tiempo real</span>
+            </div>
+          </div>
+          <div class="post-footer">
+            <span class="post-handle">@lingualife.co</span>
+            <span class="post-cta">Desliza para decodificar 👉</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- POST 2 (Fila 1, Col 2 - CLARO) -->
+      <div class="artboard-card">
+        <div class="artboard-meta">
+          <span>POST #02 (Reel Demo Producto)</span>
+          <button class="export-single-btn" onclick="exportPost('post-2', 'post-2-pocket-coach.png')">PNG</button>
+        </div>
+        <div id="post-2" class="canvas-post theme-light">
+          <div class="post-header">
+            <div class="post-brand"><span class="brand-dot"></span> LinguaLife</div>
+            <span class="post-tag">ECOSISTEMA IA</span>
+          </div>
+          <div class="post-body">
+            <h1 class="title-display">Tu tutor 1 a 1 en Meet + <span class="highlight-jade">Pocket Coach</span> en tu WhatsApp 24/7.</h1>
+            <div class="clay-widget">
+              <div style="font-size: 11px; font-weight: 700; color: #64748B; margin-bottom: 6px;">WHATSAPP INTERACTIVO</div>
+              <div class="chat-bubble">
+                <div class="chat-avatar">AI</div>
+                <div class="chat-msg">
+                  <strong>Reto de 2 min:</strong> Corrige el error en tu reunión de ayer: <br>
+                  <em>"I am agree with the budget..."</em>
+                </div>
+              </div>
+            </div>
+            <p class="subtitle-body">Retención acelerada: entrenas tus propios errores de clase en micro-sesiones diarias.</p>
+          </div>
+          <div class="post-footer">
+            <span class="post-handle">@lingualife.co</span>
+            <span class="post-cta">Ver en acción 🎬</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- POST 3 (Fila 1, Col 3 - OSCURO) -->
+      <div class="artboard-card">
+        <div class="artboard-meta">
+          <span>POST #03 (Carrusel Hoja de Ruta)</span>
+          <button class="export-single-btn" onclick="exportPost('post-3', 'post-3-hoja-ruta.png')">PNG</button>
+        </div>
+        <div id="post-3" class="canvas-post theme-dark">
+          <div class="post-header">
+            <div class="post-brand"><span class="brand-dot"></span> LinguaLife</div>
+            <span class="post-tag">MÉTODO LDS</span>
+          </div>
+          <div class="post-body">
+            <h1 class="title-display">Tu Hoja de Ruta en 3 Fases para <span class="highlight-jade">romper la barrera</span>.</h1>
+            <div class="clay-widget" style="display:flex; flex-direction:column; gap:8px;">
+              <div style="font-size:12px;"><strong>Fase 1:</strong> Decodificación Lógica (Estructuras clave)</div>
+              <div style="font-size:12px;"><strong>Fase 2:</strong> Automatización Muscular (Pocket Coach)</div>
+              <div style="font-size:12px; color:var(--jade);"><strong>Fase 3:</strong> Fluidez y Cero Traducción Mental</div>
+            </div>
+            <p class="subtitle-body">El plan de entrenamiento diseñado para la mente hispanohablante ocupada.</p>
+          </div>
+          <div class="post-footer">
+            <span class="post-handle">@lingualife.co</span>
+            <span class="post-cta">Solicita la tuya 👉</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- POST 4 (Fila 2, Col 1 - CLARO) -->
+      <div class="artboard-card">
+        <div class="artboard-meta">
+          <span>POST #04 (Hack Sintáctico LDS #01)</span>
+          <button class="export-single-btn" onclick="exportPost('post-4', 'post-4-formula-sagrada.png')">PNG</button>
+        </div>
+        <div id="post-4" class="canvas-post theme-light">
+          <div class="post-header">
+            <div class="post-brand"><span class="brand-dot"></span> LinguaLife</div>
+            <span class="post-tag">HACK LÓGICO #01</span>
+          </div>
+          <div class="post-body">
+            <h1 class="title-display">La Fórmula Sagrada: <br><span class="highlight-jade">S + T + A</span></h1>
+            <div class="formula-box" style="background:#E2E8F0; color:#0F172A;">
+              <span>SUJETO + TIEMPO + ACCIÓN</span>
+            </div>
+            <p class="subtitle-body">En inglés casi no conjugamos verbos. Lo que cambia es la <strong>Palabra de Tiempo</strong>. Domina las 12 palabras clave y dominarás el 90% del habla.</p>
+          </div>
+          <div class="post-footer">
+            <span class="post-handle">@lingualife.co</span>
+            <span class="post-cta">Guarda este hack 📌</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- POST 5 (Fila 2, Col 2 - OSCURO - CENTRO ANCLA) -->
+      <div class="artboard-card">
+        <div class="artboard-meta">
+          <span>POST #05 (Comparativa / Cierre Central)</span>
+          <button class="export-single-btn" onclick="exportPost('post-5', 'post-5-comparativa.png')">PNG</button>
+        </div>
+        <div id="post-5" class="canvas-post theme-dark">
+          <div class="post-header">
+            <div class="post-brand"><span class="brand-dot"></span> LinguaLife</div>
+            <span class="post-tag">CONTRASTE REAL</span>
+          </div>
+          <div class="post-body">
+            <h1 class="title-display">Academia Tradicional <span style="color:#EF4444;">vs</span> <span class="highlight-jade">LinguaLife</span></h1>
+            <div class="clay-widget" style="font-size:12px; display:flex; flex-direction:column; gap:8px;">
+              <div style="color:#94A3B8;">❌ 15 alumnos por sala = 3 min de habla por clase</div>
+              <div style="color:var(--jade);">✅ <strong>100% Privado 1 a 1</strong> = 45 min de práctica activa</div>
+              <div style="color:#94A3B8;">❌ Libros impresos de 2005 y tareas aburridas</div>
+              <div style="color:var(--jade);">✅ <strong>IA personalizada 24/7</strong> entrenando tus fallos</div>
+            </div>
+            <p class="subtitle-body">Entrenamiento inteligente para profesionales y estudiantes exigentes.</p>
+          </div>
+          <div class="post-footer">
+            <span class="post-handle">@lingualife.co</span>
+            <span class="post-cta">Evoluciona tu método ⚡</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- POST 6 (Fila 2, Col 3 - CLARO) -->
+      <div class="artboard-card">
+        <div class="artboard-meta">
+          <span>POST #06 (Hack Sintáctico LDS #02)</span>
+          <button class="export-single-btn" onclick="exportPost('post-6', 'post-6-falsos-cognados.png')">PNG</button>
+        </div>
+        <div id="post-6" class="canvas-post theme-light">
+          <div class="post-header">
+            <div class="post-brand"><span class="brand-dot"></span> LinguaLife</div>
+            <span class="post-tag">HACK LÓGICO #02</span>
+          </div>
+          <div class="post-body">
+            <h1 class="title-display">3 Falsos Cognados que delatan que <span class="highlight-amber">traduces del español</span>.</h1>
+            <div class="clay-widget" style="font-size:12px; display:flex; flex-direction:column; gap:6px;">
+              <div>• <em>"Actually"</em> ≠ Actualmente ➔ <strong>"En realidad"</strong></div>
+              <div>• <em>"Notice"</em> ≠ Noticia ➔ <strong>"Darse cuenta"</strong></div>
+              <div>• <em>"Support"</em> ≠ Soportar ➔ <strong>"Apoyar"</strong></div>
+            </div>
+            <p class="subtitle-body">Aprende las sutilezas que te dan porte nativo en entrevistas laborales en USD.</p>
+          </div>
+          <div class="post-footer">
+            <span class="post-handle">@lingualife.co</span>
+            <span class="post-cta">Aprende más hacks 👉</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- POST 7 (Fila 3, Col 1 - OSCURO) -->
+      <div class="artboard-card">
+        <div class="artboard-meta">
+          <span>POST #07 (Estudiantes & Receso)</span>
+          <button class="export-single-btn" onclick="exportPost('post-7', 'post-7-plan-intensivo.png')">PNG</button>
+        </div>
+        <div id="post-7" class="canvas-post theme-dark">
+          <div class="post-header">
+            <div class="post-brand"><span class="brand-dot"></span> LinguaLife</div>
+            <span class="post-tag">PLAN INTENSIVO</span>
+          </div>
+          <div class="post-body">
+            <h1 class="title-display">Aprovecha el receso: <span class="highlight-jade">16 clases en 4 semanas</span>.</h1>
+            <p class="subtitle-body">¿Tienes semanas libres? No esperes a enero para empezar desde cero con miles de personas. Entrena 4 horas por semana y sal al mercado bilingüe.</p>
+            <div class="formula-box">
+              <span>🚀 4 hrs/sem + Tutor IA = 3 meses de avance en 30 días</span>
+            </div>
+          </div>
+          <div class="post-footer">
+            <span class="post-handle">@lingualife.co</span>
+            <span class="post-cta">Ver disponibilidad 📲</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- POST 8 (Fila 3, Col 2 - CLARO) -->
+      <div class="artboard-card">
+        <div class="artboard-meta">
+          <span>POST #08 (Precios Transparentes 2026)</span>
+          <button class="export-single-btn" onclick="exportPost('post-8', 'post-8-precios.png')">PNG</button>
+        </div>
+        <div id="post-8" class="canvas-post theme-light">
+          <div class="post-header">
+            <div class="post-brand"><span class="brand-dot"></span> LinguaLife</div>
+            <span class="post-tag">TARIFAS OFICIALES</span>
+          </div>
+          <div class="post-body">
+            <h1 class="title-display">Planes Transparentes. <br><span class="highlight-jade">Sin matrículas ocultas.</span></h1>
+            <div class="clay-widget" style="font-size:12px; display:flex; flex-direction:column; gap:8px;">
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid #E2E8F0; padding-bottom:6px;">
+                <strong>Plan Regular (8 clases 1-1 + IA)</strong>
+                <span style="color:#059669; font-weight:700;">$450.000 COP</span>
+              </div>
+              <div style="display:flex; justify-content:space-between;">
+                <strong>Plan Intensivo (16 clases 1-1 + IA)</strong>
+                <span style="color:#059669; font-weight:700;">$790.000 COP</span>
+              </div>
+            </div>
+            <p class="subtitle-body">Cupos limitados por profesor para garantizar máxima atención personalizada.</p>
+          </div>
+          <div class="post-footer">
+            <span class="post-handle">@lingualife.co</span>
+            <span class="post-cta">Escribe a WhatsApp 💬</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- POST 9 (Fila 3, Col 3 - OSCURO) -->
+      <div class="artboard-card">
+        <div class="artboard-meta">
+          <span>POST #09 (Padres de Adolescentes 14+)</span>
+          <button class="export-single-btn" onclick="exportPost('post-9', 'post-9-padres-adolescentes.png')">PNG</button>
+        </div>
+        <div id="post-9" class="canvas-post theme-dark">
+          <div class="post-header">
+            <div class="post-brand"><span class="brand-dot"></span> LinguaLife</div>
+            <span class="post-tag">JÓVENES 14+</span>
+          </div>
+          <div class="post-body">
+            <h1 class="title-display">El inglés del colegio <span style="color:#EF4444;">no basta</span> para el futuro de tus hijos.</h1>
+            <p class="subtitle-body">Las clases tradicionales los aburren. En LinguaLife aprenden 1 a 1 con tutores dinámicos y refuerzan en su celular con inteligencia artificial.</p>
+            <div class="clay-widget" style="font-size:12px; color:var(--jade);">
+              ✨ Fluidez real para becas, viajes e intercambios.
+            </div>
+          </div>
+          <div class="post-footer">
+            <span class="post-handle">@lingualife.co</span>
+            <span class="post-cta">Pide información para tu hijo 📲</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ══════════════ SECCIÓN 2: CARRUSEL DE WHATSAPP (4 DIAPOSITIVAS) ══════════════ -->
+    <div id="carousel-view" class="carousel-grid" style="display:none;">
+
+      <!-- SLIDE 1 -->
+      <div class="artboard-card">
+        <div class="artboard-meta">
+          <span>SLIDE #01 (Diagnóstico)</span>
+          <button class="export-single-btn" onclick="exportPost('wapp-1', 'wapp-slide-1.png')">PNG</button>
+        </div>
+        <div id="wapp-1" class="canvas-post theme-dark">
+          <div class="post-header">
+            <div class="post-brand"><span class="brand-dot"></span> LinguaLife</div>
+            <span class="post-tag">HOJA DE RUTA #01</span>
+          </div>
+          <div class="post-body">
+            <h1 class="title-display">¿Por qué te trabas al hablar aunque entiendas todo?</h1>
+            <p class="subtitle-body">El 95% de los profesionales hispanohablantes sufren el <strong>'Efecto Traductor'</strong>: intentar armar reglas gramaticales en la cabeza antes de pronunciar.</p>
+            <div class="clay-widget" style="font-size:12px; color:var(--amber);">
+              ⚠️ Traducir palabra por palabra satura tu memoria de trabajo.
+            </div>
+          </div>
+          <div class="post-footer">
+            <span class="post-handle">The Logic Decoder System</span>
+            <span class="post-cta">1 / 4 👉</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 2 -->
+      <div class="artboard-card">
+        <div class="artboard-meta">
+          <span>SLIDE #02 (La Solución LDS)</span>
+          <button class="export-single-btn" onclick="exportPost('wapp-2', 'wapp-slide-2.png')">PNG</button>
+        </div>
+        <div id="wapp-2" class="canvas-post theme-dark">
+          <div class="post-header">
+            <div class="post-brand"><span class="brand-dot"></span> LinguaLife</div>
+            <span class="post-tag">EL MÉTODO</span>
+          </div>
+          <div class="post-body">
+            <h1 class="title-display">Desencriptamos el código del inglés con <span class="highlight-jade">Lógica Pura</span>.</h1>
+            <p class="subtitle-body">Tratamos el idioma como piezas intercambiables. Primero la Lógica Estructural (las llaves del reino), luego la práctica conversacional.</p>
+            <div class="formula-box">
+              <span>Sujeto + Palabra de Tiempo + Acción</span>
+            </div>
+          </div>
+          <div class="post-footer">
+            <span class="post-handle">Sin listas infinitas</span>
+            <span class="post-cta">2 / 4 👉</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 3 -->
+      <div class="artboard-card">
+        <div class="artboard-meta">
+          <span>SLIDE #03 (Ecosistema Híbrido)</span>
+          <button class="export-single-btn" onclick="exportPost('wapp-3', 'wapp-slide-3.png')">PNG</button>
+        </div>
+        <div id="wapp-3" class="canvas-post theme-dark">
+          <div class="post-header">
+            <div class="post-brand"><span class="brand-dot"></span> LinguaLife</div>
+            <span class="post-tag">TECNOLOGÍA</span>
+          </div>
+          <div class="post-body">
+            <h1 class="title-display">Tu Profesor 1-1 + <span class="highlight-jade">Pocket Coach en WhatsApp</span>.</h1>
+            <div class="clay-widget" style="font-size:12px; display:flex; flex-direction:column; gap:6px;">
+              <div>• <strong>En Clase (Meet):</strong> El profesor detecta tus bloqueos y entrena tu habla.</div>
+              <div>• <strong>Entre Clases (WhatsApp):</strong> El tutor de IA te envía retos de 2 min basados en tus errores.</div>
+            </div>
+            <p class="subtitle-body">Llegas a cada clase habiendo automatizado tus debilidades.</p>
+          </div>
+          <div class="post-footer">
+            <span class="post-handle">Retención del 85%</span>
+            <span class="post-cta">3 / 4 👉</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 4 -->
+      <div class="artboard-card">
+        <div class="artboard-meta">
+          <span>SLIDE #04 (Oferta y Cierre)</span>
+          <button class="export-single-btn" onclick="exportPost('wapp-4', 'wapp-slide-4.png')">PNG</button>
+        </div>
+        <div id="wapp-4" class="canvas-post theme-dark">
+          <div class="post-header">
+            <div class="post-brand"><span class="brand-dot"></span> LinguaLife</div>
+            <span class="post-tag">TU LUGAR</span>
+          </div>
+          <div class="post-body">
+            <h1 class="title-display">Elige tu modalidad y <span class="highlight-jade">asegura tu horario</span>.</h1>
+            <div class="clay-widget" style="font-size:12px; display:flex; flex-direction:column; gap:6px;">
+              <div>🟢 <strong>Plan Regular:</strong> 8 clases 1-1 + IA ($450.000 COP)</div>
+              <div>⚡ <strong>Plan Intensivo:</strong> 16 clases 1-1 + IA ($790.000 COP)</div>
+              <div style="color:#94A3B8; font-size:11px; margin-top:4px;">*Solo 10 cupos disponibles por profesor este mes.</div>
+            </div>
+            <p class="subtitle-body">Responde a este chat para confirmar tu horario de inicio.</p>
+          </div>
+          <div class="post-footer">
+            <span class="post-handle">@lingualife.co</span>
+            <span class="post-cta">Reserva tu cupo 📲</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <div id="toast">✅ Imagen exportada en alta resolución (1080x1080 px)</div>
+
+  <script>
+    // Tab switching
+    function switchTab(tab) {
+      const gridView = document.getElementById('grid-view');
+      const carouselView = document.getElementById('carousel-view');
+      const tabs = document.querySelectorAll('.tab-btn');
+
+      if (tab === 'grid') {
+        gridView.style.display = 'grid';
+        carouselView.style.display = 'none';
+        tabs[0].classList.add('active');
+        tabs[1].classList.remove('active');
+      } else {
+        gridView.style.display = 'none';
+        carouselView.style.display = 'grid';
+        tabs[0].classList.remove('active');
+        tabs[1].classList.add('active');
+      }
+    }
+
+    // Export single post with html2canvas (Scale: 2 for Retina/High-DPI)
+    function exportPost(elementId, filename) {
+      const element = document.getElementById(elementId);
+      showToast('Generando PNG en alta resolución...');
+
+      html2canvas(element, {
+        scale: 3, // Multiplicador para 1080x1080 px nítido
+        backgroundColor: null,
+        useCORS: true,
+        logging: false
+      }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = filename;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        showToast('✅ ' + filename + ' guardado exitosamente');
+      });
+    }
+
+    // Export all posts sequentially
+    async function exportAllPosts() {
+      const currentTab = document.querySelector('.tab-btn.active').innerText.includes('Grid') ? 'grid' : 'carousel';
+      const items = currentTab === 'grid' 
+        ? [
+            { id: 'post-1', name: 'post-1-manifiesto.png' },
+            { id: 'post-2', name: 'post-2-pocket-coach.png' },
+            { id: 'post-3', name: 'post-3-hoja-ruta.png' },
+            { id: 'post-4', name: 'post-4-formula-sagrada.png' },
+            { id: 'post-5', name: 'post-5-comparativa.png' },
+            { id: 'post-6', name: 'post-6-falsos-cognados.png' },
+            { id: 'post-7', name: 'post-7-plan-intensivo.png' },
+            { id: 'post-8', name: 'post-8-precios.png' },
+            { id: 'post-9', name: 'post-9-padres-adolescentes.png' }
+          ]
+        : [
+            { id: 'wapp-1', name: 'wapp-slide-1.png' },
+            { id: 'wapp-2', name: 'wapp-slide-2.png' },
+            { id: 'wapp-3', name: 'wapp-slide-3.png' },
+            { id: 'wapp-4', name: 'wapp-slide-4.png' }
+          ];
+
+      for (let i = 0; i < items.length; i++) {
+        showToast(`Exportando ${i + 1} de ${items.length}: ${items[i].name}...`);
+        await exportPostPromise(items[i].id, items[i].name);
+        await new Promise(r => setTimeout(r, 600)); // pausa entre descargas
+      }
+      showToast('🎉 ¡Todas las piezas fueron exportadas en alta resolución!');
+    }
+
+    function exportPostPromise(elementId, filename) {
+      return new Promise((resolve) => {
+        const element = document.getElementById(elementId);
+        html2canvas(element, { scale: 3, useCORS: true, logging: false }).then(canvas => {
+          const link = document.createElement('a');
+          link.download = filename;
+          link.href = canvas.toDataURL('image/png');
+          link.click();
+          resolve();
+        });
+      });
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.innerText = msg;
+      toast.style.display = 'block';
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, 3500);
+    }
+  </script>
+</body>
+</html>
