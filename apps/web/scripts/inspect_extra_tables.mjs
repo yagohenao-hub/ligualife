@@ -1,0 +1,28 @@
+import fs from 'fs';
+import path from 'path';
+import { createClient } from '@supabase/supabase-js';
+
+const envContent = fs.readFileSync(path.resolve('apps/web/.env.local'), 'utf8');
+const env = {};
+envContent.split('\n').forEach(line => {
+  const idx = line.indexOf('=');
+  if (idx > -1) {
+    const k = line.slice(0, idx).trim();
+    const v = line.slice(idx + 1).trim().replace(/^['"]|['"]$/g, '');
+    env[k] = v;
+  }
+});
+
+const url = env.NEXT_PUBLIC_SUPABASE_URL;
+const key = env.SUPABASE_SERVICE_ROLE_KEY;
+const supabase = createClient(url, key, { auth: { persistSession: false } });
+
+async function inspectExtraTables() {
+  const list = ['curriculums', 'student_curriculum', 'student_topic_progress', 'progress_apply_queue', 'error_patterns'];
+  for (const t of list) {
+    const { data, error } = await supabase.from(t).select('*').limit(1);
+    console.log(`Table ${t}:`, error ? `ERROR: ${error.message}` : (data && data.length > 0 ? Object.keys(data[0]) : 'EMPTY (accessible)'));
+  }
+}
+
+inspectExtraTables().catch(console.error);

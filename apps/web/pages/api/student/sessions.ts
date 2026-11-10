@@ -34,8 +34,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Construct studentProfile for caller
     const rawTokens = student.fields['Tokens de Reposición'] ?? student.fields['Tokens']
     const rawClasses = student.fields['ClassesRemaining'] ?? student.fields['Classes Remaining']
-    const teacherId = Array.isArray(student.fields['Teacher']) ? student.fields['Teacher'][0] : (student.fields['Teacher'] as string | null)
+    let teacherId = Array.isArray(student.fields['Teacher']) ? student.fields['Teacher'][0] : (student.fields['Teacher'] as string | null)
     let teacherName: string | null = null
+    let recurrenceDay: string | null = null
+    let recurrenceTime: string | null = null
+
+    try {
+      const { data: stLink } = await supabase
+        .from('student_teacher')
+        .select('*')
+        .eq('Student', student.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+
+      if (stLink && stLink.length > 0) {
+        if (!teacherId && stLink[0].Teacher) {
+          teacherId = stLink[0].Teacher
+        }
+        recurrenceDay = stLink[0]['Recurrence Day'] || null
+        recurrenceTime = stLink[0]['Recurrence Time'] || null
+      }
+    } catch (e) {
+      console.warn('Error fetching student_teacher:', e)
+    }
 
     if (teacherId) {
       try {
@@ -51,9 +72,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       name: (student.fields['Full Name'] || student.fields['Name'] || student.fields['FullName'] || 'Estudiante') as string,
       email: (student.fields['Email'] as string) || '',
       tokens: typeof rawTokens === 'number' ? rawTokens : (parseInt(rawTokens, 10) || 0),
-      classesRemaining: typeof rawClasses === 'number' ? rawClasses : (parseInt(rawClasses, 10) || 16),
+      classesRemaining: typeof rawClasses === 'number' ? rawClasses : (parseInt(rawClasses, 10) || 2),
       teacherId,
-      teacherName
+      teacherName,
+      recurrenceDay: recurrenceDay || 'Mie,Vie',
+      recurrenceTime: recurrenceTime || '11:00 AM'
     }
 
     // ── Alumnos Antiguos: Habilitar los 60 temas completados con slides ──────
@@ -158,6 +181,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       resolveTopics(upcoming, true),
       resolveTopics(completed, false),
     ])
+
+    // Sincronizar classesRemaining con las clases programadas activas del ciclo si no se fijó un valor explícito
+    if (upcomingSessions && upcomingSessions.length > 0) {
+      studentProfile.classesRemaining = upcomingSessions.length
+    }
 
     if (isSeniorStudent) {
       // Los alumnos antiguos que ya cursaron todo el temario ven sus próximas clases como sesiones de práctica

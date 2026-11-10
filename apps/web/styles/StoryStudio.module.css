@@ -317,7 +317,7 @@
 
 /* Print Overrides */
 @media print {
-    body * { visibility: hidden; }
+    .container :global(*) { visibility: hidden; }
     .bookSpread, .bookSpread * { visibility: visible; }
     .bookSpread {
         position: fixed;

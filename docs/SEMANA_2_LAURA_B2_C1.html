@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 2: Advanced Connectors & Discourse Flow | LinguaLife</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Warm Beige / Sand / Bone Palette */
+      --bg-page: #f1ebd9;           /* Beige cálido notorio, tipo papel libro premium */
+      --bg-surface: #fdfbf7;        /* Superficie marfil cálida */
+      --bg-surface-subtle: #faf6ed; /* Fondo sutil para tarjetas */
+      --bg-inner: #e8dfcd;          /* Fondos secundarios de tablas y citas */
+      
+      --border-warm: #dcd0ba;       /* Borde arena / beige definido */
+      --border-accent: #c9baa1;     /* Borde acentuado */
+
+      /* Typography */
+      --text-main: #231f1a;         /* Carbón cálido profundo */
+      --text-muted: #574e44;        /* Café grisáceo legible */
+      --text-dim: #7f7364;          /* Terciario cálido */
+      --font-main: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+
+      /* Pastel Mnemonic Palette */
+      --p-cyan-bg: #d9f0fc;         /* Concesión & Contraste */
+      --p-cyan-text: #02659c;
+      --p-cyan-border: #a8dcf7;
+
+      --p-amber-bg: #fdecc4;        /* Condición & Causa */
+      --p-amber-text: #8c3b00;
+      --p-amber-border: #fcd58b;
+
+      --p-violet-bg: #e8e1fc;       /* Adición & Refuerzo */
+      --p-violet-text: #5e1ec9;
+      --p-violet-border: #cebef7;
+
+      --p-rose-bg: #fddde2;         /* Vicios B2 / Alertas */
+      --p-rose-text: #960f33;
+      --p-rose-border: #f9bcc7;
+
+      --p-mint-bg: #cbf6de;         /* Reflejo C1 Nativo */
+      --p-mint-text: #045a42;
+      --p-mint-border: #99ecc0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body.clean-mode .action-bar,
+    body[data-clean="true"] .action-bar {
+      display: none !important;
+    }
+    body[data-clean="true"] .document-container,
+    body.clean-mode .document-container {
+      margin: 20px auto 40px;
+    }
+
+    /* Print & Floating Action Bar */
+    .action-bar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(241, 235, 217, 0.94);
+      backdrop-filter: blur(12px);
+      padding: 12px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1.5px solid var(--border-warm);
+      box-shadow: 0 2px 10px rgba(50, 40, 25, 0.04);
+    }
+
+    .brand-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: -0.01em;
+    }
+
+    .btn-print {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      background: var(--text-main);
+      color: #faf7f0;
+      border: 1px solid var(--text-main);
+      box-shadow: 0 2px 8px rgba(35, 31, 26, 0.15);
+      transition: all 0.2s ease;
+    }
+
+    .btn-print:hover {
+      background: #3d352b;
+      transform: translateY(-1px);
+    }
+
+    /* Document Sheet */
+    .document-container {
+      max-width: 860px;
+      margin: 32px auto 60px;
+      background: var(--bg-surface);
+      padding: 52px 60px;
+      border-radius: 18px;
+      border: 1.5px solid var(--border-warm);
+      box-shadow: 0 10px 30px rgba(55, 45, 30, 0.05), 0 1px 3px rgba(55, 45, 30, 0.03);
+    }
+
+    /* Header */
+    .doc-header {
+      padding-bottom: 22px;
+      margin-bottom: 30px;
+      border-bottom: 2px solid var(--border-warm);
+    }
+
+    .doc-title {
+      font-size: 30px;
+      font-weight: 800;
+      color: var(--text-main);
+      letter-spacing: -0.03em;
+      line-height: 1.25;
+    }
+
+    /* Headings & Pagination Guards */
+    h2.section-heading {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin: 36px 0 18px;
+      padding-bottom: 10px;
+      border-bottom: 1.5px solid var(--border-warm);
+      letter-spacing: -0.02em;
+      break-after: avoid;
+      page-break-after: avoid;
+    }
+
+    .heading-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: var(--p-violet-bg);
+      color: var(--p-violet-text);
+      border: 1px solid var(--p-violet-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      flex-shrink: 0;
+    }
+
+    h3.subheading {
+      font-size: 15.5px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin: 24px 0 10px;
+      break-after: avoid;
+      page-break-after: avoid;
+    }
+
+    p {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 14px;
+    }
+
+    /* Content Blocks */
+    .content-block {
+      margin-bottom: 22px;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    /* Pastel Callouts */
+    .callout {
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin: 16px 0 20px;
+      font-size: 13.5px;
+      line-height: 1.6;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .callout-cyan {
+      background: var(--p-cyan-bg);
+      border: 1.5px solid var(--p-cyan-border);
+      color: #074668;
+    }
+
+    .callout-title {
+      font-weight: 800;
+      font-size: 14px;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--p-cyan-text);
+    }
+
+    /* Comparison Grids */
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin: 16px 0;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .comp-card {
+      border-radius: 12px;
+      padding: 15px 18px;
+      font-size: 13px;
+    }
+
+    .comp-card.bad {
+      background: var(--p-rose-bg);
+      border: 1.5px solid var(--p-rose-border);
+    }
+
+    .comp-card.bad .comp-label {
+      color: var(--p-rose-text);
+      font-weight: 800;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 5px;
+    }
+
+    .comp-card.good {
+      background: var(--p-mint-bg);
+      border: 1.5px solid var(--p-mint-border);
+    }
+
+    .comp-card.good .comp-label {
+      color: var(--p-mint-text);
+      font-weight: 800;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 5px;
+    }
+
+    .comp-card code {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      font-weight: 600;
+      display: block;
+      color: var(--text-main);
+      margin-top: 4px;
+    }
+
+    .comp-card .note {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 5px;
+    }
+
+    /* Tables */
+    .table-wrapper {
+      margin: 14px 0 20px;
+      border: 1.5px solid var(--border-warm);
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--bg-surface);
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13px;
+    }
+
+    th {
+      background: var(--bg-inner);
+      padding: 10px 14px;
+      font-weight: 800;
+      color: var(--text-main);
+      border-bottom: 1.5px solid var(--border-warm);
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border-warm);
+      color: var(--text-muted);
+      vertical-align: middle;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Pastel Badges */
+    .tag {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+    }
+
+    .tag-amber {
+      background: var(--p-amber-bg);
+      color: var(--p-amber-text);
+      border: 1px solid var(--p-amber-border);
+    }
+
+    .tag-cyan {
+      background: var(--p-cyan-bg);
+      color: var(--p-cyan-text);
+      border: 1px solid var(--p-cyan-border);
+    }
+
+    .tag-violet {
+      background: var(--p-violet-bg);
+      color: var(--p-violet-text);
+      border: 1px solid var(--p-violet-border);
+    }
+
+    code {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      color: var(--text-main);
+    }
+
+    /* Task Boxes */
+    .task-box {
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border-warm);
+      border-radius: 14px;
+      padding: 24px;
+      margin: 22px 0;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .task-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1.5px solid var(--border-warm);
+    }
+
+    .task-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .task-badge {
+      background: var(--p-violet-bg);
+      color: var(--p-violet-text);
+      border: 1px solid var(--p-violet-border);
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 100px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .reading-passage {
+      background: var(--bg-inner);
+      border-left: 4px solid var(--p-cyan-text);
+      padding: 18px 22px;
+      border-radius: 0 10px 10px 0;
+      font-size: 14.5px;
+      line-height: 1.7;
+      color: var(--text-main);
+      font-style: italic;
+      margin: 14px 0 10px;
+    }
+
+    .reading-passage b {
+      color: #8c3b00;
+      background: rgba(253, 236, 196, 0.6);
+      padding: 1px 4px;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+
+    .writing-prompt {
+      background: var(--bg-inner);
+      border: 1.5px dashed var(--border-accent);
+      border-radius: 10px;
+      padding: 18px 22px;
+      font-size: 14.5px;
+      color: var(--text-main);
+      line-height: 1.75;
+      margin: 14px 0 6px;
+      font-style: italic;
+    }
+
+    /* Print Formatting */
+    @page {
+      size: A4 portrait;
+      margin: 12mm 14mm;
+    }
+
+    @media print {
+      html, body {
+        background-color: var(--bg-page) !important;
+        color: var(--text-main) !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      .action-bar {
+        display: none !important;
+      }
+
+      .document-container {
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background-color: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+      }
+
+      h2, h3, .subheading, .section-heading {
+        break-after: avoid !important;
+        page-break-after: avoid !important;
+      }
+
+      .content-block, .task-box, .table-wrapper, .comparison-grid, .callout {
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+      }
+
+      table, tr, td, th {
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+      }
+
+      .section-tasks {
+        break-before: page;
+        page-break-before: always;
+        padding-top: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating Print Bar -->
+  <div class="action-bar">
+    <div class="brand-title">LinguaLife &bull; Material de Clase &bull; Laura</div>
+    <button class="btn-print" onclick="window.print()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+      Descargar en PDF
+    </button>
+  </div>
+
+  <div class="document-container">
+
+    <!-- Header -->
+    <header class="doc-header">
+      <h1 class="doc-title">Week 2: Advanced Connectors & Discourse Flow</h1>
+    </header>
+
+    <!-- SECCIÓN 1: RESUMEN DE LO QUE VIMOS -->
+    <section>
+      <h2 class="section-heading">
+        <span class="heading-num">01</span>
+        Resumen Estratégico de la Sesión
+      </h2>
+
+      <div class="callout callout-cyan">
+        <div class="callout-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>
+          El Enfoque: Dejar los Conectores Infantiles y Dominar la Puntuación C1
+        </div>
+        El estudiante promedio abusa de <i>"And"</i>, <i>"But"</i>, <i>"Because"</i>, <i>"So"</i> y <i>"Also"</i>. En el nivel C1 y en el examen TOEFL, la sofisticación no consiste en acumular palabras raras, sino en <b>marcar con precisión matemática la relación lógica entre dos ideas</b> y dominar la mecánica de puntuación (punto y coma + coma).
+      </div>
+
+      <!-- 1. Puntuación & Arquitectura Sintáctica -->
+      <div class="content-block">
+        <h3 class="subheading">1. Las 3 Reglas de Oro de Puntuación (Donde el Hispanohablante Tropieza)</h3>
+        <p>En español usamos comas sueltas para todo. En inglés culto, conectar dos oraciones completas solo con una coma es un error grave (<i>Comma Splice</i>):</p>
+
+        <div class="comparison-grid">
+          <div class="comp-card bad">
+            <div class="comp-label">Vicio B2 (Comma Splice / Puntuación Rota)</div>
+            <code>"The strategy is sound, however we lack the budget."</code>
+            <div class="note">Error gramatical en TOEFL. "However" no es una conjunción coordinante como "but".</div>
+          </div>
+          <div class="comp-card good">
+            <div class="comp-label">Reflejo C1 (Conjunctive Adverb)</div>
+            <code>"The strategy is sound; however, we lack the budget."</code>
+            <div class="note">Punto y coma antes, coma obligatoria después. O iniciar oración nueva: <i>"...is sound. However, we..."</i></div>
+          </div>
+        </div>
+
+        <div class="comparison-grid">
+          <div class="comp-card bad">
+            <div class="comp-label">Vicio B2 (Confusión Clause vs. Noun)</div>
+            <code>"Despite it was raining heavily, we went out."</code>
+            <div class="note">"Despite" es preposición; jamás puede ir seguido de Sujeto + Verbo.</div>
+          </div>
+          <div class="comp-card good">
+            <div class="comp-label">Reflejo C1 (Sintaxis Impecable)</div>
+            <code>"Despite the heavy rain, we..." / "Although it was raining, we..."</code>
+            <div class="note"><b>Despite / In spite of</b> + Sustantivo o Gerundio (-ing). <b>Although / Even though</b> + Oración completa.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Banco Completo de los 15 Conectores por Familia Lógica -->
+      <div class="content-block">
+        <h3 class="subheading">2. Banco Completo de los 15 Conectores por Intención Lógica</h3>
+        <p>Desglose de los 15 conectores trabajados en clase con su función argumentativa, estructura y modelo exacto:</p>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Conector</th>
+                <th>Familia / Significado</th>
+                <th>Mecánica de Uso</th>
+                <th>Ejemplo de Alta Calidad</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="tag tag-cyan">However</span></td>
+                <td>Contraste / Sin embargo</td>
+                <td><code>; however,</code> o al inicio con coma</td>
+                <td><i>"She studied hard; however, she failed the exam."</i></td>
+              </tr>
+              <tr>
+                <td><span class="tag tag-cyan">Although</span></td>
+                <td>Concesión / Aunque</td>
+                <td>Seguido de Sujeto + Verbo</td>
+                <td><i>"Although it was raining, we went for a walk."</i></td>
+              </tr>
+              <tr>
+                <td><span class="tag tag-cyan">Despite</span></td>
+                <td>Concesión / A pesar de</td>
+                <td>Preposición + Sustantivo / <i>-ing</i></td>
+                <td><i>"Despite the cold weather, they enjoyed the trip."</i></td>
+              </tr>
+              <tr>
+                <td><span class="tag tag-cyan">On the other hand</span></td>
+                <td>Contraste / Por otro lado</td>
+                <td>Balancea dos realidades opuestas</td>
+                <td><i>"The job pays well; on the other hand, the hours are long."</i></td>
+              </tr>
+              <tr>
+                <td><span class="tag tag-cyan">Instead</span></td>
+                <td>Sustitución / En lugar de eso</td>
+                <td>Reemplaza una acción por otra</td>
+                <td><i>"I didn't attend; instead, I stayed home and read."</i></td>
+              </tr>
+              <tr>
+                <td><span class="tag tag-violet">Furthermore</span></td>
+                <td>Adición / Además (formal)</td>
+                <td>Agrega evidencia al mismo argumento</td>
+                <td><i>"The house is beautiful; furthermore, it is in a great area."</i></td>
+              </tr>
+              <tr>
+                <td><span class="tag tag-violet">Moreover</span></td>
+                <td>Refuerzo / Es más / Encima</td>
+                <td>Añade un punto con mayor peso retórico</td>
+                <td><i>"The car is fast; moreover, it is highly efficient."</i></td>
+              </tr>
+              <tr>
+                <td><span class="tag tag-violet">In addition</span></td>
+                <td>Adición / Además</td>
+                <td>Añade un requisito o dato extra</td>
+                <td><i>"You need a passport; in addition, you must have a visa."</i></td>
+              </tr>
+              <tr>
+                <td><span class="tag tag-amber">Therefore</span></td>
+                <td>Consecuencia / Por lo tanto</td>
+                <td>Deducción lógica innegable</td>
+                <td><i>"He was injured; therefore, he couldn't play."</i></td>
+              </tr>
+              <tr>
+                <td><span class="tag tag-amber">As a result</span></td>
+                <td>Causa-Efecto / Como resultado</td>
+                <td>Resultado directo de una causa previa</td>
+                <td><i>"He missed his flight; as a result, he arrived a day late."</i></td>
+              </tr>
+              <tr>
+                <td><span class="tag tag-amber">Due to</span></td>
+                <td>Causalidad / Debido a</td>
+                <td>Preposición + Sustantivo / Frase nominal</td>
+                <td><i>"The game was canceled due to heavy rain."</i></td>
+              </tr>
+              <tr>
+                <td><span class="tag tag-amber">Unless</span></td>
+                <td>Condición / A menos que</td>
+                <td>Equivale a <i>if not</i> (sin negativo)</td>
+                <td><i>"We will be late unless we leave right now."</i></td>
+              </tr>
+              <tr>
+                <td><span class="tag tag-amber">Provided that</span></td>
+                <td>Condición / Siempre y cuando</td>
+                <td>Condición necesaria y suficiente</td>
+                <td><i>"You can go out provided that you finish your homework first."</i></td>
+              </tr>
+              <tr>
+                <td><span class="tag tag-amber">Otherwise</span></td>
+                <td>Consecuencia / De lo contrario</td>
+                <td>Alerta de lo que ocurre si no se actúa</td>
+                <td><i>"You must hurry; otherwise, you will miss the train."</i></td>
+              </tr>
+              <tr>
+                <td><span class="tag tag-cyan">Meanwhile</span></td>
+                <td>Simultaneidad / Mientras tanto</td>
+                <td>Dos eventos simultáneos en paralelo</td>
+                <td><i>"I was cooking; meanwhile, my brother was setting the table."</i></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 3. Matices Nativos Clave -->
+      <div class="content-block">
+        <h3 class="subheading">3. Micro-Diferenciación Nativa: Los Matices que Separan B2 de C1</h3>
+        <p>Entender qué imagen mental y qué carga argumentativa proyecta cada conector:</p>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Pareja de Conectores</th>
+                <th>Diferencia Sutil</th>
+                <th>El Error Común a Evitar</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><b>Furthermore vs. Moreover</b></td>
+                <td><i>Furthermore</i> suma información formal en paralelo. <i>Moreover</i> sube el tono: introduce el argumento decisivo (el golpe sobre la mesa).</td>
+                <td>Usar <i>moreover</i> para listas simples de compras o tareas rutinarias.</td>
+              </tr>
+              <tr>
+                <td><b>Instead vs. On the other hand</b></td>
+                <td><i>Instead</i> cancela la opción A y adopta la B. <i>On the other hand</i> mantiene ambas opciones vivas sobre la balanza.</td>
+                <td>Decir <i>on the other hand</i> cuando en realidad descartaste por completo la primera alternativa.</td>
+              </tr>
+              <tr>
+                <td><b>Unless vs. Otherwise</b></td>
+                <td><i>Unless</i> encabeza la condición (<i>Unless you sign...</i>). <i>Otherwise</i> es un adverbio que encabeza la consecuencia (<i>Sign the deal; otherwise, we walk away</i>).</td>
+                <td>Decir <i>"Otherwise you sign"</i> (incorrecto) en vez de <i>"Unless you sign"</i>.</td>
+              </tr>
+              <tr>
+                <td><b>Due to vs. Because of</b></td>
+                <td>Tradicionalmente en inglés formal, <i>due to</i> modifica sustantivos (va tras el verbo to be: <i>The delay was due to...</i>). <i>Because of</i> modifica verbos.</td>
+                <td>Iniciar frases con <i>Due to the fact that</i> cuando un simple <i>Because</i> o <i>Since</i> es más limpio.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 4. Matriz de Conversión Rápida -->
+      <div class="content-block">
+        <h3 class="subheading">4. Matriz de Conversión Rápida (Del Estímulo en Español a Conectores C1)</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Estímulo Cotidiano (El "Disparo")</th>
+                <th>Fórmula C1 Inmediata</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>"Sin embargo, las cosas no salieron como esperábamos."</td>
+                <td><code>; however, things did not turn out as expected.</code></td>
+              </tr>
+              <tr>
+                <td>"Es más / Encima de todo, no cumplieron con la fecha."</td>
+                <td><code>Moreover, they failed to meet the agreed deadline.</code></td>
+              </tr>
+              <tr>
+                <td>"Por ende / Por consiguiente nos tocó buscar otro proveedor."</td>
+                <td><code>Therefore, we were forced to source an alternative vendor.</code></td>
+              </tr>
+              <tr>
+                <td>"A pesar de la falta de presupuesto, sacamos el proyecto."</td>
+                <td><code>Despite the budget constraints, we delivered the project.</code></td>
+              </tr>
+              <tr>
+                <td>"Aunque el cliente estaba molesto al principio..."</td>
+                <td><code>Although the client was initially dissatisfied...</code></td>
+              </tr>
+              <tr>
+                <td>"De lo contrario / Si no, vamos a perder la cuenta."</td>
+                <td><code>Otherwise, we risk losing the account entirely.</code></td>
+              </tr>
+              <tr>
+                <td>"Con tal de que / Siempre y cuando entreguen mañana..."</td>
+                <td><code>Provided that they deliver by tomorrow morning...</code></td>
+              </tr>
+              <tr>
+                <td>"A menos que nos den un descuento sustancial..."</td>
+                <td><code>Unless they provide a substantial discount...</code></td>
+              </tr>
+              <tr>
+                <td>"En vez de eso / En lugar de quejarnos, propusimos una solución."</td>
+                <td><code>Instead, we proactively put forward an alternative solution.</code></td>
+              </tr>
+              <tr>
+                <td>"Mientras tanto, el equipo técnico sigue revisando el bug."</td>
+                <td><code>Meanwhile, the engineering team continues to troubleshoot.</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 2: TAREAS ASIGNADAS (Inicia en página limpia en PDF) -->
+    <section class="section-tasks">
+      <h2 class="section-heading">
+        <span class="heading-num">02</span>
+        Tareas Prácticas
+      </h2>
+
+      <!-- TAREA 1 -->
+      <div class="task-box">
+        <div class="task-header">
+          <div class="task-title">Tarea 1: Deconstrucción del Flujo Argumentativo en un Reporte Ejecutivo</div>
+          <span class="task-badge">Análisis Sintáctico</span>
+        </div>
+
+        <p>
+          Lee el siguiente reporte ejecutivo dirigido a la junta directiva. El texto utiliza conectores avanzados para guiar la narrativa sin sonar fragmentada ni repetitiva.
+        </p>
+        <p>
+          <b>Tu objetivo:</b> Identifica cada uno de los conectores en negrita, explica <b>cuál es la relación lógica exacta que establece entre las dos proposiciones</b>, y analiza <b>por qué un estudiante de nivel B2 arruinaría la fluidez usando simplemente "but", "so" o "because"</b>.
+        </p>
+
+        <div class="reading-passage">
+          "The domestic market has contracted significantly over the past two quarters; <b>however</b>, our enterprise segment continues to demonstrate resilience. The executive committee initially considered aggressive price reductions; <b>instead</b>, we decided to bundle additional consulting hours into annual contracts. <b>Although</b> profit margins narrowed slightly during the transition, overall customer retention improved by twelve percent. <b>Furthermore</b>, customer lifetime value is projected to rise steadily over the next fiscal year. We will not be expanding into the European market <b>unless</b> regulatory approval is fully secured by Q3. <b>Provided that</b> our current cash reserves remain above the baseline threshold, no additional credit facilities will be required; <b>otherwise</b>, short-term financing must be negotiated immediately."
+        </div>
+      </div>
+
+      <!-- TAREA 2 -->
+      <div class="task-box">
+        <div class="task-header">
+          <div class="task-title">Tarea 2: Traducción Inversa Ejecutiva (Integración de Conectores)</div>
+          <span class="task-badge">Producción Activa</span>
+        </div>
+
+        <p>
+          Traduce el siguiente párrafo empresarial al inglés. El reto consiste en <b>prohibirte terminantemente el uso de 'but', 'so', 'and' o 'because'</b> para conectar las oraciones. Debes articular el relato usando obligatoriamente al menos <b>6 de los conectores trabajados en la sesión</b> con su puntuación impecable (punto y coma, comas, o estructuras con sustantivo):
+        </p>
+
+        <div class="writing-prompt">
+          "Teníamos todo listo para firmar la alianza esta semana; sin embargo, el equipo legal de ellos encontró varias discrepancias en la cláusula de confidencialidad. A pesar de la insistencia de nuestro director, ellos no quisieron ceder en ese punto. Es más, amenazaron con cancelar las negociaciones a menos que ajustemos los porcentajes de riesgo antes del viernes. Por lo tanto, nos tocó convocar a una reunión extraordinaria de emergencia. Mientras tanto, el equipo financiero está recalculando los posibles escenarios para no vernos afectados. Podemos aceptar sus términos siempre y cuando nos garanticen exclusividad durante el primer año; de lo contrario, preferimos dar por terminado el negocio en lugar de firmar un mal contrato."
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    if (window.location.search.includes('clean')) {
+      document.body.classList.add('clean-mode');
+    }
+  </script>
+</body>
+</html>
+

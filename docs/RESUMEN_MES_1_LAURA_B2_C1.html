@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Month 1: Executive Consolidation & Roadmap to Month 2 | LinguaLife</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Warm Beige / Sand / Bone Palette */
+      --bg-page: #f1ebd9;           /* Beige cálido notorio, tipo papel libro premium */
+      --bg-surface: #fdfbf7;        /* Superficie marfil cálida */
+      --bg-surface-subtle: #faf6ed; /* Fondo sutil para tarjetas */
+      --bg-inner: #e8dfcd;          /* Fondos secundarios de tablas y citas */
+      
+      --border-warm: #dcd0ba;       /* Borde arena / beige definido */
+      --border-accent: #c9baa1;     /* Borde acentuado */
+
+      /* Typography */
+      --text-main: #231f1a;         /* Carbón cálido profundo */
+      --text-muted: #574e44;        /* Café grisáceo legible */
+      --text-dim: #7f7364;          /* Terciario cálido */
+      --font-main: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+
+      /* Pastel Mnemonic Palette */
+      --p-cyan-bg: #d9f0fc;         /* Sem 1 & Distancing */
+      --p-cyan-text: #02659c;
+      --p-cyan-border: #a8dcf7;
+
+      --p-violet-bg: #e8e1fc;       /* Sem 2 & Cohesión */
+      --p-violet-text: #5e1ec9;
+      --p-violet-border: #cebef7;
+
+      --p-amber-bg: #fdecc4;        /* Sem 3 & Inversiones */
+      --p-amber-text: #8c3b00;
+      --p-amber-border: #fcd58b;
+
+      --p-mint-bg: #cbf6de;         /* Sem 4 & Palabras de Tiempo */
+      --p-mint-text: #045a42;
+      --p-mint-border: #99ecc0;
+
+      --p-rose-bg: #fddde2;         /* Alertas / Vicios hispanohablantes */
+      --p-rose-text: #960f33;
+      --p-rose-border: #f9bcc7;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body.clean-mode .action-bar,
+    body[data-clean="true"] .action-bar {
+      display: none !important;
+    }
+    body[data-clean="true"] .document-container,
+    body.clean-mode .document-container {
+      margin: 20px auto 40px;
+    }
+
+    /* Print & Floating Action Bar */
+    .action-bar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(241, 235, 217, 0.94);
+      backdrop-filter: blur(12px);
+      padding: 12px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1.5px solid var(--border-warm);
+      box-shadow: 0 2px 10px rgba(50, 40, 25, 0.04);
+    }
+
+    .brand-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: -0.01em;
+    }
+
+    .btn-print {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      background: var(--text-main);
+      color: #faf7f0;
+      border: 1px solid var(--text-main);
+      box-shadow: 0 2px 8px rgba(35, 31, 26, 0.15);
+      transition: all 0.2s ease;
+    }
+
+    .btn-print:hover {
+      background: #3d352b;
+      transform: translateY(-1px);
+    }
+
+    /* Document Sheet */
+    .document-container {
+      max-width: 860px;
+      margin: 32px auto 60px;
+      background: var(--bg-surface);
+      padding: 52px 60px;
+      border-radius: 18px;
+      border: 1.5px solid var(--border-warm);
+      box-shadow: 0 10px 30px rgba(55, 45, 30, 0.05), 0 1px 3px rgba(55, 45, 30, 0.03);
+    }
+
+    /* Header */
+    .doc-header {
+      padding-bottom: 22px;
+      margin-bottom: 30px;
+      border-bottom: 2px solid var(--border-warm);
+    }
+
+    .doc-title {
+      font-size: 30px;
+      font-weight: 800;
+      color: var(--text-main);
+      letter-spacing: -0.03em;
+      line-height: 1.25;
+    }
+
+    /* Headings & Pagination Guards */
+    h2.section-heading {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin: 36px 0 18px;
+      padding-bottom: 10px;
+      border-bottom: 1.5px solid var(--border-warm);
+      letter-spacing: -0.02em;
+      break-after: avoid;
+      page-break-after: avoid;
+    }
+
+    .heading-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: var(--p-violet-bg);
+      color: var(--p-violet-text);
+      border: 1px solid var(--p-violet-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      flex-shrink: 0;
+    }
+
+    h3.subheading {
+      font-size: 15.5px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin: 24px 0 10px;
+      break-after: avoid;
+      page-break-after: avoid;
+    }
+
+    p {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 14px;
+    }
+
+    /* Content Blocks */
+    .content-block {
+      margin-bottom: 22px;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    /* Pastel Callouts */
+    .callout {
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin: 16px 0 20px;
+      font-size: 13.5px;
+      line-height: 1.6;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .callout-cyan {
+      background: var(--p-cyan-bg);
+      border: 1.5px solid var(--p-cyan-border);
+      color: #074668;
+    }
+
+    .callout-amber {
+      background: var(--p-amber-bg);
+      border: 1.5px solid var(--p-amber-border);
+      color: #712f00;
+    }
+
+    .callout-title {
+      font-weight: 800;
+      font-size: 14px;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* 4-Week Overview Cards Grid */
+    .overview-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 20px 0;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .overview-card {
+      border-radius: 14px;
+      padding: 18px 20px;
+      border: 1.5px solid var(--border-warm);
+      background: var(--bg-surface);
+    }
+
+    .overview-card.c1 { border-color: var(--p-cyan-border); background: linear-gradient(180deg, var(--p-cyan-bg) 0%, var(--bg-surface) 100%); }
+    .overview-card.c2 { border-color: var(--p-violet-border); background: linear-gradient(180deg, var(--p-violet-bg) 0%, var(--bg-surface) 100%); }
+    .overview-card.c3 { border-color: var(--p-amber-border); background: linear-gradient(180deg, var(--p-amber-bg) 0%, var(--bg-surface) 100%); }
+    .overview-card.c4 { border-color: var(--p-mint-border); background: linear-gradient(180deg, var(--p-mint-bg) 0%, var(--bg-surface) 100%); }
+
+    .card-week-badge {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+      display: inline-block;
+    }
+
+    .overview-card.c1 .card-week-badge { color: var(--p-cyan-text); }
+    .overview-card.c2 .card-week-badge { color: var(--p-violet-text); }
+    .overview-card.c3 .card-week-badge { color: var(--p-amber-text); }
+    .overview-card.c4 .card-week-badge { color: var(--p-mint-text); }
+
+    .card-title {
+      font-size: 14.5px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .card-list {
+      list-style: none;
+      font-size: 12.5px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .card-list li {
+      margin-bottom: 4px;
+      position: relative;
+      padding-left: 14px;
+    }
+
+    .card-list li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      font-weight: bold;
+      color: var(--text-main);
+    }
+
+    /* Tables */
+    .table-wrapper {
+      margin: 14px 0 20px;
+      border: 1.5px solid var(--border-warm);
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--bg-surface);
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13px;
+    }
+
+    th {
+      background: var(--bg-inner);
+      padding: 10px 14px;
+      font-weight: 800;
+      color: var(--text-main);
+      border-bottom: 1.5px solid var(--border-warm);
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border-warm);
+      color: var(--text-muted);
+      vertical-align: middle;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Pastel Badges */
+    .tag {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+    }
+
+    .tag-amber { background: var(--p-amber-bg); color: var(--p-amber-text); border: 1px solid var(--p-amber-border); }
+    .tag-cyan { background: var(--p-cyan-bg); color: var(--p-cyan-text); border: 1px solid var(--p-cyan-border); }
+    .tag-violet { background: var(--p-violet-bg); color: var(--p-violet-text); border: 1px solid var(--p-violet-border); }
+    .tag-mint { background: var(--p-mint-bg); color: var(--p-mint-text); border: 1px solid var(--p-mint-border); }
+
+    code {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      color: var(--text-main);
+    }
+
+    /* Roadmap Pillars */
+    .pillar-box {
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border-warm);
+      border-radius: 14px;
+      padding: 20px 22px;
+      margin-bottom: 16px;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .pillar-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .pillar-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      background: var(--text-main);
+      color: #faf7f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      flex-shrink: 0;
+    }
+
+    .pillar-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .pillar-desc {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      line-height: 1.55;
+    }
+
+    .pillar-target {
+      background: var(--bg-inner);
+      border-left: 3px solid var(--p-amber-text);
+      padding: 8px 12px;
+      border-radius: 0 6px 6px 0;
+      font-size: 12.5px;
+      color: var(--text-main);
+      font-family: var(--font-mono);
+    }
+
+    /* Task Boxes */
+    .task-box {
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border-warm);
+      border-radius: 14px;
+      padding: 24px;
+      margin: 22px 0;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .task-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1.5px solid var(--border-warm);
+    }
+
+    .task-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .task-badge {
+      background: var(--p-violet-bg);
+      color: var(--p-violet-text);
+      border: 1px solid var(--p-violet-border);
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 100px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .writing-prompt {
+      background: var(--bg-inner);
+      border: 1.5px dashed var(--border-accent);
+      border-radius: 10px;
+      padding: 18px 22px;
+      font-size: 14.5px;
+      color: var(--text-main);
+      line-height: 1.75;
+      margin: 14px 0 6px;
+      font-style: italic;
+    }
+
+    /* Print Formatting */
+    @page {
+      size: A4 portrait;
+      margin: 12mm 14mm;
+    }
+
+    @media print {
+      html, body {
+        background-color: var(--bg-page) !important;
+        color: var(--text-main) !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      .action-bar {
+        display: none !important;
+      }
+
+      .document-container {
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background-color: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+      }
+
+      h2, h3, .subheading, .section-heading {
+        break-after: avoid !important;
+        page-break-after: avoid !important;
+      }
+
+      .content-block, .task-box, .table-wrapper, .overview-grid, .pillar-box, .callout {
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+      }
+
+      table, tr, td, th {
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+      }
+
+      .section-roadmap {
+        break-before: page;
+        page-break-before: always;
+        padding-top: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating Print Bar -->
+  <div class="action-bar">
+    <div class="brand-title">LinguaLife &bull; Reporte Ejecutivo de Mes &bull; Laura</div>
+    <button class="btn-print" onclick="window.print()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+      Descargar en PDF
+    </button>
+  </div>
+
+  <div class="document-container">
+
+    <!-- Header -->
+    <header class="doc-header">
+      <h1 class="doc-title">Month 1: Executive Consolidation & Roadmap to Month 2</h1>
+    </header>
+
+    <!-- SECCIÓN 1: SÍNTESIS DEL MES 1 -->
+    <section>
+      <h2 class="section-heading">
+        <span class="heading-num">01</span>
+        Consolidación del Mes 1: Los 4 Nuevos Reflejos Neuromusculares
+      </h2>
+
+      <div class="callout callout-cyan">
+        <div class="callout-title" style="color: var(--p-cyan-text);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>
+          De la Duda Teórica a la Automatización C1
+        </div>
+        El objetivo central del Mes 1 fue <b>desmantelar los vicios de traducción literal del español</b> (el <i>"se"</i> impersonal, el abuso de <i>"and/but/so"</i>, el orden oracional rígido y la vacilación con auxiliares) para reemplazarlos por automatismos instantáneos requeridos para el C1 y el examen TOEFL.
+      </div>
+
+      <!-- Cuadrícula Resumen 4 Semanas -->
+      <div class="overview-grid">
+        <div class="overview-card c1">
+          <span class="card-week-badge">Semana 1</span>
+          <div class="card-title">Voz Pasiva Diplomática & Phrasal Verbs con "OFF"</div>
+          <ul class="card-list">
+            <li><b>Distancing Corporativo:</b> <i>"Mistakes were made"</i> vs. culpar con <i>"You"</i>.</li>
+            <li><b>Impersonal vs. Personal:</b> <i>"Sales are expected to drop"</i>.</li>
+            <li><b>Partícula OFF:</b> Desconexión y alejamiento (<i>call off, put off, lay off, rip off</i>).</li>
+          </ul>
+        </div>
+
+        <div class="overview-card c2">
+          <span class="card-week-badge">Semana 2</span>
+          <div class="card-title">Conectores de Alto Nivel & Discourse Flow</div>
+          <ul class="card-list">
+            <li><b>Mecánica de Puntuación:</b> Conjunctive adverbs (<code>; however,</code> / <code>; therefore,</code>).</li>
+            <li><b>Cláusula vs. Sustantivo:</b> <i>Although</i> (+ oración) vs. <i>Despite</i> (+ noun/<i>-ing</i>).</li>
+            <li><b>Condición Estricta:</b> <i>Unless</i> (if not), <i>Provided that</i> y <i>Otherwise</i>.</li>
+          </ul>
+        </div>
+
+        <div class="overview-card c3">
+          <span class="card-week-badge">Semana 3</span>
+          <div class="card-title">Inversiones Gramaticales de Alto Impacto</div>
+          <ul class="card-list">
+            <li><b>Disparadores Restrictivos:</b> <i>"Never have I...", "Rarely does the board..."</i>.</li>
+            <li><b>Inversión Condicional sin IF:</b> <i>"Had we known...", "Should you require..."</i>.</li>
+            <li><b>Prohibición & Énfasis:</b> <i>"Under no circumstances should...", "Not only did..."</i>.</li>
+          </ul>
+        </div>
+
+        <div class="overview-card c4">
+          <span class="card-week-badge">Semana 4</span>
+          <div class="card-title">Nuevo TOEFL Speaking & Las 13 Palabras de Tiempo</div>
+          <ul class="card-list">
+            <li><b>Listen & Repeat:</b> Acoustic chunking, sombras fonéticas y reducción Schwa.</li>
+            <li><b>The Interview:</b> 35-45s direct topic sentence + signposting + ancla de ejemplo.</li>
+            <li><b>13 Palabras de Tiempo:</b> Dominio motor de <i>Modal Perfects</i> (<i>must/should/could have done</i>).</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Matriz Maestra de Reflejos -->
+      <div class="content-block">
+        <h3 class="subheading">Matriz Maestra de Reflejos C1 (El Antes y Después de Laura)</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Situación Comunicativa</th>
+                <th>Reacción Estancada (B2 / Literal)</th>
+                <th>Automatismo C1 Desarrollado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><b>1. Manejo de Crisis / Culpa</b></td>
+                <td><i>"You didn't update the files, so we have a problem."</i></td>
+                <td><code>"A discrepancy was identified; the update has been called off."</code></td>
+              </tr>
+              <tr>
+                <td><b>2. Enlace de Argumentos Opuestos</b></td>
+                <td><i>"The strategy is good, but we don't have money."</i></td>
+                <td><code>"The strategy is sound; however, financial constraints persist."</code></td>
+              </tr>
+              <tr>
+                <td><b>3. Énfasis en Reunión o Discurso</b></td>
+                <td><i>"I have never seen such bad results in this firm."</i></td>
+                <td><code>"Never in our history have we observed such volatility."</code></td>
+              </tr>
+              <tr>
+                <td><b>4. Especulación Pasada en TOEFL</b></td>
+                <td><i>"I think maybe they forgot to send the invoice."</i></td>
+                <td><code>"The accounting department must have overlooked the invoice."</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 2: ROADMAP HACIA EL MES 2 -->
+    <section class="section-roadmap">
+      <h2 class="section-heading">
+        <span class="heading-num">02</span>
+        Hacia Dónde Vamos: El Gimnasio Mental del Mes 2 (Rumbo al TOEFL C1)
+      </h2>
+
+      <div class="callout callout-amber">
+        <div class="callout-title" style="color: var(--p-amber-text);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+          El Enfoque del Mes 2: Demoler los Puntos más "Trickies" para Hispanohablantes
+        </div>
+        En el Mes 2 no nos quedaremos repasando lo básico. Entraremos a fondo en los <b>puntos ciegos donde los hispanohablantes suelen perder puntos valiosos en el TOEFL</b>. La meta es que cada respuesta hablada y cada párrafo escrito brote con naturalidad y precisión en menos de 3 segundos de preparación.
+      </div>
+
+      <!-- Los 4 Pilares del Mes 2 -->
+      <div class="pillar-box">
+        <div class="pillar-header">
+          <span class="pillar-num">1</span>
+          <span class="pillar-title">Condicionales Mixtos & Modos Subjuntivos Avanzados</span>
+        </div>
+        <div class="pillar-desc">
+          En español decimos fácilmente <i>"Si hubiera tomado esa maestría hace dos años, hoy sería directora"</i>. En inglés, mezclar la condición pasada con el resultado presente (<i>Mixed Conditionals</i>) destruye la fluidez del alumno intermedio. Automatizaremos el patrón para conectar tiempos sin titubeos.
+        </div>
+        <div class="pillar-target">
+          Fórmula Motor: <code>Had I taken [pasado]... I would now be [presente]...</code>
+        </div>
+      </div>
+
+      <div class="pillar-box">
+        <div class="pillar-header">
+          <span class="pillar-num">2</span>
+          <span class="pillar-title">Reducción de Cláusulas Relativas & Cláusulas de Participio</span>
+        </div>
+        <div class="pillar-desc">
+          El estudiante hispanohablante rellena sus oraciones con <i>"which is"</i>, <i>"who was"</i> y <i>"that has"</i>. El C1 nativo comprime ideas en bloques elegantes usando participios presentes (<i>-ing</i>) y pasados (<i>-ed</i>).
+        </div>
+        <div class="pillar-target">
+          Fórmula Motor: <code>"Having analyzed the quarterly variance, the team decided..."</code>
+        </div>
+      </div>
+
+      <div class="pillar-box">
+        <div class="pillar-header">
+          <span class="pillar-num">3</span>
+          <span class="pillar-title">Phrasal Verbs de Alta Densidad Abstracta (UP, DOWN, OUT, IN)</span>
+        </div>
+        <div class="pillar-desc">
+          Ampliación del repertorio a partículas conceptuales en entornos de negocios y debate académico: <i>scale up / scale down, weed out, step in, back out, hammer out</i>. La clave será decodificar la física de la partícula para no depender de listas de memoria.
+        </div>
+        <div class="pillar-target">
+          Fórmula Motor: Comprensión espacial &rarr; Uso instantáneo en voz activa y pasiva.
+        </div>
+      </div>
+
+      <div class="pillar-box">
+        <div class="pillar-header">
+          <span class="pillar-num">4</span>
+          <span class="pillar-title">Sprint de Delivery TOEFL Speaking bajo Temporizador Real</span>
+        </div>
+        <div class="pillar-desc">
+          Entrenamiento neuromuscular con cronómetro en mano: controlar la curva de 45 segundos exactos en la <i>Interview</i>, eliminar pausas de más de 1.5 segundos, fijar la acentuación nuclear y perfeccionar el <i>Listen & Repeat</i> con distractores acústicos.
+        </div>
+        <div class="pillar-target">
+          Fórmula Motor: 4s Topic Sentence &rarr; 25s Expansion & Conectores &rarr; 12s Anchor Example.
+        </div>
+      </div>
+
+      <!-- Reto de Integración Total del Mes 1 -->
+      <div class="task-box">
+        <div class="task-header">
+          <div class="task-title">Reto de Integración Maestra &bull; Mes 1 (Sprint Final)</div>
+          <span class="task-badge">Misión Ejecutiva</span>
+        </div>
+
+        <p>
+          Para cerrar el ciclo del Mes 1, traduce y reestructura el siguiente caso de negocio en un solo párrafo continuo de alto nivel. Tu entrega debe cumplir con las siguientes <b>4 restricciones obligatorias</b>:
+        </p>
+        <ul style="margin: 8px 0 14px 22px; font-size: 13.5px; color: var(--text-muted); line-height: 1.6;">
+          <li><b>Restricción 1:</b> Incluir al menos <b>1 voz pasiva institucional con phrasal verb</b> (<i>called off / sorted out / ironed out</i>).</li>
+          <li><b>Restricción 2:</b> Incluir al menos <b>2 conectores formales con su puntuación exacta</b> (<code>; however,</code> / <code>provided that</code> / <code>otherwise</code> / <code>despite</code>).</li>
+          <li><b>Restricción 3:</b> Incluir al menos <b>1 inversión gramatical de alto impacto</b> (<code>Rarely does...</code> / <code>Had we...</code> / <code>Under no circumstances...</code>).</li>
+          <li><b>Restricción 4:</b> Incluir al menos <b>1 modal perfect de deducción o arrepentimiento</b> (<code>must have + participio</code> o <code>should have + participio</code>).</li>
+        </ul>
+
+        <div class="writing-prompt">
+          "Rara vez una organización enfrenta una fuga de clientes tan acelerada como la que experimentamos este trimestre. La gerencia sin duda debió haber previsto el impacto del nuevo software antes del lanzamiento; sin embargo, las advertencias del equipo técnico fueron ignoradas. Ahora nos tocó suspender las migraciones hasta que los problemas de compatibilidad queden completamente resueltos. A pesar de las pérdidas iniciales, el equipo de soporte logró calmar a las cuentas más grandes. Bajo ninguna circunstancia debemos apresurar el próximo despliegue a menos que las auditorías de seguridad estén al cien por ciento; de lo contrario, la reputación de la empresa sufrirá un daño irreversible."
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    if (window.location.search.includes('clean')) {
+      document.body.classList.add('clean-mode');
+    }
+  </script>
+</body>
+</html>
+

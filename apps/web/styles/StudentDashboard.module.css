@@ -2341,6 +2341,73 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }
 
+.legoBlockYellow {
+  background: linear-gradient(135deg, rgba(234, 179, 8, 0.22), rgba(202, 138, 4, 0.15)) !important;
+  border: 1px solid rgba(234, 179, 8, 0.65) !important;
+  color: #fde047 !important;
+  box-shadow: 0 2px 10px rgba(234, 179, 8, 0.22) !important;
+}
+
+.legoBlockBlue {
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.22), rgba(2, 132, 199, 0.15)) !important;
+  border: 1px solid rgba(56, 189, 248, 0.65) !important;
+  color: #38bdf8 !important;
+  box-shadow: 0 2px 10px rgba(56, 189, 248, 0.22) !important;
+}
+
+.legoBlockRed {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.22), rgba(220, 38, 38, 0.15)) !important;
+  border: 1px solid rgba(239, 68, 68, 0.65) !important;
+  color: #f87171 !important;
+  box-shadow: 0 2px 10px rgba(239, 68, 68, 0.22) !important;
+}
+
+.tricolorPedagogyBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  color: #f1f5f9;
+  margin-bottom: 0.65rem;
+}
+
+.regularScheduleCard {
+  background: linear-gradient(145deg, rgba(56, 189, 248, 0.08), rgba(24, 24, 27, 0.75));
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.scheduleDetailGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.86rem;
+  color: #f1f5f9;
+}
+
+.scheduleCycleTag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  background: rgba(16, 185, 129, 0.18);
+  border: 1px solid rgba(16, 185, 129, 0.45);
+  color: #34d399;
+}
+
 .legoPlus {
   color: #64748b;
   font-weight: 800;

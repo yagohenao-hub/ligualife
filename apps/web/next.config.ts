@@ -14,6 +14,13 @@ const nextConfig: NextConfig = {
     'localhost',
     '127.0.0.1',
   ],
+  webpack: (config) => {
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      canvg: false,
+    };
+    return config;
+  },
 };
 
 export default nextConfig;

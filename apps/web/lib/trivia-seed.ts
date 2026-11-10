@@ -176,51 +176,199 @@ export const CURATED_TOPIC_SEEDS: Record<number, TriviaQuestion[]> = {
     {
       id: 'seed-6-1',
       topicOrder: 6,
-      topicName: 'The Detective (Yes/No Questions)',
-      question: 'Quieres confirmar si tu compañero vive cerca de la oficina. En inglés, ¿cómo se formula la pregunta?',
+      topicName: 'Prepositions (In, On, At) & Preposition Stranding',
+      question: 'Quieres preguntar en inglés "¿De dónde eres?". ¿Cuál es la forma nativa correcta?',
       options: [
-        'You live near the office?',
-        'Do you live near the office?',
-        'Live you near the office?',
-        'Are you live near the office?'
+        'From where are you?',
+        'Where are you from?',
+        'Where from you are?',
+        'From where you are?'
       ],
       correctIndex: 1,
-      explanation: 'En inglés no basta con cambiar la entonación de la voz; para hacer una pregunta de sí o no en presente con verbos de acción debemos comenzar con "Do".',
-      trapExplanation: 'En español preguntamos con la misma estructura de una afirmación: "¿Tú vives aquí?". En inglés el auxiliar "Do" al inicio es indispensable.',
+      explanation: 'En inglés rige la regla de Preposition Stranding: la preposición "from" salta al final de la pregunta: "Where are you from?". Decir "From where are you?" suena antinatural.',
+      trapExplanation: 'En español ponemos la preposición al principio ("¿De dónde...?"). En inglés casi siempre va al final.',
       archetype: 'spot_trap'
+    },
+    {
+      id: 'seed-6-2',
+      topicOrder: 6,
+      topicName: 'Prepositions (In, On, At) & Preposition Stranding',
+      question: 'Quieres decir "Nuestra clase es el viernes a las 11:00 AM". ¿Cuáles preposiciones corresponden?',
+      options: [
+        'Our class is in Friday on 11:00 AM.',
+        'Our class is on Friday at 11:00 AM.',
+        'Our class is at Friday in 11:00 AM.',
+        'Our class is on Friday in 11:00 AM.'
+      ],
+      correctIndex: 1,
+      explanation: 'Para días de la semana usamos ON (on Friday), y para horas exactas y específicas usamos AT (at 11:00 AM).',
+      trapExplanation: 'En español decimos "en viernes a las 11", pero en inglés cada nivel de tiempo tiene su preposición: ON para días, AT para horas.',
+      archetype: 'spot_trap'
+    },
+    {
+      id: 'seed-6-3',
+      topicOrder: 6,
+      topicName: 'Prepositions (In, On, At) & Preposition Stranding',
+      question: '¿Cómo expresas naturalmente "Esta es la empresa para la que trabajo"?',
+      options: [
+        'This is the company for which I work.',
+        'This is the company I work for.',
+        'This is the company that I work in for.',
+        'This is the company for I work.'
+      ],
+      correctIndex: 1,
+      explanation: 'En inglés conversacional natural omitimos "en la que/para la que" y dejamos la preposición al final de la frase: "This is the company I work for."',
+      trapExplanation: 'Traducir "para la que" como "for which" es gramaticalmente posible pero suena sumamente rígido o arcaico en el día a día.',
+      archetype: 'situation'
     }
   ],
   7: [
     {
       id: 'seed-7-1',
       topicOrder: 7,
-      topicName: 'Wh- Questions (Informativas)',
-      question: 'Quieres saber a qué hora sale el vuelo de tu cliente. ¿Cuál es el orden natural en inglés?',
+      topicName: 'The Conditional Mode & Would Architecture',
+      question: 'Quieres invitar a un socio a almorzar con el tono más natural y cortés. ¿Cuál eliges?',
       options: [
-        'What time leaves the flight?',
-        'What time does the flight leave?',
-        'What time the flight leaves?',
-        'What time is leave the flight?'
+        'Would you like to join us for lunch?',
+        'Do you will join us for lunch?',
+        'Would you to join us for lunch?',
+        'Will you like to joining us for lunch?'
       ],
-      correctIndex: 1,
-      explanation: 'Para preguntas informativas, primero va la palabra de pregunta (What time), seguida del auxiliar (does), luego el sujeto (the flight) y finalmente el verbo (leave).',
-      trapExplanation: 'Traducir literalmente "¿A qué hora sale el vuelo?" hace que muchos olviden el auxiliar "does", lo cual suena cortado o incompleto en inglés.',
+      correctIndex: 0,
+      explanation: '"Would you like to..." es la fórmula universal de cortesía ejecutiva para invitar o proponer algo cordialmente.',
+      trapExplanation: 'Nunca agregues "to" directamente después de would ("would to join" es incorrecto) ni mezcles will con do.',
       archetype: 'situation'
     },
     {
       id: 'seed-7-2',
       topicOrder: 7,
-      topicName: 'Wh- Questions (Informativas)',
-      question: 'Identifica la pregunta que incluye correctamente el auxiliar de tiempo necesario:',
+      topicName: 'The Conditional Mode & Would Architecture',
+      question: 'Elige la oración que plantea correctamente una situación hipotética con IF y WOULD:',
       options: [
-        'Where you bought that camera?',
-        'Where did you buy that camera?',
-        'Where you did buy that camera?',
-        'Where bought you that camera?'
+        'If I will have time, I would travel more.',
+        'If I had more time, I would travel more.',
+        'If I would have time, I traveled more.',
+        'If I have more time, I would to travel more.'
       ],
       correctIndex: 1,
-      explanation: 'La estructura correcta es: pregunta informativa (Where) + auxiliar de pasado (did) + persona (you) + verbo base (buy).',
-      trapExplanation: 'Omitir "did" diciendo "Where you bought?" es un calco directo del español que debemos evitar.',
+      explanation: 'La regla de oro de la hipótesis condicional es: If + Pasado Simple (had), Sujeto + Would + Verbo Base (would travel).',
+      trapExplanation: 'En español decimos "Si tuviera tiempo, viajaría", pero en inglés nunca se pone will o would dentro de la cláusula con if.',
+      archetype: 'spot_trap'
+    },
+    {
+      id: 'seed-7-3',
+      topicOrder: 7,
+      topicName: 'The Conditional Mode & Would Architecture',
+      question: '¿Cómo se pronuncia correctamente la palabra WOULD en inglés?',
+      options: [
+        'Se pronuncia exactamente /wʊld/, sonando la letra L fuertemente.',
+        'Se pronuncia /wʊd/, donde la letra L es completamente muda.',
+        'Se pronuncia /waʊld/ como en la palabra wild.',
+        'Se pronuncia /wʊlt/ terminando en t.'
+      ],
+      correctIndex: 1,
+      explanation: 'En would, could y should la "L" es muda: se pronuncia exactamente /wʊd/, rimando con "good".',
+      trapExplanation: 'Pronunciar la L es una de las marcas fonéticas más típicas de interferencia del español que Santiago entrena a corregir.',
+      archetype: 'spot_trap'
+    }
+  ],
+  8: [
+    {
+      id: 'seed-8-1',
+      topicOrder: 8,
+      topicName: 'The Gerund: Turning Verbs into Things (-ING Architecture)',
+      question: 'Quieres agradecerle a un colega por haber asistido a tu presentación. ¿Cómo lo dices de forma correcta?',
+      options: [
+        'Thank you for to come.',
+        'Thank you for coming.',
+        'Thank you for come.',
+        'Thank you to coming.'
+      ],
+      correctIndex: 1,
+      explanation: 'Regla de oro inviolable: Después de CUALQUIER preposición (for, before, after, about, without, in, on, at), el verbo que le sigue DEBE llevar -ING: "Thank you for coming".',
+      trapExplanation: 'En español decimos "gracias por venir" usando el infinitivo, pero en inglés decir "for come" o "for to come" es un error grave de interferencia.',
+      archetype: 'situation'
+    },
+    {
+      id: 'seed-8-2',
+      topicOrder: 8,
+      topicName: 'The Gerund: Turning Verbs into Things (-ING Architecture)',
+      question: '¿Cuál de las siguientes oraciones utiliza correctamente el verbo convertido en cosa/sujeto con -ING?',
+      options: [
+        'To learn English is nice, but learning takes time.',
+        'Learn English every day is very important.',
+        'Learning English opens doors to global opportunities.',
+        'For to learn English opens doors.'
+      ],
+      correctIndex: 2,
+      explanation: 'Cuando una acción es el sujeto o la "cosa" principal de la oración, el verbo se sustantiva con -ING: "Learning English opens doors".',
+      trapExplanation: 'Comenzar una frase con el verbo en forma base ("Learn English is important" ❌) es un error muy común de hispanohablantes.',
+      archetype: 'spot_trap'
+    },
+    {
+      id: 'seed-8-3',
+      topicOrder: 8,
+      topicName: 'The Gerund: Turning Verbs into Things (-ING Architecture)',
+      question: 'Identifica la frase que aplica correctamente la regla de preposición + verbo:',
+      options: [
+        'She left the meeting without to say goodbye.',
+        'She left the meeting without say goodbye.',
+        'She left the meeting without saying goodbye.',
+        'She left the meeting without said goodbye.'
+      ],
+      correctIndex: 2,
+      explanation: '"Without" es una preposición, por lo que el verbo "say" se convierte obligatoriamente en "saying": "without saying goodbye".',
+      trapExplanation: 'No uses infinitivo con "to" ni forma base tras preposiciones como without, before, after o for.',
+      archetype: 'spot_trap'
+    }
+  ],
+  9: [
+    {
+      id: 'seed-9-1',
+      topicOrder: 9,
+      topicName: 'The Subjunctive Mode',
+      question: 'Tu jefe te pide consejo sobre un colaborador. ¿Cómo formulas una recomendación formal y correcta en inglés?',
+      options: [
+        'I recommend that he attends the strategic session.',
+        'I recommend that he attend the strategic session.',
+        'I recommend him that he is attending the session.',
+        'I recommend that he to attend the strategic session.'
+      ],
+      correctIndex: 1,
+      explanation: 'En el Modo Subjuntivo con "suggest", "recommend" o "demand", el verbo que sigue a THAT permanece en su FORMA BASE PURA ("naked verb") sin agregar la -S de 3ra persona: "I recommend that he attend".',
+      trapExplanation: 'En presente simple normal dirías "he attends", pero la cláusula subjuntiva congela el verbo en su forma base.',
+      archetype: 'situation'
+    },
+    {
+      id: 'seed-9-2',
+      topicOrder: 9,
+      topicName: 'The Subjunctive Mode',
+      question: '¿Cuál de las siguientes oraciones aplica de manera impecable el modo subjuntivo con una estructura impersonal?',
+      options: [
+        'It is essential that everyone is informed immediately.',
+        'It is essential that everyone be informed immediately.',
+        'It is essential that everyone was informed immediately.',
+        'It is essential that everyone to be informed immediately.'
+      ],
+      correctIndex: 1,
+      explanation: 'Con expresiones de urgencia/necesidad ("It is essential/crucial/vital that..."), el verbo "to be" se mantiene en su forma infinitiva base "BE": "It is essential that everyone be informed".',
+      trapExplanation: 'El instinto nos lleva a decir "everyone is", pero en inglés profesional el subjuntivo exige "be".',
+      archetype: 'spot_trap'
+    },
+    {
+      id: 'seed-9-3',
+      topicOrder: 9,
+      topicName: 'The Subjunctive Mode',
+      question: '¿Cómo se niega correctamente una recomendación dentro del modo subjuntivo?',
+      options: [
+        'She suggested that we don\'t sign the agreement yet.',
+        'She suggested that we not sign the agreement yet.',
+        'She suggested that we didn\'t sign the agreement yet.',
+        'She suggested that we won\'t sign the agreement yet.'
+      ],
+      correctIndex: 1,
+      explanation: 'En el modo subjuntivo la negación NO usa auxiliares (don\'t, doesn\'t): simplemente se coloca "NOT" directamente antes de la acción base: "She suggested that we not sign".',
+      trapExplanation: 'Usar "don\'t" o "doesn\'t" es un error muy habitual. En inglés culto se dice simplemente "that [sujeto] not [verbo]".',
       archetype: 'spot_trap'
     }
   ]

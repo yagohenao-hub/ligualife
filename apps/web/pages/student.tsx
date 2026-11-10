@@ -73,6 +73,22 @@ interface StudentProfile {
   classesRemaining?: number
   teacherId: string | null
   teacherName: string | null
+  recurrenceDay?: string | null
+  recurrenceTime?: string | null
+}
+
+function getLegoBlockClass(blkText: string) {
+  const lower = blkText.toLowerCase()
+  if (blkText.includes('🟡') || lower.includes('persona') || lower.includes('sujeto') || lower.includes('protagonista')) {
+    return `${styles.legoBlock} ${styles.legoBlockYellow}`
+  }
+  if (blkText.includes('🔵') || lower.includes('tiempo') || lower.includes('modal') || lower.includes('did') || lower.includes('do')) {
+    return `${styles.legoBlock} ${styles.legoBlockBlue}`
+  }
+  if (blkText.includes('🔴') || lower.includes('acción') || lower.includes('verbo')) {
+    return `${styles.legoBlock} ${styles.legoBlockRed}`
+  }
+  return styles.legoBlock
 }
 
 // ── Helpers para Repaso Mental y Sanitización de Prompts ──
@@ -227,6 +243,7 @@ export default function StudentDashboardPage() {
   const [isProgressCollapsed, setIsProgressCollapsed] = useState(false)
   const [isClassesCollapsed, setIsClassesCollapsed] = useState(false)
   const [isTopicsCollapsed, setIsTopicsCollapsed] = useState(false)
+  const [isFlashcardsCollapsed, setIsFlashcardsCollapsed] = useState(false)
   const [isSeriesCollapsed, setIsSeriesCollapsed] = useState(false)
 
   // Verifica y gestiona el límite de 3 prácticas de IA cada 12 horas
@@ -902,7 +919,29 @@ export default function StudentDashboardPage() {
 
         {/* === Grid Row: Próximas Clases & Tokens === */}
         {!isClassesCollapsed && (
-          <div className={styles.grid}>
+          <div>
+            {/* Tarjeta de Horario Regular & Vínculo Docente */}
+            {profile.teacherName && (
+              <div className={styles.regularScheduleCard}>
+                <div className={styles.scheduleDetailGroup}>
+                  <Calendar size={18} color="#38bdf8" />
+                  <div>
+                    <span style={{ fontWeight: 700 }}>Horario Regular:</span>{' '}
+                    <span>{profile.recurrenceDay === 'Mie,Vie' ? 'Miércoles y Viernes' : (profile.recurrenceDay || 'Miércoles y Viernes')} — {profile.recurrenceTime || '11:00 AM'}</span>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+                  <span className={styles.scheduleCycleTag}>
+                    {`Mes 1 • ${completed.length} Vistas • ${completed.length + 1}ª Clase ${upcoming.length > 0 && new Date(upcoming[0].date).toDateString() === new Date().toDateString() ? 'Hoy' : 'Próxima'} (Cierre próx. Miércoles)`}
+                  </span>
+                  <span style={{ fontSize: '0.82rem', color: '#94a3b8' }}>
+                    Profesor: <strong style={{ color: '#f1f5f9' }}>{profile.teacherName}</strong>
+                  </span>
+                </div>
+              </div>
+            )}
+
+            <div className={styles.grid}>
 
             {/* Próximas Clases */}
             <section className={styles.card}>
@@ -998,6 +1037,7 @@ export default function StudentDashboardPage() {
             )}
 
           </div>
+        </div>
         )}
 
         {/* === Completed Topics: Repasa lo que has visto (Paginado a 5 por página) === */}
@@ -1201,86 +1241,218 @@ export default function StudentDashboardPage() {
           })()}
         </section>
 
-        {/* === Full Width Card: Flashcards Conceptuales (Mini-App de Vocabulario) === */}
+        {/* === Full Width Card: Práctica de Vocabulario (Hub Integral) === */}
         <section className={styles.flashcardsSection}>
           <div className={styles.flashcardsHeaderWrap}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.35rem' }}>
-                <Layers size={22} color="var(--accent-purple, #a855f7)" />
-                <h2 className={styles.sectionTitle} style={{ margin: 0 }}>
-                  Flashcards Conceptuales
-                </h2>
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, padding: '0.2rem 0.6rem', borderRadius: '999px', background: 'rgba(168, 85, 247, 0.15)', color: '#c084fc', border: '1px solid rgba(168, 85, 247, 0.3)' }}>
-                  Beta 0.2
-                </span>
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, padding: '0.2rem 0.6rem', borderRadius: '999px', background: 'rgba(16, 185, 129, 0.15)', color: '#34d399', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
-                  8 Decks • 120 Tarjetas
-                </span>
-              </div>
-              <p className={styles.empty} style={{ margin: 0, fontSize: '0.85rem' }}>
-                Aprende vocabulario sin traducir 1 a 1: vocabulario general, situaciones y lugares, familias conceptuales y verbos frasales.
-              </p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+              <Target size={22} color="var(--accent-primary, #10b981)" />
+              <h2 className={styles.sectionTitle} style={{ margin: 0 }}>
+                Práctica de Vocabulario
+              </h2>
             </div>
-            <a
-              href="/flashcards_vocabulary.csv"
-              download="flashcards_vocabulary.csv"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                fontSize: '0.8rem',
-                fontWeight: 600,
-                color: '#c4b5fd',
-                background: 'rgba(124, 58, 237, 0.12)',
-                border: '1px solid rgba(124, 58, 237, 0.3)',
-                padding: '0.4rem 0.85rem',
-                borderRadius: '8px',
-                textDecoration: 'none'
-              }}
-            >
-              <FileDown size={14} />
-              <span>Descargar CSV</span>
-            </a>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <button
+                type="button"
+                className={styles.sectionCollapseBtn}
+                onClick={() => setIsFlashcardsCollapsed(prev => !prev)}
+                title={isFlashcardsCollapsed ? "Desplegar práctica de vocabulario" : "Plegar práctica de vocabulario"}
+              >
+                {isFlashcardsCollapsed ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
+              </button>
+            </div>
           </div>
 
-          {/* Categorías organizadas */}
-          {FLASHCARD_CATEGORIES.map(category => {
-            const categoryPacks = BUILTIN_FLASHCARD_PACKS.filter(p => p.category === category)
-            if (categoryPacks.length === 0) return null
-            return (
-              <div key={category} style={{ marginBottom: '1.75rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
-                  <span style={{ fontSize: '0.82rem', fontWeight: 800, color: '#e4e4e7', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                    {category}
-                  </span>
-                  <span style={{ fontSize: '0.72rem', color: '#a1a1aa' }}>
-                    ({categoryPacks.length} {categoryPacks.length === 1 ? 'deck' : 'decks'} • {categoryPacks.reduce((acc, p) => acc + p.cards.length, 0)} tarjetas)
-                  </span>
-                </div>
-                <div className={styles.flashcardsGrid}>
-                  {categoryPacks.map(pack => (
-                    <Link
-                      key={pack.id}
-                      href={`/student/flashcards?packId=${pack.id}`}
-                      className={styles.flashcardPackCard}
-                    >
-                      <div>
-                        <div className={styles.flashcardPackTitle}>{pack.title}</div>
-                        <div className={styles.flashcardPackSub}>{pack.subtitle}</div>
-                      </div>
-                      <div className={styles.flashcardPackMeta}>
-                        <span>{pack.cards.length} Tarjetas • {pack.level}</span>
-                        <span className={styles.flashcardPracticarBtn}>
-                          <span>Practicar</span>
-                          <ArrowRight size={14} />
+          {!isFlashcardsCollapsed && (
+            <>
+              <p className={styles.empty} style={{ margin: '0.2rem 0 1.5rem 0', fontSize: '0.85rem' }}>
+                Entrena y consolida tu vocabulario mediante dos metodologías complementarias: el nuevo sistema CEFR con red semántica o las tarjetas conceptuales inmersivas.
+              </p>
+
+              {/* Sub-apartados principales de Vocabulario */}
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+                gap: '1.25rem',
+                marginBottom: '2rem'
+              }}>
+                {/* 1. Módulo Vocabulario CEFR */}
+                <div style={{
+                  background: 'linear-gradient(145deg, rgba(16, 185, 129, 0.08), rgba(24, 24, 27, 0.85))',
+                  border: '1px solid rgba(16, 185, 129, 0.35)',
+                  borderRadius: '16px',
+                  padding: '1.5rem',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  gap: '1rem',
+                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.25)'
+                }}>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <span style={{
+                          width: '36px',
+                          height: '36px',
+                          borderRadius: '10px',
+                          background: 'rgba(16, 185, 129, 0.18)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: '#34d399'
+                        }}>
+                          <Target size={20} />
                         </span>
+                        <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#f4f4f5' }}>
+                          Vocabulario CEFR
+                        </h3>
                       </div>
-                    </Link>
-                  ))}
+                      <span style={{ fontSize: '0.72rem', fontWeight: 700, padding: '0.2rem 0.6rem', borderRadius: '999px', background: 'rgba(16, 185, 129, 0.2)', color: '#34d399', border: '1px solid rgba(16, 185, 129, 0.4)' }}>
+                        Red Semántica
+                      </span>
+                    </div>
+
+                    <p style={{ margin: 0, fontSize: '0.85rem', color: '#a1a1aa', lineHeight: 1.5 }}>
+                      Swiping de triage (A1 a C2), modelo en espiral polisémico, gestor en cuadrícula a un clic, trivia contextual y conector de sinónimos/antónimos.
+                    </p>
+                  </div>
+
+                  <Link
+                    href="/student/vocabulary"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '0.5rem',
+                      background: '#10b981',
+                      color: '#042f1a',
+                      fontWeight: 700,
+                      fontSize: '0.88rem',
+                      padding: '0.65rem 1.2rem',
+                      borderRadius: '10px',
+                      textDecoration: 'none',
+                      transition: 'all 0.2s ease',
+                      boxShadow: '0 4px 14px rgba(16, 185, 129, 0.3)'
+                    }}
+                  >
+                    <span>Abrir Vocabulario CEFR</span>
+                    <ArrowRight size={15} />
+                  </Link>
+                </div>
+
+                {/* 2. Módulo Flashcards Conceptuales */}
+                <div style={{
+                  background: 'linear-gradient(145deg, rgba(168, 85, 247, 0.08), rgba(24, 24, 27, 0.85))',
+                  border: '1px solid rgba(168, 85, 247, 0.35)',
+                  borderRadius: '16px',
+                  padding: '1.5rem',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  gap: '1rem',
+                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.25)'
+                }}>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <span style={{
+                          width: '36px',
+                          height: '36px',
+                          borderRadius: '10px',
+                          background: 'rgba(168, 85, 247, 0.18)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: '#c084fc'
+                        }}>
+                          <Layers size={20} />
+                        </span>
+                        <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#f4f4f5' }}>
+                          Flashcards Conceptuales
+                        </h3>
+                      </div>
+                      <span style={{ fontSize: '0.72rem', fontWeight: 700, padding: '0.2rem 0.6rem', borderRadius: '999px', background: 'rgba(168, 85, 247, 0.2)', color: '#c084fc', border: '1px solid rgba(168, 85, 247, 0.4)' }}>
+                        Tarjetas 3D
+                      </span>
+                    </div>
+
+                    <p style={{ margin: 0, fontSize: '0.85rem', color: '#a1a1aa', lineHeight: 1.5 }}>
+                      Tarjetas de estudio visual sin traducir 1 a 1: falsos cognados, modismos, situaciones reales (gimnasio, oficina) y familias de palabras.
+                    </p>
+                  </div>
+
+                  <Link
+                    href="/student/flashcards"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '0.5rem',
+                      background: '#7c3aed',
+                      color: '#ffffff',
+                      fontWeight: 700,
+                      fontSize: '0.88rem',
+                      padding: '0.65rem 1.2rem',
+                      borderRadius: '10px',
+                      textDecoration: 'none',
+                      transition: 'all 0.2s ease',
+                      boxShadow: '0 4px 14px rgba(124, 58, 237, 0.3)'
+                    }}
+                  >
+                    <span>Abrir Flashcards Conceptuales</span>
+                    <ArrowRight size={15} />
+                  </Link>
                 </div>
               </div>
-            )
-          })}
+
+              {/* Decks rápidos de Flashcards organizados por categoría */}
+              <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '1.5rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+                  <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#a1a1aa', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                    Decks Rápidos de Flashcards
+                  </span>
+                </div>
+
+                {FLASHCARD_CATEGORIES.map(category => {
+                  const categoryPacks = BUILTIN_FLASHCARD_PACKS.filter(p => p.category === category)
+                  if (categoryPacks.length === 0) return null
+                  return (
+                    <div key={category} style={{ marginBottom: '1.5rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.65rem' }}>
+                        <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#e4e4e7' }}>
+                          {category}
+                        </span>
+                        <span style={{ fontSize: '0.7rem', color: '#71717a' }}>
+                          ({categoryPacks.length} {categoryPacks.length === 1 ? 'deck' : 'decks'})
+                        </span>
+                      </div>
+                      <div className={styles.flashcardsGrid}>
+                        {categoryPacks.map(pack => (
+                          <Link
+                            key={pack.id}
+                            href={`/student/flashcards?packId=${pack.id}`}
+                            className={styles.flashcardPackCard}
+                          >
+                            <div>
+                              <div className={styles.flashcardPackTitle}>{pack.title}</div>
+                              <div className={styles.flashcardPackSub}>{pack.subtitle}</div>
+                            </div>
+                            <div className={styles.flashcardPackMeta}>
+                              <span>{pack.cards.length} Tarjetas • {pack.level}</span>
+                              <span className={styles.flashcardPracticarBtn}>
+                                <span>Practicar</span>
+                                <ArrowRight size={14} />
+                              </span>
+                            </div>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </>
+          )}
         </section>
 
         {/* === Full Width Card: Actividad de Serie === */}
@@ -1450,6 +1622,28 @@ export default function StudentDashboardPage() {
 
                 <div className={styles.comingTitle}>Vocabulary Practicer (Flashcards)</div>
                 <div className={styles.comingDesc}>Tarjetas interactivas de repaso 3D con repetición espaciada y pronunciación nativa para consolidar vocabulario.</div>
+              </div>
+            </Link>
+
+            {/* 2.5 CEFR Vocabulary & Semantic Network */}
+            <Link 
+              href="/student/vocabulary"
+              className={styles.comingItem}
+              style={{ textDecoration: 'none', cursor: 'pointer', border: '1px solid rgba(16, 185, 129, 0.3)', background: 'linear-gradient(145deg, rgba(16, 185, 129, 0.05), rgba(24, 24, 27, 0.8))' }}
+            >
+              <div>
+                <div className={styles.comingHeader}>
+                  <span className={styles.comingIcon} style={{ color: '#10b981' }}>
+                    <Target size={20} />
+                  </span>
+                  <span className={styles.comingBadge} style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#34d399', borderColor: 'rgba(16, 185, 129, 0.4)' }}>
+                    <span className={styles.comingPulse} style={{ background: '#10b981' }} />
+                    <span>Nuevo CEFR ↗</span>
+                  </span>
+                </div>
+
+                <div className={styles.comingTitle} style={{ color: '#f4f4f5' }}>Vocabulario CEFR & Red Semántica</div>
+                <div className={styles.comingDesc}>Swiping de triage por nivel, modelo en espiral polisémico, gestor en cuadrícula, trivia contextual y conector de sinónimos.</div>
               </div>
             </Link>
 
@@ -1774,10 +1968,16 @@ export default function StudentDashboardPage() {
                             <Sparkles size={18} color="#10b981" />
                             <span>2. La Forma Correcta de Hacerlo</span>
                           </div>
+                          {summary.structureBlocks.some(b => b.includes('🟡') || b.includes('🔵') || b.includes('🔴')) && (
+                            <div className={styles.tricolorPedagogyBadge}>
+                              <span>🇨🇴</span>
+                              <span><strong>Bandera de Colombia:</strong> Persona 🟡 + Palabra de Tiempo 🔵 + Acción 🔴</span>
+                            </div>
+                          )}
                           <div className={styles.legoBlocksRow}>
                             {summary.structureBlocks.map((blk, i) => (
                               <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
-                                <span className={styles.legoBlock}>{blk}</span>
+                                <span className={getLegoBlockClass(blk)}>{blk}</span>
                                 {i < summary.structureBlocks.length - 1 && (
                                   <span className={styles.legoPlus}>+</span>
                                 )}

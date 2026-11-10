@@ -138,6 +138,102 @@ export const SEEDED_SHORT_READINGS: Record<number, ShortReadingItem> = {
       correctIndex: 1,
       explanationEs: '"You must remain calm even when alarms sound... you have to communicate clearly with your team."'
     }
+  },
+  6: {
+    id: 'sr-topic-6',
+    topicOrder: 6,
+    topicName: 'Prepositions (In, On, At) & Preposition Stranding',
+    title: 'The City I Fell in Love With',
+    readingText: 'Elena arrived in Medellín in October. On Friday at 11:00 AM, she visited the studio her sister worked at. "Where are you from?" a local architect asked her warmly. Elena smiled and pointed at the map on the table. "I am from Spain, but this is the neighborhood I want to live in." Native prepositions always tell a story.',
+    wordCount: 62,
+    focusGrammar: 'Prepositions (In October, On Friday, at 11:00 AM, worked at, Where... from?, live in)',
+    highlightedVocab: [
+      { word: 'worked at', meaningEs: 'en el que trabajaba (preposición al final)' },
+      { word: 'Where are you from?', meaningEs: '¿De dónde eres? (from al final)' },
+      { word: 'live in', meaningEs: 'en el que vivir / residir' }
+    ],
+    quickQuestion: {
+      question: 'En la frase "¿Where are you from?", ¿por qué la palabra "from" va al final?',
+      options: [
+        'Es un error de traducción.',
+        'En inglés es la regla natural de Preposition Stranding para preguntas directas.',
+        'Porque en inglés formal siempre se omite el verbo.'
+      ],
+      correctIndex: 1,
+      explanationEs: 'En inglés natural la preposición se traslada al final de la pregunta: "Where are you from?".'
+    }
+  },
+  7: {
+    id: 'sr-topic-7',
+    topicOrder: 7,
+    topicName: 'The Conditional Mode & Would Architecture',
+    title: 'The Blueprint of Possibility',
+    readingText: 'If you had one extra hour today, how would you invest it? Santiago would recommend speaking practice. "I would love to explore a new city," Camila said with enthusiasm. Mónica smiled and replied, "I would dedicate that hour to reading." Would you choose comfort or continuous growth? The conditional mode transforms our deepest aspirations into clear conversations.',
+    wordCount: 61,
+    focusGrammar: 'The Conditional Mode (would invest, would recommend, would love to, would dedicate, would you choose)',
+    highlightedVocab: [
+      { word: 'would love to', meaningEs: 'me encantaría' },
+      { word: 'aspirations', meaningEs: 'anhelos o metas futuras' },
+      { word: 'invest', meaningEs: 'invertir tiempo o energía' }
+    ],
+    quickQuestion: {
+      question: '¿Qué función cumple "would" en el texto al expresar deseos de Camila y Mónica?',
+      options: [
+        'Indica una orden estricta.',
+        'Añade el sentido condicional (-ría) a los verbos para expresar deseos e hipótesis.',
+        'Describe una acción que ocurrió en el pasado simple.'
+      ],
+      correctIndex: 1,
+      explanationEs: 'Would es el operador condicional que transforma "love" en "encantaría" y "dedicate" en "dedicaría".'
+    }
+  },
+  8: {
+    id: 'sr-topic-8',
+    topicOrder: 8,
+    topicName: 'The Gerund: Turning Verbs into Things (-ING Architecture)',
+    title: 'The Art of Showing Up',
+    readingText: 'Learning English requires patience and steady commitment. "Thank you for coming to our eighth class," Santiago told the group. Before starting, Miguel shared his insights about consistent training. In English, turning an action into a thing requires -ing. Without practicing out loud, fluency stays frozen. After finishing the first month, they are ready for higher heights.',
+    wordCount: 59,
+    focusGrammar: 'The Gerund as a Noun & Post-Prepositions (Learning requires, Thank you for coming, Before starting, turning requires, Without practicing, After finishing)',
+    highlightedVocab: [
+      { word: 'for coming', meaningEs: 'por venir (preposición for + coming)' },
+      { word: 'Without practicing', meaningEs: 'sin practicar (preposición without + practicing)' },
+      { word: 'After finishing', meaningEs: 'después de terminar (preposición after + finishing)' }
+    ],
+    quickQuestion: {
+      question: '¿Por qué los verbos llevan -ing en "for coming", "before starting" y "after finishing"?',
+      options: [
+        'Porque describen acciones continuas que están ocurriendo ahora mismo.',
+        'Porque en inglés todo verbo que va después de una preposición debe llevar -ing obligatoriamente.',
+        'Porque son verbos irregulares en pasado.'
+      ],
+      correctIndex: 1,
+      explanationEs: 'Regla de oro: Después de cualquier preposición (for, before, after, without, in, on, at), el verbo siguiente siempre lleva -ing.'
+    }
+  },
+  9: {
+    id: 'sr-topic-9',
+    topicOrder: 9,
+    topicName: 'The Subjunctive Mode',
+    title: 'The Executive Directive',
+    readingText: 'During the strategic quarterly review, the CEO made an urgent announcement. "The market is moving quickly, so I strongly recommend that our team adapt immediately," she stated. It is essential that every manager submit their updated project timelines by tomorrow morning. Furthermore, the board demanded that security protocols remain strict across all locations. Clear directives inspire confident leadership.',
+    wordCount: 63,
+    focusGrammar: 'The Subjunctive Mode (recommend that our team adapt, essential that every manager submit, demanded that protocols remain)',
+    highlightedVocab: [
+      { word: 'recommend that our team adapt', meaningEs: 'recomiendo que nuestro equipo se adapte (sin -s)' },
+      { word: 'essential that every manager submit', meaningEs: 'esencial que cada gerente envíe (sin -s)' },
+      { word: 'demanded that protocols remain', meaningEs: 'exigió que los protocolos permanezcan (forma base)' }
+    ],
+    quickQuestion: {
+      question: '¿Por qué los verbos "adapt" y "submit" no llevan la terminación "-s" en el texto?',
+      options: [
+        'Porque el texto está escrito en tiempo pasado.',
+        'Porque en el modo subjuntivo con verbos como recommend o expresiones como essential that, el verbo subordinado queda siempre en forma base pura sin -s.',
+        'Porque son verbos que no tienen tercera persona singular.'
+      ],
+      correctIndex: 1,
+      explanationEs: 'En el modo subjuntivo, los verbos que siguen a cláusulas de recomendación o mandato ("recommend that...", "essential that...") no se conjugan con -s en tercera persona y van en su forma base pura.'
+    }
   }
 }
 

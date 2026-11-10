@@ -27,20 +27,20 @@ export const FRIENDLY_TOPIC_NAMES: Record<number, { title: string; subtitle: str
     subtitle: 'La arquitectura universal para decir que no en cualquier tiempo'
   },
   6: {
-    title: 'Preguntas de Sí o No (Inversión Básica)',
-    subtitle: 'Aprende a formular preguntas directas invirtiendo la palabra de tiempo'
+    title: 'Preposiciones In, On, At & Preposiciones al Final',
+    subtitle: 'El triángulo temporal y espacial, y por qué en inglés las preposiciones van al final (Where... from?)'
   },
   7: {
-    title: 'Preguntas Abiertas (What, Where, When, Why, How)',
-    subtitle: 'Cómo recolectar información detallada combinando Wh- con palabras de tiempo'
+    title: 'El Modo Condicional (Would & Hipótesis)',
+    subtitle: 'Transforma cualquier acción en -ría (gustaría, haría) para cortesía y deseos'
   },
   8: {
-    title: 'Verbo To Be (Ser y Estar: Am, Is, Are)',
-    subtitle: 'Describir estados, identidades y lugares sin confundirlo con verbos de acción'
+    title: 'El Gerundio: Convertir el Verbo en Cosa (-ING)',
+    subtitle: 'Uso de -ing como sustantivo y la regla de oro: después de preposición siempre va -ing'
   },
   9: {
-    title: 'Pasado del Verbo To Be (Was y Were)',
-    subtitle: 'Cómo describir estados, lugares y situaciones pasadas'
+    title: 'El Modo Subjuntivo (Sugerencias y Recomendaciones de Alto Nivel)',
+    subtitle: 'Por qué el verbo queda en forma base desnuda sin -s: I suggest that he go / It is essential that she be here'
   },
   10: {
     title: 'Futuro con Will vs Going to',

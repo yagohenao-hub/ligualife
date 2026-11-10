@@ -56,7 +56,13 @@ function formatRecord(row: any): any {
     fields['Student'] = typeof row['Student'] === 'string' && row['Student'].includes(',') ? row['Student'].split(',') : [row['Student']]
   }
   if (row['Session'] && !Array.isArray(row['Session'])) fields['Session'] = [row['Session']]
-  if (row['Curriculum Topic'] && !Array.isArray(row['Curriculum Topic'])) fields['Curriculum Topic'] = [row['Curriculum Topic']]
+  if (row['Curriculum Topic']) {
+    let ct = row['Curriculum Topic']
+    if (typeof ct === 'string' && (ct.startsWith('["') || ct.startsWith('[\"'))) {
+      try { ct = JSON.parse(ct) } catch {}
+    }
+    fields['Curriculum Topic'] = Array.isArray(ct) ? ct : [ct]
+  }
 
   return {
     id: row.id,

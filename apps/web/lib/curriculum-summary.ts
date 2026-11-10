@@ -23,194 +23,205 @@ export interface TopicSummaryData {
 export const CURRICULUM_SUMMARY_CATALOG: Record<number, TopicSummaryData> = {
   "1": {
     "order": 1,
-    "title": "The Universal Idea",
+    "title": "The Universal Idea & First 6 Time Words",
     "phase": "Installer",
     "level": "A1 - Beginner",
-    "concept": "Aprende la ley fundamental que rige todo el inglés: cómo expresar cualquier idea uniendo quién lo hace, el momento en el tiempo y la acción en su forma más pura.",
-    "correctMethod": "Estructura: Actor + Temporalidad + Acción. Por ejemplo con modales directos (Will, Can, Would) donde la acción nunca cambia de forma.",
+    "concept": "Aprende la ley fundamental que rige todo el inglés: la estructura tricolor de la Bandera de Colombia uniendo Persona (Amarillo 🟡) + Palabra de Tiempo (Azul 🔵) + Acción Base (Rojo 🔴), con las primeras 6 palabras de tiempo esenciales.",
+    "correctMethod": "🟡 Persona + 🔵 Palabra de Tiempo (Can, Could, Will, Would, Be, Have) + 🔴 Acción (Verbo Base). La acción nunca cambia ni se conjuga tras un modal.",
     "structureBlocks": [
-      "Protagonista",
-      "Palabra de Tiempo",
-      "Acción Base"
+      "🟡 Persona (Sujeto)",
+      "🔵 Palabra de Tiempo (Can, Could, Will, Would, Be, Have)",
+      "🔴 Acción (Verbo Base)"
     ],
     "examples": [
       {
-        "en": "I will finish the report tomorrow.",
-        "es": "Terminaré el informe mañana (Protagonista + Tiempo + Acción)."
+        "en": "I can finish the report today.",
+        "es": "Puedo terminar el informe hoy (🟡 I + 🔵 can + 🔴 finish)."
       },
       {
-        "en": "She can help you right now.",
-        "es": "Ella puede ayudarte ahora mismo."
+        "en": "She will call you in ten minutes.",
+        "es": "Ella te llamará en diez minutos (🟡 She + 🔵 will + 🔴 call)."
       },
       {
-        "en": "It is raining a lot outside.",
-        "es": "Está lloviendo mucho afuera (el sujeto It siempre es obligatorio)."
+        "en": "We would love to visit next week.",
+        "es": "Nos encantaría visitar la próxima semana (🟡 We + 🔵 would + 🔴 love)."
+      },
+      {
+        "en": "It is raining heavily outside.",
+        "es": "Está lloviendo fuerte afuera (El sujeto 'It' siempre es obligatorio en inglés)."
       }
     ],
     "commonMistake": {
-      "explanation": "Omitir el sujeto en inglés (\"It is raining\", no \"Is raining\"). En español el sujeto puede ser tácito, en inglés siempre es indispensable.",
-      "wrong": "Is raining outside",
-      "correct": "It is raining outside"
+      "explanation": "Omitir el sujeto en inglés (decir \"Is raining\" o \"Can help\"). En español la persona puede ser tácita, pero en inglés siempre debe estar explícita.",
+      "wrong": "Is raining outside / Can help you",
+      "correct": "It is raining outside / I can help you"
     }
   },
   "2": {
     "order": 2,
-    "title": "The Time Words Logic",
+    "title": "Time Words Mastery & Indefinite Pronouns",
     "phase": "Installer",
     "level": "A1 - Beginner",
-    "concept": "Domina los modales como palabras de tiempo: expresa consejos, obligaciones y posibilidades manteniendo los verbos en su forma más pura.",
-    "correctMethod": "Sujeto + Modal (Should/Must/May/Might/Could) + Verbo Base — El universo de las palabras del tiempo fijas. La acción nunca cambia tras un modal.",
+    "concept": "Domina el resto de las palabras de tiempo (Do, Did, Shall, Should, Must, May, Might) y la matriz lógica de pronombres indefinidos con Every, Any, No, Some y sus sufijos (-thing, -where, -one).",
+    "correctMethod": "🔵 Do / Did + Modales (Shall, Should, Must, May, Might) + Matriz Indefinida [Some / Any / Every / No + thing / where / one].",
     "structureBlocks": [
-      "Sujeto",
-      "Modal (Should/Must/May/Might/Could)",
-      "Verbo Base"
+      "🔵 Do / Did + Modales (Should, Must, May, Might)",
+      "🧩 Indefinidos: Some / Any / Every / No",
+      "Sufijos: -thing / -where / -one"
     ],
     "examples": [
       {
-        "en": "You should rest before the long trip.",
-        "es": "Deberías descansar antes del viaje largo."
+        "en": "You should tell someone about this.",
+        "es": "Deberías decirle a alguien sobre esto (Should + someone)."
       },
       {
-        "en": "We must submit the proposal before 5 PM.",
-        "es": "Debemos enviar la propuesta antes de las 5 PM."
+        "en": "We did find everything you needed.",
+        "es": "Encontramos todo lo que necesitabas (Did con énfasis + everything)."
       },
       {
-        "en": "They might join the video call later.",
-        "es": "Ellos podrían unirse a la videollamada más tarde."
+        "en": "They might go somewhere quiet this weekend.",
+        "es": "Ellos podrían ir a algún lugar tranquilo este fin de semana (Might + somewhere)."
       }
     ],
     "commonMistake": {
-      "explanation": "Agregar \"to\" después de un modal (\"I can to go\", \"I must to work\").",
-      "wrong": "to",
-      "correct": "I can to go"
+      "explanation": "Agregar \"to\" después de un modal (\"I must to go\") o confundir \"something\" con \"anything\" en contextos negativos.",
+      "wrong": "You should to go / I don't know nothing",
+      "correct": "You should go / I don't know anything"
     }
   },
   "3": {
     "order": 3,
-    "title": "The Present & The Ghost Do",
+    "title": "WH-Words: Questions & Relative Affirmations",
     "phase": "Installer",
     "level": "A1 - Beginner",
-    "concept": "Descubre la excepción del presente simple y cómo la palabra de tiempo Do se esconde en afirmaciones pero exige la terminación -s con He, She e It.",
-    "correctMethod": "Do/Does + Acción Base | He/She/It + Verbo(-s) — La excepción del presente: Por qué Do se oculta en afirmación pero altera la 3ra persona con -s.",
+    "concept": "Domina el doble propósito de las WH-words (What, Where, When, Why, Who, How, Which): como preguntas directas que invierten la palabra de tiempo, y como conectores afirmativos que conservan el orden natural de la bandera.",
+    "correctMethod": "❓ Pregunta: WH + Tiempo + Persona + Acción? | 🔗 Afirmación: Persona + Acción + [WH + Persona + Tiempo + Acción].",
     "structureBlocks": [
-      "Do/Does",
-      "Acción Base | He/She/It",
-      "Verbo(-s)"
+      "❓ Pregunta: WH + Tiempo + Persona + Acción?",
+      "🔗 Conector: Persona + Acción + [WH + Persona + Tiempo + Acción]"
     ],
     "examples": [
       {
-        "en": "He lives in Medellín and works remotely.",
-        "es": "Él vive en Medellín y trabaja de forma remota."
+        "en": "Where do you live? — I know where you live.",
+        "es": "¿Dónde vives? (Pregunta) — Yo sé dónde vives (Afirmación conectada sin inversión)."
       },
       {
-        "en": "Do you have the contract ready?",
-        "es": "¿Tienes el contrato listo?"
+        "en": "What can we do? — This is what we can do.",
+        "es": "¿Qué podemos hacer? (Pregunta) — Esto es lo que podemos hacer (Afirmación conectada)."
       },
       {
-        "en": "She doesn't drink coffee after 4 PM.",
-        "es": "Ella no toma café después de las 4 PM."
+        "en": "Why are you here? — Tell me why you are here.",
+        "es": "¿Por qué estás aquí? — Dime por qué estás aquí."
       }
     ],
     "commonMistake": {
-      "explanation": "Olvidar la -s en 3ra persona o duplicarla en preguntas (\"Does he works?\").",
-      "wrong": "Traducir literalmente desde el español",
-      "correct": "Usar la estructura nativa en inglés"
+      "explanation": "Invertir el auxiliar dentro de una oración afirmativa (\"I know where do you live\" ❌). Solo invertimos cuando es una pregunta directa.",
+      "wrong": "I know where do you live",
+      "correct": "I know where you live"
     }
   },
   "4": {
     "order": 4,
-    "title": "The Past & The Ghost Did",
+    "title": "Sign Law (No Double Negatives) & Imperatives",
     "phase": "Installer",
     "level": "A2 - Elementary",
-    "concept": "Comprende el pasado sin listas interminables: entiende el rol del Did oculto y cómo libera al verbo en preguntas y respuestas negativas.",
-    "correctMethod": "Did + Acción Base | Afirmación: Verbo(-ed/irregular) — La excepción del pasado: Did se oculta en afirmación transformando el verbo, pero reaparece en negación y pregunta.",
+    "concept": "Aprende la ley matemática de signos en inglés (+ - = -, prohibida la doble negación española) y la estructura directa del Modo Imperativo para dar órdenes e instrucciones.",
+    "correctMethod": "⚖️ Ley de Signos: Sujeto + Auxiliar Negativo + Anything/Anyone (o Sujeto + Verbo Afirmativo + Nothing/No one). 📢 Imperativo: Verbo Base! / Don't + Verbo Base!",
     "structureBlocks": [
-      "Did",
-      "Acción Base | Afirmación: Verbo(-ed/irregular)"
+      "⚖️ Ley de Signos: Sujeto + Negativo + Any- (Cero doble negación)",
+      "📢 Imperativo: ¡Verbo Base! / Don't + Verbo Base!"
     ],
     "examples": [
       {
-        "en": "We launched the new product last week.",
-        "es": "Lanzamos el nuevo producto la semana pasada."
+        "en": "I don't know anything about that.",
+        "es": "No sé nada sobre eso (Negativo don't + anything neutro. NUNCA 'don't know nothing')."
       },
       {
-        "en": "Did you receive the confirmation email?",
-        "es": "¿Recibiste el correo de confirmación?"
+        "en": "She said nothing during the meeting.",
+        "es": "Ella no dijo nada durante la reunión (Verbo afirmativo + nothing negativo)."
       },
       {
-        "en": "I didn't see the notification in time.",
-        "es": "No vi la notificación a tiempo (verbo en base con Did)."
+        "en": "Listen carefully and don't interrupt!",
+        "es": "¡Escucha con atención y no interrumpas! (Imperativo directo sin persona)."
       }
     ],
     "commonMistake": {
-      "explanation": "Doble pasado: conjugar el verbo cuando ya está did (\"I didn't went\", \"Did you saw?\").",
-      "wrong": "I didn't went",
-      "correct": "Did you saw?"
+      "explanation": "Traducir la doble negación del español (\"I don't know nothing\" o \"Nobody doesn't care\"). En inglés dos negativos se cancelan y dan un sentido afirmativo.",
+      "wrong": "I don't know nothing / Don't tell to nobody",
+      "correct": "I don't know anything / Don't tell anybody"
     }
   },
   "5": {
     "order": 5,
-    "title": "Negative Architecture",
+    "title": "Foundation Integration & Conversational Fluency",
     "phase": "Installer",
     "level": "A2 - Elementary",
-    "concept": "Aprende la regla universal para negar cualquier idea en inglés uniendo la palabra de tiempo con el operador de negación.",
-    "correctMethod": "Sujeto + Palabra de Tiempo + Not + Acción Base — Negación universal: Se niega pegando Not a la Palabra de Tiempo (Don't, Didn't, Won't, Can't, Shouldn't).",
+    "concept": "Sesión integradora y práctica de los 4 pilares fundamentales: estructura de Bandera de Colombia, las 12 palabras de tiempo con modales e indefinidos, conectores WH y negación matemática.",
+    "correctMethod": "Integración completa de los 4 pilares para armar ideas complejas y espontáneas sin traducir desde el español.",
     "structureBlocks": [
-      "Sujeto",
-      "Palabra de Tiempo",
-      "Not",
-      "Acción Base"
+      "🟡 Persona (Sujeto)",
+      "🔵 12 Palabras de Tiempo",
+      "🔴 Acción (Verbo Base)",
+      "🔗 Conectores WH & Negación Perfecta"
     ],
     "examples": [
       {
-        "en": "I don't agree with that proposal.",
-        "es": "No estoy de acuerdo con esa propuesta."
+        "en": "I can explain what we should do, but don't tell anyone yet.",
+        "es": "Puedo explicar lo que deberíamos hacer, pero no le digas a nadie todavía (Integra Bandera + WH Conector + Imperativo Negativo + Any)."
       },
       {
-        "en": "She won't come to today's session.",
-        "es": "Ella no vendrá a la sesión de hoy."
+        "en": "She told me where they would go if they had time.",
+        "es": "Ella me dijo a dónde irían si tuvieran tiempo."
       },
       {
-        "en": "We shouldn't take unnecessary risks.",
-        "es": "No deberíamos tomar riesgos innecesarios."
+        "en": "We will always remember why we started this journey.",
+        "es": "Siempre recordaremos por qué empezamos este viaje."
       }
     ],
     "commonMistake": {
-      "explanation": "Negar solo con \"no\" antes del verbo (\"I no have car\", \"She no like\").",
-      "wrong": "no",
-      "correct": "I no have car"
+      "explanation": "Dudar y traducir mentalmente palabra por palabra en lugar de anclar el pensamiento en los bloques: Quién (🟡), Cuándo (🔵) y Qué hace (🔴).",
+      "wrong": "Traducir mentalmente en orden del español",
+      "correct": "Construir en bloques: Persona + Tiempo + Acción"
     }
   },
   "6": {
     "order": 6,
-    "title": "The Detective (Yes/No Questions)",
+    "title": "Prepositions (In, On, At) & Preposition Stranding",
     "phase": "Installer",
     "level": "A2 - Elementary",
-    "concept": "Activa el modo detective: invierte el orden de la palabra de tiempo para interrogar con precisión y seguridad.",
-    "correctMethod": "Palabra de Tiempo + Sujeto + Acción Base? — Inversión interrogativa: Mover la palabra de tiempo al inicio para interrogar.",
+    "concept": "Domina el triángulo de preposiciones básicas (IN, ON, AT) en sus dimensiones temporal y física, y la estructura nativa donde la preposición salta al final de la pregunta o de la oración relativa (Preposition Stranding).",
+    "correctMethod": "In/On/At (Tiempo & Lugar) + [Pregunta: WH + Tiempo + Sujeto + Acción + Preposición?] + [Relativa: Sujeto + Acción + Objeto + Preposición].",
     "structureBlocks": [
-      "Palabra de Tiempo",
-      "Sujeto",
-      "Acción Base?"
+      "📍🕒 In, On, At (General → Específico)",
+      "❓ Pregunta con Preposición al Final",
+      "🔗 Construcción Relativa (\"en la que\")"
     ],
     "examples": [
       {
-        "en": "Are you ready for the final interview?",
-        "es": "¿Estás listo para la entrevista final?"
+        "en": "Where are you from?",
+        "es": "¿De dónde eres? (La preposición 'from' salta al final, nunca 'From where are you?')."
       },
       {
-        "en": "Can you send me the slide deck?",
-        "es": "¿Puedes enviarme la presentación?"
+        "en": "Who are you talking with?",
+        "es": "¿Con quién estás hablando? (Preposición 'with' al final)."
       },
       {
-        "en": "Did they approve the quarterly budget?",
-        "es": "¿Aprobaron ellos el presupuesto trimestral?"
+        "en": "What is this tool for?",
+        "es": "¿Para qué sirve esta herramienta? (Preposición 'for' al final)."
+      },
+      {
+        "en": "This is the school I studied at.",
+        "es": "Esta es la escuela en la que estudié (Construcción 'en la que' con preposición al final)."
+      },
+      {
+        "en": "We have class on Friday at 11:00 AM in Colombia.",
+        "es": "Tenemos clase el viernes (ON) a las 11:00 AM (AT) en Colombia (IN)."
       }
     ],
     "commonMistake": {
-      "explanation": "Preguntar con orden afirmativo usando solo entonación española (\"You live here?\").",
-      "wrong": "Traducir literalmente desde el español",
-      "correct": "Usar la estructura nativa en inglés"
+      "explanation": "Traducir literalmente la preposición al principio como en español (\"From where are you?\" o \"With who are you talking?\") o usar giros arcaicos como \"the school in which I studied\" en conversación cotidiana.",
+      "wrong": "From where are you? / With who are you talking?",
+      "correct": "Where are you from? / Who are you talking with?"
     }
   },
   "7": {

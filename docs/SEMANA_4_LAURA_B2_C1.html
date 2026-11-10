@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 4: TOEFL New Speaking Test & The 13 Time Words | LinguaLife</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Warm Beige / Sand / Bone Palette */
+      --bg-page: #f1ebd9;           /* Beige cálido notorio, tipo papel libro premium */
+      --bg-surface: #fdfbf7;        /* Superficie marfil cálida */
+      --bg-surface-subtle: #faf6ed; /* Fondo sutil para tarjetas */
+      --bg-inner: #e8dfcd;          /* Fondos secundarios de tablas y citas */
+      
+      --border-warm: #dcd0ba;       /* Borde arena / beige definido */
+      --border-accent: #c9baa1;     /* Borde acentuado */
+
+      /* Typography */
+      --text-main: #231f1a;         /* Carbón cálido profundo */
+      --text-muted: #574e44;        /* Café grisáceo legible */
+      --text-dim: #7f7364;          /* Terciario cálido */
+      --font-main: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+
+      /* Pastel Mnemonic Palette */
+      --p-cyan-bg: #d9f0fc;         /* Listen & Repeat / Fonética */
+      --p-cyan-text: #02659c;
+      --p-cyan-border: #a8dcf7;
+
+      --p-amber-bg: #fdecc4;        /* Modales & Especulación */
+      --p-amber-text: #8c3b00;
+      --p-amber-border: #fcd58b;
+
+      --p-violet-bg: #e8e1fc;       /* Entrevista TOEFL & Estructura */
+      --p-violet-text: #5e1ec9;
+      --p-violet-border: #cebef7;
+
+      --p-rose-bg: #fddde2;         /* Vicios de Vacilación B2 */
+      --p-rose-text: #960f33;
+      --p-rose-border: #f9bcc7;
+
+      --p-mint-bg: #cbf6de;         /* Reflejo C1 Nativo */
+      --p-mint-text: #045a42;
+      --p-mint-border: #99ecc0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body.clean-mode .action-bar,
+    body[data-clean="true"] .action-bar {
+      display: none !important;
+    }
+    body[data-clean="true"] .document-container,
+    body.clean-mode .document-container {
+      margin: 20px auto 40px;
+    }
+
+    /* Print & Floating Action Bar */
+    .action-bar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(241, 235, 217, 0.94);
+      backdrop-filter: blur(12px);
+      padding: 12px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1.5px solid var(--border-warm);
+      box-shadow: 0 2px 10px rgba(50, 40, 25, 0.04);
+    }
+
+    .brand-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: -0.01em;
+    }
+
+    .btn-print {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      background: var(--text-main);
+      color: #faf7f0;
+      border: 1px solid var(--text-main);
+      box-shadow: 0 2px 8px rgba(35, 31, 26, 0.15);
+      transition: all 0.2s ease;
+    }
+
+    .btn-print:hover {
+      background: #3d352b;
+      transform: translateY(-1px);
+    }
+
+    /* Document Sheet */
+    .document-container {
+      max-width: 860px;
+      margin: 32px auto 60px;
+      background: var(--bg-surface);
+      padding: 52px 60px;
+      border-radius: 18px;
+      border: 1.5px solid var(--border-warm);
+      box-shadow: 0 10px 30px rgba(55, 45, 30, 0.05), 0 1px 3px rgba(55, 45, 30, 0.03);
+    }
+
+    /* Header */
+    .doc-header {
+      padding-bottom: 22px;
+      margin-bottom: 30px;
+      border-bottom: 2px solid var(--border-warm);
+    }
+
+    .doc-title {
+      font-size: 30px;
+      font-weight: 800;
+      color: var(--text-main);
+      letter-spacing: -0.03em;
+      line-height: 1.25;
+    }
+
+    /* Headings & Pagination Guards */
+    h2.section-heading {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin: 36px 0 18px;
+      padding-bottom: 10px;
+      border-bottom: 1.5px solid var(--border-warm);
+      letter-spacing: -0.02em;
+      break-after: avoid;
+      page-break-after: avoid;
+    }
+
+    .heading-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: var(--p-violet-bg);
+      color: var(--p-violet-text);
+      border: 1px solid var(--p-violet-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      flex-shrink: 0;
+    }
+
+    h3.subheading {
+      font-size: 15.5px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin: 24px 0 10px;
+      break-after: avoid;
+      page-break-after: avoid;
+    }
+
+    p {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 14px;
+    }
+
+    /* Content Blocks */
+    .content-block {
+      margin-bottom: 22px;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    /* Pastel Callouts */
+    .callout {
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin: 16px 0 20px;
+      font-size: 13.5px;
+      line-height: 1.6;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .callout-cyan {
+      background: var(--p-cyan-bg);
+      border: 1.5px solid var(--p-cyan-border);
+      color: #074668;
+    }
+
+    .callout-title {
+      font-weight: 800;
+      font-size: 14px;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--p-cyan-text);
+    }
+
+    /* Comparison Grids */
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin: 16px 0;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .comp-card {
+      border-radius: 12px;
+      padding: 15px 18px;
+      font-size: 13px;
+    }
+
+    .comp-card.bad {
+      background: var(--p-rose-bg);
+      border: 1.5px solid var(--p-rose-border);
+    }
+
+    .comp-card.bad .comp-label {
+      color: var(--p-rose-text);
+      font-weight: 800;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 5px;
+    }
+
+    .comp-card.good {
+      background: var(--p-mint-bg);
+      border: 1.5px solid var(--p-mint-border);
+    }
+
+    .comp-card.good .comp-label {
+      color: var(--p-mint-text);
+      font-weight: 800;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 5px;
+    }
+
+    .comp-card code {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      font-weight: 600;
+      display: block;
+      color: var(--text-main);
+      margin-top: 4px;
+    }
+
+    .comp-card .note {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 5px;
+    }
+
+    /* Tables */
+    .table-wrapper {
+      margin: 14px 0 20px;
+      border: 1.5px solid var(--border-warm);
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--bg-surface);
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13px;
+    }
+
+    th {
+      background: var(--bg-inner);
+      padding: 10px 14px;
+      font-weight: 800;
+      color: var(--text-main);
+      border-bottom: 1.5px solid var(--border-warm);
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border-warm);
+      color: var(--text-muted);
+      vertical-align: middle;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Pastel Badges */
+    .tag {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+    }
+
+    .tag-amber {
+      background: var(--p-amber-bg);
+      color: var(--p-amber-text);
+      border: 1px solid var(--p-amber-border);
+    }
+
+    .tag-cyan {
+      background: var(--p-cyan-bg);
+      color: var(--p-cyan-text);
+      border: 1px solid var(--p-cyan-border);
+    }
+
+    .tag-violet {
+      background: var(--p-violet-bg);
+      color: var(--p-violet-text);
+      border: 1px solid var(--p-violet-border);
+    }
+
+    code {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      color: var(--text-main);
+    }
+
+    /* Task Boxes */
+    .task-box {
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border-warm);
+      border-radius: 14px;
+      padding: 24px;
+      margin: 22px 0;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .task-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1.5px solid var(--border-warm);
+    }
+
+    .task-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .task-badge {
+      background: var(--p-violet-bg);
+      color: var(--p-violet-text);
+      border: 1px solid var(--p-violet-border);
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 100px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .reading-passage {
+      background: var(--bg-inner);
+      border-left: 4px solid var(--p-cyan-text);
+      padding: 18px 22px;
+      border-radius: 0 10px 10px 0;
+      font-size: 14.5px;
+      line-height: 1.7;
+      color: var(--text-main);
+      font-style: italic;
+      margin: 14px 0 10px;
+    }
+
+    .reading-passage b {
+      color: #8c3b00;
+      background: rgba(253, 236, 196, 0.6);
+      padding: 1px 4px;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+
+    .writing-prompt {
+      background: var(--bg-inner);
+      border: 1.5px dashed var(--border-accent);
+      border-radius: 10px;
+      padding: 18px 22px;
+      font-size: 14.5px;
+      color: var(--text-main);
+      line-height: 1.75;
+      margin: 14px 0 6px;
+      font-style: italic;
+    }
+
+    /* Print Formatting */
+    @page {
+      size: A4 portrait;
+      margin: 12mm 14mm;
+    }
+
+    @media print {
+      html, body {
+        background-color: var(--bg-page) !important;
+        color: var(--text-main) !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      .action-bar {
+        display: none !important;
+      }
+
+      .document-container {
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background-color: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+      }
+
+      h2, h3, .subheading, .section-heading {
+        break-after: avoid !important;
+        page-break-after: avoid !important;
+      }
+
+      .content-block, .task-box, .table-wrapper, .comparison-grid, .callout {
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+      }
+
+      table, tr, td, th {
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+      }
+
+      .section-tasks {
+        break-before: page;
+        page-break-before: always;
+        padding-top: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating Print Bar -->
+  <div class="action-bar">
+    <div class="brand-title">LinguaLife &bull; Material de Clase &bull; Laura</div>
+    <button class="btn-print" onclick="window.print()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+      Descargar en PDF
+    </button>
+  </div>
+
+  <div class="document-container">
+
+    <!-- Header -->
+    <header class="doc-header">
+      <h1 class="doc-title">Week 4: TOEFL New Speaking Test & The 13 Time Words</h1>
+    </header>
+
+    <!-- SECCIÓN 1: RESUMEN DE LO QUE VIMOS -->
+    <section>
+      <h2 class="section-heading">
+        <span class="heading-num">01</span>
+        Resumen Estratégico de la Sesión
+      </h2>
+
+      <div class="callout callout-cyan">
+        <div class="callout-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>
+          El Enfoque: De la Duda Gramatical al Automatismo Motor en Examen
+        </div>
+        El nuevo formato de Speaking del TOEFL ya no evalúa discursos de memoria, sino <b>reflejo neuromuscular bajo presión acústica y temporal</b>. Las dos pruebas clave (<i>Listen & Repeat</i> y <i>The Interview</i>) se sostienen sobre el dominio instantáneo de las <b>13 Palabras de Tiempo (Auxiliares y Modales)</b>: la columna vertebral que define el tiempo, la certeza, la cortesía y la agilidad de cualquier respuesta C1.
+      </div>
+
+      <!-- 1. El Nuevo Examen TOEFL Speaking -->
+      <div class="content-block">
+        <h3 class="subheading">1. Anatomía del Nuevo TOEFL Speaking: Las 2 Tareas Críticas</h3>
+        <p>Estrategia de ejecución neuromuscular para obtener la puntuación máxima en cada sección:</p>
+
+        <div class="comparison-grid">
+          <div class="comp-card bad">
+            <div class="comp-label">Parte A: Listen and Repeat (El Peligro B2)</div>
+            <code>"Intentar traducir al español mentalmente y luego recordar palabra por palabra."</code>
+            <div class="note">Colapso de memoria a corto plazo: se pierden las terminaciones, el ritmo se vuelve robótico y hay silencios de más de 2 segundos.</div>
+          </div>
+          <div class="comp-card good">
+            <div class="comp-label">Parte A: Listen and Repeat (Técnica C1)</div>
+            <code>"Acoustic Chunking + Sombras Fonéticas (Shadowing Inmediato)."</code>
+            <div class="note">Agrupar la frase en bloques de sentido (2-3 chunks), imitar el contorno de entonación y reducir los auxiliares a sonido Schwa sin vacilar.</div>
+          </div>
+        </div>
+
+        <div class="comparison-grid">
+          <div class="comp-card bad">
+            <div class="comp-label">Parte B: The Interview (Vicio B2)</div>
+            <code>"Well, that is an interesting question... in my opinion I think that..."</code>
+            <div class="note">Pérdida de los primeros 10 segundos en muletillas vacías. El tiempo de 30-45s se agota antes de dar el ejemplo concreto.</div>
+          </div>
+          <div class="comp-card good">
+            <div class="comp-label">Parte B: The Interview (Arquitectura C1 en 3 Fases)</div>
+            <code>"[1. Direct Topic Sentence] &rarr; [2. Signpost Contrast] &rarr; [3. Anchor Example]."</code>
+            <div class="note">Responder la pregunta en los primeros 4 segundos, aplicar un conector formal de contraste y rematar con un caso tangible antes del segundo 40.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Las 13 Palabras de Tiempo -->
+      <div class="content-block">
+        <h3 class="subheading">2. La Matriz de las 13 Palabras de Tiempo (El Sistema Operativo del Inglés)</h3>
+        <p>No son simples auxiliares; son los interruptores de tiempo, certidumbre y autoridad. Desglose de sus 3 familias:</p>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Familia de Operadores</th>
+                <th>Palabras de Tiempo</th>
+                <th>Función Primaria</th>
+                <th>Matiz C1 / Uso Avanzado en TOEFL</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="tag tag-cyan">Básicos & Acción</span></td>
+                <td><b>DO / DOES / DID</b></td>
+                <td>Presente simple y pasado simple</td>
+                <td><b>Énfasis asertivo:</b> <i>"I <b>do</b> agree that remote work has reshaped culture."</i><br>Inversión tras adverbios negativos: <i>"Rarely <b>did</b> we witness..."</i></td>
+              </tr>
+              <tr>
+                <td><span class="tag tag-cyan">Estado & Continuidad</span></td>
+                <td><b>AM / IS / ARE / WAS / WERE</b></td>
+                <td>Acción continua y voz pasiva</td>
+                <td><b>Reducción Schwa:</b> /wəz/ y /wər/.<br><b>Condicional hipotético C1:</b> <i>"Were the metrics to drop, we would intervene."</i></td>
+              </tr>
+              <tr>
+                <td><span class="tag tag-violet">Perfección & Precedencia</span></td>
+                <td><b>HAVE / HAS / HAD</b></td>
+                <td>Tiempos perfectos (conexión temporal)</td>
+                <td><b>Precedencia absoluta:</b> <i>Had</i> marca el pasado anterior al pasado.<br><b>Inversión condicional Tipo 3:</b> <i>"<b>Had</b> management acted sooner..."</i></td>
+              </tr>
+              <tr>
+                <td><span class="tag tag-amber">Certeza & Voluntad</span></td>
+                <td><b>WILL / WOULD</b></td>
+                <td>Futuro y condicionalidad hipotética</td>
+                <td><b>Disposición / Resistencia:</b> <i>"The client wouldn't budge."</i><br><b>Hábito en el pasado:</b> <i>"In my previous job, we would review KPIs weekly."</i></td>
+              </tr>
+              <tr>
+                <td><span class="tag tag-amber">Habilidad & Posibilidad</span></td>
+                <td><b>CAN / COULD / MAY / MIGHT</b></td>
+                <td>Capacidad, hipótesis y permiso diplomático</td>
+                <td><b>Modal Perfect de especulación:</b> <i>"They <b>might have missed</b> the deadline."</i> / <i>"The data <b>could have been</b> corrupted."</i></td>
+              </tr>
+              <tr>
+                <td><span class="tag tag-amber">Obligación & Deducción</span></td>
+                <td><b>SHOULD / MUST</b></td>
+                <td>Deber, recomendación y certeza lógica</td>
+                <td><b>Deducción lógica irrefutable:</b> <i>"She <b>must have realized</b> the error by now."</i><br><b>Arrepentimiento profesional:</b> <i>"We <b>should have audited</b> earlier."</i></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 3. Los Modales Perfectos: La Cima de la Especulación C1 -->
+      <div class="content-block">
+        <h3 class="subheading">3. Especulación de Alto Nivel: Modales + Have + Participio</h3>
+        <p>En el TOEFL Interview, los evaluadores miden cómo analizas situaciones hipotéticas del pasado sin caer en la traducción literal:</p>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Estructura Modal Perfect</th>
+                <th>Significado Exacto</th>
+                <th>Ejemplo de Respuesta C1 en TOEFL</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>Must have + Participle</code></td>
+                <td>Casi 100% de certeza lógica en el pasado (<i>"Sin duda tuvo que..."</i>)</td>
+                <td><i>"The servers <b>must have overloaded</b> during the peak traffic spike."</i></td>
+              </tr>
+              <tr>
+                <td><code>Should have + Participle</code></td>
+                <td>Obligación incumplida / Error de juicio (<i>"Se debió haber..."</i>)</td>
+                <td><i>"Management <b>should have addressed</b> employee burnout much earlier."</i></td>
+              </tr>
+              <tr>
+                <td><code>Could have + Participle</code></td>
+                <td>Capacidad que existió pero no se ejecutó (<i>"Pudo haberse..."</i>)</td>
+                <td><i>"The company <b>could have avoided</b> the lawsuit with better compliance."</i></td>
+              </tr>
+              <tr>
+                <td><code>Might / May have + Participle</code></td>
+                <td>Posibilidad abierta e incierta en el pasado (<i>"Quizás haya..."</i>)</td>
+                <td><i>"The marketing team <b>might have misinterpreted</b> consumer feedback."</i></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 4. Matriz de Conversión Rápida -->
+      <div class="content-block">
+        <h3 class="subheading">4. Matriz de Conversión Rápida (Respuestas Inmediatas con Operadores)</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Pregunta / Estímulo Oral</th>
+                <th>Fórmula de Respuesta C1 sin Vacilación</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>"Do you believe remote work reduces team collaboration?"</td>
+                <td><code>"I do believe it introduces friction; however, asynchronous tools..."</code></td>
+              </tr>
+              <tr>
+                <td>"Did the project fail because of poor planning?"</td>
+                <td><code>"It certainly did, but more importantly, resources were misallocated."</code></td>
+              </tr>
+              <tr>
+                <td>"Seguramente ellos ya se dieron cuenta del error."</td>
+                <td><code>"They must have realized the discrepancy by now."</code></td>
+              </tr>
+              <tr>
+                <td>"Debimos haber tomado esa decisión el mes pasado."</td>
+                <td><code>"We should have made that call last month."</code></td>
+              </tr>
+              <tr>
+                <td>"Pudo haber sido mucho peor si no intervenimos."</td>
+                <td><code>"It could have been significantly worse had we not intervened."</code></td>
+              </tr>
+              <tr>
+                <td>"Apenas escuché la frase, la repetí exactamente." (Chunking)</td>
+                <td><code>/ðə ˈkʌmpəni wəz rɪˈpɔːrtɪd/ [chunk 1] &rarr; /tu həv lɔːst ˈmɪljənz/ [chunk 2]</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 2: TAREAS ASIGNADAS (Inicia en página limpia en PDF) -->
+    <section class="section-tasks">
+      <h2 class="section-heading">
+        <span class="heading-num">02</span>
+        Tareas Prácticas
+      </h2>
+
+      <!-- TAREA 1 -->
+      <div class="task-box">
+        <div class="task-header">
+          <div class="task-title">Tarea 1: Auditoría de Chunking Fonético & Deconstrucción de Interview</div>
+          <span class="task-badge">Análisis Oral</span>
+        </div>
+
+        <p>
+          Analiza los siguientes dos componentes del examen de Speaking:
+        </p>
+        <p>
+          <b>Paso A (Listen & Repeat Chunking):</b> Divide las dos oraciones complejas de abajo en sus <b>bloques fonéticos naturales (chunks de 3 a 5 palabras)</b>, marca dónde va el acento nuclear más fuerte y subraya qué auxiliares deben debilitarse a sonido Schwa para no trabar la lengua:
+        </p>
+
+        <div class="reading-passage">
+          1. "The regional manager was told to suspend the audit until the financial discrepancies had been fully investigated."<br><br>
+          2. "Rarely does an organization recover from a compliance breach unless immediate corrective measures are implemented."
+        </div>
+
+        <p style="margin-top: 14px;">
+          <b>Paso B (Deconstrucción de Entrevista C1):</b> Lee la respuesta de entrevista a continuación. Identifica: (1) La <b>Topic Sentence directa</b>, (2) El <b>uso de palabras de tiempo modales</b> para especular, y (3) El <b>ancla concreta</b> utilizada para cerrar en menos de 40 segundos:
+        </p>
+
+        <div class="reading-passage">
+          "<b>Interviewer:</b> Do you think artificial intelligence will entirely replace corporate managers in the near future?<br><br>
+          <b>Candidate Response:</b> I certainly do not believe AI will replace executive leaders entirely; instead, it will aggressively automate routine administrative triage. Decision-makers should have embraced algorithmic dashboards years ago, as predictive models can process operational bottlenecks far faster than humans ever could. However, organizational culture, ethics and conflict resolution must be anchored in emotional intelligence. In my previous company, automated analytics helped us identify supply delays, but it was the management team that had to step in and renegotiate contracts with vendors. Therefore, managers who master AI will replace those who do not."
+        </div>
+      </div>
+
+      <!-- TAREA 2 -->
+      <div class="task-box">
+        <div class="task-header">
+          <div class="task-title">Tarea 2: Simulacro de Producción Oral TOEFL (The Interview Challenge)</div>
+          <span class="task-badge">Producción Activa</span>
+        </div>
+
+        <p>
+          Prepara tu respuesta oral estructurada para las siguientes <b>dos preguntas de entrevista del TOEFL</b>. Cada respuesta debe durar entre <b>35 y 45 segundos hablados</b> y debe cumplir con las siguientes restricciones obligatorias:
+        </p>
+        <ul style="margin: 8px 0 14px 22px; font-size: 13.5px; color: var(--text-muted); line-height: 1.6;">
+          <li><b>Pregunta 1:</b> Obligatorio incluir <b>1 Do/Does enfático</b> (<i>"I do believe..."</i>) y <b>1 Modal Perfect</b> (<i>should have / must have / could have</i>).</li>
+          <li><b>Pregunta 2:</b> Obligatorio incluir <b>1 Pasiva con auxiliar modal</b> (<i>must be done / should be prioritized</i>) y <b>1 Conector formal</b> (<i>however / therefore / on the other hand</i>).</li>
+        </ul>
+
+        <div class="writing-prompt">
+          <b>Pregunta 1:</b> "Some professionals believe that companies should penalize employees who do not respond to business emails outside of regular working hours. What is your position on this expectation?"<br><br>
+          <b>Pregunta 2:</b> "When a high-stakes project fails due to an unforeseen technical glitch, who should be held accountable: the project leader or the technical vendor who built the infrastructure?"
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    if (window.location.search.includes('clean')) {
+      document.body.classList.add('clean-mode');
+    }
+  </script>
+</body>
+</html>
+
