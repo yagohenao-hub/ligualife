@@ -173,7 +173,7 @@ ENTREGA TU RESPUESTA EXCLUSIVAMENTE EN FORMATO JSON VÁLIDO (sin bloques de cód
 `;
 
   try {
-    const models = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-flash-8b', 'gemini-2.5-flash', 'gemini-1.5-pro'];
+    const models = ['gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-2.0-flash'];
     let rawText = '';
 
     if (GEMINI_API_KEY) {
@@ -205,7 +205,8 @@ ENTREGA TU RESPUESTA EXCLUSIVAMENTE EN FORMATO JSON VÁLIDO (sin bloques de cód
 
     if (rawText) {
       try {
-        const cleanJson = rawText.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim();
+        const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+        const cleanJson = jsonMatch ? jsonMatch[0] : rawText.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim();
         const documentData = JSON.parse(cleanJson);
         if (documentData && Array.isArray(documentData.activities)) {
           // Sanitizar rigurosamente para evitar que la palabra de la solución quede repetida tras [___]

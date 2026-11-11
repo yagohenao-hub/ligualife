@@ -245,6 +245,7 @@ export default function StudentDashboardPage() {
   const [isTopicsCollapsed, setIsTopicsCollapsed] = useState(false)
   const [isFlashcardsCollapsed, setIsFlashcardsCollapsed] = useState(false)
   const [isSeriesCollapsed, setIsSeriesCollapsed] = useState(false)
+  const [showAllUpcoming, setShowAllUpcoming] = useState(false)
 
   // Verifica y gestiona el límite de 3 prácticas de IA cada 12 horas
   const checkPracticeLimit = useCallback(() => {
@@ -945,15 +946,41 @@ export default function StudentDashboardPage() {
 
             {/* Próximas Clases */}
             <section className={styles.card}>
-              <h3 className={styles.sectionTitle} style={{ fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Calendar size={16} color="var(--accent-primary)" />
-                <span>Próximas Clases</span>
-              </h3>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+                <h3 className={styles.sectionTitle} style={{ fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
+                  <Calendar size={16} color="var(--accent-primary)" />
+                  <span>{showAllUpcoming ? 'Todas las Próximas Clases' : 'Siguiente Clase'}</span>
+                </h3>
+                {upcoming.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => setShowAllUpcoming(prev => !prev)}
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.06)',
+                      border: '1px solid rgba(255, 255, 255, 0.12)',
+                      color: '#93c5fd',
+                      fontSize: '0.75rem',
+                      fontWeight: 700,
+                      padding: '0.25rem 0.6rem',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.35rem',
+                      transition: 'all 0.2s ease'
+                    }}
+                    title={showAllUpcoming ? "Mostrar únicamente la siguiente clase" : "Mostrar todas las clases agendadas"}
+                  >
+                    <span>{showAllUpcoming ? 'Ver solo siguiente' : `Ver todas (${upcoming.length})`}</span>
+                    {showAllUpcoming ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+                  </button>
+                )}
+              </div>
               {loading && <div className="spinner" />}
               {!loading && upcoming.length === 0 && (
                 <p className={styles.empty}>No tienes clases programadas próximamente.</p>
               )}
-              {!loading && upcoming.map(s => {
+              {!loading && (showAllUpcoming ? upcoming : upcoming.slice(0, 1)).map((s, idx) => {
                 const isSkipped = s.isHoliday && s.status === 'Canceled'
                 return (
                   <div key={s.id} className={`${styles.sessionRow} ${isSkipped ? styles.skipped : ''}`}>
@@ -961,6 +988,11 @@ export default function StudentDashboardPage() {
                     <div className={styles.sessionInfo}>
                       <div className={styles.sessionDateRow}>
                         <div className={styles.sessionDate}>{formatDate(s.date)}</div>
+                        {!showAllUpcoming && idx === 0 && (
+                          <span style={{ fontSize: '0.7rem', fontWeight: 800, padding: '0.15rem 0.5rem', borderRadius: '999px', background: 'rgba(16, 185, 129, 0.15)', color: '#34d399', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
+                            En agenda
+                          </span>
+                        )}
                         {s.isHoliday && <span className={styles.holidayBadge}>Festivo</span>}
                       </div>
                       {s.topicName && <div className={styles.sessionTopic}>{s.topicName}</div>}
@@ -1241,7 +1273,7 @@ export default function StudentDashboardPage() {
           })()}
         </section>
 
-        {/* === Full Width Card: Práctica de Vocabulario (Hub Integral) === */}
+        {/* === Full Width Card: Práctica de Vocabulario (Hub con los 4 Botones de Práctica) === */}
         <section className={styles.flashcardsSection}>
           <div className={styles.flashcardsHeaderWrap}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
@@ -1265,56 +1297,44 @@ export default function StudentDashboardPage() {
 
           {!isFlashcardsCollapsed && (
             <>
-              <p className={styles.empty} style={{ margin: '0.2rem 0 1.5rem 0', fontSize: '0.85rem' }}>
-                Entrena y consolida tu vocabulario mediante dos metodologías complementarias: el nuevo sistema CEFR con red semántica o las tarjetas conceptuales inmersivas.
+              <p className={styles.empty} style={{ margin: '0.2rem 0 1.25rem 0', fontSize: '0.85rem' }}>
+                Entrena y consolida tu vocabulario mediante el sistema de 4 modalidades de estudio activo (Resumen conceptual, Repaso mental con 15 ejercicios, Trivia gamificada y Short Reading con audio).
               </p>
 
-              {/* Sub-apartados principales de Vocabulario */}
+              {/* Botonera de 4 Modos de Estudio de Vocabulario */}
               <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+                background: 'linear-gradient(145deg, rgba(16, 185, 129, 0.08), rgba(24, 24, 27, 0.85))',
+                border: '1px solid rgba(16, 185, 129, 0.35)',
+                borderRadius: '16px',
+                padding: '1.5rem',
+                display: 'flex',
+                flexDirection: 'column',
                 gap: '1.25rem',
-                marginBottom: '2rem'
+                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.25)',
+                marginBottom: '1rem'
               }}>
-                {/* 1. Módulo Vocabulario CEFR */}
-                <div style={{
-                  background: 'linear-gradient(145deg, rgba(16, 185, 129, 0.08), rgba(24, 24, 27, 0.85))',
-                  border: '1px solid rgba(16, 185, 129, 0.35)',
-                  borderRadius: '16px',
-                  padding: '1.5rem',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  gap: '1rem',
-                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.25)'
-                }}>
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <span style={{
-                          width: '36px',
-                          height: '36px',
-                          borderRadius: '10px',
-                          background: 'rgba(16, 185, 129, 0.18)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          color: '#34d399'
-                        }}>
-                          <Target size={20} />
-                        </span>
-                        <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#f4f4f5' }}>
-                          Vocabulario CEFR
-                        </h3>
-                      </div>
-                      <span style={{ fontSize: '0.72rem', fontWeight: 700, padding: '0.2rem 0.6rem', borderRadius: '999px', background: 'rgba(16, 185, 129, 0.2)', color: '#34d399', border: '1px solid rgba(16, 185, 129, 0.4)' }}>
-                        Red Semántica
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                    <span style={{
+                      width: '38px',
+                      height: '38px',
+                      borderRadius: '10px',
+                      background: 'rgba(16, 185, 129, 0.18)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: '#34d399'
+                    }}>
+                      <Target size={22} />
+                    </span>
+                    <div>
+                      <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#f4f4f5' }}>
+                        Vocabulario Conceptual & Red Semántica
+                      </h3>
+                      <span style={{ fontSize: '0.78rem', color: '#a1a1aa' }}>
+                        12 Palabras de Tiempo • In/On/At • WH Questions • Niveles CEFR A1 a C2
                       </span>
                     </div>
-
-                    <p style={{ margin: 0, fontSize: '0.85rem', color: '#a1a1aa', lineHeight: 1.5 }}>
-                      Swiping de triage (A1 a C2), modelo en espiral polisémico, gestor en cuadrícula a un clic, trivia contextual y conector de sinónimos/antónimos.
-                    </p>
                   </div>
 
                   <Link
@@ -1322,420 +1342,108 @@ export default function StudentDashboardPage() {
                     style={{
                       display: 'inline-flex',
                       alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '0.5rem',
+                      gap: '0.4rem',
                       background: '#10b981',
                       color: '#042f1a',
-                      fontWeight: 700,
-                      fontSize: '0.88rem',
-                      padding: '0.65rem 1.2rem',
-                      borderRadius: '10px',
+                      fontWeight: 800,
+                      fontSize: '0.82rem',
+                      padding: '0.5rem 1rem',
+                      borderRadius: '8px',
                       textDecoration: 'none',
-                      transition: 'all 0.2s ease',
-                      boxShadow: '0 4px 14px rgba(16, 185, 129, 0.3)'
+                      boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)'
                     }}
                   >
-                    <span>Abrir Vocabulario CEFR</span>
-                    <ArrowRight size={15} />
+                    <span>Entrar al Hub Completo</span>
+                    <ArrowRight size={14} />
                   </Link>
                 </div>
 
-                {/* 2. Módulo Flashcards Conceptuales */}
+                {/* Los 4 Botones Interactivos de Vocabulario */}
                 <div style={{
-                  background: 'linear-gradient(145deg, rgba(168, 85, 247, 0.08), rgba(24, 24, 27, 0.85))',
-                  border: '1px solid rgba(168, 85, 247, 0.35)',
-                  borderRadius: '16px',
-                  padding: '1.5rem',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  gap: '1rem',
-                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.25)'
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+                  gap: '0.75rem',
+                  paddingTop: '0.5rem',
+                  borderTop: '1px solid rgba(255, 255, 255, 0.08)'
                 }}>
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <span style={{
-                          width: '36px',
-                          height: '36px',
-                          borderRadius: '10px',
-                          background: 'rgba(168, 85, 247, 0.18)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          color: '#c084fc'
-                        }}>
-                          <Layers size={20} />
-                        </span>
-                        <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#f4f4f5' }}>
-                          Flashcards Conceptuales
-                        </h3>
-                      </div>
-                      <span style={{ fontSize: '0.72rem', fontWeight: 700, padding: '0.2rem 0.6rem', borderRadius: '999px', background: 'rgba(168, 85, 247, 0.2)', color: '#c084fc', border: '1px solid rgba(168, 85, 247, 0.4)' }}>
-                        Tarjetas 3D
-                      </span>
-                    </div>
-
-                    <p style={{ margin: 0, fontSize: '0.85rem', color: '#a1a1aa', lineHeight: 1.5 }}>
-                      Tarjetas de estudio visual sin traducir 1 a 1: falsos cognados, modismos, situaciones reales (gimnasio, oficina) y familias de palabras.
-                    </p>
-                  </div>
-
+                  {/* 1. Resumen */}
                   <Link
-                    href="/student/flashcards"
+                    href="/student/vocabulary?mode=resumen"
+                    className={`${styles.topicActionBtn} ${styles.btnResumen}`}
                     style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '0.5rem',
-                      background: '#7c3aed',
-                      color: '#ffffff',
-                      fontWeight: 700,
-                      fontSize: '0.88rem',
-                      padding: '0.65rem 1.2rem',
-                      borderRadius: '10px',
                       textDecoration: 'none',
-                      transition: 'all 0.2s ease',
-                      boxShadow: '0 4px 14px rgba(124, 58, 237, 0.3)'
+                      justifyContent: 'center',
+                      padding: '0.75rem 1rem',
+                      borderRadius: '10px',
+                      fontWeight: 700,
+                      fontSize: '0.85rem'
                     }}
+                    title="Ver fichas conceptuales con acepciones, fórmulas y ejemplos"
                   >
-                    <span>Abrir Flashcards Conceptuales</span>
-                    <ArrowRight size={15} />
+                    <BookOpen size={16} />
+                    <span>1. Resumen</span>
+                  </Link>
+
+                  {/* 2. Repaso */}
+                  <Link
+                    href="/student/vocabulary?mode=repaso"
+                    className={`${styles.topicActionBtn} ${styles.btnAi}`}
+                    style={{
+                      textDecoration: 'none',
+                      justifyContent: 'center',
+                      padding: '0.75rem 1rem',
+                      borderRadius: '10px',
+                      fontWeight: 700,
+                      fontSize: '0.85rem'
+                    }}
+                    title="Sesión de gimnasio mental con 15 ejercicios"
+                  >
+                    <Zap size={16} />
+                    <span>2. Repaso (15)</span>
+                  </Link>
+
+                  {/* 3. Trivia */}
+                  <Link
+                    href="/student/vocabulary?mode=trivia"
+                    className={`${styles.topicActionBtn} ${styles.btnTrivia}`}
+                    style={{
+                      textDecoration: 'none',
+                      justifyContent: 'center',
+                      padding: '0.75rem 1rem',
+                      borderRadius: '10px',
+                      fontWeight: 700,
+                      fontSize: '0.85rem'
+                    }}
+                    title="Entrenar con trivia gamificada de opción múltiple"
+                  >
+                    <Flame size={16} color="#fde047" />
+                    <span>3. Trivia</span>
+                  </Link>
+
+                  {/* 4. Short Reading */}
+                  <Link
+                    href="/student/vocabulary?mode=reading"
+                    className={`${styles.topicActionBtn} ${styles.btnReading}`}
+                    style={{
+                      textDecoration: 'none',
+                      justifyContent: 'center',
+                      padding: '0.75rem 1rem',
+                      borderRadius: '10px',
+                      fontWeight: 700,
+                      fontSize: '0.85rem'
+                    }}
+                    title="Micro-lectura con audio nativo y comprensión"
+                  >
+                    <Volume2 size={16} />
+                    <span>4. Short Reading</span>
                   </Link>
                 </div>
               </div>
-
-              {/* Decks rápidos de Flashcards organizados por categoría */}
-              <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '1.5rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
-                  <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#a1a1aa', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                    Decks Rápidos de Flashcards
-                  </span>
-                </div>
-
-                {FLASHCARD_CATEGORIES.map(category => {
-                  const categoryPacks = BUILTIN_FLASHCARD_PACKS.filter(p => p.category === category)
-                  if (categoryPacks.length === 0) return null
-                  return (
-                    <div key={category} style={{ marginBottom: '1.5rem' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.65rem' }}>
-                        <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#e4e4e7' }}>
-                          {category}
-                        </span>
-                        <span style={{ fontSize: '0.7rem', color: '#71717a' }}>
-                          ({categoryPacks.length} {categoryPacks.length === 1 ? 'deck' : 'decks'})
-                        </span>
-                      </div>
-                      <div className={styles.flashcardsGrid}>
-                        {categoryPacks.map(pack => (
-                          <Link
-                            key={pack.id}
-                            href={`/student/flashcards?packId=${pack.id}`}
-                            className={styles.flashcardPackCard}
-                          >
-                            <div>
-                              <div className={styles.flashcardPackTitle}>{pack.title}</div>
-                              <div className={styles.flashcardPackSub}>{pack.subtitle}</div>
-                            </div>
-                            <div className={styles.flashcardPackMeta}>
-                              <span>{pack.cards.length} Tarjetas • {pack.level}</span>
-                              <span className={styles.flashcardPracticarBtn}>
-                                <span>Practicar</span>
-                                <ArrowRight size={14} />
-                              </span>
-                            </div>
-                          </Link>
-                        ))}
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
             </>
           )}
         </section>
 
-        {/* === Full Width Card: Actividad de Serie === */}
-        <section className={styles.seriesCardFull} style={{ margin: '2rem 0' }}>
-          <div className={styles.seriesHeaderWrap}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-              <h2 className={styles.sectionTitle} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
-                <Tv size={20} color="var(--accent-primary)" />
-                <span>Actividad de Serie</span>
-              </h2>
-              <div style={{ position: 'relative', display: 'inline-flex' }}>
-                <button
-                  type="button"
-                  className={styles.seriesInfoBtn}
-                  onClick={() => setShowSeriesInfo(prev => !prev)}
-                  title="Información sobre la actividad de serie"
-                  aria-label="Información de la actividad de serie"
-                >
-                  <Info size={15} />
-                </button>
-
-                {/* Burbuja flotante por encima con cierre instantáneo al hacer clic afuera */}
-                {showSeriesInfo && (
-                  <>
-                    <div 
-                      style={{ position: 'fixed', inset: 0, zIndex: 998, background: 'transparent' }} 
-                      onClick={() => setShowSeriesInfo(false)} 
-                    />
-                    <div 
-                      className={styles.seriesFloatingBubble}
-                      onClick={e => e.stopPropagation()}
-                    >
-                      <div className={styles.seriesInfoPopoverTitle} style={{ margin: '0 0 0.5rem 0' }}>
-                        <Sparkles size={16} />
-                        <span>¿Cómo funciona la Actividad de Serie?</span>
-                      </div>
-                      <ul className={styles.seriesInfoPopoverList}>
-                        <li><strong>100% Personalizada:</strong> Adaptada a tu nivel actual y diseñada con vocabulario auténtico de la serie o película que estás viendo.</li>
-                        <li><strong>Enfoque Práctico:</strong> Ejercicios de listening, frases coloquiales y expresiones cotidianas reales extraídas de los episodios.</li>
-                      </ul>
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
-
-            <button
-              type="button"
-              className={styles.sectionCollapseBtn}
-              onClick={() => setIsSeriesCollapsed(prev => !prev)}
-              title={isSeriesCollapsed ? "Desplegar actividad de serie" : "Plegar actividad de serie"}
-            >
-              {isSeriesCollapsed ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
-            </button>
-          </div>
-
-          {!isSeriesCollapsed && (
-            <>
-              <p className={styles.empty} style={{ marginBottom: '1.25rem', marginTop: '0.4rem' }}>
-                ¿Estás viendo una serie? Pídenos una actividad pedagógica.
-              </p>
-              <div className={styles.seriesRequestBox}>
-                <input
-                  className={styles.seriesInput}
-                  placeholder="Escribe el nombre de la serie que estás viendo..."
-                  value={seriesName}
-                  onChange={e => setSeriesName(e.target.value)}
-                  disabled={seriesLoading}
-                />
-                <button 
-                  className={styles.seriesBtn} 
-                  onClick={handleSeriesRequest}
-                  disabled={seriesLoading || !seriesName.trim()}
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
-                >
-                  {seriesLoading ? 'Enviando...' : (
-                    <>
-                      <span>Solicitar Actividad</span>
-                      <ArrowRight size={15} />
-                    </>
-                  )}
-                </button>
-              </div>
-              {seriesMsg && (
-                <div className={`${styles.seriesMsg} ${seriesMsg.type === 'error' ? styles.seriesError : styles.seriesSuccess}`} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <CheckCircle2 size={16} />
-                  <span>{seriesMsg.text}</span>
-                </div>
-              )}
-            </>
-          )}
-        </section>
-
-        {/* === Próximamente en LinguaLife (Gran Título Animado & Sin Spoilers) === */}
-        <section className={styles.comingSoonCard}>
-          <div className={styles.comingBigTitleWrap}>
-            <div>
-              <h2 className={styles.comingBigTitle}>
-                <Sparkles size={28} color="#38bdf8" />
-                <span>Próximamente en LinguaLife</span>
-              </h2>
-              <p className={styles.comingBigSub}>
-                Nuevas herramientas inmersivas y módulos pedagógicos en desarrollo activo.
-              </p>
-            </div>
-            <span className={styles.comingBadge} style={{ alignSelf: 'flex-start' }}>
-              <span className={styles.comingPulse} />
-              <span>Pronto</span>
-            </span>
-          </div>
-
-          <div className={styles.comingSoonGrid}>
-            {/* 1. Lecturas Personalizadas (Interactive Readers) - Ocupa todo el ancho (Featured) */}
-            <div className={`${styles.comingItem} ${styles.comingItemFeatured}`}>
-              <div>
-                <div className={styles.comingHeader}>
-                  <span className={styles.comingIcon} style={{ color: 'var(--accent-primary)' }}>
-                    <BookOpen size={20} />
-                  </span>
-                  <span className={styles.comingBadge}>
-                    <span className={styles.comingPulse} />
-                    <span>Pronto</span>
-                  </span>
-                </div>
-
-                {/* Cozy Cyberpunk Pixel Art Image Showcase */}
-                <div className={`${styles.cardImageWrap} ${styles.cardImageWrapFeatured}`}>
-                  <img 
-                    src="/coming-soon/reader_pixel.jpg" 
-                    alt="Lecturas Personalizadas (Interactive Readers)" 
-                    className={styles.cardPixelImg} 
-                    loading="lazy" 
-                  />
-                </div>
-
-                <div className={styles.comingTitle}>Lecturas Personalizadas (Interactive Readers)</div>
-                <div className={styles.comingDesc}>Historias adaptadas a tu nivel con resaltador inteligente en tiempo real y traducción contextual al hacer clic en cualquier oración.</div>
-              </div>
-            </div>
-
-            {/* 2. Vocabulary Practicer (Flashcards) */}
-            <Link 
-              href="/student/flashcards"
-              className={styles.comingItem}
-              style={{ textDecoration: 'none', cursor: 'pointer' }}
-            >
-              <div>
-                <div className={styles.comingHeader}>
-                  <span className={styles.comingIcon} style={{ color: 'var(--accent-purple)' }}>
-                    <Layers size={20} />
-                  </span>
-                  <span className={styles.comingBadge} style={{ background: 'rgba(124, 58, 237, 0.2)', color: '#c4b5fd', borderColor: 'rgba(124, 58, 237, 0.4)' }}>
-                    <span className={styles.comingPulse} style={{ background: '#a78bfa' }} />
-                    <span>Beta Disponible ↗</span>
-                  </span>
-                </div>
-
-                {/* Cozy Cyberpunk Pixel Art Image Showcase */}
-                <div className={styles.cardImageWrap}>
-                  <img 
-                    src="/coming-soon/flashcard_pixel.jpg" 
-                    alt="Vocabulary Practicer (Flashcards)" 
-                    className={styles.cardPixelImg} 
-                    loading="lazy" 
-                  />
-                </div>
-
-                <div className={styles.comingTitle}>Vocabulary Practicer (Flashcards)</div>
-                <div className={styles.comingDesc}>Tarjetas interactivas de repaso 3D con repetición espaciada y pronunciación nativa para consolidar vocabulario.</div>
-              </div>
-            </Link>
-
-            {/* 2.5 CEFR Vocabulary & Semantic Network */}
-            <Link 
-              href="/student/vocabulary"
-              className={styles.comingItem}
-              style={{ textDecoration: 'none', cursor: 'pointer', border: '1px solid rgba(16, 185, 129, 0.3)', background: 'linear-gradient(145deg, rgba(16, 185, 129, 0.05), rgba(24, 24, 27, 0.8))' }}
-            >
-              <div>
-                <div className={styles.comingHeader}>
-                  <span className={styles.comingIcon} style={{ color: '#10b981' }}>
-                    <Target size={20} />
-                  </span>
-                  <span className={styles.comingBadge} style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#34d399', borderColor: 'rgba(16, 185, 129, 0.4)' }}>
-                    <span className={styles.comingPulse} style={{ background: '#10b981' }} />
-                    <span>Nuevo CEFR ↗</span>
-                  </span>
-                </div>
-
-                <div className={styles.comingTitle} style={{ color: '#f4f4f5' }}>Vocabulario CEFR & Red Semántica</div>
-                <div className={styles.comingDesc}>Swiping de triage por nivel, modelo en espiral polisémico, gestor en cuadrícula, trivia contextual y conector de sinónimos.</div>
-              </div>
-            </Link>
-
-            {/* 3. Interactive Scene Explorer */}
-            <Link 
-              href="/student/interactive-scene"
-              className={styles.comingItem}
-              style={{ textDecoration: 'none', cursor: 'pointer' }}
-            >
-              <div>
-                <div className={styles.comingHeader}>
-                  <span className={styles.comingIcon} style={{ color: 'var(--accent-blue)' }}>
-                    <Compass size={20} />
-                  </span>
-                  <span className={styles.comingBadge} style={{ background: 'rgba(59, 130, 246, 0.2)', color: '#93c5fd', borderColor: 'rgba(59, 130, 246, 0.4)' }}>
-                    <span className={styles.comingPulse} style={{ background: '#60a5fa' }} />
-                    <span>Beta Disponible ↗</span>
-                  </span>
-                </div>
-
-                {/* Cozy Cyberpunk Pixel Art Image Showcase */}
-                <div className={styles.cardImageWrap}>
-                  <img 
-                    src="/coming-soon/scene_pixel.jpg" 
-                    alt="Interactive Scene Explorer" 
-                    className={styles.cardPixelImg} 
-                    loading="lazy" 
-                  />
-                </div>
-
-                <div className={styles.comingTitle}>Interactive Scene Explorer</div>
-                <div className={styles.comingDesc}>Escenarios visuales interactivos 2D con vocabulario situacional, audios contextuales y práctica guiada paso a paso.</div>
-              </div>
-            </Link>
-
-            {/* 4. Banco de Videos Nativos */}
-            <div className={styles.comingItem}>
-              <div>
-                <div className={styles.comingHeader}>
-                  <span className={styles.comingIcon} style={{ color: 'var(--accent-emerald)' }}>
-                    <Video size={20} />
-                  </span>
-                  <span className={styles.comingBadge}>
-                    <span className={styles.comingPulse} />
-                    <span>Pronto</span>
-                  </span>
-                </div>
-
-                {/* Cozy Cyberpunk Pixel Art Image Showcase */}
-                <div className={styles.cardImageWrap}>
-                  <img 
-                    src="/coming-soon/video_pixel.jpg" 
-                    alt="Banco de Videos Nativos" 
-                    className={styles.cardPixelImg} 
-                    loading="lazy" 
-                  />
-                </div>
-
-                <div className={styles.comingTitle}>Banco de Videos Nativos</div>
-                <div className={styles.comingDesc}>Clips y videos auténticos seleccionados por nivel con transcripción sincronizada para acostumbrar tu oído al ritmo nativo.</div>
-              </div>
-            </div>
-
-            {/* 5. Sistema de Logros & Medallas */}
-            <div className={styles.comingItem}>
-              <div>
-                <div className={styles.comingHeader}>
-                  <span className={styles.comingIcon} style={{ color: 'var(--accent-amber)' }}>
-                    <Trophy size={20} />
-                  </span>
-                  <span className={styles.comingBadge}>
-                    <span className={styles.comingPulse} />
-                    <span>Pronto</span>
-                  </span>
-                </div>
-
-                {/* Cozy Cyberpunk Pixel Art Image Showcase */}
-                <div className={styles.cardImageWrap}>
-                  <img 
-                    src="/coming-soon/trophy_pixel.jpg" 
-                    alt="Sistema de Logros & Medallas" 
-                    className={styles.cardPixelImg} 
-                    loading="lazy" 
-                  />
-                </div>
-
-                <div className={styles.comingTitle}>Sistema de Logros & Medallas</div>
-                <div className={styles.comingDesc}>Insignias de constancia, hitos de fluidez y recompensas exclusivas al platinar lecciones y completar tus retos semanales.</div>
-              </div>
-            </div>
-          </div>
-        </section>
+        {/* Actividad de Serie & Próximamente (Archivados para Roadmap Posterior en docs/IDEAS_Y_MODULOS_A_FUTURO.md) */}
       </div>
 
       {/* === Modal de Repaso: Diapositiva Única de Concepto Esencial (Sin Scroll Bleed & Mobile Optimized) === */}
@@ -2059,18 +1767,24 @@ export default function StudentDashboardPage() {
       })()}
 
       {/* === Modal Interactivo: Juego de Trivia Infinita === */}
-      {showTriviaModal && activeTriviaTopic && (
-        <InfiniteTriviaModal
-          isOpen={showTriviaModal}
-          onClose={handleCloseTrivia}
-          topicOrder={activeTriviaTopic.order}
-          topicName={activeTriviaTopic.name}
-          studentProfile={profile}
-          onMasteryUpgrade={(updatedMap) => {
-            setMasteryMap(updatedMap)
-          }}
-        />
-      )}
+      {showTriviaModal && activeTriviaTopic && (() => {
+        const triviaMeta = getTopicSummary(activeTriviaTopic.order, activeTriviaTopic.name)
+        return (
+          <InfiniteTriviaModal
+            isOpen={showTriviaModal}
+            onClose={handleCloseTrivia}
+            topicOrder={activeTriviaTopic.order}
+            topicName={activeTriviaTopic.name}
+            ldsFormula={triviaMeta.correctMethod}
+            commonMistake={triviaMeta.commonMistake?.explanation}
+            grammarFocus={triviaMeta.concept}
+            studentProfile={profile}
+            onMasteryUpgrade={(updatedMap) => {
+              setMasteryMap(updatedMap)
+            }}
+          />
+        )
+      })()}
 
       {/* === Modal Interactivo: Short Reading con Audio TTS & IA === */}
       {activeReadingTopic && (

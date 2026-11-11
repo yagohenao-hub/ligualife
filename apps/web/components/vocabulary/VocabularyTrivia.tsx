@@ -1,341 +1,789 @@
-import React, { useState, useEffect } from 'react';
-import { VocabularyWordItem, VocabCategory } from '@/lib/vocabulary';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import {
+  Flame,
+  Trophy,
+  Star,
+  Sparkles,
+  CheckCircle2,
+  AlertCircle,
+  ArrowRight,
+  Check,
+  Volume2,
+  VolumeX,
+  Zap,
+  History
+} from 'lucide-react';
+import { VocabularyWordItem, VocabCategory, CefrLevel } from '@/lib/vocabulary';
+import {
+  TriviaQuestion,
+  TriviaDifficulty,
+  AnsweredTriviaQuestion,
+  getSeedQuestionsForVocabulary
+} from '@/lib/trivia-seed';
+import { soundEngine } from '@/lib/sound-effects';
 import styles from '@/styles/Vocabulary.module.css';
 
 interface Props {
   words: VocabularyWordItem[];
   category?: VocabCategory;
+  level?: CefrLevel;
 }
 
-interface TriviaQuestion {
-  targetWord: string;
-  contextSentence: string;
-  embeddedPassiveWord?: { word: string; meaning: string };
-  questionType: 'polysemy_trap' | 'cloze' | 'grammar_function';
-  options: { text: string; isCorrect: boolean; explanation?: string }[];
-}
+const normalizeKey = (q?: string | null): string =>
+  (q || '').trim().toLowerCase().replace(/\s+/g, ' ');
 
-const CATEGORY_TRIVIA_BANKS: Record<VocabCategory, TriviaQuestion[]> = {
-  time_words: [
-    {
-      targetWord: 'would',
-      contextSentence: 'If we had more time today, I ___ review the last five slides with you.',
-      embeddedPassiveWord: { word: 'slides', meaning: 'Diapositivas de la lección' },
-      questionType: 'cloze',
-      options: [
-        { text: 'would (Condicional: revisaría)', isCorrect: true, explanation: '"Would" añade el sentido condicional "-ría" a la acción.' },
-        { text: 'will (Futuro certero)', isCorrect: false, explanation: 'En una situación hipotética con "if had", no se usa will directo.' },
-        { text: 'must (Obligación estricta)', isCorrect: false, explanation: 'Expresa necesidad obligatoria, no deseo hipotético.' },
-        { text: 'can (Habilidad presente)', isCorrect: false, explanation: 'Para oraciones condicionales se requiere would o could.' }
-      ]
-    },
-    {
-      targetWord: 'did',
-      contextSentence: 'Why ___ you choose this specific topic for our speaking practice?',
-      embeddedPassiveWord: { word: 'speaking practice', meaning: 'Práctica de conversación activa' },
-      questionType: 'cloze',
-      options: [
-        { text: 'did (Auxiliar de pasado)', isCorrect: true, explanation: '"Did" absorbe el tiempo pasado en preguntas, dejando choose en forma base.' },
-        { text: 'do (Auxiliar de presente)', isCorrect: false, explanation: 'Pregunta por una elección ya realizada en el pasado.' },
-        { text: 'chose (Verbo ya en pasado)', isCorrect: false, explanation: 'No se puede usar verbo pasado directamente con inversión interrogativa.' },
-        { text: 'have (Haber)', isCorrect: false, explanation: 'Requeriría participio "chosen", no la forma base.' }
-      ]
-    },
-    {
-      targetWord: 'should',
-      contextSentence: 'You have a headache; you ___ take a short break before the meeting starts.',
-      embeddedPassiveWord: { word: 'short break', meaning: 'Pausa breve para descansar' },
-      questionType: 'grammar_function',
-      options: [
-        { text: 'should (Consejo / Recomendación amistosa)', isCorrect: true, explanation: '"Should" es el modal de recomendación y sugerencia.' },
-        { text: 'must (Imposición legal u obligatoria)', isCorrect: false, explanation: 'Demasiado severo para un simple dolor de cabeza.' },
-        { text: 'shall (Compromiso solemne en primera persona)', isCorrect: false, explanation: 'No se usa con "you" para dar consejos cotidianos.' },
-        { text: 'did (Pasado)', isCorrect: false, explanation: 'El consejo es para el presente/futuro inmediato.' }
-      ]
-    },
-    {
-      targetWord: 'must',
-      contextSentence: 'Look at the heavy traffic on the highway! We ___ be late for our flight if we don\'t leave now.',
-      embeddedPassiveWord: { word: 'highway', meaning: 'Autopista principal' },
-      questionType: 'cloze',
-      options: [
-        { text: 'will / might (Cálculo de probabilidad)', isCorrect: false, explanation: 'Revisa la deducción lógica de certeza.' },
-        { text: 'must (Deducción lógica certera)', isCorrect: true, explanation: '"Must be" expresa una alta deducción lógica basada en la evidencia.' },
-        { text: 'could to (Error de sintaxis con to)', isCorrect: false, explanation: 'Los modales jamás llevan "to".' },
-        { text: 'did (Pasado)', isCorrect: false, explanation: 'Habla de un evento inminente.' }
-      ]
-    }
-  ],
-  prepositions_in_on_at: [
-    {
-      targetWord: 'at',
-      contextSentence: 'Santiago\'s class begins promptly ___ 11:00 AM on Wednesday.',
-      embeddedPassiveWord: { word: 'promptly', meaning: 'Con estricta puntualidad' },
-      questionType: 'cloze',
-      options: [
-        { text: 'at (Horas precisas del reloj)', isCorrect: true, explanation: 'Para las horas del reloj se usa estrictamente "at".' },
-        { text: 'in (Espacio amplio o meses)', isCorrect: false, explanation: '"In" no se usa con horas de reloj.' },
-        { text: 'on (Días de la semana)', isCorrect: false, explanation: '"On" acompaña a "Wednesday", pero la hora puntual requiere "at".' },
-        { text: 'by (Junto a)', isCorrect: false, explanation: 'No marca la hora fija de inicio.' }
-      ]
-    },
-    {
-      targetWord: 'on',
-      contextSentence: 'All the printed reports are resting ___ the conference table.',
-      embeddedPassiveWord: { word: 'conference table', meaning: 'Mesa de reuniones' },
-      questionType: 'cloze',
-      options: [
-        { text: 'on (Superficie con contacto físico)', isCorrect: true, explanation: 'Estar encima de una mesa con contacto se expresa con "on".' },
-        { text: 'in (Dentro de un contenedor)', isCorrect: false, explanation: 'Una mesa no es una caja 3D en la que te metes dentro.' },
-        { text: 'at (Punto geográfico)', isCorrect: false, explanation: 'La superficie de contacto exige "on".' },
-        { text: 'under (Debajo)', isCorrect: false, explanation: 'Significa debajo, contrario a la intención.' }
-      ]
-    },
-    {
-      targetWord: 'in',
-      contextSentence: 'She moved to live and work ___ Colombia two years ago.',
-      embeddedPassiveWord: { word: 'two years ago', meaning: 'Hace dos años' },
-      questionType: 'cloze',
-      options: [
-        { text: 'in (Países y ciudades amplias)', isCorrect: true, explanation: 'Los países y ciudades llevan siempre "in".' },
-        { text: 'at (Puntos exactos con número)', isCorrect: false, explanation: 'Un país entero es un territorio amplio, no un punto exacto.' },
-        { text: 'on (Superficies)', isCorrect: false, explanation: 'No se usa con países soberanos.' },
-        { text: 'to (Dirección en movimiento)', isCorrect: false, explanation: 'Aquí indica residencia/ubicación con live and work.' }
-      ]
-    },
-    {
-      targetWord: 'about',
-      contextSentence: 'What are you two arguing ___? Keep calm and let\'s review the facts.',
-      embeddedPassiveWord: { word: 'arguing', meaning: 'Discutiendo acaloradamente' },
-      questionType: 'cloze',
-      options: [
-        { text: 'about (Preposition Stranding al final)', isCorrect: true, explanation: 'En preguntas naturales la preposición va al final: "What are you arguing about?".' },
-        { text: 'for (Para)', isCorrect: false, explanation: 'Argue se combina con "about" para el tema de la discusión.' },
-        { text: 'with (Con)', isCorrect: false, explanation: 'with iría si preguntara por la persona ("Who are you arguing with?").' },
-        { text: 'in (En)', isCorrect: false, explanation: 'No es la colocación correcta de argue.' }
-      ]
-    }
-  ],
-  wh_words: [
-    {
-      targetWord: 'where',
-      contextSentence: 'Excuse me, could you tell me ___ the train station is located?',
-      embeddedPassiveWord: { word: 'located', meaning: 'Situada o posicionada geográficamente' },
-      questionType: 'cloze',
-      options: [
-        { text: 'where (Lugar con orden directo sin auxiliar)', isCorrect: true, explanation: 'En preguntas indirectas se conserva el orden afirmativo: "where the station is".' },
-        { text: 'where is the (Inversión doble errónea)', isCorrect: false, explanation: 'No se repite la inversión "is" dos veces en la frase.' },
-        { text: 'when (Tiempo)', isCorrect: false, explanation: 'La estación es un lugar físico, no una hora.' },
-        { text: 'why (Razón)', isCorrect: false, explanation: 'Pregunta por ubicación geográfica.' }
-      ]
-    },
-    {
-      targetWord: 'which',
-      contextSentence: 'We have two meeting rooms available: ___ one would you prefer?',
-      embeddedPassiveWord: { word: 'available', meaning: 'Disponible para ser usada' },
-      questionType: 'cloze',
-      options: [
-        { text: 'which (Elección entre opciones limitadas conocidas)', isCorrect: true, explanation: 'Al haber exactamente dos alternativas delimitadas, se usa "Which".' },
-        { text: 'what (Opciones abiertas e infinitas)', isCorrect: false, explanation: '"What" se usa cuando no hay un conjunto cerrado definido.' },
-        { text: 'how (Modo)', isCorrect: false, explanation: 'No responde a la selección de una sala.' },
-        { text: 'who (Personas)', isCorrect: false, explanation: 'Las salas son objetos inanimados.' }
-      ]
-    },
-    {
-      targetWord: 'what',
-      contextSentence: 'This summary is exactly ___ we needed to complete the monthly report.',
-      embeddedPassiveWord: { word: 'monthly report', meaning: 'Informe mensual de progreso' },
-      questionType: 'grammar_function',
-      options: [
-        { text: 'what (Conector: "lo que / aquello que")', isCorrect: true, explanation: '"What" como conector traduce "aquello que / lo que necesitábamos".' },
-        { text: 'that (Que restrictivo)', isCorrect: false, explanation: 'Requeriría un antecedente explícito como "the thing that".' },
-        { text: 'which (El cual)', isCorrect: false, explanation: 'No funciona como pronombre nominal en este contexto.' },
-        { text: 'how (Cómo)', isCorrect: false, explanation: 'No coincide con el sentido de "lo que necesitábamos".' }
-      ]
-    }
-  ],
-  cefr_general: [
-    {
-      targetWord: 'run',
-      contextSentence: 'She had to ___ the marketing agency while her business partner was away on a business trip.',
-      embeddedPassiveWord: { word: 'business partner', meaning: 'Socio de negocios / Persona con quien compartes empresa' },
-      questionType: 'polysemy_trap',
-      options: [
-        { text: 'run (Administrar / Gestionar)', isCorrect: true, explanation: 'Aquí "run" significa operar o administrar una entidad, no correr físicamente.' },
-        { text: 'run (Desplazarse rápido a pie)', isCorrect: false, explanation: 'Este es el sentido físico de A1, pero no encaja con administrar una agencia.' },
-        { text: 'walk (Caminar)', isCorrect: false, explanation: 'No tiene sentido semántico en este contexto corporativo.' },
-        { text: 'sprint (Pique corto)', isCorrect: false, explanation: 'Solo se refiere a carreras atléticas cortas.' }
-      ]
-    },
-    {
-      targetWord: 'book',
-      contextSentence: 'Remember to ___ a quiet meeting room before tomorrow morning so we have a safe space to talk.',
-      embeddedPassiveWord: { word: 'safe', meaning: 'Seguro / Protegido de interrupciones' },
-      questionType: 'cloze',
-      options: [
-        { text: 'book (Reservar con anticipación)', isCorrect: true, explanation: '"To book a room" es la colocación estándar en inglés.' },
-        { text: 'book (Leer un libro)', isCorrect: false, explanation: 'En este caso actúa como verbo de reservación, no como el sustantivo.' },
-        { text: 'cancel (Cancelar)', isCorrect: false, explanation: 'El contexto pide asegurar la sala, no eliminarla.' },
-        { text: 'borrow (Pedir prestado)', isCorrect: false, explanation: 'No se usa para salas de reunión corporativas.' }
-      ]
-    },
-    {
-      targetWord: 'kind',
-      contextSentence: 'What ___ of leadership style does the new manager prefer to practice with the team?',
-      embeddedPassiveWord: { word: 'manager', meaning: 'Director / Quien administra y gestiona' },
-      questionType: 'polysemy_trap',
-      options: [
-        { text: 'kind (Tipo / Variedad)', isCorrect: true, explanation: '"What kind of..." pregunta por la clasificación o tipología.' },
-        { text: 'kind (Amable / Bondadoso)', isCorrect: false, explanation: 'Aunque es un significado real de A1, aquí no actúa como adjetivo de personalidad.' },
-        { text: 'cruel (Despiadado)', isCorrect: false, explanation: 'Antónimo del sentido adjetivo, no encaja sintácticamente.' },
-        { text: 'light (Ligero)', isCorrect: false, explanation: 'No corresponde a esta familia de preguntas.' }
-      ]
-    }
-  ]
-};
-
-export const VocabularyTrivia: React.FC<Props> = ({ words, category = 'time_words' }) => {
-  const [questions, setQuestions] = useState<TriviaQuestion[]>([]);
-  const [currentQIndex, setCurrentQIndex] = useState(0);
+export const VocabularyTrivia: React.FC<Props> = ({
+  words,
+  category = 'time_words',
+  level = 'A1'
+}) => {
+  const [queue, setQueue] = useState<TriviaQuestion[]>([]);
+  const [currentQuestion, setCurrentQuestion] = useState<TriviaQuestion | null>(null);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
-  const [score, setScore] = useState(0);
+  const [isAnswered, setIsAnswered] = useState(false);
   const [streak, setStreak] = useState(0);
-  const [isFinished, setIsFinished] = useState(false);
-  const [tooltipWord, setTooltipWord] = useState<string | null>(null);
+  const [bestStreak, setBestStreak] = useState(0);
+  const [masteredCount, setMasteredCount] = useState(0);
+  const [history, setHistory] = useState<AnsweredTriviaQuestion[]>([]);
+  const [showHistory, setShowHistory] = useState(false);
+  const [milestoneNotice, setMilestoneNotice] = useState<string | null>(null);
+  const [isMusicOn, setIsMusicOn] = useState(false);
+
+  // Refs sincronizados para garantizar un loop infinito sin cierres obsoletos (stale closures)
+  const queueRef = useRef<TriviaQuestion[]>([]);
+  const currentQuestionRef = useRef<TriviaQuestion | null>(null);
+  const seenQuestionsRef = useRef<Set<string>>(new Set());
+  const recentContextsRef = useRef<string[]>([]);
+  const isRefillingRef = useRef<boolean>(false);
+  const lastRefillAttemptRef = useRef<number>(0);
+  const autoAdvanceTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const storageKeySuffix = `vocab_${category}_${level}`;
+
+  const syncQueue = useCallback((newQueue: TriviaQuestion[]) => {
+    queueRef.current = newQueue;
+    setQueue(newQueue);
+  }, []);
+
+  const syncCurrentQuestion = useCallback((q: TriviaQuestion | null) => {
+    currentQuestionRef.current = q;
+    if (q?.question) {
+      const k = normalizeKey(q.question);
+      seenQuestionsRef.current.add(k);
+      recentContextsRef.current = [...recentContextsRef.current.slice(-18), q.question];
+    }
+    setCurrentQuestion(q);
+  }, []);
+
+  const clearAutoAdvanceTimer = useCallback(() => {
+    if (autoAdvanceTimerRef.current) {
+      clearTimeout(autoAdvanceTimerRef.current);
+      autoAdvanceTimerRef.current = null;
+    }
+  }, []);
 
   useEffect(() => {
-    const list = CATEGORY_TRIVIA_BANKS[category] || CATEGORY_TRIVIA_BANKS.time_words;
-    setQuestions(list);
-    setCurrentQIndex(0);
-    setSelectedOption(null);
-    setScore(0);
+    return () => {
+      clearAutoAdvanceTimer();
+      soundEngine.stopAmbientLoop();
+    };
+  }, [clearAutoAdvanceTimer]);
+
+  const buildFullVocabPool = useCallback((): TriviaQuestion[] => {
+    const baseSeeds = getSeedQuestionsForVocabulary(category, level, words);
+    let cachedAi: TriviaQuestion[] = [];
+    if (typeof window !== 'undefined') {
+      try {
+        const raw = localStorage.getItem(`ll_trivia_ai_pool_v2_${storageKeySuffix}`);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) cachedAi = parsed;
+        }
+      } catch {}
+    }
+
+    const combined = [...cachedAi, ...baseSeeds];
+    const unique: TriviaQuestion[] = [];
+    const seen = new Set<string>();
+    for (const item of combined) {
+      if (!item || !item.question || !Array.isArray(item.options) || item.options.length < 2) continue;
+      const k = normalizeKey(item.question);
+      if (!seen.has(k)) {
+        seen.add(k);
+        unique.push(item);
+      }
+    }
+    return unique;
+  }, [category, level, words, storageKeySuffix]);
+
+  // Inicializar cola de preguntas al cambiar de categoría o nivel
+  useEffect(() => {
+    clearAutoAdvanceTimer();
+    try {
+      const savedBest = localStorage.getItem(`ll_trivia_best_guest_${storageKeySuffix}`);
+      setBestStreak(savedBest ? parseInt(savedBest, 10) : 0);
+      const savedMastered = localStorage.getItem(`ll_trivia_mastered_guest_${storageKeySuffix}`);
+      setMasteredCount(savedMastered ? parseInt(savedMastered, 10) : 0);
+    } catch {}
+
+    seenQuestionsRef.current.clear();
+    recentContextsRef.current = [];
+    lastRefillAttemptRef.current = 0;
+
+    const pool = buildFullVocabPool();
+    if (pool.length > 0) {
+      syncCurrentQuestion(pool[0]);
+      syncQueue(pool.slice(1));
+    }
+
     setStreak(0);
-    setIsFinished(false);
-  }, [category, words]);
+    setSelectedOption(null);
+    setIsAnswered(false);
+    setHistory([]);
+    setShowHistory(false);
+    setMilestoneNotice(null);
+  }, [category, level, words, storageKeySuffix, buildFullVocabPool, syncCurrentQuestion, syncQueue, clearAutoAdvanceTimer]);
 
-  if (questions.length === 0) {
-    return <div style={{ color: '#a1a1aa', textAlign: 'center', padding: '3rem' }}>Cargando preguntas de trivia...</div>;
-  }
+  // Recarga de preguntas con IA en segundo plano
+  const refillQuestions = useCallback(async () => {
+    if (isRefillingRef.current) return;
+    const now = Date.now();
+    if (now - lastRefillAttemptRef.current < 6000) return;
 
-  if (isFinished) {
+    isRefillingRef.current = true;
+    lastRefillAttemptRef.current = now;
+
+    try {
+      const difficultyLevel: TriviaDifficulty =
+        masteredCount >= 8 || streak >= 7
+          ? 'advanced'
+          : masteredCount >= 4 || streak >= 3
+          ? 'intermediate'
+          : 'basic';
+
+      const res = await fetch('/api/student/trivia-questions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contextType: 'vocabulary',
+          vocabCategory: category,
+          cefrLevel: level,
+          topicOrder: 100,
+          topicName: `Vocabulario ${category} (${level})`,
+          difficultyLevel,
+          excludeContexts: recentContextsRef.current.slice(-15)
+        })
+      });
+
+      const data = await res.json();
+      if (data.ok && Array.isArray(data.questions) && data.questions.length > 0) {
+        const currentKey = normalizeKey(currentQuestionRef.current?.question);
+        const existingKeys = new Set(queueRef.current.map(q => normalizeKey(q.question)));
+
+        const fresh: TriviaQuestion[] = data.questions.filter((q: TriviaQuestion) => {
+          const k = normalizeKey(q?.question);
+          return k && k !== currentKey && !existingKeys.has(k);
+        });
+
+        if (fresh.length > 0) {
+          const updated = [...queueRef.current, ...fresh];
+          syncQueue(updated);
+
+          if (typeof window !== 'undefined' && data.source === 'ai') {
+            try {
+              const cacheKey = `ll_trivia_ai_pool_v2_${storageKeySuffix}`;
+              const prevRaw = localStorage.getItem(cacheKey);
+              const prevList: TriviaQuestion[] = prevRaw ? JSON.parse(prevRaw) : [];
+              const merged = [...fresh, ...prevList];
+              const deduped: TriviaQuestion[] = [];
+              const seen = new Set<string>();
+              for (const item of merged) {
+                const k = normalizeKey(item.question);
+                if (!seen.has(k)) {
+                  seen.add(k);
+                  deduped.push(item);
+                }
+              }
+              localStorage.setItem(cacheKey, JSON.stringify(deduped.slice(0, 40)));
+            } catch {}
+          }
+        }
+      }
+    } catch {
+      // Fallo silencioso, el sintetizador local mantiene el loop infinito activo
+    } finally {
+      isRefillingRef.current = false;
+    }
+  }, [category, level, masteredCount, streak, storageKeySuffix, syncQueue]);
+
+  useEffect(() => {
+    if (queue.length < 5 && !isRefillingRef.current) {
+      refillQuestions();
+    }
+  }, [queue.length, refillQuestions]);
+
+  const getGuaranteedDifferentQuestion = useCallback(
+    (avoidQuestionText?: string | null): TriviaQuestion | null => {
+      const avoidKey = normalizeKey(avoidQuestionText);
+      const fullPool = buildFullVocabPool();
+      if (fullPool.length === 0) return null;
+
+      const unseenDifferent = fullPool.filter(q => {
+        const k = normalizeKey(q.question);
+        return k !== avoidKey && !seenQuestionsRef.current.has(k);
+      });
+
+      if (unseenDifferent.length > 0) {
+        return {
+          ...unseenDifferent[0],
+          id: `${unseenDifferent[0].id}-fresh-${Date.now()}`
+        };
+      }
+
+      seenQuestionsRef.current.clear();
+      if (avoidKey) seenQuestionsRef.current.add(avoidKey);
+
+      const diffPool = fullPool.filter(q => normalizeKey(q.question) !== avoidKey);
+      const candidates = diffPool.length > 0 ? diffPool : fullPool;
+      const idx = Math.floor(Math.random() * candidates.length);
+      return {
+        ...candidates[idx],
+        id: `${candidates[idx].id}-cycle-${Date.now()}-${idx}`
+      };
+    },
+    [buildFullVocabPool]
+  );
+
+  const handleNext = useCallback(() => {
+    clearAutoAdvanceTimer();
+
+    const currentKey = normalizeKey(currentQuestionRef.current?.question);
+    const workingQueue = [...queueRef.current];
+    let nextQ: TriviaQuestion | null = null;
+
+    const unseenIdx = workingQueue.findIndex(q => {
+      const k = normalizeKey(q.question);
+      return k !== currentKey && !seenQuestionsRef.current.has(k);
+    });
+
+    if (unseenIdx !== -1) {
+      nextQ = workingQueue[unseenIdx];
+      workingQueue.splice(unseenIdx, 1);
+    } else {
+      const nonDupIdx = workingQueue.findIndex(q => normalizeKey(q.question) !== currentKey);
+      if (nonDupIdx !== -1) {
+        nextQ = workingQueue[nonDupIdx];
+        workingQueue.splice(nonDupIdx, 1);
+      } else {
+        workingQueue.length = 0;
+        nextQ = getGuaranteedDifferentQuestion(currentQuestionRef.current?.question);
+      }
+    }
+
+    if (!nextQ) {
+      nextQ = getGuaranteedDifferentQuestion(currentQuestionRef.current?.question);
+    }
+
+    if (workingQueue.length < 3) {
+      const pool = buildFullVocabPool();
+      const nextKey = normalizeKey(nextQ?.question);
+      const refillCandidates = pool.filter(p => {
+        const pk = normalizeKey(p.question);
+        return (
+          pk !== currentKey &&
+          pk !== nextKey &&
+          !seenQuestionsRef.current.has(pk) &&
+          !workingQueue.some(wq => normalizeKey(wq.question) === pk)
+        );
+      });
+      workingQueue.push(...refillCandidates.slice(0, 6));
+    }
+
+    if (nextQ) {
+      syncCurrentQuestion(nextQ);
+      syncQueue(workingQueue);
+    }
+
+    setSelectedOption(null);
+    setIsAnswered(false);
+    setMilestoneNotice(null);
+
+    if (workingQueue.length < 5 && !isRefillingRef.current) {
+      refillQuestions();
+    }
+  }, [
+    clearAutoAdvanceTimer,
+    getGuaranteedDifferentQuestion,
+    buildFullVocabPool,
+    syncCurrentQuestion,
+    syncQueue,
+    refillQuestions
+  ]);
+
+  const handleSelectOption = useCallback(
+    (index: number) => {
+      const activeQ = currentQuestionRef.current;
+      if (isAnswered || !activeQ) return;
+
+      clearAutoAdvanceTimer();
+      setSelectedOption(index);
+      setIsAnswered(true);
+
+      const isCorrect = index === activeQ.correctIndex;
+
+      if (isCorrect) {
+        soundEngine.playRewardChime();
+        const nextStreak = streak + 1;
+        setStreak(nextStreak);
+
+        if (nextStreak > bestStreak) {
+          setBestStreak(nextStreak);
+          try {
+            localStorage.setItem(`ll_trivia_best_guest_${storageKeySuffix}`, String(nextStreak));
+          } catch {}
+        }
+
+        const isMilestone =
+          [5, 10, 15, 20, 25].includes(nextStreak) ||
+          (nextStreak > 25 && nextStreak % 5 === 0);
+        if (isMilestone) {
+          soundEngine.playMilestoneFanfare();
+          const tierLabels: Record<number, string> = {
+            5: 'Bronce 🥉',
+            10: 'Plata 🥈',
+            15: 'Oro 🏆',
+            20: 'Diamante 💎',
+            25: 'Platino 👑'
+          };
+          setMilestoneNotice(
+            `¡Racha de ${nextStreak}! Alcanzaste el rango ${tierLabels[nextStreak] || 'Maestro 🔥'} en este módulo.`
+          );
+        }
+
+        setMasteredCount(prev => {
+          const next = prev + 1;
+          try {
+            localStorage.setItem(`ll_trivia_mastered_guest_${storageKeySuffix}`, String(next));
+          } catch {}
+          return next;
+        });
+
+        autoAdvanceTimerRef.current = setTimeout(() => {
+          handleNext();
+        }, 950);
+      } else {
+        setStreak(0);
+        setMilestoneNotice(null);
+
+        const working = [...queueRef.current];
+        const activeKey = normalizeKey(activeQ.question);
+        if (working.filter(q => normalizeKey(q.question) !== activeKey).length < 2) {
+          const filler = getGuaranteedDifferentQuestion(activeQ.question);
+          if (filler) working.unshift(filler);
+        }
+        const retryClone: TriviaQuestion = {
+          ...activeQ,
+          id: `${activeQ.id}-retry-${Date.now()}`
+        };
+        const insertPos = Math.min(3, Math.max(2, working.length));
+        working.splice(insertPos, 0, retryClone);
+        syncQueue(working);
+      }
+
+      const answeredItem: AnsweredTriviaQuestion = {
+        ...activeQ,
+        selectedIndex: index,
+        isCorrect,
+        answeredAt: Date.now()
+      };
+      setHistory(prev => [answeredItem, ...prev].slice(0, 3));
+    },
+    [
+      isAnswered,
+      streak,
+      bestStreak,
+      storageKeySuffix,
+      clearAutoAdvanceTimer,
+      handleNext,
+      getGuaranteedDifferentQuestion,
+      syncQueue
+    ]
+  );
+
+  if (!currentQuestion) {
     return (
-      <div className={styles.triviaCard} style={{ textAlign: 'center', padding: '3rem 1.5rem' }}>
-        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🏆</div>
-        <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '0.5rem' }}>
-          ¡Sesión de Trivia Completada!
-        </h3>
-        <p style={{ color: '#a1a1aa', marginBottom: '1.5rem' }}>
-          Puntuación final: <strong style={{ color: '#34d399', fontSize: '1.2rem' }}>{score} de {questions.length}</strong>
-        </p>
-        <button
-          onClick={() => {
-            setCurrentQIndex(0);
-            setSelectedOption(null);
-            setScore(0);
-            setStreak(0);
-            setIsFinished(false);
-          }}
-          className={styles.tabBtn}
-          style={{ margin: '0 auto' }}
-        >
-          🔄 Jugar otra ronda
-        </button>
+      <div style={{ color: '#a1a1aa', textAlign: 'center', padding: '3rem' }}>
+        Preparando motor de Trivia Infinita...
       </div>
     );
   }
 
-  const q = questions[currentQIndex];
+  const isCurrentCorrect = selectedOption === currentQuestion.correctIndex;
+  const activeDifficulty: TriviaDifficulty =
+    currentQuestion.difficulty ||
+    (masteredCount >= 8 || streak >= 7
+      ? 'advanced'
+      : masteredCount >= 4 || streak >= 3
+      ? 'intermediate'
+      : 'basic');
 
-  function handleSelect(index: number) {
-    if (selectedOption !== null) return;
-    setSelectedOption(index);
+  const diffBadge =
+    activeDifficulty === 'advanced'
+      ? { label: 'Nivel 3: Master 🔥', color: '#f43f5e', bg: 'rgba(244, 63, 94, 0.14)' }
+      : activeDifficulty === 'intermediate'
+      ? { label: 'Nivel 2: Ágil ⚡', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.14)' }
+      : { label: 'Nivel 1: Base 🌱', color: '#10b981', bg: 'rgba(16, 185, 129, 0.14)' };
 
-    const isCorrect = q.options[index].isCorrect;
-    if (isCorrect) {
-      setScore(prev => prev + 1);
-      setStreak(prev => prev + 1);
-    } else {
-      setStreak(0);
-    }
-  }
-
-  function handleNext() {
-    setSelectedOption(null);
-    if (currentQIndex + 1 < questions.length) {
-      setCurrentQIndex(prev => prev + 1);
-    } else {
-      setIsFinished(true);
-    }
-  }
+  const nextMilestoneTarget = Math.floor(streak / 5) * 5 + 5;
+  const progressInTier = ((streak % 5) / 5) * 100;
 
   return (
-    <div className={styles.triviaCard}>
-      {/* Header bar */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-        <span style={{ fontSize: '0.85rem', color: '#a1a1aa' }}>
-          Pregunta {currentQIndex + 1} de {questions.length}
-        </span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <span style={{ fontSize: '0.85rem', color: '#fbbf24', fontWeight: 700 }}>
-            🔥 Racha: {streak}
+    <div className={styles.triviaCard} style={{ position: 'relative' }}>
+      {/* Top Metrics & Dopamine Header */}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '0.75rem',
+          marginBottom: '0.85rem',
+          paddingBottom: '0.75rem',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.08)'
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+          <span
+            style={{
+              fontSize: '0.75rem',
+              fontWeight: 800,
+              padding: '0.25rem 0.65rem',
+              borderRadius: '999px',
+              color: diffBadge.color,
+              background: diffBadge.bg,
+              border: `1px solid ${diffBadge.color}40`
+            }}
+          >
+            {diffBadge.label}
           </span>
-          <span style={{ fontSize: '0.85rem', color: '#34d399', fontWeight: 700 }}>
-            Puntos: {score}
+
+          {streak >= 2 && (
+            <span
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.25rem',
+                fontSize: '0.75rem',
+                fontWeight: 800,
+                color: '#38bdf8',
+                background: 'rgba(56, 189, 248, 0.12)',
+                padding: '0.25rem 0.6rem',
+                borderRadius: '999px'
+              }}
+            >
+              <Zap size={13} /> Combo x{Math.min(5, Math.floor(streak / 2) + 1)}
+            </span>
+          )}
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flexWrap: 'wrap' }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.85rem', color: '#fbbf24', fontWeight: 800 }}>
+            <Flame size={15} /> Racha: {streak}
           </span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.85rem', color: '#c084fc', fontWeight: 700 }}>
+            <Trophy size={14} /> Récord: {bestStreak}
+          </span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.85rem', color: '#34d399', fontWeight: 700 }}>
+            <Star size={14} /> Dominio: {masteredCount}
+          </span>
+
+          <button
+            type="button"
+            onClick={() => {
+              const playing = soundEngine.toggleMusic();
+              setIsMusicOn(playing);
+            }}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.3rem',
+              background: isMusicOn ? 'rgba(56, 189, 248, 0.15)' : 'rgba(255, 255, 255, 0.05)',
+              border: '1px solid rgba(255, 255, 255, 0.12)',
+              color: isMusicOn ? '#38bdf8' : '#a1a1aa',
+              padding: '0.25rem 0.6rem',
+              borderRadius: '8px',
+              fontSize: '0.75rem',
+              fontWeight: 700,
+              cursor: 'pointer'
+            }}
+          >
+            {isMusicOn ? <Volume2 size={14} /> : <VolumeX size={14} />}
+            <span>{isMusicOn ? 'Música On' : 'Música Off'}</span>
+          </button>
+
+          {history.length > 0 && (
+            <button
+              type="button"
+              onClick={() => setShowHistory(prev => !prev)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.3rem',
+                background: showHistory ? 'rgba(168, 85, 247, 0.2)' : 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(168, 85, 247, 0.35)',
+                color: '#e9d5ff',
+                padding: '0.25rem 0.6rem',
+                borderRadius: '8px',
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                cursor: 'pointer'
+              }}
+            >
+              <History size={13} />
+              <span>Últimas {history.length}</span>
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Target Word Tag */}
-      <div style={{ marginBottom: '0.75rem' }}>
-        <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#a855f7', background: 'rgba(168, 85, 247, 0.1)', padding: '0.25rem 0.6rem', borderRadius: '6px', fontWeight: 700 }}>
-          {q.questionType === 'polysemy_trap' ? 'Trampa Polisémica' : q.questionType === 'grammar_function' ? 'Función Gramatical' : 'Completar Contexto'} • {q.targetWord}
+      {/* Progress Bar Toward Next Milestone */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.75rem',
+          marginBottom: '1rem'
+        }}
+      >
+        <span style={{ fontSize: '0.74rem', color: '#94a3b8', fontWeight: 600, whiteSpace: 'nowrap' }}>
+          Próximo rango a los <strong style={{ color: '#fbbf24' }}>{nextMilestoneTarget} aciertos</strong> ({streak % 5}/5)
         </span>
+        <div
+          style={{
+            flex: 1,
+            height: '6px',
+            background: 'rgba(255, 255, 255, 0.07)',
+            borderRadius: '999px',
+            overflow: 'hidden'
+          }}
+        >
+          <div
+            style={{
+              width: `${Math.max(8, progressInTier)}%`,
+              height: '100%',
+              background: 'linear-gradient(90deg, #38bdf8, #a855f7, #fbbf24)',
+              borderRadius: '999px',
+              transition: 'width 0.35s ease'
+            }}
+          />
+        </div>
       </div>
 
-      {/* Sentence */}
-      <div className={styles.contextSentence}>
-        {q.contextSentence}
+      {milestoneNotice && (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            background: 'linear-gradient(90deg, rgba(245, 158, 11, 0.2), rgba(168, 85, 247, 0.2))',
+            border: '1px solid rgba(251, 191, 36, 0.45)',
+            color: '#fef3c7',
+            padding: '0.6rem 0.9rem',
+            borderRadius: '10px',
+            marginBottom: '1rem',
+            fontSize: '0.85rem',
+            fontWeight: 700
+          }}
+        >
+          <span style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+            <Sparkles size={15} color="#fbbf24" />
+            {milestoneNotice}
+          </span>
+          <button
+            type="button"
+            onClick={() => setMilestoneNotice(null)}
+            style={{ background: 'transparent', border: 'none', color: '#fde68a', cursor: 'pointer' }}
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
+      {/* Archetype & Context Tag */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '0.75rem' }}>
+        <span
+          style={{
+            fontSize: '0.74rem',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+            color: '#c084fc',
+            background: 'rgba(168, 85, 247, 0.14)',
+            padding: '0.25rem 0.65rem',
+            borderRadius: '6px',
+            fontWeight: 800
+          }}
+        >
+          {currentQuestion.archetype === 'cloze'
+            ? 'Completar Contexto (Cloze)'
+            : currentQuestion.archetype === 'transform'
+            ? 'Contraste Polisémico'
+            : currentQuestion.archetype === 'detective'
+            ? 'Producción Inversa'
+            : currentQuestion.archetype === 'spot_trap'
+            ? 'Spot the Trap'
+            : 'Situación Comunicativa'}
+        </span>
+
+        {currentQuestion.contextScenario && (
+          <span style={{ fontSize: '0.78rem', color: '#94a3b8', fontWeight: 600 }}>
+            {currentQuestion.contextScenario}
+          </span>
+        )}
       </div>
 
-      {/* Options */}
+      {/* Question Prompt */}
+      <div className={styles.contextSentence} style={{ marginBottom: '1.15rem' }}>
+        {currentQuestion.question}
+      </div>
+
+      {/* 4 Options */}
       <div className={styles.optionsGrid}>
-        {q.options.map((opt, idx) => {
+        {currentQuestion.options.map((optText, idx) => {
+          const letter = ['A', 'B', 'C', 'D'][idx];
           const isSelected = selectedOption === idx;
+          const isRightOption = idx === currentQuestion.correctIndex;
           let optClass = styles.optionBtn;
 
-          if (selectedOption !== null) {
-            if (opt.isCorrect) optClass += ` ${styles.optionCorrect}`;
-            else if (isSelected && !opt.isCorrect) optClass += ` ${styles.optionWrong}`;
+          if (isAnswered) {
+            if (isRightOption) optClass += ` ${styles.optionCorrect}`;
+            else if (isSelected && !isRightOption) optClass += ` ${styles.optionWrong}`;
           }
 
           return (
             <button
-              key={idx}
-              onClick={() => handleSelect(idx)}
+              key={`${currentQuestion.id}-${idx}`}
+              type="button"
+              onClick={() => handleSelectOption(idx)}
               className={optClass}
-              disabled={selectedOption !== null}
+              disabled={isAnswered}
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.65rem' }}
             >
-              <span>{opt.text}</span>
-              {selectedOption !== null && opt.isCorrect && <span>✓</span>}
-              {selectedOption !== null && isSelected && !opt.isCorrect && <span>✗</span>}
+              <span style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', textAlign: 'left' }}>
+                <strong
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '24px',
+                    height: '24px',
+                    borderRadius: '6px',
+                    background: 'rgba(255,255,255,0.08)',
+                    fontSize: '0.78rem',
+                    flexShrink: 0
+                  }}
+                >
+                  {letter}
+                </strong>
+                <span>{optText}</span>
+              </span>
+              {isAnswered && isRightOption && <Check size={16} color="#34d399" />}
+              {isAnswered && isSelected && !isRightOption && <span>✗</span>}
             </button>
           );
         })}
       </div>
 
-      {/* Feedback & Next Button */}
-      {selectedOption !== null && (
-        <div style={{ marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-          <p style={{ margin: '0 0 1rem 0', fontSize: '0.9rem', color: '#d4d4d8' }}>
-            💡 {q.options[selectedOption].explanation || (q.options[selectedOption].isCorrect ? '¡Excelente análisis del significado!' : 'Revisa el contexto específico de esta oración.')}
-          </p>
-          <button
-            onClick={handleNext}
-            className={styles.tabBtn}
-            style={{ width: '100%', justifyContent: 'center' }}
-          >
-            {currentQIndex + 1 < questions.length ? 'Siguiente Pregunta →' : 'Ver Resultados Finales 🏆'}
-          </button>
+      {/* Instant Feedback */}
+      {isAnswered && (
+        <div style={{ marginTop: '1.2rem', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+          {isCurrentCorrect ? (
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                color: '#34d399',
+                fontWeight: 700,
+                fontSize: '0.92rem'
+              }}
+            >
+              <CheckCircle2 size={18} />
+              <span>¡Excelente! Respuesta correcta. Cargando siguiente reto...</span>
+            </div>
+          ) : (
+            <div
+              style={{
+                background: 'rgba(239, 68, 68, 0.08)',
+                border: '1px solid rgba(239, 68, 68, 0.28)',
+                borderRadius: '12px',
+                padding: '1rem'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', color: '#f87171', fontWeight: 800, fontSize: '0.85rem' }}>
+                  <AlertCircle size={16} /> Respuesta Incorrecta
+                </span>
+                <span style={{ fontSize: '0.85rem', color: '#e2e8f0' }}>
+                  Correcta: <strong style={{ color: '#34d399' }}>{currentQuestion.options[currentQuestion.correctIndex]}</strong>
+                </span>
+              </div>
+              <p style={{ margin: '0 0 0.5rem 0', fontSize: '0.88rem', color: '#e2e8f0', lineHeight: 1.5 }}>
+                {currentQuestion.explanation}
+              </p>
+              {currentQuestion.trapExplanation && (
+                <p style={{ margin: '0 0 0.9rem 0', fontSize: '0.82rem', color: '#fcd34d' }}>
+                  <strong>💡 Clave para recordar:</strong> {currentQuestion.trapExplanation}
+                </p>
+              )}
+              <button
+                type="button"
+                onClick={handleNext}
+                className={styles.tabBtn}
+                style={{ width: '100%', justifyContent: 'center', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+              >
+                <span>Continuar al siguiente reto</span>
+                <ArrowRight size={15} />
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Mini Historial de las últimas 3 preguntas */}
+      {showHistory && history.length > 0 && (
+        <div
+          style={{
+            marginTop: '1.25rem',
+            padding: '1rem',
+            background: 'rgba(15, 23, 42, 0.85)',
+            border: '1px solid rgba(168, 85, 247, 0.3)',
+            borderRadius: '12px'
+          }}
+        >
+          <h4 style={{ margin: '0 0 0.75rem 0', fontSize: '0.85rem', color: '#e9d5ff' }}>
+            Últimas {history.length} preguntas respondidas
+          </h4>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+            {history.map((h, i) => (
+              <div
+                key={i}
+                style={{
+                  padding: '0.65rem',
+                  borderRadius: '8px',
+                  background: 'rgba(255, 255, 255, 0.03)',
+                  borderLeft: `3px solid ${h.isCorrect ? '#10b981' : '#ef4444'}`
+                }}
+              >
+                <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#f8fafc', marginBottom: '0.25rem' }}>
+                  {h.question}
+                </div>
+                <div style={{ fontSize: '0.78rem', color: '#34d399', marginBottom: '0.2rem' }}>
+                  ✓ {h.options[h.correctIndex]}
+                </div>
+                <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{h.explanation}</div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>

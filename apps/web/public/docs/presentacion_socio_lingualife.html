@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LinguaLife — Executive Briefing & Architecture Deck (Partner Edition)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #07090e;
+      --bg-card: rgba(15, 18, 28, 0.82);
+      --bg-card-hover: rgba(24, 29, 44, 0.95);
+      --border-card: rgba(255, 255, 255, 0.08);
+      --border-active: rgba(139, 92, 246, 0.4);
+      --accent-purple: #8b5cf6;
+      --accent-purple-light: #a78bfa;
+      --accent-violet: #6d28d9;
+      --accent-emerald: #10b981;
+      --accent-cyan: #06b6d4;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      --text-main: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 12% 18%, rgba(109, 40, 217, 0.18) 0%, transparent 45%),
+        radial-gradient(circle at 88% 25%, rgba(6, 182, 212, 0.14) 0%, transparent 40%),
+        radial-gradient(circle at 50% 85%, rgba(16, 185, 129, 0.12) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.85) 0%, transparent 100%);
+      background-attachment: fixed;
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Top Navigation Bar */
+    header.deck-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      background: rgba(7, 9, 14, 0.85);
+      border-bottom: 1px solid var(--border-card);
+      padding: 0.85rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-logo {
+      width: 34px;
+      height: 34px;
+      background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 1.1rem;
+      color: #fff;
+      box-shadow: 0 0 16px rgba(139, 92, 246, 0.4);
+    }
+
+    .brand-name {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #fff;
+    }
+
+    .brand-pill {
+      font-size: 0.7rem;
+      padding: 0.2rem 0.55rem;
+      border-radius: 9999px;
+      background: rgba(139, 92, 246, 0.16);
+      border: 1px solid rgba(139, 92, 246, 0.35);
+      color: var(--accent-purple-light);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .deck-controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .slide-counter {
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.04);
+      padding: 0.3rem 0.75rem;
+      border-radius: 6px;
+      border: 1px solid var(--border-card);
+    }
+
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-card);
+      color: var(--text-main);
+      padding: 0.45rem 0.9rem;
+      border-radius: 7px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .nav-btn:hover {
+      background: rgba(139, 92, 246, 0.2);
+      border-color: var(--accent-purple);
+      color: #fff;
+      transform: translateY(-1px);
+    }
+
+    .nav-btn.primary {
+      background: linear-gradient(135deg, var(--accent-violet), var(--accent-purple));
+      border: none;
+      box-shadow: 0 4px 14px rgba(109, 40, 217, 0.35);
+    }
+
+    .nav-btn.primary:hover {
+      box-shadow: 0 6px 20px rgba(109, 40, 217, 0.55);
+    }
+
+    /* Deck Layout */
+    main.deck-container {
+      flex: 1;
+      max-width: 1220px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 4rem;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* Individual Slide Styles */
+    .slide {
+      display: none;
+      animation: fadeIn 0.35s ease-out forwards;
+    }
+
+    .slide.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.995);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* Badge & Eyebrow */
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent-purple-light);
+      margin-bottom: 0.75rem;
+    }
+
+    .eyebrow-emerald { color: var(--accent-emerald); }
+    .eyebrow-cyan { color: var(--accent-cyan); }
+    .eyebrow-amber { color: var(--accent-amber); }
+    .eyebrow-rose { color: var(--accent-rose); }
+
+    .slide-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.75rem;
+      background: linear-gradient(135deg, #ffffff 40%, #cbd5e1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .slide-desc {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      max-width: 860px;
+      margin-bottom: 2rem;
+    }
+
+    /* Grid & Cards */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: 14px;
+      padding: 1.5rem;
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card:hover {
+      border-color: var(--border-active);
+      background: var(--bg-card-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    .card-highlight {
+      border-color: rgba(139, 92, 246, 0.4);
+      background: linear-gradient(180deg, rgba(139, 92, 246, 0.08) 0%, rgba(15, 18, 28, 0.9) 100%);
+    }
+
+    .card-emerald {
+      border-color: rgba(16, 185, 129, 0.3);
+      background: linear-gradient(180deg, rgba(16, 185, 129, 0.06) 0%, rgba(15, 18, 28, 0.9) 100%);
+    }
+
+    .card-cyan {
+      border-color: rgba(6, 182, 212, 0.3);
+      background: linear-gradient(180deg, rgba(6, 182, 212, 0.06) 0%, rgba(15, 18, 28, 0.9) 100%);
+    }
+
+    .card-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-body {
+      font-size: 0.92rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .card-body p {
+      margin-bottom: 0.6rem;
+    }
+
+    .card-body p:last-child {
+      margin-bottom: 0;
+    }
+
+    .status-tag {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.2rem 0.5rem;
+      border-radius: 9999px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .status-live {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.35);
+    }
+
+    .status-beta {
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.35);
+    }
+
+    .status-scale {
+      background: rgba(139, 92, 246, 0.15);
+      color: #c084fc;
+      border: 1px solid rgba(139, 92, 246, 0.35);
+    }
+
+    /* Metric Big Callout */
+    .metric-box {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-card);
+      border-radius: 12px;
+      padding: 1.25rem;
+      text-align: center;
+    }
+
+    .metric-value {
+      font-size: 2.4rem;
+      font-weight: 900;
+      font-family: var(--mono);
+      background: linear-gradient(135deg, #fff, var(--accent-purple-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.1;
+      margin-bottom: 0.25rem;
+    }
+
+    .metric-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    /* Timeline & Architecture Diagrams */
+    .arch-flow {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .arch-layer {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .layer-badge {
+      width: 140px;
+      flex-shrink: 0;
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.5rem 0.75rem;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .layer-content {
+      flex: 1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      align-items: center;
+    }
+
+    .chip {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 0.4rem 0.8rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #f1f5f9;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .chip-green { border-color: rgba(16, 185, 129, 0.4); background: rgba(16, 185, 129, 0.08); }
+    .chip-purple { border-color: rgba(139, 92, 246, 0.4); background: rgba(139, 92, 246, 0.08); }
+    .chip-cyan { border-color: rgba(6, 182, 212, 0.4); background: rgba(6, 182, 212, 0.08); }
+    .chip-amber { border-color: rgba(245, 158, 11, 0.4); background: rgba(245, 158, 11, 0.08); }
+
+    /* Code Snippets / Tables */
+    .code-pill {
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+    }
+
+    /* Comparison Table */
+    .table-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    table.exec-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    table.exec-table th {
+      background: rgba(255, 255, 255, 0.04);
+      padding: 1rem 1.25rem;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-card);
+    }
+
+    table.exec-table td {
+      padding: 1.15rem 1.25rem;
+      font-size: 0.9rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: var(--text-secondary);
+      vertical-align: middle;
+    }
+
+    table.exec-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    table.exec-table tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    /* Slide Footer Navigation */
+    footer.deck-footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      backdrop-filter: blur(14px);
+      background: rgba(7, 9, 14, 0.85);
+      border-top: 1px solid var(--border-card);
+      padding: 0.75rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 90;
+    }
+
+    .slide-dots {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .dot {
+      width: 28px;
+      height: 6px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.15);
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .dot.active {
+      background: var(--accent-purple);
+      width: 48px;
+      box-shadow: 0 0 10px rgba(139, 92, 246, 0.6);
+    }
+
+    .shortcut-hint {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-family: var(--mono);
+    }
+
+    kbd {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+      padding: 0.15rem 0.35rem;
+      font-size: 0.7rem;
+      color: #fff;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .grid-2, .grid-3, .grid-4 {
+        grid-template-columns: 1fr;
+      }
+      .slide-title {
+        font-size: 1.9rem;
+      }
+      .arch-layer {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .layer-badge {
+        width: 100%;
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header class="deck-header">
+    <div class="brand">
+      <div class="brand-logo">L</div>
+      <div class="brand-name">LinguaLife</div>
+      <span class="brand-pill">Partner Briefing 2026</span>
+    </div>
+
+    <div class="deck-controls">
+      <span class="slide-counter" id="slideIndicator">Slide 1 / 8</span>
+      <button class="nav-btn" onclick="prevSlide()" title="Diapositiva Anterior (←)">
+        ← Anterior
+      </button>
+      <button class="nav-btn primary" onclick="nextSlide()" title="Siguiente Diapositiva (→)">
+        Siguiente →
+      </button>
+    </div>
+  </header>
+
+  <!-- Slide Canvas -->
+  <main class="deck-container">
+
+    <!-- SLIDE 1: Executive Cover -->
+    <section class="slide active" id="slide-1">
+      <span class="eyebrow eyebrow-cyan">⚡ Confidencial &amp; Estratégico · Onboarding de Socio</span>
+      <h1 class="slide-title">LinguaLife: El Ecosistema Híbrido de Alto Rendimiento en Inglés</h1>
+      <p class="slide-desc">
+        Fusionamos <strong>Coaching Ejecutivo Humano 1-a-1</strong> con un <strong>Ecosistema de IA Neuromuscular 24/7</strong> (Web App + WhatsApp Pocket Coach). Resolvemos el problema del 90% de estudiantes que se quedan estancados entre B1 y B2.
+      </p>
+
+      <div class="grid-4" style="margin-bottom: 2rem;">
+        <div class="metric-box">
+          <div class="metric-value">1-a-1 + IA</div>
+          <div class="metric-label">Modelo Híbrido</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-value">120+</div>
+          <div class="metric-label">Flashcards 3D &amp; Decks</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-value">15 Clases</div>
+          <div class="metric-label">Retos por Tema en Repaso</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-value">24/7</div>
+          <div class="metric-label">Pocket Coach WhatsApp</div>
+        </div>
+      </div>
+
+      <div class="card card-highlight">
+        <div class="card-title">
+          <span>🎯 La Tesis de Negocio</span>
+          <span class="status-tag status-live">Validado</span>
+        </div>
+        <div class="card-body">
+          <p>
+            <strong>El problema del mercado:</strong> Las apps tradicionales (Duolingo, Babbel) generan dopamina pero no fluidez ejecutiva en situaciones de presión. Los cursos tradicionales de instituto (Open English, academias locales) son pasivos, aburridos y carecen de seguimiento diario individualizado.
+          </p>
+          <p>
+            <strong>La propuesta LinguaLife:</strong> Diseñamos una metodología de <em>gimnasia refleja neuromuscular</em>. Las sesiones humanas se dedican a la producción de alta presión (entrevistas TOEFL, debates directivos, pasiva institucional), mientras la plataforma web y el bot de WhatsApp mantienen activo el cerebro del alumno los otros 6 días de la semana con micro-estímulos medibles.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 2: Product Suite Overview -->
+    <section class="slide" id="slide-2">
+      <span class="eyebrow eyebrow-emerald">📦 Suite de Producto</span>
+      <h1 class="slide-title">Qué Hay Construido y Funcionando Hoy</h1>
+      <p class="slide-desc">
+        La plataforma está completamente funcional en producción y beta activa con estudiantes antiguos. No es un wireframe ni un prototipo en Figma: es software desplegado con backend relacional y automatización en tiempo real.
+      </p>
+
+      <div class="grid-3">
+        <div class="card card-highlight">
+          <div class="card-icon">🧠</div>
+          <div class="card-title">
+            <span>Portal Alumno &amp; Repaso</span>
+            <span class="status-tag status-live">Live</span>
+          </div>
+          <div class="card-body">
+            <p><strong>Ruta:</strong> <span class="code-pill">/student</span></p>
+            <p>Acceso por PIN institucional sin fricción de contraseñas olvidadas. Dashboard personalizado que muestra próximas sesiones, saldo de tokens de reposición y acceso al <strong>Gimnasio Mental de Repaso</strong> (15 retos interactivos por cada tema curricular cursado).</p>
+          </div>
+        </div>
+
+        <div class="card card-emerald">
+          <div class="card-icon">🤖</div>
+          <div class="card-title">
+            <span>WhatsApp Pocket Coach</span>
+            <span class="status-tag status-live">Live</span>
+          </div>
+          <div class="card-body">
+            <p><strong>Motor:</strong> Evolution API + Gemini AI</p>
+            <p>Bot automatizado que acompaña al alumno 24/7 en WhatsApp. Envía micro-retos diarios adaptados al nivel, evalúa notas de voz y textos, ofrece feedback fonético instantáneo y reporta actividad al backend.</p>
+          </div>
+        </div>
+
+        <div class="card card-cyan">
+          <div class="card-icon">🃏</div>
+          <div class="card-title">
+            <span>Flashcards 3D &amp; Decks</span>
+            <span class="status-tag status-live">Live</span>
+          </div>
+          <div class="card-body">
+            <p><strong>Ruta:</strong> <span class="code-pill">/student/flashcards</span></p>
+            <p>Mazo de 120 cartas divididas en 8 categorías: Vocabulario General (A1 a C2), Oficinas y Lugares, Nubes Conceptuales y Phrasal Verbs Críticos. Con audio nativo, transcripción fonética IPA y anclas nemotécnicas espaciales.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-icon">🎯</div>
+          <div class="card-title">
+            <span>Trivia Infinita Adaptativa</span>
+            <span class="status-tag status-live">Live</span>
+          </div>
+          <div class="card-body">
+            <p><strong>Ruta:</strong> <span class="code-pill">/api/student/trivia-questions</span></p>
+            <p>Generación algorítmica de retos gramaticales y de colocación con gamificación, rachas y feedback inmediato. Mantiene al estudiante entrenando en tiempos muertos (móvil).</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-icon">📅</div>
+          <div class="card-title">
+            <span>Motor de Agendamiento</span>
+            <span class="status-tag status-live">Live</span>
+          </div>
+          <div class="card-body">
+            <p><strong>Ruta:</strong> <span class="code-pill">/dashboard</span> y <span class="code-pill">/api/student/reschedule</span></p>
+            <p>Sincronización bidireccional profesor-alumno. Cancelaciones hasta 24h antes devuelven un <em>Token de Reposición</em> automático. El alumno puede canjearlo en slots libres de profesores sin intervención manual.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-icon">📊</div>
+          <div class="card-title">
+            <span>Panel de Admin &amp; Métricas</span>
+            <span class="status-tag status-live">Live</span>
+          </div>
+          <div class="card-body">
+            <p><strong>Ruta:</strong> <span class="code-pill">/admin</span></p>
+            <p>Control centralizado de profesores, horas dictadas, gestión de festivos corporativos, asignación de cursos intensivos, simulación de progreso y monitoreo de retención.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 3: System Architecture -->
+    <section class="slide" id="slide-3">
+      <span class="eyebrow eyebrow-purple">🏗️ Arquitectura Técnica</span>
+      <h1 class="slide-title">El Stack Tecnológico y Flujo de Datos</h1>
+      <p class="slide-desc">
+        Diseñado con tecnologías modernas, altamente escalables y de bajo costo operativo. La arquitectura desacopla la experiencia de usuario web de los motores de mensajería y LLMs.
+      </p>
+
+      <div class="arch-flow">
+        <!-- Layer 1 -->
+        <div class="arch-layer">
+          <div class="layer-badge" style="background: rgba(139, 92, 246, 0.2); color: #c4b5fd; border: 1px solid rgba(139, 92, 246, 0.4);">
+            1. Capa Cliente
+          </div>
+          <div class="layer-content">
+            <span class="chip chip-purple">Next.js 14/16 (React + TS)</span>
+            <span class="chip">CSS Modules Mobile-First</span>
+            <span class="chip">Lucide React Icons</span>
+            <span class="chip">HTML5 Audio API</span>
+            <span class="chip">Web Speech Synthesizer</span>
+            <span class="chip">Progressive Web Design</span>
+          </div>
+        </div>
+
+        <!-- Layer 2 -->
+        <div class="arch-layer">
+          <div class="layer-badge" style="background: rgba(6, 182, 212, 0.2); color: #67e8f9; border: 1px solid rgba(6, 182, 212, 0.4);">
+            2. Capa Backend &amp; APIs
+          </div>
+          <div class="layer-content">
+            <span class="chip chip-cyan">Next.js API Routes (Node.js)</span>
+            <span class="chip">Unified Database Adapter (Supabase Primary + Airtable Fallback)</span>
+            <span class="chip">Token System Middleware</span>
+            <span class="chip">Cron Dispatcher (Railway/Vercel)</span>
+          </div>
+        </div>
+
+        <!-- Layer 3 -->
+        <div class="arch-layer">
+          <div class="layer-badge" style="background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.4);">
+            3. Datos &amp; Persistencia
+          </div>
+          <div class="layer-content">
+            <span class="chip chip-green">Supabase (PostgreSQL Cloud)</span>
+            <span class="chip">Tablas: students, teachers, sessions, session_participants</span>
+            <span class="chip">curriculum_topics, student_topic_progress</span>
+            <span class="chip">Row-Level Security Ready</span>
+          </div>
+        </div>
+
+        <!-- Layer 4 -->
+        <div class="arch-layer">
+          <div class="layer-badge" style="background: rgba(245, 158, 11, 0.2); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.4);">
+            4. Inteligencia Artificial &amp; WhatsApp
+          </div>
+          <div class="layer-content">
+            <span class="chip chip-amber">Google Gemini Pro / Flash 1.5</span>
+            <span class="chip">Evolution API (WhatsApp Cloud Bridge en Railway)</span>
+            <span class="chip">Prompt Engineering Neuromuscular</span>
+            <span class="chip">Dynamic Micro-Reading Engine</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 4: The Pedagogical Engine -->
+    <section class="slide" id="slide-4">
+      <span class="eyebrow eyebrow-amber">⚡ Ventaja Competitiva</span>
+      <h1 class="slide-title">El Motor Pedagógico: Del Saber Teórico al Reflejo</h1>
+      <p class="slide-desc">
+        La mayoría de academias enseñan "reglas gramaticales". LinguaLife entrena <em>automatismos musculares subconscientes</em> para profesionales y candidatos al TOEFL iBT.
+      </p>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">
+            <span>❌ La Escuela Tradicional (B1-B2 Stagnation)</span>
+          </div>
+          <div class="card-body">
+            <p>• <strong>Traducción mental lenta:</strong> El estudiante arma mentalmente la frase en español y busca cada palabra en inglés.</p>
+            <p>• <strong>Explicaciones de libro:</strong> Reglas rígidas ("Passive = Object + Be + Past Participle") que se congelan en una conversación de negocios real.</p>
+            <p>• <strong>Vicios literales agresivos:</strong> Decir <em>"You made a mistake"</em> en juntas corporativas o <em>"We need to discuss this"</em> sin distanciamiento diplomático.</p>
+            <p>• <strong>Práctica intermitente:</strong> Estudiar 2 horas a la semana y olvidar el 80% en los 5 días de silencio.</p>
+          </div>
+        </div>
+
+        <div class="card card-highlight">
+          <div class="card-title">
+            <span>✅ La Metodología LinguaLife (Neuromuscular C1)</span>
+          </div>
+          <div class="card-body">
+            <p>• <strong>Disparos de respuesta en &lt; 3 segundos:</strong> Si el alumno tarda más de 3 segundos, la tarjeta vuelve al fondo del mazo activo.</p>
+            <p>• <strong>Pasiva Institucional &amp; Phrasal Verbs:</strong> Blindaje corporativo (<em>"A discrepancy was identified"</em> / <em>"The meeting was called off"</em>) sin culpar agresivamente.</p>
+            <p>• <strong>Inversiones &amp; Fluidez C1:</strong> Dominio de estructuras de alto impacto (<em>"Seldom have we witnessed..."</em>) para entrevistas ejecutivas y TOEFL.</p>
+            <p>• <strong>Bucle de contacto diario 24/7:</strong> El Pocket Coach en WhatsApp asegura entre 5 y 10 minutos de gimnasia diaria sin esfuerzo logístico.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 5: WhatsApp Pocket Coach Deep Dive -->
+    <section class="slide" id="slide-5">
+      <span class="eyebrow eyebrow-cyan">📱 Inteligencia Artificial en WhatsApp</span>
+      <h1 class="slide-title">Pocket Coach: La Retención de Usuarios al 100%</h1>
+      <p class="slide-desc">
+        El gran talón de Aquiles de la educación online es el abandono (churn). El Pocket Coach vive dentro de la app que el usuario ya abre 50 veces al día: <strong>WhatsApp</strong>.
+      </p>
+
+      <div class="grid-3" style="margin-bottom: 1.5rem;">
+        <div class="card">
+          <div class="card-icon">⚡</div>
+          <div class="card-title">Micro-Retos Diarios</div>
+          <div class="card-body">
+            Envío programado de un estímulo en español colombiano o de negocios para traducir o corregir en menos de 1 minuto. El estudiante responde por nota de voz o texto.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-icon">🎙️</div>
+          <div class="card-title">Feedback Auditivo Inmediato</div>
+          <div class="card-body">
+            La IA detecta acentuaciones erróneas del hispanohablante (como pronunciar fuerte "WAS" /wɑːz/ en vez de reducirlo al sonido Schwa /wəz/) y devuelve un audio de modelo nativo.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-icon">📈</div>
+          <div class="card-title">Sincronización con el Profe</div>
+          <div class="card-body">
+            Los errores recurrentes en WhatsApp se registran en Supabase y alimentan las notas de la siguiente clase humana del profesor, logrando personalización quirúrgica.
+          </div>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <table class="exec-table">
+          <thead>
+            <tr>
+              <th>Componente</th>
+              <th>Tecnología</th>
+              <th>Estado Operativo</th>
+              <th>Impacto en el Negocio</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Instancia WhatsApp</strong></td>
+              <td>Evolution API en Railway / Baileys</td>
+              <td><span class="status-tag status-live">Operativo</span></td>
+              <td>0 costo por mensaje de plantilla (ahorro de miles de USD frente a Meta Cloud API).</td>
+            </tr>
+            <tr>
+              <td><strong>Cerebro Conversacional</strong></td>
+              <td>Google Gemini 1.5 Flash</td>
+              <td><span class="status-tag status-live">Operativo</span></td>
+              <td>Respuestas en menos de 1.2 segundos con contexto de nivel CEFR y corrección cálida.</td>
+            </tr>
+            <tr>
+              <td><strong>Disparador Automatizado</strong></td>
+              <td>Cron Jobs en Node / Next API</td>
+              <td><span class="status-tag status-live">Operativo</span></td>
+              <td>Despacho automatizado a las 8:00 AM hora local del alumno según su huso horario.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SLIDE 6: Business Model & Economics -->
+    <section class="slide" id="slide-6">
+      <span class="eyebrow eyebrow-emerald">💰 Modelo de Negocio &amp; Monetización</span>
+      <h1 class="slide-title">Unit Economics y Líneas de Ingreso</h1>
+      <p class="slide-desc">
+        LinguaLife opera con un modelo híbrido B2C y B2B de alto margen. La automatización por IA reduce drásticamente las horas de soporte y preparación que tradicionalmente encarecen a una academia.
+      </p>
+
+      <div class="grid-3" style="margin-bottom: 2rem;">
+        <div class="card card-highlight">
+          <div class="card-icon">⭐</div>
+          <div class="card-title">1. Intensivo 1-a-1 C1 / TOEFL</div>
+          <div class="card-body">
+            <p><strong>Público:</strong> Ejecutivos, directores, profesionales migrando o postulando a maestrías en el exterior.</p>
+            <p><strong>Oferta:</strong> Paquetes de 1 a 3 meses (8 a 24 sesiones 1-a-1 de alta presión) + Acceso total Web + WhatsApp Coach 24/7.</p>
+            <p><strong>Ticket promedio:</strong> $300 - $650 USD / mes.</p>
+          </div>
+        </div>
+
+        <div class="card card-cyan">
+          <div class="card-icon">🏢</div>
+          <div class="card-title">2. Planes B2B Corporativos</div>
+          <div class="card-body">
+            <p><strong>Público:</strong> Empresas de software, fintechs y consultoras con equipos que necesitan negociar en inglés.</p>
+            <p><strong>Oferta:</strong> Licencias mensuales por colaborador con dashboard gerencial de asistencia y fluidez neuromuscular.</p>
+            <p><strong>Ticket:</strong> Contratos anuales recurrentes ($1,500 - $5,000 USD / mes por empresa).</p>
+          </div>
+        </div>
+
+        <div class="card card-emerald">
+          <div class="card-icon">🚀</div>
+          <div class="card-title">3. Membresía Solo-IA (Escala)</div>
+          <div class="card-body">
+            <p><strong>Público:</strong> Estudiantes que no pueden costear coach privado pero quieren la gimnasia diaria.</p>
+            <p><strong>Oferta:</strong> Pocket Coach WhatsApp 24/7 + Portal Web + Flashcards 3D + 1 sesión grupal quincenal de speaking.</p>
+            <p><strong>Ticket:</strong> $29 - $49 USD / mes (Margen bruto &gt; 85%).</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Estructura de Costos Actual (Ultra Lean)</div>
+          <div class="card-body">
+            <p>• <strong>Infraestructura Web (Vercel):</strong> Tier gratuito / Pro ($20/mes).</p>
+            <p>• <strong>Base de Datos (Supabase):</strong> Free / Pro Tier ($25/mes).</p>
+            <p>• <strong>Evolution API (Railway Server):</strong> ~$5 - $10 USD/mes.</p>
+            <p>• <strong>APIs de IA (Gemini Flash):</strong> Menos de $0.001 por reto resuelto.</p>
+            <p><strong>Resultado:</strong> Cada nuevo alumno añade casi 95% de margen directo en los módulos de software.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Retención &amp; LTV (Valor de Vida)</div>
+          <div class="card-body">
+            <p>• El alumno promedio permanece entre <strong>4 y 8 meses</strong> gracias a los hitos de exámenes (TOEFL/IELTS) o ascensos laborales.</p>
+            <p>• El sistema de <strong>Tokens de Reposición</strong> reduce la fricción de cancelación y elimina solicitudes de reembolso por inasistencia justificada.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 7: Strategic Milestones & Roadmap -->
+    <section class="slide" id="slide-7">
+      <span class="eyebrow eyebrow-purple">🗺️ Hoja de Ruta Estratégica</span>
+      <h1 class="slide-title">Sprint de Escalamiento &amp; Próximos 90 Días</h1>
+      <p class="slide-desc">
+        Habiendo consolidado la plataforma técnica, la fase actual es de <strong>conversión comercial agresiva, cierre de alianzas y empaquetamiento B2B</strong>.
+      </p>
+
+      <div class="grid-3">
+        <div class="card card-highlight">
+          <div class="card-title">
+            <span>Fase 1: Conversión Beta</span>
+            <span class="status-tag status-live">En Curso</span>
+          </div>
+          <div class="card-body">
+            <p>• Reenganche de estudiantes antiguos en el nuevo formato intensivo C1 (ej. casos Laura Arango, Andrés Restrepo).</p>
+            <p>• Afianzar la SIM corporativa en celular dedicado para asegurar disponibilidad ininterrumpida de Pocket Coach en WhatsApp.</p>
+            <p>• Generación de primeros testimonios en video y métricas de aceleración medible.</p>
+          </div>
+        </div>
+
+        <div class="card card-emerald">
+          <div class="card-title">
+            <span>Fase 2: Embudo &amp; Tráfico</span>
+            <span class="status-tag status-beta">Próximos 30 Días</span>
+          </div>
+          <div class="card-body">
+            <p>• Lanzamiento de campaña orgánica y pagada en TikTok / Instagram Reels con el hook: <em>"Tu profe de IA en WhatsApp + coach humano C1"</em>.</p>
+            <p>• Funnel de conversión directa con clase de diagnóstico neuromuscular gratuita.</p>
+            <p>• Legaltech Lean: Formalización de términos de uso, Habeas Data WhatsApp y contratos de adhesión para estudiantes.</p>
+          </div>
+        </div>
+
+        <div class="card card-cyan">
+          <div class="card-title">
+            <span>Fase 3: Escala Institucional</span>
+            <span class="status-tag status-scale">Días 60 - 90</span>
+          </div>
+          <div class="card-body">
+            <p>• Módulo TOEFL Speaking Simulator con transcripción fonética y scoring automático.</p>
+            <p>• Portal B2B con métricas de progreso para directores de Recursos Humanos.</p>
+            <p>• Constitución societaria formal y registro educativo para emisión de certificaciones oficiales.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 8: The Partnership Opportunity -->
+    <section class="slide" id="slide-8">
+      <span class="eyebrow eyebrow-emerald">🤝 Sinergia &amp; Bienvenida al Equipo</span>
+      <h1 class="slide-title">El Rol del Socio: Dónde Aceleramos Juntos</h1>
+      <p class="slide-desc">
+        La plataforma tecnológica y el método pedagógico están probados y en funcionamiento. La oportunidad de entrada para un socio estratégico está en potenciar los motores de crecimiento comercial y operación.
+      </p>
+
+      <div class="grid-2" style="margin-bottom: 2rem;">
+        <div class="card card-highlight">
+          <div class="card-title">Lo que LinguaLife Aporta Hoy</div>
+          <div class="card-body">
+            <p>✅ Plataforma de software completa y operativa (<span class="code-pill">Next.js + Supabase</span>).</p>
+            <p>✅ Motor de IA automatizado en WhatsApp (<span class="code-pill">Pocket Coach</span>).</p>
+            <p>✅ Currículo exhaustivo estructurado por niveles (A1 hasta C2, TOEFL iBT, Business English).</p>
+            <p>✅ Base de 120 Flashcards interactivas y 15 retos automatizados por cada lección.</p>
+            <p>✅ Infraestructura en la nube con costos operativos prácticamente nulos.</p>
+          </div>
+        </div>
+
+        <div class="card card-emerald">
+          <div class="card-title">Lo que Buscamos en Esta Integración</div>
+          <div class="card-body">
+            <p>🚀 <strong>Crecimiento Comercial &amp; Ventas:</strong> Cierre de prospectos B2C y alianzas con empresas B2B.</p>
+            <p>🚀 <strong>Marketing &amp; Growth:</strong> Estrategia de contenido audiovisual para viralizar el concepto del Pocket Coach.</p>
+            <p>🚀 <strong>Estructuración Legal &amp; Financiera:</strong> Consolidación de pasarelas de pago recurrentes (Stripe, Wompi) y gestión de flujo de caja.</p>
+            <p>🚀 <strong>Operación y Expansión:</strong> Reclutamiento y estandarización del pool de profesores calificados a medida que crezca la matrícula.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="text-align: center; padding: 2rem; border-color: rgba(139, 92, 246, 0.5); background: linear-gradient(180deg, rgba(139, 92, 246, 0.12) 0%, rgba(15, 18, 28, 0.95) 100%);">
+        <h3 style="font-size: 1.6rem; font-weight: 800; color: #fff; margin-bottom: 0.5rem;">
+          Estamos listos para ejecutar y escalar.
+        </h3>
+        <p style="color: var(--text-secondary); max-width: 600px; margin: 0 auto 1.5rem; font-size: 0.95rem;">
+          Todo el sistema está en vivo y disponible para inspección técnica inmediata, pruebas de usuario en vivo y revisión de base de datos.
+        </p>
+        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+          <a href="/student" target="_blank" class="nav-btn primary" style="text-decoration: none;">
+            Explorar Portal de Alumno →
+          </a>
+          <a href="/dashboard" target="_blank" class="nav-btn" style="text-decoration: none;">
+            Ver Dashboard Profesor →
+          </a>
+          <a href="/admin" target="_blank" class="nav-btn" style="text-decoration: none;">
+            Ver Panel de Admin →
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Bottom Navigation & Dots -->
+  <footer class="deck-footer">
+    <div class="slide-dots" id="dotsContainer">
+      <!-- Generated by JS -->
+    </div>
+
+    <div class="shortcut-hint">
+      Usa las teclas <kbd>←</kbd> y <kbd>→</kbd> o <kbd>Espacio</kbd> para navegar
+    </div>
+  </footer>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    let currentSlide = 0;
+
+    const slideIndicator = document.getElementById('slideIndicator');
+    const dotsContainer = document.getElementById('dotsContainer');
+
+    // Build Dots
+    slides.forEach((_, idx) => {
+      const dot = document.createElement('div');
+      dot.className = `dot ${idx === 0 ? 'active' : ''}`;
+      dot.onclick = () => goToSlide(idx);
+      dotsContainer.appendChild(dot);
+    });
+
+    const dots = document.querySelectorAll('.dot');
+
+    function updateDeck() {
+      slides.forEach((s, idx) => {
+        s.classList.toggle('active', idx === currentSlide);
+      });
+
+      dots.forEach((d, idx) => {
+        d.classList.toggle('active', idx === currentSlide);
+      });
+
+      slideIndicator.textContent = `Slide ${currentSlide + 1} / ${totalSlides}`;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides - 1) {
+        currentSlide++;
+        updateDeck();
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) {
+        currentSlide--;
+        updateDeck();
+      }
+    }
+
+    function goToSlide(index) {
+      if (index >= 0 && index < totalSlides) {
+        currentSlide = index;
+        updateDeck();
+      }
+    }
+
+    // Keyboard Navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        e.preventDefault();
+        prevSlide();
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        goToSlide(0);
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        goToSlide(totalSlides - 1);
+      }
+    });
+  </script>
+</body>
+</html>
+

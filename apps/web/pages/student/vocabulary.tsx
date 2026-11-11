@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { 
   CefrLevel, 
   VocabCategory, 
@@ -54,6 +55,7 @@ const CATEGORIES: CategoryConfig[] = [
 ];
 
 export default function VocabularyHubPage() {
+  const router = useRouter();
   const [activeCategory, setActiveCategory] = useState<VocabCategory>('time_words');
   const [selectedLevel, setSelectedLevel] = useState<CefrLevel>('A1');
   const [includePreviousPending, setIncludePreviousPending] = useState(false);
@@ -68,6 +70,16 @@ export default function VocabularyHubPage() {
   const [showResumenModal, setShowResumenModal] = useState(false);
   const [showRepasoModal, setShowRepasoModal] = useState(false);
   const [showReadingModal, setShowReadingModal] = useState(false);
+
+  // Activar automáticamente cualquiera de los 4 botones si se llega desde el Dashboard (?mode=resumen|repaso|trivia|reading)
+  useEffect(() => {
+    if (!router.isReady) return;
+    const mode = router.query.mode;
+    if (mode === 'resumen') setShowResumenModal(true);
+    else if (mode === 'repaso') setShowRepasoModal(true);
+    else if (mode === 'trivia') setActiveTab('trivia');
+    else if (mode === 'reading') setShowReadingModal(true);
+  }, [router.isReady, router.query.mode]);
 
   // Detectar perfil de estudiante activo en localStorage
   useEffect(() => {
@@ -327,6 +339,7 @@ export default function VocabularyHubPage() {
           <VocabularyTrivia 
             words={words} 
             category={activeCategory}
+            level={selectedLevel}
           />
         )}
 
@@ -348,6 +361,8 @@ export default function VocabularyHubPage() {
           onClose={() => setShowRepasoModal(false)}
           category={activeCategory}
           categoryTitle={currentCategoryConfig.title}
+          level={selectedLevel}
+          words={words}
         />
 
         <VocabReadingModal
@@ -355,6 +370,7 @@ export default function VocabularyHubPage() {
           onClose={() => setShowReadingModal(false)}
           category={activeCategory}
           categoryTitle={currentCategoryConfig.title}
+          level={selectedLevel}
         />
       </div>
     </>

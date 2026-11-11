@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { X, Volume2, Square, Sparkles, CheckCircle2, AlertCircle, BookOpen, HelpCircle } from 'lucide-react';
-import { VocabCategory, VOCAB_SHORT_READINGS } from '@/lib/vocabulary';
+import { X, Volume2, Square, CheckCircle2, AlertCircle, HelpCircle } from 'lucide-react';
+import { VocabCategory, CefrLevel, getVocabShortReadingByLevel } from '@/lib/vocabulary';
+import { soundEngine } from '@/lib/sound-effects';
 import styles from '@/styles/Vocabulary.module.css';
 
 interface Props {
@@ -8,19 +9,32 @@ interface Props {
   onClose: () => void;
   category: VocabCategory;
   categoryTitle: string;
+  level?: CefrLevel;
 }
 
 export const VocabReadingModal: React.FC<Props> = ({
   isOpen,
   onClose,
   category,
-  categoryTitle
+  categoryTitle,
+  level = 'A1'
 }) => {
-  const reading = VOCAB_SHORT_READINGS[category] || VOCAB_SHORT_READINGS.time_words;
+  const reading = getVocabShortReadingByLevel(category, level);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+  const [playbackSpeed, setPlaybackSpeed] = useState<0.5 | 0.75 | 1.0>(0.75);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [showSpanish, setShowSpanish] = useState(false);
+
+  useEffect(() => {
+    setSelectedOption(null);
+    setShowResult(false);
+    setShowSpanish(false);
+    setIsPlayingAudio(false);
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+  }, [category, level, isOpen]);
 
   useEffect(() => {
     return () => {
@@ -32,6 +46,20 @@ export const VocabReadingModal: React.FC<Props> = ({
 
   if (!isOpen) return null;
 
+  function playReadingAtSpeed(speed: 0.5 | 0.75 | 1.0) {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(reading.storyEn);
+    utterance.lang = 'en-US';
+    utterance.rate = speed;
+
+    utterance.onend = () => setIsPlayingAudio(false);
+    utterance.onerror = () => setIsPlayingAudio(false);
+
+    window.speechSynthesis.speak(utterance);
+    setIsPlayingAudio(true);
+  }
+
   function toggleAudio() {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
 
@@ -41,22 +69,23 @@ export const VocabReadingModal: React.FC<Props> = ({
       return;
     }
 
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(reading.storyEn);
-    utterance.lang = 'en-US';
-    utterance.rate = 0.85;
+    playReadingAtSpeed(playbackSpeed);
+  }
 
-    utterance.onend = () => setIsPlayingAudio(false);
-    utterance.onerror = () => setIsPlayingAudio(false);
-
-    window.speechSynthesis.speak(utterance);
-    setIsPlayingAudio(true);
+  function handleSpeedChange(speed: 0.5 | 0.75 | 1.0) {
+    setPlaybackSpeed(speed);
+    if (isPlayingAudio) {
+      playReadingAtSpeed(speed);
+    }
   }
 
   function handleSelectOption(idx: number) {
     if (showResult) return;
     setSelectedOption(idx);
     setShowResult(true);
+    if (idx === reading.comprehensionQuestion.correctIndex) {
+      soundEngine.playRewardChime();
+    }
   }
 
   const isCorrect = selectedOption === reading.comprehensionQuestion.correctIndex;
@@ -113,7 +142,28 @@ export const VocabReadingModal: React.FC<Props> = ({
               </span>
             </div>
 
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+              <div style={{ display: 'inline-flex', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', padding: '0.15rem', border: '1px solid rgba(255,255,255,0.08)' }}>
+                {([0.5, 0.75, 1.0] as const).map(spd => (
+                  <button
+                    key={spd}
+                    type="button"
+                    onClick={() => handleSpeedChange(spd)}
+                    style={{
+                      background: playbackSpeed === spd ? '#38bdf8' : 'transparent',
+                      color: playbackSpeed === spd ? '#0f172a' : '#cbd5e1',
+                      border: 'none',
+                      borderRadius: '6px',
+                      padding: '0.2rem 0.5rem',
+                      fontSize: '0.75rem',
+                      fontWeight: 800,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    {spd}x
+                  </button>
+                ))}
+              </div>
               <button
                 onClick={() => setShowSpanish(prev => !prev)}
                 className={styles.translationToggleBtn}

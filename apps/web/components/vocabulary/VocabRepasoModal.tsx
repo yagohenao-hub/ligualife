@@ -1,6 +1,13 @@
-import React, { useState } from 'react';
-import { X, Zap, CheckCircle2, AlertCircle, RefreshCw, Trophy, ArrowRight, HelpCircle } from 'lucide-react';
-import { VocabCategory, VOCAB_MENTAL_GYM, VocabMentalGymExercise } from '@/lib/vocabulary';
+import React, { useState, useEffect } from 'react';
+import { X, Zap, CheckCircle2, AlertCircle, RefreshCw } from 'lucide-react';
+import {
+  VocabCategory,
+  CefrLevel,
+  VocabularyWordItem,
+  VocabMentalGymExercise,
+  getVocabMentalGymExercises
+} from '@/lib/vocabulary';
+import { soundEngine } from '@/lib/sound-effects';
 import styles from '@/styles/Vocabulary.module.css';
 
 interface Props {
@@ -8,18 +15,28 @@ interface Props {
   onClose: () => void;
   category: VocabCategory;
   categoryTitle: string;
+  level?: CefrLevel;
+  words?: VocabularyWordItem[];
 }
 
 export const VocabRepasoModal: React.FC<Props> = ({
   isOpen,
   onClose,
   category,
-  categoryTitle
+  categoryTitle,
+  level = 'A1',
+  words
 }) => {
-  const exercises = VOCAB_MENTAL_GYM[category] || VOCAB_MENTAL_GYM.time_words;
+  const exercises = getVocabMentalGymExercises(category, level, words);
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [checkedResults, setCheckedResults] = useState<Record<number, boolean>>({});
   const [showSummary, setShowSummary] = useState(false);
+
+  useEffect(() => {
+    setAnswers({});
+    setCheckedResults({});
+    setShowSummary(false);
+  }, [category, level]);
 
   if (!isOpen) return null;
 
@@ -36,6 +53,9 @@ export const VocabRepasoModal: React.FC<Props> = ({
       cleanUser.includes(cleanSol) ||
       (ex.type === 'fill' && cleanUser === cleanSol.split(' ')[0]);
 
+    if (isMatch) {
+      soundEngine.playRewardChime();
+    }
     setCheckedResults(prev => ({ ...prev, [ex.id]: isMatch }));
   }
 

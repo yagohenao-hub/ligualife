@@ -1374,6 +1374,657 @@ export const VOCABULARY_MASTER_DATA: VocabularyWordItem[] = [
       { id: 'vr-cool-warm', sourceSenseId: 'vs-cool-1', targetSenseId: 'vs-warm-1', targetWord: 'warm', targetDefinitionEs: 'Cálido o tibio', relationType: 'antonym' },
       { id: 'vr-cool-awesome', sourceSenseId: 'vs-cool-2', targetSenseId: 'vs-awesome-1', targetWord: 'awesome', targetDefinitionEs: 'Increíble o fascinante', relationType: 'synonym' }
     ]
+  },
+
+  // ── NIVEL A2: EXPANSIÓN COTIDIANA Y LABORAL ────────────────────────────────
+  {
+    id: 'vw-point',
+    word: 'point',
+    cefrLevel: 'A2',
+    partOfSpeech: 'noun / verb',
+    ipa: '/pɔɪnt/',
+    category: 'cefr_general',
+    thematicCluster: 'Arguments & Direction',
+    senses: [
+      {
+        id: 'vs-point-1',
+        wordId: 'vw-point',
+        word: 'point',
+        senseIndex: 1,
+        cefrLevelTarget: 'A2',
+        partOfSpeech: 'noun',
+        ipa: '/pɔɪnt/',
+        definitionEn: 'The main idea, purpose, or essential argument of a discussion.',
+        definitionEs: 'El punto clave, propósito o argumento central de una conversación.',
+        exampleSentenceEn: 'You made a very good point during the team meeting.',
+        exampleSentenceEs: 'planteaste un muy buen punto durante la reunión del equipo.',
+        collocations: ['good point', 'get to the point', 'there is no point in'],
+        notes: '"There is no point in + ING" significa "No tiene sentido hacer algo".'
+      },
+      {
+        id: 'vs-point-2',
+        wordId: 'vw-point',
+        word: 'point',
+        senseIndex: 2,
+        cefrLevelTarget: 'B1',
+        partOfSpeech: 'verb',
+        ipa: '/pɔɪnt/',
+        definitionEn: 'To direct someone’s attention toward something (often with "out").',
+        definitionEs: 'Señalar, indicar o hacer notar un detalle o error (point out).',
+        exampleSentenceEn: 'The mistake was pointed out immediately by the analyst.',
+        exampleSentenceEs: 'El error fue señalado de inmediato por el analista.',
+        collocations: ['point out', 'point at', 'point toward']
+      }
+    ],
+    relations: [
+      { id: 'vr-point-purpose', sourceSenseId: 'vs-point-1', targetSenseId: 'vs-purpose-1', targetWord: 'purpose', targetDefinitionEs: 'Propósito o sentido', relationType: 'synonym' },
+      { id: 'vr-point-highlight', sourceSenseId: 'vs-point-2', targetSenseId: 'vs-highlight-1', targetWord: 'highlight', targetDefinitionEs: 'Resaltar o destacar', relationType: 'synonym' }
+    ]
+  },
+  {
+    id: 'vw-mind',
+    word: 'mind',
+    cefrLevel: 'A2',
+    partOfSpeech: 'noun / verb',
+    ipa: '/maɪnd/',
+    category: 'cefr_general',
+    thematicCluster: 'Cognition & Courtesy',
+    senses: [
+      {
+        id: 'vs-mind-1',
+        wordId: 'vw-mind',
+        word: 'mind',
+        senseIndex: 1,
+        cefrLevelTarget: 'A2',
+        partOfSpeech: 'noun',
+        ipa: '/maɪnd/',
+        definitionEn: 'The faculty of consciousness, thought, and decision-making.',
+        definitionEs: 'La mente, el pensamiento o la opinión.',
+        exampleSentenceEn: 'Let me know if you change your mind about the proposal.',
+        exampleSentenceEs: 'Avísame si cambias de opinión sobre la propuesta.',
+        collocations: ['change your mind', 'keep in mind', 'make up your mind']
+      },
+      {
+        id: 'vs-mind-2',
+        wordId: 'vw-mind',
+        word: 'mind',
+        senseIndex: 2,
+        cefrLevelTarget: 'A2',
+        partOfSpeech: 'verb',
+        ipa: '/maɪnd/',
+        definitionEn: 'To feel annoyed, bothered, or object to something.',
+        definitionEs: 'Importar, incomodar o molestar (usado en preguntas de cortesía).',
+        exampleSentenceEn: 'Would you mind sending me the document again?',
+        exampleSentenceEs: '¿Te importaría enviarme el documento de nuevo?',
+        collocations: ['would you mind + ING', 'never mind', 'I don\'t mind'],
+        notes: 'Después del verbo "mind" SIEMPRE usamos gerundio (-ING): "Would you mind waiting?".'
+      }
+    ],
+    relations: [
+      { id: 'vr-mind-care', sourceSenseId: 'vs-mind-2', targetSenseId: 'vs-bother-1', targetWord: 'bother', targetDefinitionEs: 'Incomodar o molestar', relationType: 'synonym' }
+    ]
+  },
+
+  // ── NIVEL B1: TRANSICIÓN PROFESIONAL Y POLISEMIA FUNCIONAL ─────────────────
+  {
+    id: 'vw-address',
+    word: 'address',
+    cefrLevel: 'B1',
+    partOfSpeech: 'noun / verb',
+    ipa: '/əˈdres/',
+    category: 'cefr_general',
+    thematicCluster: 'Location & Problem Solving',
+    senses: [
+      {
+        id: 'vs-address-1',
+        wordId: 'vw-address',
+        word: 'address',
+        senseIndex: 1,
+        cefrLevelTarget: 'A1',
+        partOfSpeech: 'noun',
+        ipa: '/ˈædres/',
+        definitionEn: 'The details of the place where someone lives or works.',
+        definitionEs: 'Dirección física o de correo electrónico.',
+        exampleSentenceEn: 'Please confirm your shipping address before Friday.',
+        exampleSentenceEs: 'Por favor confirma tu dirección de envío antes del viernes.',
+        collocations: ['email address', 'home address']
+      },
+      {
+        id: 'vs-address-2',
+        wordId: 'vw-address',
+        word: 'address',
+        senseIndex: 2,
+        cefrLevelTarget: 'B1',
+        partOfSpeech: 'verb',
+        ipa: '/əˈdres/',
+        definitionEn: 'To deal with, tackle, or give attention to a problem or issue.',
+        definitionEs: 'Abordar, atender o encargarse de un problema o situación.',
+        exampleSentenceEn: 'We need to address the client’s concerns immediately.',
+        exampleSentenceEs: 'Necesitamos abordar las inquietudes del cliente de inmediato.',
+        collocations: ['address an issue', 'address a problem', 'address concerns'],
+        notes: 'Clave en inglés de negocios para reemplazar el básico "talk about a problem".'
+      }
+    ],
+    relations: [
+      { id: 'vr-address-tackle', sourceSenseId: 'vs-address-2', targetSenseId: 'vs-tackle-1', targetWord: 'tackle', targetDefinitionEs: 'Enfrentar o abordar un problema', relationType: 'synonym' },
+      { id: 'vr-address-ignore', sourceSenseId: 'vs-address-2', targetSenseId: 'vs-ignore-1', targetWord: 'ignore', targetDefinitionEs: 'Ignorar o pasar por alto', relationType: 'antonym' }
+    ]
+  },
+  {
+    id: 'vw-issue',
+    word: 'issue',
+    cefrLevel: 'B1',
+    partOfSpeech: 'noun / verb',
+    ipa: '/ˈɪʃuː/',
+    category: 'cefr_general',
+    thematicCluster: 'Business & Operations',
+    senses: [
+      {
+        id: 'vs-issue-1',
+        wordId: 'vw-issue',
+        word: 'issue',
+        senseIndex: 1,
+        cefrLevelTarget: 'B1',
+        partOfSpeech: 'noun',
+        ipa: '/ˈɪʃuː/',
+        definitionEn: 'An important topic for debate, or a delicate problem/difficulty.',
+        definitionEs: 'Asunto importante, inconveniente técnico o tema delicado.',
+        exampleSentenceEn: 'The technical issue is currently being sorted out.',
+        exampleSentenceEs: 'El inconveniente técnico ya está siendo solucionado.',
+        collocations: ['sort out an issue', 'raise an issue', 'key issue'],
+        notes: 'Suena mucho más diplomático y profesional que decir "problem".'
+      },
+      {
+        id: 'vs-issue-2',
+        wordId: 'vw-issue',
+        word: 'issue',
+        senseIndex: 2,
+        cefrLevelTarget: 'B2',
+        partOfSpeech: 'verb',
+        ipa: '/ˈɪʃuː/',
+        definitionEn: 'To officially supply, emit, or distribute a document, refund, or statement.',
+        definitionEs: 'Emitir o expedir oficialmente (una factura, reembolso, comunicado o pasaporte).',
+        exampleSentenceEn: 'The finance department will issue a full refund tomorrow.',
+        exampleSentenceEs: 'El departamento de finanzas emitirá un reembolso completo mañana.',
+        collocations: ['issue a refund', 'issue an invoice', 'issue a statement']
+      }
+    ],
+    relations: [
+      { id: 'vr-issue-matter', sourceSenseId: 'vs-issue-1', targetSenseId: 'vs-matter-1', targetWord: 'matter', targetDefinitionEs: 'Asunto o cuestión', relationType: 'synonym' },
+      { id: 'vr-issue-emit', sourceSenseId: 'vs-issue-2', targetSenseId: 'vs-emit-1', targetWord: 'grant', targetDefinitionEs: 'Otorgar o expedir', relationType: 'synonym' }
+    ]
+  },
+  {
+    id: 'vw-figure',
+    word: 'figure',
+    cefrLevel: 'B1',
+    partOfSpeech: 'noun / phrasal verb',
+    ipa: '/ˈfɪɡjər/',
+    category: 'cefr_general',
+    thematicCluster: 'Metrics & Deduction',
+    senses: [
+      {
+        id: 'vs-figure-1',
+        wordId: 'vw-figure',
+        word: 'figure',
+        senseIndex: 1,
+        cefrLevelTarget: 'B1',
+        partOfSpeech: 'noun',
+        ipa: '/ˈfɪɡjər/',
+        definitionEn: 'A number, especially an official statistic or financial amount.',
+        definitionEs: 'Cifra, dato numérico o estadística financiera.',
+        exampleSentenceEn: 'The sales figures for this quarter exceeded our expectations.',
+        exampleSentenceEs: 'Las cifras de ventas de este trimestre superaron nuestras expectativas.',
+        collocations: ['sales figures', 'six-figure salary', 'official figures']
+      },
+      {
+        id: 'vs-figure-2',
+        wordId: 'vw-figure',
+        word: 'figure',
+        senseIndex: 2,
+        cefrLevelTarget: 'B1',
+        partOfSpeech: 'phrasal verb',
+        ipa: '/ˈfɪɡjər/',
+        definitionEn: 'To understand, solve, or find the answer to something (figure out).',
+        definitionEs: 'Descifrar, entender o encontrarle la vuelta a un problema (figure out).',
+        exampleSentenceEn: 'We need to figure out why the server crashed.',
+        exampleSentenceEs: 'Necesitamos descifrar por qué se cayó el servidor.',
+        collocations: ['figure out how', 'figure it out']
+      }
+    ],
+    relations: [
+      { id: 'vr-figure-solve', sourceSenseId: 'vs-figure-2', targetSenseId: 'vs-solve-1', targetWord: 'work out', targetDefinitionEs: 'Resolver o deducir', relationType: 'synonym' }
+    ]
+  },
+  {
+    id: 'vw-board',
+    word: 'board',
+    cefrLevel: 'B1',
+    partOfSpeech: 'noun / verb',
+    ipa: '/bɔːrd/',
+    category: 'cefr_general',
+    thematicCluster: 'Travel & Corporate Governance',
+    senses: [
+      {
+        id: 'vs-board-1',
+        wordId: 'vw-board',
+        word: 'board',
+        senseIndex: 1,
+        cefrLevelTarget: 'B1',
+        partOfSpeech: 'verb',
+        ipa: '/bɔːrd/',
+        definitionEn: 'To get on or enter a plane, ship, or train.',
+        definitionEs: 'Abordar o embarcar en un avión, tren o barco.',
+        exampleSentenceEn: 'Passengers are now invited to board the flight at Gate 12.',
+        exampleSentenceEs: 'Se invita a los pasajeros a abordar el vuelo en la Puerta 12.',
+        collocations: ['board a flight', 'boarding pass', 'on board']
+      },
+      {
+        id: 'vs-board-2',
+        wordId: 'vw-board',
+        word: 'board',
+        senseIndex: 2,
+        cefrLevelTarget: 'B2',
+        partOfSpeech: 'noun',
+        ipa: '/bɔːrd/',
+        definitionEn: 'The group of people who control and direct a company (Board of Directors).',
+        definitionEs: 'Junta directiva o consejo de administración de una empresa.',
+        exampleSentenceEn: 'The proposal was approved by the board of directors.',
+        exampleSentenceEs: 'La propuesta fue aprobada por la junta directiva.',
+        collocations: ['board of directors', 'across the board', 'on board with the idea']
+      }
+    ],
+    relations: [
+      { id: 'vr-board-committee', sourceSenseId: 'vs-board-2', targetSenseId: 'vs-committee-1', targetWord: 'committee', targetDefinitionEs: 'Comité o consejo', relationType: 'synonym' }
+    ]
+  },
+
+  // ── NIVEL B2: INGLÉS CORPORATIVO Y FLUIDEZ EJECUTIVA ───────────────────────
+  {
+    id: 'vw-drive',
+    word: 'drive',
+    cefrLevel: 'B2',
+    partOfSpeech: 'verb / noun',
+    ipa: '/draɪv/',
+    category: 'cefr_general',
+    thematicCluster: 'Leadership & Momentum',
+    senses: [
+      {
+        id: 'vs-drive-1',
+        wordId: 'vw-drive',
+        word: 'drive',
+        senseIndex: 1,
+        cefrLevelTarget: 'A1',
+        partOfSpeech: 'verb',
+        ipa: '/draɪv/',
+        definitionEn: 'To operate and control the direction and speed of a motor vehicle.',
+        definitionEs: 'Conducir o manejar un vehículo.',
+        exampleSentenceEn: 'He drives to the office every Wednesday.',
+        exampleSentenceEs: 'Él conduce a la oficina todos los miércoles.',
+        collocations: ['drive a car', 'drive home']
+      },
+      {
+        id: 'vs-drive-2',
+        wordId: 'vw-drive',
+        word: 'drive',
+        senseIndex: 2,
+        cefrLevelTarget: 'B2',
+        partOfSpeech: 'verb / noun',
+        ipa: '/draɪv/',
+        definitionEn: 'To propel, motivate, or cause a process/metric to grow; strong inner determination.',
+        definitionEs: 'Impulsar resultados o crecimiento; empuje y determinación personal.',
+        exampleSentenceEn: 'Innovation is what drives our company’s long-term growth.',
+        exampleSentenceEs: 'La innovación es lo que impulsa el crecimiento a largo plazo de nuestra empresa.',
+        collocations: ['drive growth', 'drive results', 'strong drive to succeed']
+      }
+    ],
+    relations: [
+      { id: 'vr-drive-propel', sourceSenseId: 'vs-drive-2', targetSenseId: 'vs-propel-1', targetWord: 'fuel', targetDefinitionEs: 'Impulsar o alimentar', relationType: 'synonym' }
+    ]
+  },
+  {
+    id: 'vw-account',
+    word: 'account',
+    cefrLevel: 'B2',
+    partOfSpeech: 'noun / phrasal verb',
+    ipa: '/əˈkaʊnt/',
+    category: 'cefr_general',
+    thematicCluster: 'Finance & Explanation',
+    senses: [
+      {
+        id: 'vs-account-1',
+        wordId: 'vw-account',
+        word: 'account',
+        senseIndex: 1,
+        cefrLevelTarget: 'B1',
+        partOfSpeech: 'noun',
+        ipa: '/əˈkaʊnt/',
+        definitionEn: 'An arrangement with a bank or platform; or a detailed report/description of an event.',
+        definitionEs: 'Cuenta bancaria/digital; o bien un relato/versión detallada de un hecho.',
+        exampleSentenceEn: 'She gave an accurate account of what happened in the negotiation.',
+        exampleSentenceEs: 'Ella dio un relato preciso de lo que ocurrió en la negociación.',
+        collocations: ['bank account', 'take into account', 'on account of']
+      },
+      {
+        id: 'vs-account-2',
+        wordId: 'vw-account',
+        word: 'account',
+        senseIndex: 2,
+        cefrLevelTarget: 'B2',
+        partOfSpeech: 'phrasal verb',
+        ipa: '/əˈkaʊnt/',
+        definitionEn: 'To form a specific proportion/percentage of a total, or to explain the reason for something (account for).',
+        definitionEs: 'Representar un porcentaje del total, o justificar/explicar la causa de algo (account for).',
+        exampleSentenceEn: 'Remote clients account for 65% of our annual revenue.',
+        exampleSentenceEs: 'Los clientes remotos representan el 65% de nuestros ingresos anuales.',
+        collocations: ['account for', 'hold someone accountable'],
+        notes: 'Esencial para gráficos, reportes ejecutivos y el examen TOEFL.'
+      }
+    ],
+    relations: [
+      { id: 'vr-account-represent', sourceSenseId: 'vs-account-2', targetSenseId: 'vs-represent-1', targetWord: 'Make up', targetDefinitionEs: 'Constituir o representar una parte', relationType: 'synonym' }
+    ]
+  },
+  {
+    id: 'vw-ground',
+    word: 'ground',
+    cefrLevel: 'B2',
+    partOfSpeech: 'noun / verb',
+    ipa: '/ɡraʊnd/',
+    category: 'cefr_general',
+    thematicCluster: 'Foundation & Justification',
+    senses: [
+      {
+        id: 'vs-ground-1',
+        wordId: 'vw-ground',
+        word: 'ground',
+        senseIndex: 1,
+        cefrLevelTarget: 'A2',
+        partOfSpeech: 'noun',
+        ipa: '/ɡraʊnd/',
+        definitionEn: 'The solid surface of the earth.',
+        definitionEs: 'El suelo o la tierra firme.',
+        exampleSentenceEn: 'The autumn leaves fell softly to the ground.',
+        exampleSentenceEs: 'Las hojas de otoño cayeron suavemente al suelo.',
+        collocations: ['on the ground', 'from the ground up']
+      },
+      {
+        id: 'vs-ground-2',
+        wordId: 'vw-ground',
+        word: 'ground',
+        senseIndex: 2,
+        cefrLevelTarget: 'B2',
+        partOfSpeech: 'noun (often plural: grounds)',
+        ipa: '/ɡraʊnd/',
+        definitionEn: 'Solid reasons, basis, or justification for a belief, action, or legal decision.',
+        definitionEs: 'Fundamento, base sólida, motivo justificado o terreno común.',
+        exampleSentenceEn: 'We finally found common ground during the contract negotiation.',
+        exampleSentenceEs: 'Finalmente encontramos un punto en común durante la negociación del contrato.',
+        collocations: ['common ground', 'on the grounds that', 'gain ground']
+      }
+    ],
+    relations: [
+      { id: 'vr-ground-basis', sourceSenseId: 'vs-ground-2', targetSenseId: 'vs-basis-1', targetWord: 'foundation', targetDefinitionEs: 'Base o fundamento', relationType: 'synonym' }
+    ]
+  },
+
+  // ── NIVEL C1: DOMINIO EJECUTIVO, DIPLOMACIA Y TOEFL ────────────────────────
+  {
+    id: 'vw-yield',
+    word: 'yield',
+    cefrLevel: 'C1',
+    partOfSpeech: 'verb / noun',
+    ipa: '/jiːld/',
+    category: 'cefr_general',
+    thematicCluster: 'Returns & Negotiation',
+    senses: [
+      {
+        id: 'vs-yield-1',
+        wordId: 'vw-yield',
+        word: 'yield',
+        senseIndex: 1,
+        cefrLevelTarget: 'C1',
+        partOfSpeech: 'verb / noun',
+        ipa: '/jiːld/',
+        definitionEn: 'To produce or provide a positive result, profit, or data output.',
+        definitionEs: 'Producir, arrojar resultados o generar un rendimiento financiero.',
+        exampleSentenceEn: 'The new marketing strategy yielded impressive results in the first month.',
+        exampleSentenceEs: 'La nueva estrategia de marketing arrojó resultados impresionantes en el primer mes.',
+        collocations: ['yield results', 'high-yield investment']
+      },
+      {
+        id: 'vs-yield-2',
+        wordId: 'vw-yield',
+        word: 'yield',
+        senseIndex: 2,
+        cefrLevelTarget: 'C1',
+        partOfSpeech: 'verb',
+        ipa: '/jiːld/',
+        definitionEn: 'To give way to arguments, pressure, or traffic; to surrender control.',
+        definitionEs: 'Ceder el paso o ceder ante la presión en una negociación.',
+        exampleSentenceEn: 'Neither side was willing to yield during the boardroom debate.',
+        exampleSentenceEs: 'Ninguna de las partes estuvo dispuesta a ceder durante el debate de junta.',
+        collocations: ['yield to pressure', 'yield the floor']
+      }
+    ],
+    relations: [
+      { id: 'vr-yield-produce', sourceSenseId: 'vs-yield-1', targetSenseId: 'vs-produce-1', targetWord: 'generate', targetDefinitionEs: 'Generar o producir', relationType: 'synonym' },
+      { id: 'vr-yield-relent', sourceSenseId: 'vs-yield-2', targetSenseId: 'vs-relent-1', targetWord: 'give in', targetDefinitionEs: 'Ceder', relationType: 'synonym' }
+    ]
+  },
+  {
+    id: 'vw-leverage',
+    word: 'leverage',
+    cefrLevel: 'C1',
+    partOfSpeech: 'noun / verb',
+    ipa: '/ˈlevərɪdʒ/',
+    category: 'cefr_general',
+    thematicCluster: 'Strategy & Influence',
+    senses: [
+      {
+        id: 'vs-leverage-1',
+        wordId: 'vw-leverage',
+        word: 'leverage',
+        senseIndex: 1,
+        cefrLevelTarget: 'C1',
+        partOfSpeech: 'verb',
+        ipa: '/ˈlevərɪdʒ/',
+        definitionEn: 'To use an existing resource, technology, or advantage to maximum effect.',
+        definitionEs: 'Apalancar, aprovechar estratégicamente un recurso o ventaja al máximo.',
+        exampleSentenceEn: 'We must leverage artificial intelligence to automate repetitive tasks.',
+        exampleSentenceEs: 'Debemos aprovechar estratégicamente la IA para automatizar tareas repetitivas.',
+        collocations: ['leverage technology', 'leverage our network']
+      },
+      {
+        id: 'vs-leverage-2',
+        wordId: 'vw-leverage',
+        word: 'leverage',
+        senseIndex: 2,
+        cefrLevelTarget: 'C1',
+        partOfSpeech: 'noun',
+        ipa: '/ˈlevərɪdʒ/',
+        definitionEn: 'Power or strategic advantage to influence people and get results in a negotiation.',
+        definitionEs: 'Poder de negociación, ventaja estratégica o influencia.',
+        exampleSentenceEn: 'Having two competing offers gives you strong leverage in salary talks.',
+        exampleSentenceEs: 'Tener dos ofertas competidoras te da un fuerte poder de negociación salarial.',
+        collocations: ['bargaining leverage', 'gain leverage']
+      }
+    ],
+    relations: [
+      { id: 'vr-leverage-harness', sourceSenseId: 'vs-leverage-1', targetSenseId: 'vs-harness-1', targetWord: 'capitalize on', targetDefinitionEs: 'Capitalizar o sacar partido', relationType: 'synonym' }
+    ]
+  },
+  {
+    id: 'vw-sound',
+    word: 'sound',
+    cefrLevel: 'C1',
+    partOfSpeech: 'noun / verb / adjective',
+    ipa: '/saʊnd/',
+    category: 'cefr_general',
+    thematicCluster: 'Perception & Judgment',
+    senses: [
+      {
+        id: 'vs-sound-1',
+        wordId: 'vw-sound',
+        word: 'sound',
+        senseIndex: 1,
+        cefrLevelTarget: 'A2',
+        partOfSpeech: 'noun / verb',
+        ipa: '/saʊnd/',
+        definitionEn: 'Vibrations that travel through the air and can be heard; to convey an impression.',
+        definitionEs: 'Sonido; o sonar de cierta manera ("That sounds great").',
+        exampleSentenceEn: 'Your proposal sounds very promising.',
+        exampleSentenceEs: 'Tu propuesta suena muy prometedora.',
+        collocations: ['sounds good', 'sound like']
+      },
+      {
+        id: 'vs-sound-2',
+        wordId: 'vw-sound',
+        word: 'sound',
+        senseIndex: 2,
+        cefrLevelTarget: 'C1',
+        partOfSpeech: 'adjective',
+        ipa: '/saʊnd/',
+        definitionEn: 'Financially solid, logically reliable, sensible, and well-founded.',
+        definitionEs: 'Sólido, sensato, bien fundamentado o financieramente estable.',
+        exampleSentenceEn: 'She always provides sound financial advice to the executive committee.',
+        exampleSentenceEs: 'Ella siempre brinda asesoría financiera sólida y sensata al comité ejecutivo.',
+        collocations: ['sound advice', 'sound judgment', 'financially sound'],
+        notes: 'Trampa clásica C1: "sound advice" NO es "consejo ruidoso", sino "consejo sensato/sólido".'
+      }
+    ],
+    relations: [
+      { id: 'vr-sound-solid', sourceSenseId: 'vs-sound-2', targetSenseId: 'vs-solid-1', targetWord: 'reliable', targetDefinitionEs: 'Confiable y sólido', relationType: 'synonym' },
+      { id: 'vr-sound-flawed', sourceSenseId: 'vs-sound-2', targetSenseId: 'vs-flawed-1', targetWord: 'flawed', targetDefinitionEs: 'Defectuoso o mal fundamentado', relationType: 'antonym' }
+    ]
+  },
+
+  // ── NIVEL C2: MAESTRÍA NATIVA Y MATICES ACADÉMICOS / LITERARIOS ────────────
+  {
+    id: 'vw-harbor',
+    word: 'harbor',
+    cefrLevel: 'C2',
+    partOfSpeech: 'noun / verb',
+    ipa: '/ˈhɑːrbər/',
+    category: 'cefr_general',
+    thematicCluster: 'Maritime & Psychology',
+    senses: [
+      {
+        id: 'vs-harbor-1',
+        wordId: 'vw-harbor',
+        word: 'harbor',
+        senseIndex: 1,
+        cefrLevelTarget: 'B1',
+        partOfSpeech: 'noun',
+        ipa: '/ˈhɑːrbər/',
+        definitionEn: 'A sheltered port on the coast where ships can moor safely.',
+        definitionEs: 'Puerto marítimo o bahía resguardada para embarcaciones.',
+        exampleSentenceEn: 'Several boats were anchored in the quiet harbor.',
+        exampleSentenceEs: 'Varios barcos estaban anclados en el tranquilo puerto.',
+        collocations: ['safe harbor', 'pearl harbor']
+      },
+      {
+        id: 'vs-harbor-2',
+        wordId: 'vw-harbor',
+        word: 'harbor',
+        senseIndex: 2,
+        cefrLevelTarget: 'C2',
+        partOfSpeech: 'verb',
+        ipa: '/ˈhɑːrbər/',
+        definitionEn: 'To keep a thought, doubt, grudge, or secret emotion in one’s mind over a long period.',
+        definitionEs: 'Albergar o guardar en secreto un pensamiento, duda, sospecha o resentimiento.',
+        exampleSentenceEn: 'Despite the agreement, several investors still harbor doubts about the merger.',
+        exampleSentenceEs: 'A pesar del acuerdo, varios inversionistas aún albergan dudas sobre la fusión.',
+        collocations: ['harbor doubts', 'harbor resentment', 'harbor illusions']
+      }
+    ],
+    relations: [
+      { id: 'vr-harbor-foster', sourceSenseId: 'vs-harbor-2', targetSenseId: 'vs-foster-1', targetWord: 'hold onto', targetDefinitionEs: 'Mantener o guardar internamente', relationType: 'synonym' }
+    ]
+  },
+  {
+    id: 'vw-weather',
+    word: 'weather',
+    cefrLevel: 'C2',
+    partOfSpeech: 'noun / verb',
+    ipa: '/ˈweðər/',
+    category: 'cefr_general',
+    thematicCluster: 'Climate & Resilience',
+    senses: [
+      {
+        id: 'vs-weather-1',
+        wordId: 'vw-weather',
+        word: 'weather',
+        senseIndex: 1,
+        cefrLevelTarget: 'A1',
+        partOfSpeech: 'noun',
+        ipa: '/ˈweðər/',
+        definitionEn: 'The state of the atmosphere with respect to heat, cold, wind, or rain.',
+        definitionEs: 'El clima o estado atmosférico.',
+        exampleSentenceEn: 'The weather in Medellín is pleasant all year round.',
+        exampleSentenceEs: 'El clima en Medellín es agradable todo el año.',
+        collocations: ['cold weather', 'under the weather']
+      },
+      {
+        id: 'vs-weather-2',
+        wordId: 'vw-weather',
+        word: 'weather',
+        senseIndex: 2,
+        cefrLevelTarget: 'C2',
+        partOfSpeech: 'verb',
+        ipa: '/ˈweðər/',
+        definitionEn: 'To come safely through a crisis, recession, or difficult period.',
+        definitionEs: 'Capear el temporal, resistir o superar con éxito una crisis difícil.',
+        exampleSentenceEn: 'Thanks to its cash reserves, the startup weathered the economic downturn.',
+        exampleSentenceEs: 'Gracias a sus reservas de caja, la startup logró sortear la recesión económica.',
+        collocations: ['weather the storm', 'weather a crisis']
+      }
+    ],
+    relations: [
+      { id: 'vr-weather-withstand', sourceSenseId: 'vs-weather-2', targetSenseId: 'vs-withstand-1', targetWord: 'withstand', targetDefinitionEs: 'Resistir o soportar con éxito', relationType: 'synonym' }
+    ]
+  },
+  {
+    id: 'vw-stem',
+    word: 'stem',
+    cefrLevel: 'C2',
+    partOfSpeech: 'noun / verb',
+    ipa: '/stem/',
+    category: 'cefr_general',
+    thematicCluster: 'Causality & Control',
+    senses: [
+      {
+        id: 'vs-stem-1',
+        wordId: 'vw-stem',
+        word: 'stem',
+        senseIndex: 1,
+        cefrLevelTarget: 'C1',
+        partOfSpeech: 'phrasal verb (stem from)',
+        ipa: '/stem/',
+        definitionEn: 'To originate in or be caused by something (stem from).',
+        definitionEs: 'Originarse en, derivarse de o tener su raíz en algo (stem from).',
+        exampleSentenceEn: 'Most communication errors stem from translating literally from Spanish.',
+        exampleSentenceEs: 'La mayoría de los errores de comunicación se derivan de traducir literalmente del español.',
+        collocations: ['stem from', 'root and stem']
+      },
+      {
+        id: 'vs-stem-2',
+        wordId: 'vw-stem',
+        word: 'stem',
+        senseIndex: 2,
+        cefrLevelTarget: 'C2',
+        partOfSpeech: 'verb',
+        ipa: '/stem/',
+        definitionEn: 'To stop, restrict, or contain the flow or spread of something undesirable.',
+        definitionEs: 'Frenar, contener o detener el avance de una tendencia negativa.',
+        exampleSentenceEn: 'The central bank raised interest rates to stem inflation.',
+        exampleSentenceEs: 'El banco central subió las tasas de interés para contener la inflación.',
+        collocations: ['stem the tide', 'stem the flow', 'stem inflation']
+      }
+    ],
+    relations: [
+      { id: 'vr-stem-curb', sourceSenseId: 'vs-stem-2', targetSenseId: 'vs-curb-1', targetWord: 'curb', targetDefinitionEs: 'Frenar o contener', relationType: 'synonym' }
+    ]
   }
 ];
 
@@ -1407,7 +2058,7 @@ export function saveLocalStudentWordState(senseId: string, status: TriageStatus)
 // Compatibilidad con código anterior que llamaba PILOT_VOCABULARY_DATA
 export const PILOT_VOCABULARY_DATA: VocabularyWordItem[] = VOCABULARY_MASTER_DATA;
 
-// Filtrado principal por categoría
+// Filtrado principal por categoría (conservando todas las acepciones polisémicas de cada palabra)
 export function getVocabularyByCategory(
   category: VocabCategory,
   level: CefrLevel = 'A1',
@@ -1417,29 +2068,34 @@ export function getVocabularyByCategory(
   const levelOrder: CefrLevel[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
   const currentIndex = levelOrder.indexOf(level);
 
-  return VOCABULARY_MASTER_DATA.filter(item => item.category === category).map(item => {
-    // Si es cefr_general filtramos por nivel; si es una categoría temática fija (tiempo, prep, wh) mostramos sus sentidos completos
-    const activeSenses = item.category === 'cefr_general'
-      ? item.senses.filter(sense => {
-          const senseLevelIndex = levelOrder.indexOf(sense.cefrLevelTarget);
-          if (sense.cefrLevelTarget === level) return true;
-          if (includePreviousPending && senseLevelIndex < currentIndex) {
-            const state = localStates[sense.id] || 'unreviewed';
-            return state === 'to_learn' || state === 'passive';
-          }
-          return false;
-        })
-      : item.senses;
+  return VOCABULARY_MASTER_DATA.filter(item => {
+    if (item.category !== category) return false;
+    if (category !== 'cefr_general') return true;
 
-    const primarySense = activeSenses[0] || item.senses[0];
+    // Para cefr_general, incluir palabras cuyo nivel principal o alguna de sus acepciones coincida con el nivel seleccionado
+    const matchesCurrentLevel = item.cefrLevel === level || item.senses.some(s => s.cefrLevelTarget === level);
+    if (matchesCurrentLevel) return true;
+
+    if (includePreviousPending) {
+      const itemLevelIdx = levelOrder.indexOf(item.cefrLevel);
+      if (itemLevelIdx < currentIndex) {
+        const primarySense = item.senses[0];
+        const state = (primarySense && localStates[primarySense.id]) || 'unreviewed';
+        return state === 'to_learn' || state === 'passive' || state === 'unreviewed';
+      }
+    }
+    return false;
+  }).map(item => {
+    const primarySense = item.senses[0];
     const triageStatus = (localStates[primarySense?.id] as TriageStatus) || 'unreviewed';
 
     return {
       ...item,
-      senses: activeSenses,
+      // Mantenemos todas las acepciones de la palabra para que el Resumen y la Trivia muestren el contraste polisémico completo
+      senses: item.senses,
       triageStatus
     };
-  }).filter(item => item.senses.length > 0);
+  });
 }
 
 export function getVocabularyForLevel(
@@ -1621,3 +2277,180 @@ export const VOCAB_MENTAL_GYM: Record<VocabCategory, VocabMentalGymExercise[]> =
     { id: 15, type: 'reverse', instruction: 'Traduce al inglés con genial / chévere:', promptText: 'Esa chaqueta se ve muy genial.', hint: 'Adjetivo cool', solution: 'That jacket looks really cool.', explanation: '"Cool" en sentido coloquial A2 es genial o atractivo.' }
   ]
 };
+
+// -----------------------------------------------------------------------------
+// LECTURAS CORTAS Y GIMNASIO MENTAL ADAPTATIVOS POR NIVEL MCER (A1 - C2)
+// -----------------------------------------------------------------------------
+
+export const CEFR_LEVEL_SHORT_READINGS: Record<CefrLevel, VocabShortReading> = {
+  A1: VOCAB_SHORT_READINGS.cefr_general,
+  A2: {
+    title: 'Making Up Your Mind',
+    storyEn: 'She runs a growing studio and raised a good point during the morning call. At first, the client wanted to book a session for Friday, but later changed his mind. Would you mind pointing out the key details on the light screen so everyone feels safe with the plan?',
+    storyEs: 'Ella dirige un estudio en crecimiento y planteó un buen punto durante la llamada matutina. Al principio, el cliente quería reservar una sesión para el viernes, pero luego cambió de opinión. ¿Te importaría señalar los detalles clave en la pantalla luminosa para que todos se sientan seguros con el plan?',
+    wordCount: 51,
+    highlightWords: ['runs', 'point', 'book', 'mind', 'pointing out', 'light', 'safe'],
+    comprehensionQuestion: {
+      question: 'In "Would you mind pointing out the key details?", what grammatical form must follow the verb "mind"?',
+      options: [
+        'An infinitive with to (to point)',
+        'A gerund ending in -ING (pointing)',
+        'A past participle (pointed)',
+        'A modal verb (can point)'
+      ],
+      correctIndex: 1,
+      explanation: 'Después del verbo "mind" ("Would you mind...?") SIEMPRE usamos gerundio (-ING): "Would you mind pointing out...?".'
+    }
+  },
+  B1: {
+    title: 'Addressing the Issue on Board',
+    storyEn: 'Before we board the evening flight, we must address a delicate technical issue with the client. Looking at the latest sales figures, we need to figure out why deliveries slowed down. Fortunately, the board of directors will issue an official statement tomorrow morning.',
+    storyEs: 'Antes de abordar el vuelo nocturno, debemos atender un delicado inconveniente técnico con el cliente. Al observar las últimas cifras de ventas, necesitamos descifrar por qué se desaceleraron las entregas. Afortunadamente, la junta directiva emitirá un comunicado oficial mañana por la mañana.',
+    wordCount: 44,
+    highlightWords: ['board', 'address', 'issue', 'figures', 'figure out'],
+    comprehensionQuestion: {
+      question: 'What is the difference between "address an issue" and "issue a statement" in this B1 executive passage?',
+      options: [
+        'Both mean to write a physical home address',
+        '"Address" (verb) means to deal with a problem, while "issue" (verb) means to officially emit a statement',
+        '"Address" is a noun and "issue" is an adjective',
+        'Both mean to board an airplane'
+      ],
+      correctIndex: 1,
+      explanation: 'En nivel B1/B2 ejecutivo, "to address an issue" es abordar un problema, mientras que "to issue a statement/refund" es emitir oficialmente un comunicado o reembolso.'
+    }
+  },
+  B2: {
+    title: 'Finding Common Ground',
+    storyEn: 'Innovation is what drives our international expansion. Today, enterprise clients account for seventy percent of our revenue. When we reviewed the financial account of the quarter, both teams found common ground and built a strategy from the ground up.',
+    storyEs: 'La innovación es lo que impulsa nuestra expansión internacional. Hoy en día, los clientes corporativos representan el setenta por ciento de nuestros ingresos. Cuando revisamos el informe financiero del trimestre, ambos equipos encontraron un punto en común y construyeron una estrategia desde cero.',
+    wordCount: 40,
+    highlightWords: ['drives', 'account for', 'account', 'common ground', 'ground'],
+    comprehensionQuestion: {
+      question: 'What does the phrasal verb "account for" mean in "enterprise clients account for 70% of our revenue"?',
+      options: [
+        'To open a savings bank account',
+        'To represent or form a specific proportion of a total',
+        'To drive a vehicle to the office',
+        'To touch the physical ground'
+      ],
+      correctIndex: 1,
+      explanation: '"Account for" en contextos ejecutivos y TOEFL significa representar o constituir un porcentaje específico del total.'
+    }
+  },
+  C1: {
+    title: 'Sound Judgment & Strategic Leverage',
+    storyEn: 'Your proposal sounds promising, and it rests on financially sound advice. If we leverage our proprietary technology, the campaign will yield high returns this quarter. Even under pressure, a prepared negotiator knows when to hold bargaining leverage and when not to yield.',
+    storyEs: 'Tu propuesta suena prometedora y se apoya en una asesoría financieramente sólida. Si apalancamos nuestra tecnología propia, la campaña arrojará altos rendimientos este trimestre. Incluso bajo presión, un negociador preparado sabe cuándo mantener su poder de negociación y cuándo no ceder.',
+    wordCount: 43,
+    highlightWords: ['sounds', 'sound', 'leverage', 'yield'],
+    comprehensionQuestion: {
+      question: 'In C1 English, what does the adjective "sound" mean in "financially sound advice"?',
+      options: [
+        'Loud and noisy',
+        'Solid, reliable, sensible, and well-founded',
+        'Uncertain and risky',
+        'Related to music production'
+      ],
+      correctIndex: 1,
+      explanation: 'Como adjetivo C1, "sound" ("sound advice", "sound judgment") significa sólido, sensato y bien fundamentado.'
+    }
+  },
+  C2: {
+    title: 'Weathering the Storm',
+    storyEn: 'While ships rested in the quiet harbor, a few board members still harbored doubts about the global recession. Most operational bottlenecks stem from outdated workflows. However, by acting decisively to stem the outflow of capital, the firm weathered the economic storm.',
+    storyEs: 'Mientras los barcos descansaban en el puerto tranquilo, algunos miembros de la junta aún albergaban dudas sobre la recesión global. La mayoría de los cuellos de botella operativos se derivan de flujos obsoletos. Sin embargo, al actuar con decisión para contener la fuga de capital, la firma logró capear la tormenta económica.',
+    wordCount: 42,
+    highlightWords: ['harbor', 'harbored', 'stem from', 'stem', 'weathered'],
+    comprehensionQuestion: {
+      question: 'Contrast "stem from" vs. "stem (transitive)" in the C2 passage:',
+      options: [
+        'Both refer to flowers and plants',
+        '"Stem from" means to originate in/be caused by, whereas "to stem (outflow/inflation)" means to stop or contain an undesirable flow',
+        'Both mean to predict the weather',
+        '"Stem" means to harbor a ship in port'
+      ],
+      correctIndex: 1,
+      explanation: '"Stem from" indica origen o causa ("derivarse de"), mientras que el verbo transitivo C2 "to stem (inflation/the tide)" significa frenar o contener un flujo negativo.'
+    }
+  }
+};
+
+export function getVocabShortReadingByLevel(
+  category: VocabCategory,
+  level: CefrLevel = 'A1'
+): VocabShortReading {
+  if (category === 'cefr_general') {
+    return CEFR_LEVEL_SHORT_READINGS[level] || VOCAB_SHORT_READINGS.cefr_general;
+  }
+  return VOCAB_SHORT_READINGS[category];
+}
+
+export function getVocabMentalGymExercises(
+  category: VocabCategory,
+  level: CefrLevel = 'A1',
+  words?: VocabularyWordItem[]
+): VocabMentalGymExercise[] {
+  if (category !== 'cefr_general' || level === 'A1') {
+    return VOCAB_MENTAL_GYM[category];
+  }
+
+  const targetWords = words && words.length > 0 ? words : getVocabularyByCategory('cefr_general', level, false);
+  if (targetWords.length === 0) return VOCAB_MENTAL_GYM.cefr_general;
+
+  const exercises: VocabMentalGymExercise[] = [];
+  let idCounter = 1;
+
+  // Bloque 1: 5 ejercicios de completación contextual (fill) basados en las acepciones del nivel
+  const allSenses = targetWords.flatMap(w => w.senses);
+  for (let i = 0; i < 5; i++) {
+    const sense = allSenses[i % allSenses.length];
+    const regex = new RegExp(`\\b${sense.word}(s|ed|ing)?\\b`, 'i');
+    const blankedSentence = regex.test(sense.exampleSentenceEn)
+      ? sense.exampleSentenceEn.replace(regex, '[___]')
+      : `${sense.exampleSentenceEn} ([___])`;
+
+    exercises.push({
+      id: idCounter++,
+      type: 'fill',
+      instruction: `Completa con el término exacto (${sense.partOfSpeech} — ${sense.definitionEs}):`,
+      promptText: blankedSentence,
+      hint: `${sense.definitionEs} (${sense.collocations?.[0] || sense.word})`,
+      solution: sense.word,
+      explanation: `En este contexto (${sense.cefrLevelTarget}), "${sense.word}" significa: ${sense.definitionEs}. Ejemplo completo: "${sense.exampleSentenceEn}".`
+    });
+  }
+
+  // Bloque 2: 5 ejercicios de detección de trampa / contraste polisémico (trap)
+  for (let i = 0; i < 5; i++) {
+    const wordItem = targetWords[i % targetWords.length];
+    const sense1 = wordItem.senses[0];
+    const sense2 = wordItem.senses[1] || wordItem.senses[0];
+    exercises.push({
+      id: idCounter++,
+      type: 'trap',
+      instruction: `Domina la segunda acepción (${sense2.cefrLevelTarget}) de "${wordItem.word.toUpperCase()}":`,
+      promptText: `Acepción 1 (${sense1.cefrLevelTarget}): "${sense1.definitionEs}". ¿Cómo usas "${wordItem.word}" con el sentido de "${sense2.definitionEs}"?`,
+      hint: sense2.collocations?.join(' / ') || sense2.definitionEs,
+      solution: sense2.exampleSentenceEn,
+      explanation: `${sense2.notes || `En nivel ${sense2.cefrLevelTarget}, "${wordItem.word}" (${sense2.partOfSpeech}) significa "${sense2.definitionEs}".`}`
+    });
+  }
+
+  // Bloque 3: 5 ejercicios de producción inversa Español -> Inglés (reverse)
+  for (let i = 0; i < 5; i++) {
+    const sense = allSenses[(i + 1) % allSenses.length];
+    exercises.push({
+      id: idCounter++,
+      type: 'reverse',
+      instruction: `Traduce al inglés aplicando "${sense.word}" (${sense.cefrLevelTarget}):`,
+      promptText: sense.exampleSentenceEs,
+      hint: `Usa "${sense.word}" (${sense.collocations?.[0] || sense.partOfSpeech})`,
+      solution: sense.exampleSentenceEn,
+      explanation: `Traducción natural: "${sense.exampleSentenceEn}" (${sense.definitionEs}).`
+    });
+  }
+
+  return exercises;
+}
+
