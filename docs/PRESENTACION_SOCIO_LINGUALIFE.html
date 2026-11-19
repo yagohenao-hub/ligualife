@@ -10,10 +10,10 @@
   <style>
     :root {
       --bg-dark: #07090e;
-      --bg-card: rgba(15, 18, 28, 0.82);
-      --bg-card-hover: rgba(24, 29, 44, 0.95);
+      --bg-card: rgba(15, 18, 28, 0.85);
+      --bg-card-hover: rgba(24, 29, 44, 0.98);
       --border-card: rgba(255, 255, 255, 0.08);
-      --border-active: rgba(139, 92, 246, 0.4);
+      --border-active: rgba(139, 92, 246, 0.45);
       --accent-purple: #8b5cf6;
       --accent-purple-light: #a78bfa;
       --accent-violet: #6d28d9;
@@ -56,7 +56,7 @@
       z-index: 100;
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      background: rgba(7, 9, 14, 0.85);
+      background: rgba(7, 9, 14, 0.88);
       border-bottom: 1px solid var(--border-card);
       padding: 0.85rem 2rem;
       display: flex;
@@ -154,10 +154,10 @@
     /* Deck Layout */
     main.deck-container {
       flex: 1;
-      max-width: 1220px;
+      max-width: 1240px;
       width: 100%;
       margin: 0 auto;
-      padding: 2.5rem 1.5rem 4rem;
+      padding: 2.2rem 1.5rem 4rem;
       display: flex;
       flex-direction: column;
       position: relative;
@@ -166,7 +166,7 @@
     /* Individual Slide Styles */
     .slide {
       display: none;
-      animation: fadeIn 0.35s ease-out forwards;
+      animation: fadeIn 0.32s ease-out forwards;
     }
 
     .slide.active {
@@ -176,7 +176,7 @@
     @keyframes fadeIn {
       from {
         opacity: 0;
-        transform: translateY(12px) scale(0.995);
+        transform: translateY(10px) scale(0.995);
       }
       to {
         opacity: 1;
@@ -184,7 +184,7 @@
       }
     }
 
-    /* Badge & Eyebrow */
+    /* Eyebrow & Titles */
     .eyebrow {
       display: inline-flex;
       align-items: center;
@@ -194,7 +194,7 @@
       text-transform: uppercase;
       letter-spacing: 0.12em;
       color: var(--accent-purple-light);
-      margin-bottom: 0.75rem;
+      margin-bottom: 0.65rem;
     }
 
     .eyebrow-emerald { color: var(--accent-emerald); }
@@ -203,29 +203,29 @@
     .eyebrow-rose { color: var(--accent-rose); }
 
     .slide-title {
-      font-size: 2.5rem;
+      font-size: 2.4rem;
       font-weight: 800;
       line-height: 1.15;
       letter-spacing: -0.03em;
-      margin-bottom: 0.75rem;
+      margin-bottom: 0.65rem;
       background: linear-gradient(135deg, #ffffff 40%, #cbd5e1 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
     .slide-desc {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       color: var(--text-muted);
       line-height: 1.6;
-      max-width: 860px;
-      margin-bottom: 2rem;
+      max-width: 880px;
+      margin-bottom: 1.8rem;
     }
 
-    /* Grid & Cards */
+    /* Grids & Cards */
     .grid-2 {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 1.5rem;
+      gap: 1.35rem;
     }
 
     .grid-3 {
@@ -244,7 +244,7 @@
       background: var(--bg-card);
       border: 1px solid var(--border-card);
       border-radius: 14px;
-      padding: 1.5rem;
+      padding: 1.35rem;
       transition: all 0.25s ease;
       position: relative;
       overflow: hidden;
@@ -259,50 +259,61 @@
 
     .card-highlight {
       border-color: rgba(139, 92, 246, 0.4);
-      background: linear-gradient(180deg, rgba(139, 92, 246, 0.08) 0%, rgba(15, 18, 28, 0.9) 100%);
+      background: linear-gradient(180deg, rgba(139, 92, 246, 0.08) 0%, rgba(15, 18, 28, 0.92) 100%);
     }
 
     .card-emerald {
       border-color: rgba(16, 185, 129, 0.3);
-      background: linear-gradient(180deg, rgba(16, 185, 129, 0.06) 0%, rgba(15, 18, 28, 0.9) 100%);
+      background: linear-gradient(180deg, rgba(16, 185, 129, 0.06) 0%, rgba(15, 18, 28, 0.92) 100%);
     }
 
     .card-cyan {
       border-color: rgba(6, 182, 212, 0.3);
-      background: linear-gradient(180deg, rgba(6, 182, 212, 0.06) 0%, rgba(15, 18, 28, 0.9) 100%);
+      background: linear-gradient(180deg, rgba(6, 182, 212, 0.06) 0%, rgba(15, 18, 28, 0.92) 100%);
+    }
+
+    .card-amber {
+      border-color: rgba(245, 158, 11, 0.35);
+      background: linear-gradient(180deg, rgba(245, 158, 11, 0.07) 0%, rgba(15, 18, 28, 0.92) 100%);
+    }
+
+    .card-rose {
+      border-color: rgba(244, 63, 94, 0.35);
+      background: linear-gradient(180deg, rgba(244, 63, 94, 0.07) 0%, rgba(15, 18, 28, 0.92) 100%);
     }
 
     .card-icon {
-      width: 42px;
-      height: 42px;
+      width: 40px;
+      height: 40px;
       border-radius: 10px;
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.1);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.25rem;
-      margin-bottom: 1rem;
+      font-size: 1.2rem;
+      margin-bottom: 0.85rem;
     }
 
     .card-title {
-      font-size: 1.15rem;
+      font-size: 1.1rem;
       font-weight: 700;
       color: #fff;
       margin-bottom: 0.5rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 0.5rem;
     }
 
     .card-body {
-      font-size: 0.92rem;
+      font-size: 0.9rem;
       color: var(--text-secondary);
-      line-height: 1.6;
+      line-height: 1.58;
     }
 
     .card-body p {
-      margin-bottom: 0.6rem;
+      margin-bottom: 0.55rem;
     }
 
     .card-body p:last-child {
@@ -310,12 +321,13 @@
     }
 
     .status-tag {
-      font-size: 0.7rem;
-      font-weight: 700;
+      font-size: 0.68rem;
+      font-weight: 800;
       padding: 0.2rem 0.5rem;
       border-radius: 9999px;
       text-transform: uppercase;
       letter-spacing: 0.06em;
+      white-space: nowrap;
     }
 
     .status-live {
@@ -324,113 +336,122 @@
       border: 1px solid rgba(16, 185, 129, 0.35);
     }
 
-    .status-beta {
+    .status-pending {
       background: rgba(245, 158, 11, 0.15);
       color: #fbbf24;
       border: 1px solid rgba(245, 158, 11, 0.35);
     }
 
-    .status-scale {
+    .status-urgent {
+      background: rgba(244, 63, 94, 0.15);
+      color: #fb7185;
+      border: 1px solid rgba(244, 63, 94, 0.35);
+    }
+
+    .status-future {
       background: rgba(139, 92, 246, 0.15);
       color: #c084fc;
       border: 1px solid rgba(139, 92, 246, 0.35);
     }
 
-    /* Metric Big Callout */
+    /* Metric Callout */
     .metric-box {
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid var(--border-card);
       border-radius: 12px;
-      padding: 1.25rem;
+      padding: 1.15rem;
       text-align: center;
     }
 
     .metric-value {
-      font-size: 2.4rem;
+      font-size: 2.1rem;
       font-weight: 900;
       font-family: var(--mono);
       background: linear-gradient(135deg, #fff, var(--accent-purple-light));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      line-height: 1.1;
+      line-height: 1.15;
       margin-bottom: 0.25rem;
     }
 
     .metric-label {
-      font-size: 0.8rem;
+      font-size: 0.76rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
       color: var(--text-muted);
-      font-weight: 600;
+      font-weight: 700;
     }
 
-    /* Timeline & Architecture Diagrams */
-    .arch-flow {
-      display: flex;
-      flex-direction: column;
+    /* Diagrams & Pipelines */
+    .flow-pipeline {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
       gap: 1rem;
+      position: relative;
     }
 
-    .arch-layer {
+    .flow-step {
       background: var(--bg-card);
       border: 1px solid var(--border-card);
       border-radius: 12px;
-      padding: 1.25rem 1.5rem;
+      padding: 1.25rem;
       display: flex;
-      align-items: center;
-      gap: 1.5rem;
+      flex-direction: column;
+      position: relative;
     }
 
-    .layer-badge {
-      width: 140px;
-      flex-shrink: 0;
-      font-size: 0.8rem;
+    .flow-step-num {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--accent-purple);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      padding: 0.5rem 0.75rem;
-      border-radius: 8px;
-      text-align: center;
+      font-size: 0.78rem;
+      margin-bottom: 0.65rem;
     }
 
-    .layer-content {
-      flex: 1;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.6rem;
-      align-items: center;
-    }
-
-    .chip {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 0.4rem 0.8rem;
-      border-radius: 8px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: #f1f5f9;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-
-    .chip-green { border-color: rgba(16, 185, 129, 0.4); background: rgba(16, 185, 129, 0.08); }
-    .chip-purple { border-color: rgba(139, 92, 246, 0.4); background: rgba(139, 92, 246, 0.08); }
-    .chip-cyan { border-color: rgba(6, 182, 212, 0.4); background: rgba(6, 182, 212, 0.08); }
-    .chip-amber { border-color: rgba(245, 158, 11, 0.4); background: rgba(245, 158, 11, 0.08); }
-
-    /* Code Snippets / Tables */
     .code-pill {
       font-family: var(--mono);
-      font-size: 0.82rem;
-      background: rgba(0, 0, 0, 0.4);
+      font-size: 0.8rem;
+      background: rgba(0, 0, 0, 0.45);
       padding: 0.15rem 0.4rem;
       border-radius: 4px;
       border: 1px solid rgba(255, 255, 255, 0.08);
       color: #38bdf8;
     }
 
-    /* Comparison Table */
+    /* Check & Bullet List */
+    .checklist {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .checklist li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .checklist li strong {
+      color: #fff;
+    }
+
+    .check-icon {
+      font-size: 0.95rem;
+      line-height: 1.3;
+      flex-shrink: 0;
+    }
+
+    /* Table Card */
     .table-card {
       background: var(--bg-card);
       border: 1px solid var(--border-card);
@@ -446,8 +467,8 @@
 
     table.exec-table th {
       background: rgba(255, 255, 255, 0.04);
-      padding: 1rem 1.25rem;
-      font-size: 0.8rem;
+      padding: 0.9rem 1.15rem;
+      font-size: 0.78rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
       color: var(--text-muted);
@@ -455,8 +476,8 @@
     }
 
     table.exec-table td {
-      padding: 1.15rem 1.25rem;
-      font-size: 0.9rem;
+      padding: 1rem 1.15rem;
+      font-size: 0.88rem;
       border-bottom: 1px solid rgba(255, 255, 255, 0.04);
       color: var(--text-secondary);
       vertical-align: middle;
@@ -466,10 +487,6 @@
       border-bottom: none;
     }
 
-    table.exec-table tr:hover td {
-      background: rgba(255, 255, 255, 0.02);
-    }
-
     /* Slide Footer Navigation */
     footer.deck-footer {
       position: fixed;
@@ -477,7 +494,7 @@
       left: 0;
       right: 0;
       backdrop-filter: blur(14px);
-      background: rgba(7, 9, 14, 0.85);
+      background: rgba(7, 9, 14, 0.88);
       border-top: 1px solid var(--border-card);
       padding: 0.75rem 2rem;
       display: flex;
@@ -521,21 +538,12 @@
       color: #fff;
     }
 
-    /* Responsive */
     @media (max-width: 900px) {
-      .grid-2, .grid-3, .grid-4 {
+      .grid-2, .grid-3, .grid-4, .flow-pipeline {
         grid-template-columns: 1fr;
       }
       .slide-title {
-        font-size: 1.9rem;
-      }
-      .arch-layer {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      .layer-badge {
-        width: 100%;
-        text-align: left;
+        font-size: 1.85rem;
       }
     }
   </style>
@@ -547,11 +555,11 @@
     <div class="brand">
       <div class="brand-logo">L</div>
       <div class="brand-name">LinguaLife</div>
-      <span class="brand-pill">Partner Briefing 2026</span>
+      <span class="brand-pill">Partner Briefing · MVP Launch</span>
     </div>
 
     <div class="deck-controls">
-      <span class="slide-counter" id="slideIndicator">Slide 1 / 8</span>
+      <span class="slide-counter" id="slideIndicator">Slide 1 / 5</span>
       <button class="nav-btn" onclick="prevSlide()" title="Diapositiva Anterior (←)">
         ← Anterior
       </button>
@@ -564,262 +572,434 @@
   <!-- Slide Canvas -->
   <main class="deck-container">
 
-    <!-- SLIDE 1: Executive Cover -->
+    <!-- =====================================================================
+         SLIDE 1: PENDIENTES CRÍTICOS PARA EL LANZAMIENTO DEL MVP AL MERCADO
+         ===================================================================== -->
     <section class="slide active" id="slide-1">
-      <span class="eyebrow eyebrow-cyan">⚡ Confidencial &amp; Estratégico · Onboarding de Socio</span>
-      <h1 class="slide-title">LinguaLife: El Ecosistema Híbrido de Alto Rendimiento en Inglés</h1>
+      <span class="eyebrow eyebrow-amber">🚨 Sprint de Salida al Mercado · Go-to-Market Checklist</span>
+      <h1 class="slide-title">Ruta Crítica: Lo que Falta para Lanzar el MVP</h1>
       <p class="slide-desc">
-        Fusionamos <strong>Coaching Ejecutivo Humano 1-a-1</strong> con un <strong>Ecosistema de IA Neuromuscular 24/7</strong> (Web App + WhatsApp Pocket Coach). Resolvemos el problema del 90% de estudiantes que se quedan estancados entre B1 y B2.
-      </p>
-
-      <div class="grid-4" style="margin-bottom: 2rem;">
-        <div class="metric-box">
-          <div class="metric-value">1-a-1 + IA</div>
-          <div class="metric-label">Modelo Híbrido</div>
-        </div>
-        <div class="metric-box">
-          <div class="metric-value">120+</div>
-          <div class="metric-label">Flashcards 3D &amp; Decks</div>
-        </div>
-        <div class="metric-box">
-          <div class="metric-value">15 Clases</div>
-          <div class="metric-label">Retos por Tema en Repaso</div>
-        </div>
-        <div class="metric-box">
-          <div class="metric-value">24/7</div>
-          <div class="metric-label">Pocket Coach WhatsApp</div>
-        </div>
-      </div>
-
-      <div class="card card-highlight">
-        <div class="card-title">
-          <span>🎯 La Tesis de Negocio</span>
-          <span class="status-tag status-live">Validado</span>
-        </div>
-        <div class="card-body">
-          <p>
-            <strong>El problema del mercado:</strong> Las apps tradicionales (Duolingo, Babbel) generan dopamina pero no fluidez ejecutiva en situaciones de presión. Los cursos tradicionales de instituto (Open English, academias locales) son pasivos, aburridos y carecen de seguimiento diario individualizado.
-          </p>
-          <p>
-            <strong>La propuesta LinguaLife:</strong> Diseñamos una metodología de <em>gimnasia refleja neuromuscular</em>. Las sesiones humanas se dedican a la producción de alta presión (entrevistas TOEFL, debates directivos, pasiva institucional), mientras la plataforma web y el bot de WhatsApp mantienen activo el cerebro del alumno los otros 6 días de la semana con micro-estímulos medibles.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <!-- SLIDE 2: Product Suite Overview -->
-    <section class="slide" id="slide-2">
-      <span class="eyebrow eyebrow-emerald">📦 Suite de Producto</span>
-      <h1 class="slide-title">Qué Hay Construido y Funcionando Hoy</h1>
-      <p class="slide-desc">
-        La plataforma está completamente funcional en producción y beta activa con estudiantes antiguos. No es un wireframe ni un prototipo en Figma: es software desplegado con backend relacional y automatización en tiempo real.
-      </p>
-
-      <div class="grid-3">
-        <div class="card card-highlight">
-          <div class="card-icon">🧠</div>
-          <div class="card-title">
-            <span>Portal Alumno &amp; Repaso</span>
-            <span class="status-tag status-live">Live</span>
-          </div>
-          <div class="card-body">
-            <p><strong>Ruta:</strong> <span class="code-pill">/student</span></p>
-            <p>Acceso por PIN institucional sin fricción de contraseñas olvidadas. Dashboard personalizado que muestra próximas sesiones, saldo de tokens de reposición y acceso al <strong>Gimnasio Mental de Repaso</strong> (15 retos interactivos por cada tema curricular cursado).</p>
-          </div>
-        </div>
-
-        <div class="card card-emerald">
-          <div class="card-icon">🤖</div>
-          <div class="card-title">
-            <span>WhatsApp Pocket Coach</span>
-            <span class="status-tag status-live">Live</span>
-          </div>
-          <div class="card-body">
-            <p><strong>Motor:</strong> Evolution API + Gemini AI</p>
-            <p>Bot automatizado que acompaña al alumno 24/7 en WhatsApp. Envía micro-retos diarios adaptados al nivel, evalúa notas de voz y textos, ofrece feedback fonético instantáneo y reporta actividad al backend.</p>
-          </div>
-        </div>
-
-        <div class="card card-cyan">
-          <div class="card-icon">🃏</div>
-          <div class="card-title">
-            <span>Flashcards 3D &amp; Decks</span>
-            <span class="status-tag status-live">Live</span>
-          </div>
-          <div class="card-body">
-            <p><strong>Ruta:</strong> <span class="code-pill">/student/flashcards</span></p>
-            <p>Mazo de 120 cartas divididas en 8 categorías: Vocabulario General (A1 a C2), Oficinas y Lugares, Nubes Conceptuales y Phrasal Verbs Críticos. Con audio nativo, transcripción fonética IPA y anclas nemotécnicas espaciales.</p>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-icon">🎯</div>
-          <div class="card-title">
-            <span>Trivia Infinita Adaptativa</span>
-            <span class="status-tag status-live">Live</span>
-          </div>
-          <div class="card-body">
-            <p><strong>Ruta:</strong> <span class="code-pill">/api/student/trivia-questions</span></p>
-            <p>Generación algorítmica de retos gramaticales y de colocación con gamificación, rachas y feedback inmediato. Mantiene al estudiante entrenando en tiempos muertos (móvil).</p>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-icon">📅</div>
-          <div class="card-title">
-            <span>Motor de Agendamiento</span>
-            <span class="status-tag status-live">Live</span>
-          </div>
-          <div class="card-body">
-            <p><strong>Ruta:</strong> <span class="code-pill">/dashboard</span> y <span class="code-pill">/api/student/reschedule</span></p>
-            <p>Sincronización bidireccional profesor-alumno. Cancelaciones hasta 24h antes devuelven un <em>Token de Reposición</em> automático. El alumno puede canjearlo en slots libres de profesores sin intervención manual.</p>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-icon">📊</div>
-          <div class="card-title">
-            <span>Panel de Admin &amp; Métricas</span>
-            <span class="status-tag status-live">Live</span>
-          </div>
-          <div class="card-body">
-            <p><strong>Ruta:</strong> <span class="code-pill">/admin</span></p>
-            <p>Control centralizado de profesores, horas dictadas, gestión de festivos corporativos, asignación de cursos intensivos, simulación de progreso y monitoreo de retención.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- SLIDE 3: System Architecture -->
-    <section class="slide" id="slide-3">
-      <span class="eyebrow eyebrow-purple">🏗️ Arquitectura Técnica</span>
-      <h1 class="slide-title">El Stack Tecnológico y Flujo de Datos</h1>
-      <p class="slide-desc">
-        Diseñado con tecnologías modernas, altamente escalables y de bajo costo operativo. La arquitectura desacopla la experiencia de usuario web de los motores de mensajería y LLMs.
-      </p>
-
-      <div class="arch-flow">
-        <!-- Layer 1 -->
-        <div class="arch-layer">
-          <div class="layer-badge" style="background: rgba(139, 92, 246, 0.2); color: #c4b5fd; border: 1px solid rgba(139, 92, 246, 0.4);">
-            1. Capa Cliente
-          </div>
-          <div class="layer-content">
-            <span class="chip chip-purple">Next.js 14/16 (React + TS)</span>
-            <span class="chip">CSS Modules Mobile-First</span>
-            <span class="chip">Lucide React Icons</span>
-            <span class="chip">HTML5 Audio API</span>
-            <span class="chip">Web Speech Synthesizer</span>
-            <span class="chip">Progressive Web Design</span>
-          </div>
-        </div>
-
-        <!-- Layer 2 -->
-        <div class="arch-layer">
-          <div class="layer-badge" style="background: rgba(6, 182, 212, 0.2); color: #67e8f9; border: 1px solid rgba(6, 182, 212, 0.4);">
-            2. Capa Backend &amp; APIs
-          </div>
-          <div class="layer-content">
-            <span class="chip chip-cyan">Next.js API Routes (Node.js)</span>
-            <span class="chip">Unified Database Adapter (Supabase Primary + Airtable Fallback)</span>
-            <span class="chip">Token System Middleware</span>
-            <span class="chip">Cron Dispatcher (Railway/Vercel)</span>
-          </div>
-        </div>
-
-        <!-- Layer 3 -->
-        <div class="arch-layer">
-          <div class="layer-badge" style="background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.4);">
-            3. Datos &amp; Persistencia
-          </div>
-          <div class="layer-content">
-            <span class="chip chip-green">Supabase (PostgreSQL Cloud)</span>
-            <span class="chip">Tablas: students, teachers, sessions, session_participants</span>
-            <span class="chip">curriculum_topics, student_topic_progress</span>
-            <span class="chip">Row-Level Security Ready</span>
-          </div>
-        </div>
-
-        <!-- Layer 4 -->
-        <div class="arch-layer">
-          <div class="layer-badge" style="background: rgba(245, 158, 11, 0.2); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.4);">
-            4. Inteligencia Artificial &amp; WhatsApp
-          </div>
-          <div class="layer-content">
-            <span class="chip chip-amber">Google Gemini Pro / Flash 1.5</span>
-            <span class="chip">Evolution API (WhatsApp Cloud Bridge en Railway)</span>
-            <span class="chip">Prompt Engineering Neuromuscular</span>
-            <span class="chip">Dynamic Micro-Reading Engine</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- SLIDE 4: The Pedagogical Engine -->
-    <section class="slide" id="slide-4">
-      <span class="eyebrow eyebrow-amber">⚡ Ventaja Competitiva</span>
-      <h1 class="slide-title">El Motor Pedagógico: Del Saber Teórico al Reflejo</h1>
-      <p class="slide-desc">
-        La mayoría de academias enseñan "reglas gramaticales". LinguaLife entrena <em>automatismos musculares subconscientes</em> para profesionales y candidatos al TOEFL iBT.
-      </p>
-
-      <div class="grid-2">
-        <div class="card">
-          <div class="card-title">
-            <span>❌ La Escuela Tradicional (B1-B2 Stagnation)</span>
-          </div>
-          <div class="card-body">
-            <p>• <strong>Traducción mental lenta:</strong> El estudiante arma mentalmente la frase en español y busca cada palabra en inglés.</p>
-            <p>• <strong>Explicaciones de libro:</strong> Reglas rígidas ("Passive = Object + Be + Past Participle") que se congelan en una conversación de negocios real.</p>
-            <p>• <strong>Vicios literales agresivos:</strong> Decir <em>"You made a mistake"</em> en juntas corporativas o <em>"We need to discuss this"</em> sin distanciamiento diplomático.</p>
-            <p>• <strong>Práctica intermitente:</strong> Estudiar 2 horas a la semana y olvidar el 80% en los 5 días de silencio.</p>
-          </div>
-        </div>
-
-        <div class="card card-highlight">
-          <div class="card-title">
-            <span>✅ La Metodología LinguaLife (Neuromuscular C1)</span>
-          </div>
-          <div class="card-body">
-            <p>• <strong>Disparos de respuesta en &lt; 3 segundos:</strong> Si el alumno tarda más de 3 segundos, la tarjeta vuelve al fondo del mazo activo.</p>
-            <p>• <strong>Pasiva Institucional &amp; Phrasal Verbs:</strong> Blindaje corporativo (<em>"A discrepancy was identified"</em> / <em>"The meeting was called off"</em>) sin culpar agresivamente.</p>
-            <p>• <strong>Inversiones &amp; Fluidez C1:</strong> Dominio de estructuras de alto impacto (<em>"Seldom have we witnessed..."</em>) para entrevistas ejecutivas y TOEFL.</p>
-            <p>• <strong>Bucle de contacto diario 24/7:</strong> El Pocket Coach en WhatsApp asegura entre 5 y 10 minutos de gimnasia diaria sin esfuerzo logístico.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- SLIDE 5: WhatsApp Pocket Coach Deep Dive -->
-    <section class="slide" id="slide-5">
-      <span class="eyebrow eyebrow-cyan">📱 Inteligencia Artificial en WhatsApp</span>
-      <h1 class="slide-title">Pocket Coach: La Retención de Usuarios al 100%</h1>
-      <p class="slide-desc">
-        El gran talón de Aquiles de la educación online es el abandono (churn). El Pocket Coach vive dentro de la app que el usuario ya abre 50 veces al día: <strong>WhatsApp</strong>.
+        La plataforma tecnológica base ya está construida. Esta es la lista priorizada de las tareas indispensables y los vacíos operativos que debemos cerrar para abrir comercialmente y captar los primeros alumnos pagos.
       </p>
 
       <div class="grid-3" style="margin-bottom: 1.5rem;">
-        <div class="card">
-          <div class="card-icon">⚡</div>
-          <div class="card-title">Micro-Retos Diarios</div>
+        <!-- Bloque 1: Marketing & Tráfico -->
+        <div class="card card-amber">
+          <div class="card-icon">🎯</div>
+          <div class="card-title">
+            <span>1. Campaña &amp; Captación</span>
+            <span class="status-tag status-urgent">Urgente</span>
+          </div>
           <div class="card-body">
-            Envío programado de un estímulo en español colombiano o de negocios para traducir o corregir en menos de 1 minuto. El estudiante responde por nota de voz o texto.
+            <ul class="checklist">
+              <li><span class="check-icon">⏳</span> <span><strong>Pauta Meta Ads:</strong> Activar campaña de tráfico frío ($5 USD/día) directo a WhatsApp con los hooks de Tech/Remoto y Receso.</span></li>
+              <li><span class="check-icon">⏳</span> <span><strong>Assets Comerciales:</strong> Finalizar infografía PDF y carrusel de WhatsApp de la hoja de ruta para soporte visual en ventas.</span></li>
+              <li><span class="check-icon">⏳</span> <span><strong>Oferta Reenganche:</strong> Recontactar a los alumnos antiguos con paquete de relanzamiento y descuento por referido.</span></li>
+            </ul>
           </div>
         </div>
 
-        <div class="card">
-          <div class="card-icon">🎙️</div>
-          <div class="card-title">Feedback Auditivo Inmediato</div>
+        <!-- Bloque 2: Operaciones & WhatsApp -->
+        <div class="card card-rose">
+          <div class="card-icon">📲</div>
+          <div class="card-title">
+            <span>2. Operación Pocket Coach</span>
+            <span class="status-tag status-urgent">Urgente</span>
+          </div>
           <div class="card-body">
-            La IA detecta acentuaciones erróneas del hispanohablante (como pronunciar fuerte "WAS" /wɑːz/ en vez de reducirlo al sonido Schwa /wəz/) y devuelve un audio de modelo nativo.
+            <ul class="checklist">
+              <li><span class="check-icon">⏳</span> <span><strong>SIM y Celular Dedicado:</strong> Montar el WhatsApp corporativo fijo en el celular de soporte para que los micro-retos de IA no se interrumpan.</span></li>
+              <li><span class="check-icon">⏳</span> <span><strong>Evolution API en Producción:</strong> Dejar la instancia de Railway monitoreada con webhook de reconexión automática ante caídas.</span></li>
+              <li><span class="check-icon">⏳</span> <span><strong>Protocolo de Cierre:</strong> Calibrar el guion de venta consultiva por notas de voz sin regalar clases diagnósticas en Zoom.</span></li>
+            </ul>
           </div>
         </div>
 
-        <div class="card">
-          <div class="card-icon">📈</div>
-          <div class="card-title">Sincronización con el Profe</div>
+        <!-- Bloque 3: Legaltech & Pasarelas -->
+        <div class="card card-highlight">
+          <div class="card-icon">⚖️</div>
+          <div class="card-title">
+            <span>3. Legal &amp; Pasarelas</span>
+            <span class="status-tag status-pending">Prioridad</span>
+          </div>
           <div class="card-body">
-            Los errores recurrentes en WhatsApp se registran en Supabase y alimentan las notas de la siguiente clase humana del profesor, logrando personalización quirúrgica.
+            <ul class="checklist">
+              <li><span class="check-icon">⏳</span> <span><strong>Habeas Data &amp; Términos:</strong> Publicar términos de servicio y política de datos para interacciones por WhatsApp y grabaciones.</span></li>
+              <li><span class="check-icon">⏳</span> <span><strong>Contrato de Matrícula:</strong> Cláusulas blindadas de no reembolso y política de reagendamiento 24h con tokens.</span></li>
+              <li><span class="check-icon">⏳</span> <span><strong>Pasarela de Cobro Recurrente:</strong> Habilitar link de Wompi / Stripe / PSE para débito y tarjeta de crédito en COP y USD.</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="card card-highlight" style="margin-bottom: 1.5rem;">
+        <div class="card-title">
+          <span>🎯 Objetivo Inmediato del Sprint de Lanzamiento</span>
+          <span class="status-tag status-live">Meta Numérica</span>
+        </div>
+        <div class="card-body" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <p style="margin: 0; max-width: 780px;">
+            Cerrar los primeros <strong>20 alumnos pagos</strong> (10 para cada profesor) invirtiendo ~$150 USD en pauta durante 30 días, generando flujo de caja inmediato (~$3,600 USD) y validando la retención con el acompañamiento de IA antes de abrir contrataciones docentes masivas.
+          </p>
+          <div style="font-family: var(--mono); font-weight: 800; font-size: 1.1rem; color: #34d399;">
+            CAC ~$7.50 USD · ROAS ~24x
+          </div>
+        </div>
+      </div>
+
+      <!-- Desglose Financiero por Alumno (Unit Economics Unitario) -->
+      <div class="table-card" style="border: 1px solid rgba(16, 185, 129, 0.35); background: linear-gradient(180deg, rgba(16, 185, 129, 0.05) 0%, rgba(15, 18, 28, 0.95) 100%);">
+        <div style="padding: 1rem 1.25rem; border-bottom: 1px solid var(--border-card); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+          <div>
+            <h3 style="font-size: 1.05rem; font-weight: 800; color: #fff; margin: 0;">
+              💵 Unit Economics: ¿Cuánto Dinero Entra y Queda Libre por Alumno?
+            </h3>
+            <span style="font-size: 0.78rem; color: var(--text-muted);">
+              Cálculo mensual basado en el Plan Regular (8 clases 1-1 al mes + Pocket Coach IA 24/7)
+            </span>
+          </div>
+          <span class="status-tag status-live" style="font-size: 0.75rem; padding: 0.25rem 0.65rem;">
+            Margen Libre: ~24.5% (~$110.000 COP / alumno)
+          </span>
+        </div>
+
+        <table class="exec-table">
+          <thead>
+            <tr>
+              <th>Concepto</th>
+              <th>Monto por Alumno (COP)</th>
+              <th>Equivalente USD</th>
+              <th>% del Ticket</th>
+              <th>Detalle &amp; Destino del Gasto</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="background: rgba(255, 255, 255, 0.02);">
+              <td><strong style="color: #38bdf8;">(+) Mensualidad Cobrada al Alumno</strong></td>
+              <td><strong style="color: #38bdf8; font-family: var(--mono); font-size: 1.05rem;">$450.000 COP</strong></td>
+              <td><strong>~$134.50 USD</strong></td>
+              <td><strong>100%</strong></td>
+              <td>Ingreso bruto pagado por el estudiante por sus 8 clases mensuales + IA.</td>
+            </tr>
+            <tr>
+              <td><span style="color: #f87171;">(−) Pago a Profesor</span></td>
+              <td style="color: #f87171; font-family: var(--mono); font-weight: 700;">$300.000 COP</td>
+              <td>~$89.70 USD</td>
+              <td>66.7%</td>
+              <td>Honorarios docentes garantizados ($37.500 COP por clase 1-a-1 de alta presión).</td>
+            </tr>
+            <tr style="background: rgba(139, 92, 246, 0.06);">
+              <td><strong style="color: var(--accent-purple-light);">( =) Margen Bruto de Contribución</strong></td>
+              <td><strong style="color: var(--accent-purple-light); font-family: var(--mono); font-size: 1rem;">$150.000 COP</strong></td>
+              <td><strong>~$44.80 USD</strong></td>
+              <td><strong>33.3%</strong></td>
+              <td>Fondo disponible por cada alumno para cubrir CAC, infraestructura y utilidad.</td>
+            </tr>
+            <tr>
+              <td><span style="color: #fbbf24;">(−) Marketing &amp; Pauta Prorrateada (CAC)</span></td>
+              <td style="color: #fbbf24; font-family: var(--mono); font-weight: 700;">$25.000 COP</td>
+              <td>~$7.50 USD</td>
+              <td>5.5%</td>
+              <td>Costo de adquisición publicitaria ($500.000 COP de pauta / 20 alumnos captados).</td>
+            </tr>
+            <tr>
+              <td><span style="color: #cbd5e1;">(−) Gastos Operativos &amp; Software (por cabeza)</span></td>
+              <td style="color: #cbd5e1; font-family: var(--mono); font-weight: 700;">$15.000 COP</td>
+              <td>~$4.50 USD</td>
+              <td>3.3%</td>
+              <td>Comisión de pasarela (~2.9% Wompi/Stripe) + tokens Gemini Flash + Railway/Supabase.</td>
+            </tr>
+            <tr style="background: rgba(16, 185, 129, 0.12); border-top: 1px solid rgba(16, 185, 129, 0.35);">
+              <td><strong style="color: #34d399; font-size: 0.95rem;">( =) UTILIDAD NETA LIBRE PARA LA EMPRESA</strong></td>
+              <td><strong style="color: #34d399; font-family: var(--mono); font-size: 1.15rem;">$110.000 COP</strong></td>
+              <td><strong style="color: #34d399; font-family: var(--mono); font-size: 1.15rem;">~$32.80 USD</strong></td>
+              <td><strong style="color: #34d399; font-size: 1rem;">~24.5%</strong></td>
+              <td><strong style="color: #fff;">Flujo de caja 100% libre mensual por estudiante ($2.200.000 COP con los primeros 20 alumnos).</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Proyección de Escala: Sprint de Lanzamiento vs. Llenado Progresivo de Profesores -->
+      <div class="table-card" style="margin-top: 1.25rem; border: 1px solid rgba(139, 92, 246, 0.35); background: linear-gradient(180deg, rgba(139, 92, 246, 0.05) 0%, rgba(15, 18, 28, 0.95) 100%);">
+        <div style="padding: 1rem 1.25rem; border-bottom: 1px solid var(--border-card); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+          <div>
+            <h3 style="font-size: 1.05rem; font-weight: 800; color: #fff; margin: 0;">
+              📈 Proyección de Escala: Llenando Profesores con Este Modelo
+            </h3>
+            <span style="font-size: 0.78rem; color: var(--text-muted);">
+              Capacidad estándar por profesor: 10 a 15 alumnos individuales activos en agenda (20 a 30 horas/mes).
+            </span>
+          </div>
+          <span class="status-tag status-scale" style="font-size: 0.75rem; padding: 0.25rem 0.65rem;">
+            Escalabilidad Lineal sin Costo Fijo
+          </span>
+        </div>
+
+        <table class="exec-table">
+          <thead>
+            <tr>
+              <th>Etapa &amp; Capacidad</th>
+              <th>Alumnos Activos</th>
+              <th>Facturación Bruta Mensual</th>
+              <th>Pago Total Profesores</th>
+              <th>Inversión Marketing &amp; Soft.</th>
+              <th>Utilidad Neta Libre Mensual</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="background: rgba(245, 158, 11, 0.08);">
+              <td>
+                <strong style="color: #fbbf24;">🚀 Meta Sprint Lanzamiento</strong><br>
+                <span style="font-size: 0.75rem; color: var(--text-muted);">2 profesores con 10 alumnos c/u</span>
+              </td>
+              <td><strong style="font-family: var(--mono); color: #fff;">20 Alumnos</strong></td>
+              <td style="font-family: var(--mono); color: #38bdf8;">$9.000.000 COP<br><span style="font-size: 0.75rem; color: var(--text-muted);">~$2.690 USD</span></td>
+              <td style="font-family: var(--mono); color: #f87171;">$6.000.000 COP</td>
+              <td style="font-family: var(--mono); color: #cbd5e1;">$800.000 COP<br><span style="font-size: 0.75rem; color: var(--text-muted);">$500k ad + $300k soft</span></td>
+              <td><strong style="font-family: var(--mono); font-size: 1.05rem; color: #34d399;">$2.200.000 COP / mes</strong><br><span style="font-size: 0.75rem; color: var(--text-muted);">~$657 USD libres</span></td>
+            </tr>
+            <tr>
+              <td>
+                <strong style="color: #fff;">👥 2 Profesores a Plena Capacidad</strong><br>
+                <span style="font-size: 0.75rem; color: var(--text-muted);">15 alumnos por profesor</span>
+              </td>
+              <td><strong style="font-family: var(--mono); color: #fff;">30 Alumnos</strong></td>
+              <td style="font-family: var(--mono); color: #38bdf8;">$13.500.000 COP<br><span style="font-size: 0.75rem; color: var(--text-muted);">~$4.035 USD</span></td>
+              <td style="font-family: var(--mono); color: #f87171;">$9.000.000 COP</td>
+              <td style="font-family: var(--mono); color: #cbd5e1;">$1.150.000 COP<br><span style="font-size: 0.75rem; color: var(--text-muted);">CAC baja por referidos</span></td>
+              <td><strong style="font-family: var(--mono); font-size: 1.05rem; color: #34d399;">$3.350.000 COP / mes</strong><br><span style="font-size: 0.75rem; color: var(--text-muted);">~$1.000 USD libres</span></td>
+            </tr>
+            <tr style="background: rgba(139, 92, 246, 0.08);">
+              <td>
+                <strong style="color: var(--accent-purple-light);">🏢 4 Profesores (Fase Enero/Febrero)</strong><br>
+                <span style="font-size: 0.75rem; color: var(--text-muted);">2 fundadores + 2 profes contratados</span>
+              </td>
+              <td><strong style="font-family: var(--mono); color: #fff;">50 Alumnos</strong></td>
+              <td style="font-family: var(--mono); color: #38bdf8;">$22.500.000 COP<br><span style="font-size: 0.75rem; color: var(--text-muted);">~$6.725 USD</span></td>
+              <td style="font-family: var(--mono); color: #f87171;">$15.000.000 COP</td>
+              <td style="font-family: var(--mono); color: #cbd5e1;">$1.850.000 COP<br><span style="font-size: 0.75rem; color: var(--text-muted);">Economía de escala</span></td>
+              <td><strong style="font-family: var(--mono); font-size: 1.05rem; color: #34d399;">$5.650.000 COP / mes</strong><br><span style="font-size: 0.75rem; color: var(--text-muted);">~$1.690 USD libres</span></td>
+            </tr>
+            <tr style="background: rgba(16, 185, 129, 0.1);">
+              <td>
+                <strong style="color: #34d399;">🌟 6 Profesores (Escala Consolidada)</strong><br>
+                <span style="font-size: 0.75rem; color: var(--text-muted);">Pool docente optimizado</span>
+              </td>
+              <td><strong style="font-family: var(--mono); color: #fff;">80 Alumnos</strong></td>
+              <td style="font-family: var(--mono); color: #38bdf8;">$36.000.000 COP<br><span style="font-size: 0.75rem; color: var(--text-muted);">~$10.760 USD</span></td>
+              <td style="font-family: var(--mono); color: #f87171;">$24.000.000 COP</td>
+              <td style="font-family: var(--mono); color: #cbd5e1;">$2.700.000 COP<br><span style="font-size: 0.75rem; color: var(--text-muted);">Retención &gt; 80%</span></td>
+              <td><strong style="font-family: var(--mono); font-size: 1.15rem; color: #34d399;">$9.300.000 COP / mes</strong><br><span style="font-size: 0.75rem; color: var(--text-muted);">~$2.780 USD libres</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         SLIDE 2: LO QUE QUEDÓ EN PRODUCCIÓN VS. IDEAS A FUTURO
+         ===================================================================== -->
+    <section class="slide" id="slide-2">
+      <span class="eyebrow eyebrow-emerald">📦 Alcance del Producto</span>
+      <h1 class="slide-title">Qué Quedó en Producción y Qué Está Concebido a Futuro</h1>
+      <p class="slide-desc">
+        Para garantizar un lanzamiento sólido y sin dispersión técnica, limpiamos el dashboard de los alumnos dejando exclusivamente el <strong>core de las 4 actividades de práctica</strong>, archivando las expansiones para las siguientes fases.
+      </p>
+
+      <div class="grid-2" style="margin-bottom: 1.5rem;">
+        <!-- Columna 1: En Producción Hoy -->
+        <div class="card card-emerald">
+          <div class="card-title">
+            <span>✅ En Producción para el MVP (Core Listo)</span>
+            <span class="status-tag status-live">Desplegado</span>
+          </div>
+          <div class="card-body">
+            <ul class="checklist">
+              <li>
+                <span class="check-icon">🟢</span>
+                <span><strong>El Core de los 4 Botones:</strong> Disponible tanto en Temas de Clase (<span class="code-pill">/student</span>) como en Vocabulario (<span class="code-pill">/student/vocabulary</span>):
+                <br>• <strong>1. Resumen:</strong> Ficha de decodificación estructural, IPA y errores comunes.
+                <br>• <strong>2. Repaso:</strong> Gimnasio mental de 15 ejercicios intensivos (Fill + Trap + Sprint).
+                <br>• <strong>3. Trivia Infinita:</strong> Loop algorítmico sin congelamiento con 5 arquetipos y caché de IA.
+                <br>• <strong>4. Short Reading:</strong> Micro-lectura contextual con audio TTS multi-velocidad (0.5x, 0.75x, 1x).</span>
+              </li>
+              <li>
+                <span class="check-icon">🟢</span>
+                <span><strong>Próximas Clases Simplificadas:</strong> Muestra solo la siguiente clase por defecto con botón para ver todas y reagendar citas futuras con 24h de anticipación.</span>
+              </li>
+              <li>
+                <span class="check-icon">🟢</span>
+                <span><strong>Motor de Tokens de Reposición:</strong> Reagendamiento y canje automático en slots de profesores sin soporte manual.</span>
+              </li>
+              <li>
+                <span class="check-icon">🟢</span>
+                <span><strong>Gimnasio de Vocabulario Polisémico:</strong> Palabras con doble acepción desde nivel A1 hasta C2 (inglés general y corporativo).</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Columna 2: Ideas Concebidas a Futuro -->
+        <div class="card card-cyan">
+          <div class="card-title">
+            <span>💡 Ideas &amp; Módulos Concebidos (Fase 2 y 3)</span>
+            <span class="status-tag status-future">Carpeta de Futuro</span>
+          </div>
+          <div class="card-body">
+            <ul class="checklist">
+              <li>
+                <span class="check-icon">🟣</span>
+                <span><strong>Flashcards 3D Interactivas:</strong> Mazo con volteo tridimensional, modo examen cronometrado y audio nativo (archivado en <span class="code-pill">IDEAS_A_FUTURO.md</span> para evitar sobrecarga en el primer contacto del alumno).</span>
+              </li>
+              <li>
+                <span class="check-icon">🟣</span>
+                <span><strong>Inglés con Series de TV:</strong> Módulo para solicitar y estudiar lecciones basadas en capítulos y diálogos reales de series populares.</span>
+              </li>
+              <li>
+                <span class="check-icon">🟣</span>
+                <span><strong>Simulador TOEFL Speaking con IA:</strong> Grabación de voz del estudiante, transcripción fonética y calificación automática con rúbrica oficial TOEFL iBT.</span>
+              </li>
+              <li>
+                <span class="check-icon">🟣</span>
+                <span><strong>Muro Social de Logros &amp; Rachas:</strong> Feed comunitario donde los estudiantes comparan rachas y celebran ascensos a Diamond y Platinum.</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body" style="font-size: 0.88rem; color: var(--text-muted); text-align: center;">
+          📁 Todas las especificaciones, componentes y código de estos módulos futuros están resguardados en <span class="code-pill">docs/IDEAS_Y_MODULOS_A_FUTURO.md</span> listos para activarse a medida que crezca la base de usuarios.
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         SLIDE 3: INTEGRACIÓN VISUAL DEL STACK TECNOLÓGICO
+         ===================================================================== -->
+    <section class="slide" id="slide-3">
+      <span class="eyebrow eyebrow-cyan">⚙️ Arquitectura de Sistemas</span>
+      <h1 class="slide-title">Cómo se Integra el Stack Tecnológico</h1>
+      <p class="slide-desc">
+        Un flujo de extremo a extremo que conecta la interfaz del estudiante, la base de datos relacional, los modelos de lenguaje de última generación y el canal de mensajería de WhatsApp en un solo ecosistema reactivo.
+      </p>
+
+      <!-- Diagrama Gráfico de Flujo -->
+      <div class="flow-pipeline" style="margin-bottom: 1.5rem;">
+        <div class="flow-step" style="border-color: rgba(139, 92, 246, 0.4);">
+          <div class="flow-step-num">1</div>
+          <h4 style="color: #fff; font-size: 0.95rem; margin-bottom: 0.4rem;">Frontend &amp; PWA</h4>
+          <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 0.6rem;">
+            Portal rápido y sin contraseñas con login por PIN institucional.
+          </p>
+          <div style="margin-top: auto; display: flex; flex-direction: column; gap: 0.35rem;">
+            <span class="code-pill">Next.js 16 + React</span>
+            <span class="code-pill">Web Audio + Web Speech</span>
+            <span class="code-pill">Mobile-First CSS</span>
+          </div>
+        </div>
+
+        <div class="flow-step" style="border-color: rgba(6, 182, 212, 0.4);">
+          <div class="flow-step-num" style="background: var(--accent-cyan);">2</div>
+          <h4 style="color: #fff; font-size: 0.95rem; margin-bottom: 0.4rem;">API &amp; Orquestador</h4>
+          <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 0.6rem;">
+            Rutas de servidor que procesan tokens, agendas y ejercicios en milisegundos.
+          </p>
+          <div style="margin-top: auto; display: flex; flex-direction: column; gap: 0.35rem;">
+            <span class="code-pill">Next.js API Serverless</span>
+            <span class="code-pill">Token Engine Middleware</span>
+            <span class="code-pill">Cron Dispatchers</span>
+          </div>
+        </div>
+
+        <div class="flow-step" style="border-color: rgba(16, 185, 129, 0.4);">
+          <div class="flow-step-num" style="background: var(--accent-emerald);">3</div>
+          <h4 style="color: #fff; font-size: 0.95rem; margin-bottom: 0.4rem;">Datos &amp; Memoria</h4>
+          <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 0.6rem;">
+            PostgreSQL en la nube con persistencia relacional y caché local de 0ms.
+          </p>
+          <div style="margin-top: auto; display: flex; flex-direction: column; gap: 0.35rem;">
+            <span class="code-pill">Supabase (Postgres Cloud)</span>
+            <span class="code-pill">Mastery &amp; Streak Tables</span>
+            <span class="code-pill">localStorage Tier Cache</span>
+          </div>
+        </div>
+
+        <div class="flow-step" style="border-color: rgba(245, 158, 11, 0.4);">
+          <div class="flow-step-num" style="background: var(--accent-amber);">4</div>
+          <h4 style="color: #fff; font-size: 0.95rem; margin-bottom: 0.4rem;">IA &amp; WhatsApp</h4>
+          <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 0.6rem;">
+            Generación pedagógica en vivo y canal conversacional 24/7 en WhatsApp.
+          </p>
+          <div style="margin-top: auto; display: flex; flex-direction: column; gap: 0.35rem;">
+            <span class="code-pill">Gemini 2.5 Flash / Lite</span>
+            <span class="code-pill">Evolution API (Railway)</span>
+            <span class="code-pill">LDS Prompting System</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Explicación de la Integración -->
+      <div class="card card-highlight">
+        <div class="card-title">
+          <span>🔄 Cómo Fluye una Interacción Típica en LinguaLife</span>
+          <span class="status-tag status-live">Zero Latency</span>
+        </div>
+        <div class="card-body">
+          <p>
+            <strong>1. En la Web:</strong> El alumno abre su repaso o trivia; el sistema consulta primero el <em>catálogo local persistente en 0 milisegundos</em> para arrancar de inmediato. Al mismo tiempo, en segundo plano, la API llama a <strong>Gemini 2.5 Flash</strong> para generar 5 nuevos desafíos adaptados a su racha y guardarlos en caché.
+          </p>
+          <p>
+            <strong>2. En WhatsApp:</strong> A las 8:00 AM, un cron job dispara un micro-reto al WhatsApp del alumno vía <strong>Evolution API</strong>. Cuando el estudiante responde con texto o nota de voz, Gemini evalúa la respuesta en &lt; 1.2 segundos, corrigiendo vicios literales del español y registrando el puntaje en <strong>Supabase</strong> para que el profesor humano lo vea antes de su siguiente clase.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         SLIDE 4: ESTADO ACTUAL VS. ESTADO IDEAL (BRECHA OPERATIVA)
+         ===================================================================== -->
+    <section class="slide" id="slide-4">
+      <span class="eyebrow eyebrow-purple">📊 Diagnóstico &amp; Escalamiento</span>
+      <h1 class="slide-title">Estado Actual vs. Estado Ideal</h1>
+      <p class="slide-desc">
+        Dónde estamos parados hoy con la tecnología construida y qué requerimientos específicos necesitamos cubrir para alcanzar el estado ideal de escala institucional y rentabilidad predecible.
+      </p>
+
+      <div class="grid-2" style="margin-bottom: 1.5rem;">
+        <!-- Estado Actual -->
+        <div class="card">
+          <div class="card-title">
+            <span>📍 Estado Actual (MVP Operativo)</span>
+            <span class="status-tag status-live">Hoy</span>
+          </div>
+          <div class="card-body">
+            <ul class="checklist">
+              <li><span class="check-icon">✓</span> <span><strong>Software 100% Funcional:</strong> Web app con 4 botones de práctica por tema y vocabulario desplegados en producción.</span></li>
+              <li><span class="check-icon">✓</span> <span><strong>Validación Beta:</strong> Pruebas activas con alumnos antiguos testeando dinámicas y horarios.</span></li>
+              <li><span class="check-icon">✓</span> <span><strong>Costos Operativos Mínimos:</strong> Infraestructura lean en Vercel, Supabase y Railway con costo de software menor a $35 USD/mes.</span></li>
+              <li><span class="check-icon">⚠️</span> <span><strong>Canal de Ventas en Frío Inactivo:</strong> Dependencia de boca a boca y red personal por falta de pauta encendida.</span></li>
+              <li><span class="check-icon">⚠️</span> <span><strong>Operación Semi-Manual:</strong> Cobros por transferencia bancaria directa sin recurrencia automática de tarjeta.</span></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Estado Ideal -->
+        <div class="card card-highlight">
+          <div class="card-title">
+            <span>🚀 Estado Ideal (Escala &amp; Predecibilidad)</span>
+            <span class="status-tag status-scale">Objetivo</span>
+          </div>
+          <div class="card-body">
+            <ul class="checklist">
+              <li><span class="check-icon">🎯</span> <span><strong>Flujo Constante de Prospectos:</strong> Embudo automatizado de Meta Ads a WhatsApp generando 8 a 10 conversaciones diarias calificadas.</span></li>
+              <li><span class="check-icon">🎯</span> <span><strong>Cobro Recurrente Automatizado:</strong> Membresías con cargo mensual a tarjeta mediante Stripe / Wompi, reduciendo la fricción de renovación a cero.</span></li>
+              <li><span class="check-icon">🎯</span> <span><strong>Pool de Profesores Estandarizado:</strong> Guías de sesión y rúbrica neuromuscular para incorporar nuevos profesores sin perder la calidad premium.</span></li>
+              <li><span class="check-icon">🎯</span> <span><strong>Legaltech y Certificación:</strong> Términos de servicio formales, Habeas Data blindado y registro institucional para emitir certificados oficiales.</span></li>
+              <li><span class="check-icon">🎯</span> <span><strong>Diversificación de Ingresos:</strong> Venta de clases combinada con productos digitales y libros de la rama editorial.</span></li>
+            </ul>
           </div>
         </div>
       </div>
@@ -828,193 +1008,204 @@
         <table class="exec-table">
           <thead>
             <tr>
-              <th>Componente</th>
-              <th>Tecnología</th>
-              <th>Estado Operativo</th>
-              <th>Impacto en el Negocio</th>
+              <th>Dimensión</th>
+              <th>Dónde Estamos (Hoy)</th>
+              <th>Qué Falta para el Estado Ideal</th>
+              <th>Rol Clave para Cerrar la Brecha</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td><strong>Instancia WhatsApp</strong></td>
-              <td>Evolution API en Railway / Baileys</td>
-              <td><span class="status-tag status-live">Operativo</span></td>
-              <td>0 costo por mensaje de plantilla (ahorro de miles de USD frente a Meta Cloud API).</td>
+              <td><strong>Adquisición de Clientes</strong></td>
+              <td>Tráfico orgánico y alumnos antiguos</td>
+              <td>Campaña de Meta Ads continua ($5/día) + protocolo de notas de voz</td>
+              <td>Growth &amp; Estrategia Comercial</td>
             </tr>
             <tr>
-              <td><strong>Cerebro Conversacional</strong></td>
-              <td>Google Gemini 1.5 Flash</td>
-              <td><span class="status-tag status-live">Operativo</span></td>
-              <td>Respuestas en menos de 1.2 segundos con contexto de nivel CEFR y corrección cálida.</td>
+              <td><strong>Facturación &amp; Cobros</strong></td>
+              <td>Transferencias manuales (Nequi / Bancolombia)</td>
+              <td>Suscripciones automáticas por Wompi / Stripe</td>
+              <td>Estructuración Financiera</td>
             </tr>
             <tr>
-              <td><strong>Disparador Automatizado</strong></td>
-              <td>Cron Jobs en Node / Next API</td>
-              <td><span class="status-tag status-live">Operativo</span></td>
-              <td>Despacho automatizado a las 8:00 AM hora local del alumno según su huso horario.</td>
+              <td><strong>Pocket Coach WhatsApp</strong></td>
+              <td>Instancia de desarrollo en Railway</td>
+              <td>Celular físico y SIM corporativa dedicada 24/7</td>
+              <td>Operaciones y Soporte Técnico</td>
+            </tr>
+            <tr>
+              <td><strong>Ecosistema de Productos</strong></td>
+              <td>Solo clases 1-a-1</td>
+              <td>Venta de libros bilingües y cursos digitales complementarios</td>
+              <td>Línea Editorial &amp; Negocios Digitales</td>
             </tr>
           </tbody>
         </table>
       </div>
     </section>
 
-    <!-- SLIDE 6: Business Model & Economics -->
-    <section class="slide" id="slide-6">
+    <!-- =====================================================================
+         SLIDE 5: MODELO DE NEGOCIO (CLASE MVP + RAMA EDITORIAL Y PRODUCTOS)
+         ===================================================================== -->
+    <section class="slide" id="slide-5">
       <span class="eyebrow eyebrow-emerald">💰 Modelo de Negocio &amp; Monetización</span>
-      <h1 class="slide-title">Unit Economics y Líneas de Ingreso</h1>
+      <h1 class="slide-title">Líneas de Ingreso: El Core de Clases y la Rama Editorial</h1>
       <p class="slide-desc">
-        LinguaLife opera con un modelo híbrido B2C y B2B de alto margen. La automatización por IA reduce drásticamente las horas de soporte y preparación que tradicionalmente encarecen a una academia.
+        El modelo principal para el lanzamiento del MVP es la <strong>clase 1-a-1 con acompañamiento de IA</strong>. Los modelos de membresía grupal y la <strong>rama editorial de libros bilingües y productos digitales</strong> constituyen las líneas de expansión a futuro cercano con alto margen.
       </p>
 
-      <div class="grid-3" style="margin-bottom: 2rem;">
-        <div class="card card-highlight">
+      <div class="grid-3" style="margin-bottom: 1.5rem;">
+        <!-- Línea 1: Core MVP (Clase 1-a-1) -->
+        <div class="card card-emerald">
           <div class="card-icon">⭐</div>
-          <div class="card-title">1. Intensivo 1-a-1 C1 / TOEFL</div>
+          <div class="card-title">
+            <span>1. Clases 1-a-1 + IA (Core MVP)</span>
+            <span class="status-tag status-live">Lanzamiento</span>
+          </div>
           <div class="card-body">
-            <p><strong>Público:</strong> Ejecutivos, directores, profesionales migrando o postulando a maestrías en el exterior.</p>
-            <p><strong>Oferta:</strong> Paquetes de 1 a 3 meses (8 a 24 sesiones 1-a-1 de alta presión) + Acceso total Web + WhatsApp Coach 24/7.</p>
-            <p><strong>Ticket promedio:</strong> $300 - $650 USD / mes.</p>
+            <p><strong>El Producto Estrella:</strong> Sesiones individuales de alta intensidad enfocadas en producción neuromuscular y preparación TOEFL/laboral + acompañamiento diario de Pocket Coach.</p>
+            <p><strong>Planes Oficiales:</strong></p>
+            <p>• <strong>Plan Regular:</strong> 8 clases/mes = <strong>$450.000 COP</strong> (~$134 USD).</p>
+            <p>• <strong>Plan Intensivo:</strong> 16 clases/mes = <strong>$790.000 COP</strong> (~$236 USD).</p>
+            <p>• <strong>Sprint Fast-Track:</strong> 24 clases/mes = <strong>$1.150.000 COP</strong> (~$344 USD).</p>
+            <p style="color: #34d399; font-weight: 700; margin-top: 0.5rem;">Genera flujo de caja y rentabilidad inmediata.</p>
           </div>
         </div>
 
+        <!-- Línea 2: Rama Editorial y Productos Digitales -->
+        <div class="card card-highlight">
+          <div class="card-icon">📚</div>
+          <div class="card-title">
+            <span>2. Rama Editorial &amp; Libros</span>
+            <span class="status-tag status-future">Oportunidad Socio</span>
+          </div>
+          <div class="card-body">
+            <p><strong>Venta Externa de Contenido:</strong> Comercialización de libros físicos y digitales de lectura bilingüe paralela, manuales de colocaciones C1 y guías nemotécnicas para hispanohablantes fuera de la academia.</p>
+            <p><strong>Potencial de Negocio:</strong></p>
+            <p>• Venta por Amazon KDP, MercadoLibre y e-commerce propio.</p>
+            <p>• Formatos físicos y audiolibros complementarios.</p>
+            <p>• Excelente producto de entrada (<em>front-end tripwire</em> a $15-$35 USD) para captar clientes que luego compran clases.</p>
+            <p style="color: var(--accent-purple-light); font-weight: 700; margin-top: 0.5rem;">Área ideal para co-liderar por el socio.</p>
+          </div>
+        </div>
+
+        <!-- Línea 3: Membresía Solo-IA y B2B -->
         <div class="card card-cyan">
           <div class="card-icon">🏢</div>
-          <div class="card-title">2. Planes B2B Corporativos</div>
-          <div class="card-body">
-            <p><strong>Público:</strong> Empresas de software, fintechs y consultoras con equipos que necesitan negociar en inglés.</p>
-            <p><strong>Oferta:</strong> Licencias mensuales por colaborador con dashboard gerencial de asistencia y fluidez neuromuscular.</p>
-            <p><strong>Ticket:</strong> Contratos anuales recurrentes ($1,500 - $5,000 USD / mes por empresa).</p>
+          <div class="card-title">
+            <span>3. Membresía IA &amp; B2B</span>
+            <span class="status-tag status-future">Futuro Cercano</span>
           </div>
-        </div>
-
-        <div class="card card-emerald">
-          <div class="card-icon">🚀</div>
-          <div class="card-title">3. Membresía Solo-IA (Escala)</div>
           <div class="card-body">
-            <p><strong>Público:</strong> Estudiantes que no pueden costear coach privado pero quieren la gimnasia diaria.</p>
-            <p><strong>Oferta:</strong> Pocket Coach WhatsApp 24/7 + Portal Web + Flashcards 3D + 1 sesión grupal quincenal de speaking.</p>
-            <p><strong>Ticket:</strong> $29 - $49 USD / mes (Margen bruto &gt; 85%).</p>
+            <p><strong>Escalamiento Masivo:</strong> Acceso autónomo a la plataforma web + Pocket Coach en WhatsApp para usuarios que no requieren tutor privado semanal.</p>
+            <p><strong>Modelos:</strong></p>
+            <p>• <strong>Membresía B2C:</strong> $29 - $49 USD/mes con 1 sesión grupal quincenal (margen &gt; 85%).</p>
+            <p>• <strong>Planes Corporativos B2B:</strong> Paquetes para empresas de tecnología con dashboard de asistencia para RRHH ($1,500 - $4,000 USD/mes).</p>
           </div>
         </div>
       </div>
 
-      <div class="grid-2">
-        <div class="card">
-          <div class="card-title">Estructura de Costos Actual (Ultra Lean)</div>
-          <div class="card-body">
-            <p>• <strong>Infraestructura Web (Vercel):</strong> Tier gratuito / Pro ($20/mes).</p>
-            <p>• <strong>Base de Datos (Supabase):</strong> Free / Pro Tier ($25/mes).</p>
-            <p>• <strong>Evolution API (Railway Server):</strong> ~$5 - $10 USD/mes.</p>
-            <p>• <strong>APIs de IA (Gemini Flash):</strong> Menos de $0.001 por reto resuelto.</p>
-            <p><strong>Resultado:</strong> Cada nuevo alumno añade casi 95% de margen directo en los módulos de software.</p>
-          </div>
+      <!-- Cuadro de Unit Economics -->
+      <div class="card card-amber">
+        <div class="card-title">
+          <span>💡 Por Qué este Modelo es Altamente Sostenible</span>
+          <span class="status-tag status-live">Lean Economics</span>
         </div>
-
-        <div class="card">
-          <div class="card-title">Retención &amp; LTV (Valor de Vida)</div>
-          <div class="card-body">
-            <p>• El alumno promedio permanece entre <strong>4 y 8 meses</strong> gracias a los hitos de exámenes (TOEFL/IELTS) o ascensos laborales.</p>
-            <p>• El sistema de <strong>Tokens de Reposición</strong> reduce la fricción de cancelación y elimina solicitudes de reembolso por inasistencia justificada.</p>
+        <div class="card-body" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+          <div>
+            <strong style="color: #fff;">1. Costo Operativo Fijo Mínimo:</strong>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.25rem;">La infraestructura de servidores e IA cuesta menos de $35 USD/mes, permitiendo que casi la totalidad del cobro vaya al margen de contribución.</p>
+          </div>
+          <div>
+            <strong style="color: #fff;">2. Cero Dependencia de Salas Físicas:</strong>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.25rem;">Toda la operación es remota, sin arriendos, servicios públicos ni gastos notariales que ahoguen el flujo en los primeros meses.</p>
+          </div>
+          <div>
+            <strong style="color: #fff;">3. Sinergia Editorial + Clases:</strong>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.25rem;">El estudiante de libros se convierte en alumno de clases 1-a-1, y el alumno de clases compra los libros para su familia o equipo.</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- SLIDE 7: Strategic Milestones & Roadmap -->
-    <section class="slide" id="slide-7">
-      <span class="eyebrow eyebrow-purple">🗺️ Hoja de Ruta Estratégica</span>
-      <h1 class="slide-title">Sprint de Escalamiento &amp; Próximos 90 Días</h1>
+    <!-- =====================================================================
+         SLIDE 6 (ANTES 7): HITOS Y METAS DE AQUÍ A FEBRERO
+         ===================================================================== -->
+    <section class="slide" id="slide-6">
+      <span class="eyebrow eyebrow-emerald">🗺️ Plan de Vuelo</span>
+      <h1 class="slide-title">Hitos y Metas Estratégicas de Aquí a Febrero</h1>
       <p class="slide-desc">
-        Habiendo consolidado la plataforma técnica, la fase actual es de <strong>conversión comercial agresiva, cierre de alianzas y empaquetamiento B2B</strong>.
+        Un cronograma gráfico y secuencial diseñado para transformar la validación técnica en un negocio consolidado, rentable y con bases operativas para el ciclo comercial de inicio de año.
       </p>
 
+      <!-- Roadmap Gráfico de 4 Fases -->
+      <div class="flow-pipeline" style="margin-bottom: 1.5rem;">
+        <!-- Hito 1: Noviembre -->
+        <div class="flow-step" style="border-color: rgba(244, 63, 94, 0.45); background: linear-gradient(180deg, rgba(244, 63, 94, 0.08) 0%, rgba(15, 18, 28, 0.95) 100%);">
+          <div class="flow-step-num" style="background: var(--accent-rose);">Nov</div>
+          <h4 style="color: #fff; font-size: 0.95rem; margin-bottom: 0.35rem;">Blindaje &amp; Salida</h4>
+          <span style="font-size: 0.7rem; color: #fb7185; font-weight: 800; text-transform: uppercase; margin-bottom: 0.6rem;">Fase 1: Inmediata</span>
+          <ul class="checklist" style="font-size: 0.8rem; gap: 0.45rem;">
+            <li>• SIM corporativa en celular dedicado para Pocket Coach 24/7.</li>
+            <li>• Campaña publicitaria encendida ($5 USD/día a WhatsApp).</li>
+            <li>• Términos legales de servicio y Habeas Data publicados.</li>
+            <li>• Reenganche de primeros 5 alumnos antiguos.</li>
+          </ul>
+        </div>
+
+        <!-- Hito 2: Diciembre -->
+        <div class="flow-step" style="border-color: rgba(245, 158, 11, 0.45); background: linear-gradient(180deg, rgba(245, 158, 11, 0.08) 0%, rgba(15, 18, 28, 0.95) 100%);">
+          <div class="flow-step-num" style="background: var(--accent-amber);">Dic</div>
+          <h4 style="color: #fff; font-size: 0.95rem; margin-bottom: 0.35rem;">Campaña Receso</h4>
+          <span style="font-size: 0.7rem; color: #fbbf24; font-weight: 800; text-transform: uppercase; margin-bottom: 0.6rem;">Fase 2: Captación 20 Alumnos</span>
+          <ul class="checklist" style="font-size: 0.8rem; gap: 0.45rem;">
+            <li>• Venta de paquetes intensivos de vacaciones (4 hrs/semana).</li>
+            <li>• Meta de 20 alumnos activos pagos distribuidos entre los 2 profesores.</li>
+            <li>• Facturación mensual objetivo: ~$3,600 USD (~$12M COP).</li>
+            <li>• Integración de pasarela de pago recurrente (Wompi/Stripe).</li>
+          </ul>
+        </div>
+
+        <!-- Hito 3: Enero -->
+        <div class="flow-step" style="border-color: rgba(6, 182, 212, 0.45); background: linear-gradient(180deg, rgba(6, 182, 212, 0.08) 0%, rgba(15, 18, 28, 0.95) 100%);">
+          <div class="flow-step-num" style="background: var(--accent-cyan);">Ene</div>
+          <h4 style="color: #fff; font-size: 0.95rem; margin-bottom: 0.35rem;">Expansión &amp; Libros</h4>
+          <span style="font-size: 0.7rem; color: #67e8f9; font-weight: 800; text-transform: uppercase; margin-bottom: 0.6rem;">Fase 3: Temporada Alta</span>
+          <ul class="checklist" style="font-size: 0.8rem; gap: 0.45rem;">
+            <li>• Captación de alta demanda de año nuevo ("Aprender inglés en 2027").</li>
+            <li>• Prototipo del primer libro bilingüe / producto digital para la rama editorial.</li>
+            <li>• Estandarización de manual pedagógico para incorporar 2 profesores nuevos.</li>
+            <li>• Meta acumulada: 35-40 alumnos activos.</li>
+          </ul>
+        </div>
+
+        <!-- Hito 4: Febrero -->
+        <div class="flow-step" style="border-color: rgba(16, 185, 129, 0.45); background: linear-gradient(180deg, rgba(16, 185, 129, 0.08) 0%, rgba(15, 18, 28, 0.95) 100%);">
+          <div class="flow-step-num" style="background: var(--accent-emerald);">Feb</div>
+          <h4 style="color: #fff; font-size: 0.95rem; margin-bottom: 0.35rem;">Institucionalización</h4>
+          <span style="font-size: 0.7rem; color: #34d399; font-weight: 800; text-transform: uppercase; margin-bottom: 0.6rem;">Fase 4: Consolidación</span>
+          <ul class="checklist" style="font-size: 0.8rem; gap: 0.45rem;">
+            <li>• Constitución societaria formal y apertura de cuenta corporativa.</li>
+            <li>• Lanzamiento oficial del primer libro en Amazon / e-commerce.</li>
+            <li>• Primeras propuestas piloto cerradas con empresas B2B.</li>
+            <li>• Operación estabilizada con flujo de caja positivo y recurrente.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Resumen de Metas Clave a Febrero -->
       <div class="grid-3">
-        <div class="card card-highlight">
-          <div class="card-title">
-            <span>Fase 1: Conversión Beta</span>
-            <span class="status-tag status-live">En Curso</span>
-          </div>
-          <div class="card-body">
-            <p>• Reenganche de estudiantes antiguos en el nuevo formato intensivo C1 (ej. casos Laura Arango, Andrés Restrepo).</p>
-            <p>• Afianzar la SIM corporativa en celular dedicado para asegurar disponibilidad ininterrumpida de Pocket Coach en WhatsApp.</p>
-            <p>• Generación de primeros testimonios en video y métricas de aceleración medible.</p>
-          </div>
+        <div class="metric-box">
+          <div class="metric-value">40+</div>
+          <div class="metric-label">Alumnos Activos Recurrentes</div>
         </div>
-
-        <div class="card card-emerald">
-          <div class="card-title">
-            <span>Fase 2: Embudo &amp; Tráfico</span>
-            <span class="status-tag status-beta">Próximos 30 Días</span>
-          </div>
-          <div class="card-body">
-            <p>• Lanzamiento de campaña orgánica y pagada en TikTok / Instagram Reels con el hook: <em>"Tu profe de IA en WhatsApp + coach humano C1"</em>.</p>
-            <p>• Funnel de conversión directa con clase de diagnóstico neuromuscular gratuita.</p>
-            <p>• Legaltech Lean: Formalización de términos de uso, Habeas Data WhatsApp y contratos de adhesión para estudiantes.</p>
-          </div>
+        <div class="metric-box">
+          <div class="metric-value">~$6K USD</div>
+          <div class="metric-label">Facturación Mensual Proyectada</div>
         </div>
-
-        <div class="card card-cyan">
-          <div class="card-title">
-            <span>Fase 3: Escala Institucional</span>
-            <span class="status-tag status-scale">Días 60 - 90</span>
-          </div>
-          <div class="card-body">
-            <p>• Módulo TOEFL Speaking Simulator con transcripción fonética y scoring automático.</p>
-            <p>• Portal B2B con métricas de progreso para directores de Recursos Humanos.</p>
-            <p>• Constitución societaria formal y registro educativo para emisión de certificaciones oficiales.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- SLIDE 8: The Partnership Opportunity -->
-    <section class="slide" id="slide-8">
-      <span class="eyebrow eyebrow-emerald">🤝 Sinergia &amp; Bienvenida al Equipo</span>
-      <h1 class="slide-title">El Rol del Socio: Dónde Aceleramos Juntos</h1>
-      <p class="slide-desc">
-        La plataforma tecnológica y el método pedagógico están probados y en funcionamiento. La oportunidad de entrada para un socio estratégico está en potenciar los motores de crecimiento comercial y operación.
-      </p>
-
-      <div class="grid-2" style="margin-bottom: 2rem;">
-        <div class="card card-highlight">
-          <div class="card-title">Lo que LinguaLife Aporta Hoy</div>
-          <div class="card-body">
-            <p>✅ Plataforma de software completa y operativa (<span class="code-pill">Next.js + Supabase</span>).</p>
-            <p>✅ Motor de IA automatizado en WhatsApp (<span class="code-pill">Pocket Coach</span>).</p>
-            <p>✅ Currículo exhaustivo estructurado por niveles (A1 hasta C2, TOEFL iBT, Business English).</p>
-            <p>✅ Base de 120 Flashcards interactivas y 15 retos automatizados por cada lección.</p>
-            <p>✅ Infraestructura en la nube con costos operativos prácticamente nulos.</p>
-          </div>
-        </div>
-
-        <div class="card card-emerald">
-          <div class="card-title">Lo que Buscamos en Esta Integración</div>
-          <div class="card-body">
-            <p>🚀 <strong>Crecimiento Comercial &amp; Ventas:</strong> Cierre de prospectos B2C y alianzas con empresas B2B.</p>
-            <p>🚀 <strong>Marketing &amp; Growth:</strong> Estrategia de contenido audiovisual para viralizar el concepto del Pocket Coach.</p>
-            <p>🚀 <strong>Estructuración Legal &amp; Financiera:</strong> Consolidación de pasarelas de pago recurrentes (Stripe, Wompi) y gestión de flujo de caja.</p>
-            <p>🚀 <strong>Operación y Expansión:</strong> Reclutamiento y estandarización del pool de profesores calificados a medida que crezca la matrícula.</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="card" style="text-align: center; padding: 2rem; border-color: rgba(139, 92, 246, 0.5); background: linear-gradient(180deg, rgba(139, 92, 246, 0.12) 0%, rgba(15, 18, 28, 0.95) 100%);">
-        <h3 style="font-size: 1.6rem; font-weight: 800; color: #fff; margin-bottom: 0.5rem;">
-          Estamos listos para ejecutar y escalar.
-        </h3>
-        <p style="color: var(--text-secondary); max-width: 600px; margin: 0 auto 1.5rem; font-size: 0.95rem;">
-          Todo el sistema está en vivo y disponible para inspección técnica inmediata, pruebas de usuario en vivo y revisión de base de datos.
-        </p>
-        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-          <a href="/student" target="_blank" class="nav-btn primary" style="text-decoration: none;">
-            Explorar Portal de Alumno →
-          </a>
-          <a href="/dashboard" target="_blank" class="nav-btn" style="text-decoration: none;">
-            Ver Dashboard Profesor →
-          </a>
-          <a href="/admin" target="_blank" class="nav-btn" style="text-decoration: none;">
-            Ver Panel de Admin →
-          </a>
+        <div class="metric-box">
+          <div class="metric-value">1er Libro</div>
+          <div class="metric-label">Lanzado en Línea Editorial</div>
         </div>
       </div>
     </section>
