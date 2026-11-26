@@ -10,7 +10,8 @@
   align-items: center;
   padding: 1rem 1.5rem;
   border-bottom: 1px solid var(--border-glass);
-  background: rgba(0,0,0,0.3);
+  background: var(--bg-glass);
+  backdrop-filter: blur(16px);
 }
 
 .title {

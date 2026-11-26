@@ -94,7 +94,8 @@ export const VOCABULARY_MASTER_DATA: VocabularyWordItem[] = [
     ],
     relations: [
       { id: 'vr-can-could', sourceSenseId: 'vs-can-1', targetSenseId: 'vs-could-1', targetWord: 'could', targetDefinitionEs: 'Forma en pasado o más formal de can', relationType: 'related' },
-      { id: 'vr-can-able', sourceSenseId: 'vs-can-1', targetSenseId: 'vs-able-1', targetWord: 'be able to', targetDefinitionEs: 'Ser capaz de', relationType: 'synonym' }
+      { id: 'vr-can-able', sourceSenseId: 'vs-can-1', targetSenseId: 'vs-able-1', targetWord: 'be able to', targetDefinitionEs: 'Ser capaz de', relationType: 'synonym' },
+      { id: 'vr-can-unable', sourceSenseId: 'vs-can-1', targetSenseId: 'vs-unable-1', targetWord: 'be unable to', targetDefinitionEs: 'No poder o carecer de capacidad', relationType: 'antonym' }
     ]
   },
   {
@@ -138,7 +139,9 @@ export const VOCABULARY_MASTER_DATA: VocabularyWordItem[] = [
       }
     ],
     relations: [
-      { id: 'vr-could-can', sourceSenseId: 'vs-could-1', targetSenseId: 'vs-can-1', targetWord: 'can', targetDefinitionEs: 'Forma presente directa', relationType: 'related' }
+      { id: 'vr-could-can', sourceSenseId: 'vs-could-1', targetSenseId: 'vs-can-1', targetWord: 'can', targetDefinitionEs: 'Forma presente directa', relationType: 'related' },
+      { id: 'vr-could-able', sourceSenseId: 'vs-could-1', targetSenseId: 'vs-was-able-1', targetWord: 'was able to', targetDefinitionEs: 'Pudo o logró hacer algo', relationType: 'synonym' },
+      { id: 'vr-could-fail', sourceSenseId: 'vs-could-1', targetSenseId: 'vs-fail-1', targetWord: 'fail to', targetDefinitionEs: 'No lograr o fallar al intentar', relationType: 'antonym' }
     ]
   },
   {
@@ -182,7 +185,9 @@ export const VOCABULARY_MASTER_DATA: VocabularyWordItem[] = [
       }
     ],
     relations: [
-      { id: 'vr-will-would', sourceSenseId: 'vs-will-1', targetSenseId: 'vs-would-1', targetWord: 'would', targetDefinitionEs: 'Forma condicional de will', relationType: 'related' }
+      { id: 'vr-will-would', sourceSenseId: 'vs-will-1', targetSenseId: 'vs-would-1', targetWord: 'would', targetDefinitionEs: 'Forma condicional de will', relationType: 'related' },
+      { id: 'vr-will-going', sourceSenseId: 'vs-will-1', targetSenseId: 'vs-going-1', targetWord: 'going to', targetDefinitionEs: 'Ir a realizar una acción futura', relationType: 'synonym' },
+      { id: 'vr-will-refuse', sourceSenseId: 'vs-will-2', targetSenseId: 'vs-refuse-1', targetWord: 'refuse to', targetDefinitionEs: 'Negarse rotundamente a hacer algo', relationType: 'antonym' }
     ]
   },
   {
@@ -226,7 +231,9 @@ export const VOCABULARY_MASTER_DATA: VocabularyWordItem[] = [
       }
     ],
     relations: [
-      { id: 'vr-would-will', sourceSenseId: 'vs-would-1', targetSenseId: 'vs-will-1', targetWord: 'will', targetDefinitionEs: 'Forma de futuro real', relationType: 'related' }
+      { id: 'vr-would-will', sourceSenseId: 'vs-would-1', targetSenseId: 'vs-will-1', targetWord: 'will', targetDefinitionEs: 'Forma de futuro real', relationType: 'related' },
+      { id: 'vr-would-used', sourceSenseId: 'vs-would-1', targetSenseId: 'vs-used-1', targetWord: 'used to', targetDefinitionEs: 'Solía ocurrir en el pasado', relationType: 'synonym' },
+      { id: 'vr-would-decline', sourceSenseId: 'vs-would-2', targetSenseId: 'vs-decline-1', targetWord: 'decline to', targetDefinitionEs: 'Rechazar una invitación o propuesta', relationType: 'antonym' }
     ]
   },
   {
@@ -270,7 +277,8 @@ export const VOCABULARY_MASTER_DATA: VocabularyWordItem[] = [
       }
     ],
     relations: [
-      { id: 'vr-should-ought', sourceSenseId: 'vs-should-1', targetSenseId: 'vs-ought-1', targetWord: 'ought to', targetDefinitionEs: 'Deberías (equivalente formal)', relationType: 'synonym' }
+      { id: 'vr-should-ought', sourceSenseId: 'vs-should-1', targetSenseId: 'vs-ought-1', targetWord: 'ought to', targetDefinitionEs: 'Deberías (equivalente formal)', relationType: 'synonym' },
+      { id: 'vr-should-avoid', sourceSenseId: 'vs-should-1', targetSenseId: 'vs-avoid-1', targetWord: 'avoid', targetDefinitionEs: 'Evitar hacerlo (recomendación inversa)', relationType: 'antonym' }
     ]
   },
   {
@@ -314,7 +322,8 @@ export const VOCABULARY_MASTER_DATA: VocabularyWordItem[] = [
       }
     ],
     relations: [
-      { id: 'vr-must-have-to', sourceSenseId: 'vs-must-1', targetSenseId: 'vs-have-to-1', targetWord: 'have to', targetDefinitionEs: 'Tener que (obligación externa)', relationType: 'synonym' }
+      { id: 'vr-must-have-to', sourceSenseId: 'vs-must-1', targetSenseId: 'vs-have-to-1', targetWord: 'have to', targetDefinitionEs: 'Tener que (obligación externa)', relationType: 'synonym' },
+      { id: 'vr-must-need-not', sourceSenseId: 'vs-must-1', targetSenseId: 'vs-need-not-1', targetWord: 'need not', targetDefinitionEs: 'No es necesario / opcional', relationType: 'antonym' }
     ]
   },
   {
@@ -358,7 +367,9 @@ export const VOCABULARY_MASTER_DATA: VocabularyWordItem[] = [
       }
     ],
     relations: [
-      { id: 'vr-may-might', sourceSenseId: 'vs-may-2', targetSenseId: 'vs-might-1', targetWord: 'might', targetDefinitionEs: 'Posibilidad más remota', relationType: 'related' }
+      { id: 'vr-may-might', sourceSenseId: 'vs-may-2', targetSenseId: 'vs-might-1', targetWord: 'might', targetDefinitionEs: 'Posibilidad más remota', relationType: 'related' },
+      { id: 'vr-may-allowed', sourceSenseId: 'vs-may-1', targetSenseId: 'vs-allowed-1', targetWord: 'be allowed to', targetDefinitionEs: 'Tener permiso para hacer algo', relationType: 'synonym' },
+      { id: 'vr-may-forbidden', sourceSenseId: 'vs-may-1', targetSenseId: 'vs-forbidden-1', targetWord: 'be forbidden', targetDefinitionEs: 'Estar prohibido o sin permiso', relationType: 'antonym' }
     ]
   },
   {
@@ -402,7 +413,9 @@ export const VOCABULARY_MASTER_DATA: VocabularyWordItem[] = [
       }
     ],
     relations: [
-      { id: 'vr-might-may', sourceSenseId: 'vs-might-1', targetSenseId: 'vs-may-2', targetWord: 'may', targetDefinitionEs: 'Posibilidad con mayor certeza', relationType: 'related' }
+      { id: 'vr-might-may', sourceSenseId: 'vs-might-1', targetSenseId: 'vs-may-2', targetWord: 'may', targetDefinitionEs: 'Posibilidad con mayor certeza', relationType: 'related' },
+      { id: 'vr-might-perhaps', sourceSenseId: 'vs-might-1', targetSenseId: 'vs-perhaps-1', targetWord: 'perhaps', targetDefinitionEs: 'Tal vez / Quizás', relationType: 'synonym' },
+      { id: 'vr-might-def-not', sourceSenseId: 'vs-might-1', targetSenseId: 'vs-def-not-1', targetWord: 'definitely not', targetDefinitionEs: 'Definitivamente no (certeza negativa)', relationType: 'antonym' }
     ]
   },
   {
@@ -446,7 +459,9 @@ export const VOCABULARY_MASTER_DATA: VocabularyWordItem[] = [
       }
     ],
     relations: [
-      { id: 'vr-shall-should', sourceSenseId: 'vs-shall-1', targetSenseId: 'vs-should-1', targetWord: 'should', targetDefinitionEs: 'Deberías / Deberíamos', relationType: 'related' }
+      { id: 'vr-shall-should', sourceSenseId: 'vs-shall-1', targetSenseId: 'vs-should-1', targetWord: 'should', targetDefinitionEs: 'Deberías / Deberíamos', relationType: 'related' },
+      { id: 'vr-shall-let-us', sourceSenseId: 'vs-shall-1', targetSenseId: 'vs-let-us-1', targetWord: 'let us', targetDefinitionEs: 'Hagamos (propuesta directa)', relationType: 'synonym' },
+      { id: 'vr-shall-forbid', sourceSenseId: 'vs-shall-2', targetSenseId: 'vs-forbid-1', targetWord: 'forbid', targetDefinitionEs: 'Prohibir u oponerse', relationType: 'antonym' }
     ]
   },
   {
@@ -490,7 +505,9 @@ export const VOCABULARY_MASTER_DATA: VocabularyWordItem[] = [
       }
     ],
     relations: [
-      { id: 'vr-do-did', sourceSenseId: 'vs-do-1', targetSenseId: 'vs-did-1', targetWord: 'did', targetDefinitionEs: 'Forma en pasado simple', relationType: 'related' }
+      { id: 'vr-do-did', sourceSenseId: 'vs-do-1', targetSenseId: 'vs-did-1', targetWord: 'did', targetDefinitionEs: 'Forma en pasado simple', relationType: 'related' },
+      { id: 'vr-do-perform', sourceSenseId: 'vs-do-2', targetSenseId: 'vs-perform-1', targetWord: 'perform', targetDefinitionEs: 'Realizar o ejecutar una actividad', relationType: 'synonym' },
+      { id: 'vr-do-neglect', sourceSenseId: 'vs-do-2', targetSenseId: 'vs-neglect-1', targetWord: 'neglect', targetDefinitionEs: 'Descuidar o dejar de hacer', relationType: 'antonym' }
     ]
   },
   {
@@ -534,7 +551,9 @@ export const VOCABULARY_MASTER_DATA: VocabularyWordItem[] = [
       }
     ],
     relations: [
-      { id: 'vr-did-do', sourceSenseId: 'vs-did-1', targetSenseId: 'vs-do-1', targetWord: 'do', targetDefinitionEs: 'Forma presente', relationType: 'related' }
+      { id: 'vr-did-do', sourceSenseId: 'vs-did-1', targetSenseId: 'vs-do-1', targetWord: 'do', targetDefinitionEs: 'Forma presente', relationType: 'related' },
+      { id: 'vr-did-completed', sourceSenseId: 'vs-did-2', targetSenseId: 'vs-completed-1', targetWord: 'completed', targetDefinitionEs: 'Completó o realizó la acción', relationType: 'synonym' },
+      { id: 'vr-did-skipped', sourceSenseId: 'vs-did-2', targetSenseId: 'vs-skipped-1', targetWord: 'skipped', targetDefinitionEs: 'Omitió o dejó sin hacer', relationType: 'antonym' }
     ]
   },
   {
@@ -578,7 +597,8 @@ export const VOCABULARY_MASTER_DATA: VocabularyWordItem[] = [
       }
     ],
     relations: [
-      { id: 'vr-be-exist', sourceSenseId: 'vs-be-1', targetSenseId: 'vs-exist-1', targetWord: 'exist', targetDefinitionEs: 'Existir', relationType: 'related' }
+      { id: 'vr-be-exist', sourceSenseId: 'vs-be-1', targetSenseId: 'vs-exist-1', targetWord: 'exist', targetDefinitionEs: 'Existir o estar presente', relationType: 'synonym' },
+      { id: 'vr-be-vanish', sourceSenseId: 'vs-be-1', targetSenseId: 'vs-vanish-1', targetWord: 'vanish', targetDefinitionEs: 'Desaparecer o dejar de estar', relationType: 'antonym' }
     ]
   },
   {
@@ -622,7 +642,8 @@ export const VOCABULARY_MASTER_DATA: VocabularyWordItem[] = [
       }
     ],
     relations: [
-      { id: 'vr-have-possess', sourceSenseId: 'vs-have-1', targetSenseId: 'vs-possess-1', targetWord: 'possess', targetDefinitionEs: 'Poseer', relationType: 'synonym' }
+      { id: 'vr-have-possess', sourceSenseId: 'vs-have-1', targetSenseId: 'vs-possess-1', targetWord: 'possess', targetDefinitionEs: 'Poseer', relationType: 'synonym' },
+      { id: 'vr-have-lack', sourceSenseId: 'vs-have-1', targetSenseId: 'vs-lack-1', targetWord: 'lack', targetDefinitionEs: 'Carecer de algo', relationType: 'antonym' }
     ]
   },
 
@@ -668,7 +689,8 @@ export const VOCABULARY_MASTER_DATA: VocabularyWordItem[] = [
       }
     ],
     relations: [
-      { id: 'vr-in-inside', sourceSenseId: 'vs-in-1', targetSenseId: 'vs-inside-1', targetWord: 'inside', targetDefinitionEs: 'En el interior de', relationType: 'synonym' }
+      { id: 'vr-in-inside', sourceSenseId: 'vs-in-1', targetSenseId: 'vs-inside-1', targetWord: 'inside', targetDefinitionEs: 'En el interior de', relationType: 'synonym' },
+      { id: 'vr-in-outside', sourceSenseId: 'vs-in-1', targetSenseId: 'vs-outside-1', targetWord: 'outside', targetDefinitionEs: 'Afuera o en el exterior de', relationType: 'antonym' }
     ]
   },
   {
@@ -712,7 +734,8 @@ export const VOCABULARY_MASTER_DATA: VocabularyWordItem[] = [
       }
     ],
     relations: [
-      { id: 'vr-on-upon', sourceSenseId: 'vs-on-1', targetSenseId: 'vs-upon-1', targetWord: 'upon', targetDefinitionEs: 'Encima de (literario)', relationType: 'synonym' }
+      { id: 'vr-on-upon', sourceSenseId: 'vs-on-1', targetSenseId: 'vs-upon-1', targetWord: 'upon', targetDefinitionEs: 'Encima de', relationType: 'synonym' },
+      { id: 'vr-on-beneath', sourceSenseId: 'vs-on-1', targetSenseId: 'vs-beneath-1', targetWord: 'beneath', targetDefinitionEs: 'Debajo de la superficie', relationType: 'antonym' }
     ]
   },
   {
@@ -756,7 +779,8 @@ export const VOCABULARY_MASTER_DATA: VocabularyWordItem[] = [
       }
     ],
     relations: [
-      { id: 'vr-at-exact', sourceSenseId: 'vs-at-1', targetSenseId: 'vs-exact-1', targetWord: 'by', targetDefinitionEs: 'Junto a / Para tal hora', relationType: 'related' }
+      { id: 'vr-at-exact', sourceSenseId: 'vs-at-1', targetSenseId: 'vs-exact-1', targetWord: 'near', targetDefinitionEs: 'Cerca o en ese punto exacto', relationType: 'synonym' },
+      { id: 'vr-at-far', sourceSenseId: 'vs-at-1', targetSenseId: 'vs-far-1', targetWord: 'far from', targetDefinitionEs: 'Lejos de ese punto', relationType: 'antonym' }
     ]
   },
 
@@ -802,7 +826,9 @@ export const VOCABULARY_MASTER_DATA: VocabularyWordItem[] = [
       }
     ],
     relations: [
-      { id: 'vr-where-somewhere', sourceSenseId: 'vs-where-1', targetSenseId: 'vs-somewhere-1', targetWord: 'somewhere', targetDefinitionEs: 'Algún lugar', relationType: 'related' }
+      { id: 'vr-where-somewhere', sourceSenseId: 'vs-where-1', targetSenseId: 'vs-somewhere-1', targetWord: 'somewhere', targetDefinitionEs: 'Algún lugar', relationType: 'related' },
+      { id: 'vr-where-place', sourceSenseId: 'vs-where-1', targetSenseId: 'vs-place-1', targetWord: 'in what place', targetDefinitionEs: 'En qué lugar o ubicación', relationType: 'synonym' },
+      { id: 'vr-where-nowhere', sourceSenseId: 'vs-where-1', targetSenseId: 'vs-nowhere-1', targetWord: 'nowhere', targetDefinitionEs: 'En ningún lugar', relationType: 'antonym' }
     ]
   },
   {
@@ -846,7 +872,9 @@ export const VOCABULARY_MASTER_DATA: VocabularyWordItem[] = [
       }
     ],
     relations: [
-      { id: 'vr-what-which', sourceSenseId: 'vs-what-1', targetSenseId: 'vs-which-1', targetWord: 'which', targetDefinitionEs: 'Cuál (entre opciones limitadas)', relationType: 'related' }
+      { id: 'vr-what-which', sourceSenseId: 'vs-what-1', targetSenseId: 'vs-which-1', targetWord: 'which', targetDefinitionEs: 'Cuál (entre opciones limitadas)', relationType: 'related' },
+      { id: 'vr-what-thing', sourceSenseId: 'vs-what-2', targetSenseId: 'vs-thing-1', targetWord: 'that thing', targetDefinitionEs: 'Aquella cosa o asunto', relationType: 'synonym' },
+      { id: 'vr-what-nothing', sourceSenseId: 'vs-what-2', targetSenseId: 'vs-nothing-1', targetWord: 'nothing', targetDefinitionEs: 'Nada en absoluto', relationType: 'antonym' }
     ]
   },
   {
@@ -890,7 +918,9 @@ export const VOCABULARY_MASTER_DATA: VocabularyWordItem[] = [
       }
     ],
     relations: [
-      { id: 'vr-who-someone', sourceSenseId: 'vs-who-1', targetSenseId: 'vs-someone-1', targetWord: 'someone', targetDefinitionEs: 'Alguien', relationType: 'related' }
+      { id: 'vr-who-someone', sourceSenseId: 'vs-who-1', targetSenseId: 'vs-someone-1', targetWord: 'someone', targetDefinitionEs: 'Alguien', relationType: 'related' },
+      { id: 'vr-who-person', sourceSenseId: 'vs-who-2', targetSenseId: 'vs-person-1', targetWord: 'that person', targetDefinitionEs: 'La persona que', relationType: 'synonym' },
+      { id: 'vr-who-nobody', sourceSenseId: 'vs-who-1', targetSenseId: 'vs-nobody-1', targetWord: 'nobody', targetDefinitionEs: 'Nadie / Ninguna persona', relationType: 'antonym' }
     ]
   },
   {
@@ -934,7 +964,9 @@ export const VOCABULARY_MASTER_DATA: VocabularyWordItem[] = [
       }
     ],
     relations: [
-      { id: 'vr-when-whenever', sourceSenseId: 'vs-when-1', targetSenseId: 'vs-whenever-1', targetWord: 'whenever', targetDefinitionEs: 'Cuando sea / En cualquier momento', relationType: 'related' }
+      { id: 'vr-when-whenever', sourceSenseId: 'vs-when-1', targetSenseId: 'vs-whenever-1', targetWord: 'whenever', targetDefinitionEs: 'Cuando sea / En cualquier momento', relationType: 'related' },
+      { id: 'vr-when-moment', sourceSenseId: 'vs-when-2', targetSenseId: 'vs-moment-1', targetWord: 'at that moment', targetDefinitionEs: 'En ese instante o momento', relationType: 'synonym' },
+      { id: 'vr-when-never', sourceSenseId: 'vs-when-1', targetSenseId: 'vs-never-1', targetWord: 'never', targetDefinitionEs: 'Nunca / En ningún momento', relationType: 'antonym' }
     ]
   },
   {
@@ -978,7 +1010,9 @@ export const VOCABULARY_MASTER_DATA: VocabularyWordItem[] = [
       }
     ],
     relations: [
-      { id: 'vr-why-because', sourceSenseId: 'vs-why-1', targetSenseId: 'vs-because-1', targetWord: 'because', targetDefinitionEs: 'Porque (respuesta)', relationType: 'related' }
+      { id: 'vr-why-because', sourceSenseId: 'vs-why-1', targetSenseId: 'vs-because-1', targetWord: 'because', targetDefinitionEs: 'Porque (respuesta)', relationType: 'related' },
+      { id: 'vr-why-reason', sourceSenseId: 'vs-why-2', targetSenseId: 'vs-reason-1', targetWord: 'for that reason', targetDefinitionEs: 'Por ese motivo o razón', relationType: 'synonym' },
+      { id: 'vr-why-no-cause', sourceSenseId: 'vs-why-1', targetSenseId: 'vs-no-cause-1', targetWord: 'without cause', targetDefinitionEs: 'Sin causa ni motivo alguno', relationType: 'antonym' }
     ]
   },
   {
@@ -1022,7 +1056,8 @@ export const VOCABULARY_MASTER_DATA: VocabularyWordItem[] = [
       }
     ],
     relations: [
-      { id: 'vr-how-way', sourceSenseId: 'vs-how-2', targetSenseId: 'vs-way-1', targetWord: 'the way', targetDefinitionEs: 'La forma o modo', relationType: 'synonym' }
+      { id: 'vr-how-way', sourceSenseId: 'vs-how-2', targetSenseId: 'vs-way-1', targetWord: 'the way', targetDefinitionEs: 'La forma o modo', relationType: 'synonym' },
+      { id: 'vr-how-no-means', sourceSenseId: 'vs-how-1', targetSenseId: 'vs-no-means-1', targetWord: 'by no means', targetDefinitionEs: 'De ninguna manera o modo', relationType: 'antonym' }
     ]
   },
   {
@@ -1066,7 +1101,9 @@ export const VOCABULARY_MASTER_DATA: VocabularyWordItem[] = [
       }
     ],
     relations: [
-      { id: 'vr-which-what', sourceSenseId: 'vs-which-1', targetSenseId: 'vs-what-1', targetWord: 'what', targetDefinitionEs: 'Qué (opciones ilimitadas)', relationType: 'related' }
+      { id: 'vr-which-what', sourceSenseId: 'vs-which-1', targetSenseId: 'vs-what-1', targetWord: 'what', targetDefinitionEs: 'Qué (opciones ilimitadas)', relationType: 'related' },
+      { id: 'vr-which-option', sourceSenseId: 'vs-which-1', targetSenseId: 'vs-option-1', targetWord: 'one option', targetDefinitionEs: 'Una alternativa concreta', relationType: 'synonym' },
+      { id: 'vr-which-neither', sourceSenseId: 'vs-which-1', targetSenseId: 'vs-neither-1', targetWord: 'neither', targetDefinitionEs: 'Ninguna de las opciones', relationType: 'antonym' }
     ]
   },
 
@@ -1241,6 +1278,7 @@ export const VOCABULARY_MASTER_DATA: VocabularyWordItem[] = [
       }
     ],
     relations: [
+      { id: 'vr-light-bright', sourceSenseId: 'vs-light-1', targetSenseId: 'vs-bright-1', targetWord: 'brightness', targetDefinitionEs: 'Luminosidad o brillo', relationType: 'synonym' },
       { id: 'vr-light-dark', sourceSenseId: 'vs-light-1', targetSenseId: 'vs-dark-1', targetWord: 'darkness', targetDefinitionEs: 'Oscuridad', relationType: 'antonym' },
       { id: 'vr-light-heavy', sourceSenseId: 'vs-light-2', targetSenseId: 'vs-heavy-1', targetWord: 'heavy', targetDefinitionEs: 'Pesado o difícil de cargar', relationType: 'antonym' }
     ]
@@ -1418,7 +1456,8 @@ export const VOCABULARY_MASTER_DATA: VocabularyWordItem[] = [
     ],
     relations: [
       { id: 'vr-point-purpose', sourceSenseId: 'vs-point-1', targetSenseId: 'vs-purpose-1', targetWord: 'purpose', targetDefinitionEs: 'Propósito o sentido', relationType: 'synonym' },
-      { id: 'vr-point-highlight', sourceSenseId: 'vs-point-2', targetSenseId: 'vs-highlight-1', targetWord: 'highlight', targetDefinitionEs: 'Resaltar o destacar', relationType: 'synonym' }
+      { id: 'vr-point-highlight', sourceSenseId: 'vs-point-2', targetSenseId: 'vs-highlight-1', targetWord: 'highlight', targetDefinitionEs: 'Resaltar o destacar', relationType: 'synonym' },
+      { id: 'vr-point-overlook', sourceSenseId: 'vs-point-2', targetSenseId: 'vs-overlook-1', targetWord: 'overlook', targetDefinitionEs: 'Pasar por alto o ignorar', relationType: 'antonym' }
     ]
   },
   {
@@ -1461,7 +1500,8 @@ export const VOCABULARY_MASTER_DATA: VocabularyWordItem[] = [
       }
     ],
     relations: [
-      { id: 'vr-mind-care', sourceSenseId: 'vs-mind-2', targetSenseId: 'vs-bother-1', targetWord: 'bother', targetDefinitionEs: 'Incomodar o molestar', relationType: 'synonym' }
+      { id: 'vr-mind-care', sourceSenseId: 'vs-mind-2', targetSenseId: 'vs-bother-1', targetWord: 'bother', targetDefinitionEs: 'Incomodar o molestar', relationType: 'synonym' },
+      { id: 'vr-mind-welcome', sourceSenseId: 'vs-mind-2', targetSenseId: 'vs-welcome-1', targetWord: 'welcome', targetDefinitionEs: 'Agradar o recibir con gusto', relationType: 'antonym' }
     ]
   },
 
@@ -1551,7 +1591,8 @@ export const VOCABULARY_MASTER_DATA: VocabularyWordItem[] = [
     ],
     relations: [
       { id: 'vr-issue-matter', sourceSenseId: 'vs-issue-1', targetSenseId: 'vs-matter-1', targetWord: 'matter', targetDefinitionEs: 'Asunto o cuestión', relationType: 'synonym' },
-      { id: 'vr-issue-emit', sourceSenseId: 'vs-issue-2', targetSenseId: 'vs-emit-1', targetWord: 'grant', targetDefinitionEs: 'Otorgar o expedir', relationType: 'synonym' }
+      { id: 'vr-issue-emit', sourceSenseId: 'vs-issue-2', targetSenseId: 'vs-emit-1', targetWord: 'grant', targetDefinitionEs: 'Otorgar o expedir', relationType: 'synonym' },
+      { id: 'vr-issue-withhold', sourceSenseId: 'vs-issue-2', targetSenseId: 'vs-withhold-1', targetWord: 'withhold', targetDefinitionEs: 'Retener o negar la entrega', relationType: 'antonym' }
     ]
   },
   {
@@ -1593,7 +1634,8 @@ export const VOCABULARY_MASTER_DATA: VocabularyWordItem[] = [
       }
     ],
     relations: [
-      { id: 'vr-figure-solve', sourceSenseId: 'vs-figure-2', targetSenseId: 'vs-solve-1', targetWord: 'work out', targetDefinitionEs: 'Resolver o deducir', relationType: 'synonym' }
+      { id: 'vr-figure-solve', sourceSenseId: 'vs-figure-2', targetSenseId: 'vs-solve-1', targetWord: 'work out', targetDefinitionEs: 'Resolver o deducir', relationType: 'synonym' },
+      { id: 'vr-figure-misread', sourceSenseId: 'vs-figure-2', targetSenseId: 'vs-misread-1', targetWord: 'misinterpret', targetDefinitionEs: 'Malinterpretar o confundirse', relationType: 'antonym' }
     ]
   },
   {
@@ -1635,7 +1677,8 @@ export const VOCABULARY_MASTER_DATA: VocabularyWordItem[] = [
       }
     ],
     relations: [
-      { id: 'vr-board-committee', sourceSenseId: 'vs-board-2', targetSenseId: 'vs-committee-1', targetWord: 'committee', targetDefinitionEs: 'Comité o consejo', relationType: 'synonym' }
+      { id: 'vr-board-committee', sourceSenseId: 'vs-board-2', targetSenseId: 'vs-committee-1', targetWord: 'committee', targetDefinitionEs: 'Comité o consejo', relationType: 'synonym' },
+      { id: 'vr-board-disembark', sourceSenseId: 'vs-board-1', targetSenseId: 'vs-disembark-1', targetWord: 'disembark', targetDefinitionEs: 'Desembarcar o salir del transporte', relationType: 'antonym' }
     ]
   },
 
@@ -1679,7 +1722,8 @@ export const VOCABULARY_MASTER_DATA: VocabularyWordItem[] = [
       }
     ],
     relations: [
-      { id: 'vr-drive-propel', sourceSenseId: 'vs-drive-2', targetSenseId: 'vs-propel-1', targetWord: 'fuel', targetDefinitionEs: 'Impulsar o alimentar', relationType: 'synonym' }
+      { id: 'vr-drive-propel', sourceSenseId: 'vs-drive-2', targetSenseId: 'vs-propel-1', targetWord: 'fuel', targetDefinitionEs: 'Impulsar o alimentar', relationType: 'synonym' },
+      { id: 'vr-drive-hinder', sourceSenseId: 'vs-drive-2', targetSenseId: 'vs-hinder-1', targetWord: 'hinder', targetDefinitionEs: 'Frenar u obstaculizar', relationType: 'antonym' }
     ]
   },
   {
@@ -1722,7 +1766,8 @@ export const VOCABULARY_MASTER_DATA: VocabularyWordItem[] = [
       }
     ],
     relations: [
-      { id: 'vr-account-represent', sourceSenseId: 'vs-account-2', targetSenseId: 'vs-represent-1', targetWord: 'Make up', targetDefinitionEs: 'Constituir o representar una parte', relationType: 'synonym' }
+      { id: 'vr-account-represent', sourceSenseId: 'vs-account-2', targetSenseId: 'vs-represent-1', targetWord: 'make up', targetDefinitionEs: 'Constituir o representar una parte', relationType: 'synonym' },
+      { id: 'vr-account-omit', sourceSenseId: 'vs-account-2', targetSenseId: 'vs-omit-1', targetWord: 'omit', targetDefinitionEs: 'Omitir o excluir del cálculo', relationType: 'antonym' }
     ]
   },
   {
@@ -1764,7 +1809,8 @@ export const VOCABULARY_MASTER_DATA: VocabularyWordItem[] = [
       }
     ],
     relations: [
-      { id: 'vr-ground-basis', sourceSenseId: 'vs-ground-2', targetSenseId: 'vs-basis-1', targetWord: 'foundation', targetDefinitionEs: 'Base o fundamento', relationType: 'synonym' }
+      { id: 'vr-ground-basis', sourceSenseId: 'vs-ground-2', targetSenseId: 'vs-basis-1', targetWord: 'foundation', targetDefinitionEs: 'Base o fundamento', relationType: 'synonym' },
+      { id: 'vr-ground-speculation', sourceSenseId: 'vs-ground-2', targetSenseId: 'vs-speculation-1', targetWord: 'speculation', targetDefinitionEs: 'Especulación sin base sólida', relationType: 'antonym' }
     ]
   },
 
@@ -1809,7 +1855,8 @@ export const VOCABULARY_MASTER_DATA: VocabularyWordItem[] = [
     ],
     relations: [
       { id: 'vr-yield-produce', sourceSenseId: 'vs-yield-1', targetSenseId: 'vs-produce-1', targetWord: 'generate', targetDefinitionEs: 'Generar o producir', relationType: 'synonym' },
-      { id: 'vr-yield-relent', sourceSenseId: 'vs-yield-2', targetSenseId: 'vs-relent-1', targetWord: 'give in', targetDefinitionEs: 'Ceder', relationType: 'synonym' }
+      { id: 'vr-yield-relent', sourceSenseId: 'vs-yield-2', targetSenseId: 'vs-relent-1', targetWord: 'give in', targetDefinitionEs: 'Ceder', relationType: 'synonym' },
+      { id: 'vr-yield-resist', sourceSenseId: 'vs-yield-2', targetSenseId: 'vs-resist-1', targetWord: 'resist', targetDefinitionEs: 'Resistirse o mantenerse firme', relationType: 'antonym' }
     ]
   },
   {
@@ -1851,7 +1898,8 @@ export const VOCABULARY_MASTER_DATA: VocabularyWordItem[] = [
       }
     ],
     relations: [
-      { id: 'vr-leverage-harness', sourceSenseId: 'vs-leverage-1', targetSenseId: 'vs-harness-1', targetWord: 'capitalize on', targetDefinitionEs: 'Capitalizar o sacar partido', relationType: 'synonym' }
+      { id: 'vr-leverage-harness', sourceSenseId: 'vs-leverage-1', targetSenseId: 'vs-harness-1', targetWord: 'capitalize on', targetDefinitionEs: 'Capitalizar o sacar partido', relationType: 'synonym' },
+      { id: 'vr-leverage-squander', sourceSenseId: 'vs-leverage-1', targetSenseId: 'vs-squander-1', targetWord: 'squander', targetDefinitionEs: 'Desperdiciar o desaprovechar', relationType: 'antonym' }
     ]
   },
   {
@@ -1939,7 +1987,8 @@ export const VOCABULARY_MASTER_DATA: VocabularyWordItem[] = [
       }
     ],
     relations: [
-      { id: 'vr-harbor-foster', sourceSenseId: 'vs-harbor-2', targetSenseId: 'vs-foster-1', targetWord: 'hold onto', targetDefinitionEs: 'Mantener o guardar internamente', relationType: 'synonym' }
+      { id: 'vr-harbor-foster', sourceSenseId: 'vs-harbor-2', targetSenseId: 'vs-foster-1', targetWord: 'hold onto', targetDefinitionEs: 'Mantener o guardar internamente', relationType: 'synonym' },
+      { id: 'vr-harbor-discard', sourceSenseId: 'vs-harbor-2', targetSenseId: 'vs-discard-1', targetWord: 'discard', targetDefinitionEs: 'Desechar o abandonar una idea', relationType: 'antonym' }
     ]
   },
   {
@@ -1981,7 +2030,8 @@ export const VOCABULARY_MASTER_DATA: VocabularyWordItem[] = [
       }
     ],
     relations: [
-      { id: 'vr-weather-withstand', sourceSenseId: 'vs-weather-2', targetSenseId: 'vs-withstand-1', targetWord: 'withstand', targetDefinitionEs: 'Resistir o soportar con éxito', relationType: 'synonym' }
+      { id: 'vr-weather-withstand', sourceSenseId: 'vs-weather-2', targetSenseId: 'vs-withstand-1', targetWord: 'withstand', targetDefinitionEs: 'Resistir o soportar con éxito', relationType: 'synonym' },
+      { id: 'vr-weather-succumb', sourceSenseId: 'vs-weather-2', targetSenseId: 'vs-succumb-1', targetWord: 'succumb', targetDefinitionEs: 'Sucumbir o ceder ante la crisis', relationType: 'antonym' }
     ]
   },
   {
@@ -2023,7 +2073,8 @@ export const VOCABULARY_MASTER_DATA: VocabularyWordItem[] = [
       }
     ],
     relations: [
-      { id: 'vr-stem-curb', sourceSenseId: 'vs-stem-2', targetSenseId: 'vs-curb-1', targetWord: 'curb', targetDefinitionEs: 'Frenar o contener', relationType: 'synonym' }
+      { id: 'vr-stem-curb', sourceSenseId: 'vs-stem-2', targetSenseId: 'vs-curb-1', targetWord: 'curb', targetDefinitionEs: 'Frenar o contener', relationType: 'synonym' },
+      { id: 'vr-stem-escalate', sourceSenseId: 'vs-stem-2', targetSenseId: 'vs-escalate-1', targetWord: 'escalate', targetDefinitionEs: 'Escalar o dejar crecer sin freno', relationType: 'antonym' }
     ]
   }
 ];

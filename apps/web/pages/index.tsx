@@ -2,27 +2,34 @@ import React from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import { PixelMinerScene } from '@/components/PixelMinerScene'
+import { LinguaLifeLogo } from '@/components/LinguaLifeLogo'
+import { ThemeToggle } from '@/components/ThemeToggle'
 import styles from '@/styles/WorkInProgress.module.css'
 
 export default function HomeWorkInProgress() {
   return (
     <>
       <Head>
-        <title>LinguaLife — Work In Progress ⛏️</title>
+        <title>LinguaLife — Sistema Acelerado de Fluidez B2</title>
         <meta
           name="description"
           content="Estamos afinando los últimos detalles de nuestra plataforma. Accede a tu registro de estudiante o inicio de sesión directamente."
         />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon.svg" />
       </Head>
 
       <div className={styles.container}>
         <div className={styles.ambientGlow}></div>
 
         <main className={styles.contentCard}>
-          {/* Badge */}
-          <div className={styles.pixelBadge}>
-            <span>⛏️</span> WORK IN PROGRESS
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.35rem', flexWrap: 'wrap', gap: '0.75rem' }}>
+            <LinguaLifeLogo size="md" />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+              <div className={styles.pixelBadge} style={{ margin: 0 }}>
+                <span>⛏️</span> WORK IN PROGRESS
+              </div>
+              <ThemeToggle />
+            </div>
           </div>
 
           {/* Title */}

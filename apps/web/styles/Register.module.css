@@ -1,21 +1,25 @@
 .container {
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   background-color: var(--bg-primary);
   padding: 2rem;
   color: var(--text-primary);
+  position: relative;
+  z-index: 1;
 }
 
 .card {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-glass);
-  border-radius: 16px;
-  padding: 2.5rem;
+  background: var(--surface-1);
+  border: 1px solid var(--surface-border);
+  border-radius: 20px;
+  padding: 2.35rem;
   width: 100%;
   max-width: 600px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--clay);
+  backdrop-filter: blur(18px);
 }
 
 .title {
@@ -72,12 +76,13 @@
 }
 
 .input {
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid var(--border-glass);
+  background: var(--surface-2);
+  border: 1px solid var(--surface-border);
   padding: 0.8rem 1rem;
-  border-radius: 8px;
+  border-radius: 10px;
   color: var(--text-primary);
   font-size: 1rem;
+}
   transition: border-color 0.2s;
 }
 

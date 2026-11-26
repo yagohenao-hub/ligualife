@@ -13,7 +13,7 @@ import {
   Zap,
   History
 } from 'lucide-react';
-import { VocabularyWordItem, VocabCategory, CefrLevel } from '@/lib/vocabulary';
+import { VocabularyWordItem, VocabCategory, CefrLevel, TriageStatus } from '@/lib/vocabulary';
 import {
   TriviaQuestion,
   TriviaDifficulty,
@@ -25,6 +25,7 @@ import styles from '@/styles/Vocabulary.module.css';
 
 interface Props {
   words: VocabularyWordItem[];
+  progressMap?: Record<string, TriageStatus>;
   category?: VocabCategory;
   level?: CefrLevel;
 }
@@ -32,11 +33,41 @@ interface Props {
 const normalizeKey = (q?: string | null): string =>
   (q || '').trim().toLowerCase().replace(/\s+/g, ' ');
 
+/** Extrae huella de palabra/tópico para evitar preguntas seguidas del mismo ítem */
+const getQuestionFocusKey = (q: TriviaQuestion): string => {
+  const quoteMatch = q.question.match(/usando\s+"([^"]+)"|significa exactamente\s+"([^"]+)"/i);
+  if (quoteMatch) return (quoteMatch[1] || quoteMatch[2] || '').toLowerCase();
+  if (typeof q.topicOrder === 'number' && q.topicOrder >= 100) return `word-slot-${q.topicOrder}`;
+  return (q.ldsFormula || q.id || '').slice(0, 20).toLowerCase();
+};
+
+/** Reordena preguntas para que dos adyacentes nunca pertenezcan a la misma palabra */
+const spreadQuestionsByFocus = (items: TriviaQuestion[]): TriviaQuestion[] => {
+  if (items.length <= 2) return items;
+  const remaining = [...items];
+  const result: TriviaQuestion[] = [];
+  let lastFocus = '';
+  while (remaining.length > 0) {
+    const pickIdx = remaining.findIndex(item => getQuestionFocusKey(item) !== lastFocus);
+    const idx = pickIdx !== -1 ? pickIdx : 0;
+    const [picked] = remaining.splice(idx, 1);
+    result.push(picked);
+    lastFocus = getQuestionFocusKey(picked);
+  }
+  return result;
+};
+
 export const VocabularyTrivia: React.FC<Props> = ({
   words,
+  progressMap = {},
   category = 'time_words',
   level = 'A1'
 }) => {
+  const toLearnWords = words.filter(w => progressMap[w.id] === 'to_learn');
+  const [onlyToLearn, setOnlyToLearn] = useState(false);
+  const effectiveOnlyToLearn = onlyToLearn && toLearnWords.length > 0;
+  const activeWords = effectiveOnlyToLearn ? toLearnWords : words;
+
   const [queue, setQueue] = useState<TriviaQuestion[]>([]);
   const [currentQuestion, setCurrentQuestion] = useState<TriviaQuestion | null>(null);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
@@ -90,9 +121,9 @@ export const VocabularyTrivia: React.FC<Props> = ({
   }, [clearAutoAdvanceTimer]);
 
   const buildFullVocabPool = useCallback((): TriviaQuestion[] => {
-    const baseSeeds = getSeedQuestionsForVocabulary(category, level, words);
+    const baseSeeds = getSeedQuestionsForVocabulary(category, level, activeWords);
     let cachedAi: TriviaQuestion[] = [];
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && !effectiveOnlyToLearn) {
       try {
         const raw = localStorage.getItem(`ll_trivia_ai_pool_v2_${storageKeySuffix}`);
         if (raw) {
@@ -102,10 +133,17 @@ export const VocabularyTrivia: React.FC<Props> = ({
       } catch {}
     }
 
-    const combined = [...cachedAi, ...baseSeeds];
+    // Prioriza rotación diversa: intercala seeds Round-Robin con IA cacheada y esparce por palabra
+    const interleaved: TriviaQuestion[] = [];
+    const maxLen = Math.max(baseSeeds.length, cachedAi.length);
+    for (let i = 0; i < maxLen; i++) {
+      if (i < baseSeeds.length) interleaved.push(baseSeeds[i]);
+      if (i < cachedAi.length) interleaved.push(cachedAi[i]);
+    }
+
     const unique: TriviaQuestion[] = [];
     const seen = new Set<string>();
-    for (const item of combined) {
+    for (const item of interleaved) {
       if (!item || !item.question || !Array.isArray(item.options) || item.options.length < 2) continue;
       const k = normalizeKey(item.question);
       if (!seen.has(k)) {
@@ -113,10 +151,10 @@ export const VocabularyTrivia: React.FC<Props> = ({
         unique.push(item);
       }
     }
-    return unique;
-  }, [category, level, words, storageKeySuffix]);
+    return spreadQuestionsByFocus(unique);
+  }, [category, level, activeWords, effectiveOnlyToLearn, storageKeySuffix]);
 
-  // Inicializar cola de preguntas al cambiar de categoría o nivel
+  // Inicializar cola de preguntas al cambiar de categoría, nivel o filtro
   useEffect(() => {
     clearAutoAdvanceTimer();
     try {
@@ -142,7 +180,7 @@ export const VocabularyTrivia: React.FC<Props> = ({
     setHistory([]);
     setShowHistory(false);
     setMilestoneNotice(null);
-  }, [category, level, words, storageKeySuffix, buildFullVocabPool, syncCurrentQuestion, syncQueue, clearAutoAdvanceTimer]);
+  }, [category, level, words, effectiveOnlyToLearn, storageKeySuffix, buildFullVocabPool, syncCurrentQuestion, syncQueue, clearAutoAdvanceTimer]);
 
   // Recarga de preguntas con IA en segundo plano
   const refillQuestions = useCallback(async () => {
@@ -168,6 +206,7 @@ export const VocabularyTrivia: React.FC<Props> = ({
           contextType: 'vocabulary',
           vocabCategory: category,
           cefrLevel: level,
+          targetWords: activeWords.map(w => w.word.toLowerCase()),
           topicOrder: 100,
           topicName: `Vocabulario ${category} (${level})`,
           difficultyLevel,
@@ -412,7 +451,7 @@ export const VocabularyTrivia: React.FC<Props> = ({
 
   if (!currentQuestion) {
     return (
-      <div style={{ color: '#a1a1aa', textAlign: 'center', padding: '3rem' }}>
+      <div style={{ color: 'var(--text-secondary)', textAlign: 'center', padding: '3rem' }}>
         Preparando motor de Trivia Infinita...
       </div>
     );
@@ -429,10 +468,10 @@ export const VocabularyTrivia: React.FC<Props> = ({
 
   const diffBadge =
     activeDifficulty === 'advanced'
-      ? { label: 'Nivel 3: Master 🔥', color: '#f43f5e', bg: 'rgba(244, 63, 94, 0.14)' }
+      ? { label: 'Nivel 3: Master 🔥', color: 'var(--brand-pink, #FF5076)', bg: 'rgba(255, 80, 118, 0.14)' }
       : activeDifficulty === 'intermediate'
-      ? { label: 'Nivel 2: Ágil ⚡', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.14)' }
-      : { label: 'Nivel 1: Base 🌱', color: '#10b981', bg: 'rgba(16, 185, 129, 0.14)' };
+      ? { label: 'Nivel 2: Ágil ⚡', color: 'var(--brand-yellow, #FDBA3B)', bg: 'rgba(253, 186, 59, 0.16)' }
+      : { label: 'Nivel 1: Base 🌱', color: 'var(--accent-green, #34D399)', bg: 'rgba(52, 211, 153, 0.14)' };
 
   const nextMilestoneTarget = Math.floor(streak / 5) * 5 + 5;
   const progressInTier = ((streak % 5) / 5) * 100;
@@ -449,7 +488,7 @@ export const VocabularyTrivia: React.FC<Props> = ({
           gap: '0.75rem',
           marginBottom: '0.85rem',
           paddingBottom: '0.75rem',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.08)'
+          borderBottom: '1px solid var(--surface-border)'
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
@@ -466,6 +505,34 @@ export const VocabularyTrivia: React.FC<Props> = ({
           >
             {diffBadge.label}
           </span>
+
+          {/* Filtro rápido: Todas vs Solo Por Aprender */}
+          {toLearnWords.length > 0 && (
+            <button
+              type="button"
+              onClick={() => setOnlyToLearn(prev => !prev)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+                fontSize: '0.74rem',
+                fontWeight: 800,
+                padding: '0.25rem 0.65rem',
+                borderRadius: '999px',
+                cursor: 'pointer',
+                background: effectiveOnlyToLearn
+                  ? 'rgba(255, 80, 118, 0.16)'
+                  : 'var(--bg-hover, rgba(255,255,255,0.06))',
+                color: effectiveOnlyToLearn ? 'var(--brand-pink, #FF5076)' : 'var(--text-secondary)',
+                border: effectiveOnlyToLearn
+                  ? '1px solid rgba(255, 80, 118, 0.45)'
+                  : '1px solid var(--surface-border)'
+              }}
+              title="Alterna entre todo el banco actual o solo tus palabras marcadas como Por aprender"
+            >
+              <span>{effectiveOnlyToLearn ? `🎯 Por aprender (${toLearnWords.length})` : `🌐 Todas (${words.length})`}</span>
+            </button>
+          )}
 
           {streak >= 2 && (
             <span
@@ -487,13 +554,13 @@ export const VocabularyTrivia: React.FC<Props> = ({
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flexWrap: 'wrap' }}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.85rem', color: '#fbbf24', fontWeight: 800 }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.85rem', color: 'var(--brand-yellow, #FDBA3B)', fontWeight: 800 }}>
             <Flame size={15} /> Racha: {streak}
           </span>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.85rem', color: '#c084fc', fontWeight: 700 }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.85rem', color: 'var(--brand-purple, #8C31C5)', fontWeight: 700 }}>
             <Trophy size={14} /> Récord: {bestStreak}
           </span>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.85rem', color: '#34d399', fontWeight: 700 }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.85rem', color: 'var(--accent-green, #34D399)', fontWeight: 700 }}>
             <Star size={14} /> Dominio: {masteredCount}
           </span>
 
@@ -507,9 +574,9 @@ export const VocabularyTrivia: React.FC<Props> = ({
               display: 'inline-flex',
               alignItems: 'center',
               gap: '0.3rem',
-              background: isMusicOn ? 'rgba(56, 189, 248, 0.15)' : 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.12)',
-              color: isMusicOn ? '#38bdf8' : '#a1a1aa',
+              background: isMusicOn ? 'rgba(26, 193, 231, 0.16)' : 'var(--bg-hover, rgba(255, 255, 255, 0.05))',
+              border: isMusicOn ? '1px solid rgba(26, 193, 231, 0.4)' : '1px solid var(--surface-border)',
+              color: isMusicOn ? 'var(--brand-cyan, #1AC1E7)' : 'var(--text-secondary)',
               padding: '0.25rem 0.6rem',
               borderRadius: '8px',
               fontSize: '0.75rem',
@@ -529,9 +596,9 @@ export const VocabularyTrivia: React.FC<Props> = ({
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '0.3rem',
-                background: showHistory ? 'rgba(168, 85, 247, 0.2)' : 'rgba(255, 255, 255, 0.05)',
-                border: '1px solid rgba(168, 85, 247, 0.35)',
-                color: '#e9d5ff',
+                background: showHistory ? 'rgba(140, 49, 197, 0.2)' : 'var(--bg-hover, rgba(255, 255, 255, 0.05))',
+                border: '1px solid rgba(140, 49, 197, 0.35)',
+                color: 'var(--text-primary)',
                 padding: '0.25rem 0.6rem',
                 borderRadius: '8px',
                 fontSize: '0.75rem',
@@ -555,14 +622,14 @@ export const VocabularyTrivia: React.FC<Props> = ({
           marginBottom: '1rem'
         }}
       >
-        <span style={{ fontSize: '0.74rem', color: '#94a3b8', fontWeight: 600, whiteSpace: 'nowrap' }}>
-          Próximo rango a los <strong style={{ color: '#fbbf24' }}>{nextMilestoneTarget} aciertos</strong> ({streak % 5}/5)
+        <span style={{ fontSize: '0.74rem', color: 'var(--text-secondary)', fontWeight: 600, whiteSpace: 'nowrap' }}>
+          Próximo rango a los <strong style={{ color: 'var(--brand-yellow, #FDBA3B)' }}>{nextMilestoneTarget} aciertos</strong> ({streak % 5}/5)
         </span>
         <div
           style={{
             flex: 1,
             height: '6px',
-            background: 'rgba(255, 255, 255, 0.07)',
+            background: 'var(--surface-border)',
             borderRadius: '999px',
             overflow: 'hidden'
           }}
@@ -571,7 +638,7 @@ export const VocabularyTrivia: React.FC<Props> = ({
             style={{
               width: `${Math.max(8, progressInTier)}%`,
               height: '100%',
-              background: 'linear-gradient(90deg, #38bdf8, #a855f7, #fbbf24)',
+              background: 'linear-gradient(90deg, var(--brand-cyan, #1AC1E7), var(--brand-purple, #8C31C5), var(--brand-pink, #FF5076))',
               borderRadius: '999px',
               transition: 'width 0.35s ease'
             }}
@@ -585,9 +652,9 @@ export const VocabularyTrivia: React.FC<Props> = ({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            background: 'linear-gradient(90deg, rgba(245, 158, 11, 0.2), rgba(168, 85, 247, 0.2))',
-            border: '1px solid rgba(251, 191, 36, 0.45)',
-            color: '#fef3c7',
+            background: 'linear-gradient(90deg, rgba(253, 186, 59, 0.2), rgba(140, 49, 197, 0.18))',
+            border: '1px solid rgba(253, 186, 59, 0.45)',
+            color: 'var(--text-primary)',
             padding: '0.6rem 0.9rem',
             borderRadius: '10px',
             marginBottom: '1rem',
@@ -596,13 +663,13 @@ export const VocabularyTrivia: React.FC<Props> = ({
           }}
         >
           <span style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-            <Sparkles size={15} color="#fbbf24" />
+            <Sparkles size={15} color="var(--brand-yellow, #FDBA3B)" />
             {milestoneNotice}
           </span>
           <button
             type="button"
             onClick={() => setMilestoneNotice(null)}
-            style={{ background: 'transparent', border: 'none', color: '#fde68a', cursor: 'pointer' }}
+            style={{ background: 'transparent', border: 'none', color: 'var(--text-primary)', cursor: 'pointer' }}
           >
             ✕
           </button>
@@ -616,8 +683,8 @@ export const VocabularyTrivia: React.FC<Props> = ({
             fontSize: '0.74rem',
             textTransform: 'uppercase',
             letterSpacing: '0.05em',
-            color: '#c084fc',
-            background: 'rgba(168, 85, 247, 0.14)',
+            color: 'var(--brand-purple, #8C31C5)',
+            background: 'rgba(140, 49, 197, 0.14)',
             padding: '0.25rem 0.65rem',
             borderRadius: '6px',
             fontWeight: 800
@@ -635,7 +702,7 @@ export const VocabularyTrivia: React.FC<Props> = ({
         </span>
 
         {currentQuestion.contextScenario && (
-          <span style={{ fontSize: '0.78rem', color: '#94a3b8', fontWeight: 600 }}>
+          <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', fontWeight: 600 }}>
             {currentQuestion.contextScenario}
           </span>
         )}
@@ -695,14 +762,14 @@ export const VocabularyTrivia: React.FC<Props> = ({
 
       {/* Instant Feedback */}
       {isAnswered && (
-        <div style={{ marginTop: '1.2rem', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+        <div style={{ marginTop: '1.2rem', paddingTop: '1rem', borderTop: '1px solid var(--surface-border)' }}>
           {isCurrentCorrect ? (
             <div
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.5rem',
-                color: '#34d399',
+                color: 'var(--accent-green, #34D399)',
                 fontWeight: 700,
                 fontSize: '0.92rem'
               }}
@@ -713,25 +780,25 @@ export const VocabularyTrivia: React.FC<Props> = ({
           ) : (
             <div
               style={{
-                background: 'rgba(239, 68, 68, 0.08)',
-                border: '1px solid rgba(239, 68, 68, 0.28)',
+                background: 'rgba(255, 80, 118, 0.09)',
+                border: '1px solid rgba(255, 80, 118, 0.32)',
                 borderRadius: '12px',
                 padding: '1rem'
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', color: '#f87171', fontWeight: 800, fontSize: '0.85rem' }}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', color: 'var(--brand-pink, #FF5076)', fontWeight: 800, fontSize: '0.85rem' }}>
                   <AlertCircle size={16} /> Respuesta Incorrecta
                 </span>
-                <span style={{ fontSize: '0.85rem', color: '#e2e8f0' }}>
-                  Correcta: <strong style={{ color: '#34d399' }}>{currentQuestion.options[currentQuestion.correctIndex]}</strong>
+                <span style={{ fontSize: '0.85rem', color: 'var(--text-primary)' }}>
+                  Correcta: <strong style={{ color: 'var(--accent-green, #34D399)' }}>{currentQuestion.options[currentQuestion.correctIndex]}</strong>
                 </span>
               </div>
-              <p style={{ margin: '0 0 0.5rem 0', fontSize: '0.88rem', color: '#e2e8f0', lineHeight: 1.5 }}>
+              <p style={{ margin: '0 0 0.5rem 0', fontSize: '0.88rem', color: 'var(--text-primary)', lineHeight: 1.5 }}>
                 {currentQuestion.explanation}
               </p>
               {currentQuestion.trapExplanation && (
-                <p style={{ margin: '0 0 0.9rem 0', fontSize: '0.82rem', color: '#fcd34d' }}>
+                <p style={{ margin: '0 0 0.9rem 0', fontSize: '0.82rem', color: 'var(--brand-yellow, #FDBA3B)' }}>
                   <strong>💡 Clave para recordar:</strong> {currentQuestion.trapExplanation}
                 </p>
               )}
@@ -755,12 +822,12 @@ export const VocabularyTrivia: React.FC<Props> = ({
           style={{
             marginTop: '1.25rem',
             padding: '1rem',
-            background: 'rgba(15, 23, 42, 0.85)',
-            border: '1px solid rgba(168, 85, 247, 0.3)',
+            background: 'var(--bg-secondary)',
+            border: '1px solid rgba(140, 49, 197, 0.3)',
             borderRadius: '12px'
           }}
         >
-          <h4 style={{ margin: '0 0 0.75rem 0', fontSize: '0.85rem', color: '#e9d5ff' }}>
+          <h4 style={{ margin: '0 0 0.75rem 0', fontSize: '0.85rem', color: 'var(--brand-purple, #8C31C5)' }}>
             Últimas {history.length} preguntas respondidas
           </h4>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
@@ -770,17 +837,17 @@ export const VocabularyTrivia: React.FC<Props> = ({
                 style={{
                   padding: '0.65rem',
                   borderRadius: '8px',
-                  background: 'rgba(255, 255, 255, 0.03)',
-                  borderLeft: `3px solid ${h.isCorrect ? '#10b981' : '#ef4444'}`
+                  background: 'var(--bg-hover, rgba(255, 255, 255, 0.03))',
+                  borderLeft: `3px solid ${h.isCorrect ? 'var(--accent-green, #34D399)' : 'var(--brand-pink, #FF5076)'}`
                 }}
               >
-                <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#f8fafc', marginBottom: '0.25rem' }}>
+                <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.25rem' }}>
                   {h.question}
                 </div>
-                <div style={{ fontSize: '0.78rem', color: '#34d399', marginBottom: '0.2rem' }}>
+                <div style={{ fontSize: '0.78rem', color: 'var(--accent-green, #34D399)', marginBottom: '0.2rem' }}>
                   ✓ {h.options[h.correctIndex]}
                 </div>
-                <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{h.explanation}</div>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{h.explanation}</div>
               </div>
             ))}
           </div>

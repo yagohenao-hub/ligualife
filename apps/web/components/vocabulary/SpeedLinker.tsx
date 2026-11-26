@@ -1,9 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { VocabularyWordItem } from '@/lib/vocabulary';
+import React, { useState, useEffect, useCallback } from 'react';
+import {
+  VocabularyWordItem,
+  VocabCategory,
+  CefrLevel,
+  getVocabularyByCategory
+} from '@/lib/vocabulary';
+import { soundEngine } from '@/lib/sound-effects';
 import styles from '@/styles/Vocabulary.module.css';
 
 interface Props {
   words: VocabularyWordItem[];
+  category?: VocabCategory;
+  level?: CefrLevel;
 }
 
 interface PairItem {
@@ -14,40 +22,150 @@ interface PairItem {
   matched: boolean;
 }
 
-export const SpeedLinker: React.FC<Props> = ({ words }) => {
+type LinkMode = 'synonym' | 'antonym';
+
+export const SpeedLinker: React.FC<Props> = ({
+  words,
+  category = 'time_words',
+  level = 'A1'
+}) => {
+  const [linkMode, setLinkMode] = useState<LinkMode>('synonym');
   const [timeLeft, setTimeLeft] = useState(45);
   const [isPlaying, setIsPlaying] = useState(false);
   const [score, setScore] = useState(0);
   const [combo, setCombo] = useState(0);
   const [selectedFirst, setSelectedFirst] = useState<PairItem | null>(null);
+  const [errorPairIds, setErrorPairIds] = useState<string[]>([]);
   const [cards, setCards] = useState<PairItem[]>([]);
 
-  // Pares de prueba basados en el grafo semántico
-  const INITIAL_PAIRS: { word1: string; word2: string; type: 'synonym' | 'antonym' }[] = [
-    { word1: 'run (manage)', word2: 'manage', type: 'synonym' },
-    { word1: 'kind (friendly)', word2: 'mean', type: 'antonym' },
-    { word1: 'light (weight)', word2: 'heavy', type: 'antonym' },
-    { word1: 'book (reserve)', word2: 'reserve', type: 'synonym' },
-    { word1: 'fair (just)', word2: 'unfair', type: 'antonym' },
-    { word1: 'safe (protected)', word2: 'dangerous', type: 'antonym' }
-  ];
+  // Pares de respaldo limpios (cero paréntesis ni pistas reveladoras)
+  const CLEAN_FALLBACKS: Record<LinkMode, { word1: string; word2: string }[]> = {
+    synonym: [
+      { word1: 'run', word2: 'manage' },
+      { word1: 'book', word2: 'reserve' },
+      { word1: 'kind', word2: 'friendly' },
+      { word1: 'safe', word2: 'secure' },
+      { word1: 'cool', word2: 'awesome' },
+      { word1: 'right', word2: 'correct' }
+    ],
+    antonym: [
+      { word1: 'run', word2: 'walk' },
+      { word1: 'book', word2: 'cancel' },
+      { word1: 'kind', word2: 'mean' },
+      { word1: 'light', word2: 'heavy' },
+      { word1: 'safe', word2: 'dangerous' },
+      { word1: 'cool', word2: 'warm' }
+    ]
+  };
 
-  function startGame() {
+  const buildDynamicPairs = useCallback(
+    (mode: LinkMode): { word1: string; word2: string; type: LinkMode }[] => {
+      const pairs: { word1: string; word2: string; type: LinkMode }[] = [];
+      const seenPairKeys = new Set<string>();
+      const usedTokens = new Set<string>();
+
+      // Combinar palabras activas + respaldo del mismo módulo/CEFR si un subnivel estricto tiene pocas
+      const primaryPool = [...words].sort(() => Math.random() - 0.5);
+      const extendedPool =
+        primaryPool.length < 4
+          ? [
+            ...primaryPool,
+            ...getVocabularyByCategory(category, level, true)
+              .filter(ext => !primaryPool.some(p => p.id === ext.id))
+              .sort(() => Math.random() - 0.5)
+          ]
+          : primaryPool;
+
+      for (const w of extendedPool) {
+        if (pairs.length >= 6) break;
+        const leftClean = w.word.replace(/\s*\([^)]*\)/g, '').trim();
+        const leftKey = leftClean.toLowerCase();
+        if (!leftClean || usedTokens.has(leftKey)) continue;
+
+        const matchingRels = (w.relations || [])
+          .filter(rel => rel.relationType === mode)
+          .sort(() => Math.random() - 0.5);
+
+        for (const rel of matchingRels) {
+          const rightClean = (rel.targetWord || '').replace(/\s*\([^)]*\)/g, '').trim();
+          const rightKey = rightClean.toLowerCase();
+          const pairKey = [leftKey, rightKey].sort().join('|');
+
+          if (
+            rightClean &&
+            leftKey !== rightKey &&
+            !usedTokens.has(rightKey) &&
+            !seenPairKeys.has(pairKey)
+          ) {
+            seenPairKeys.add(pairKey);
+            usedTokens.add(leftKey);
+            usedTokens.add(rightKey);
+            pairs.push({ word1: leftClean, word2: rightClean, type: mode });
+            break; // Una relación limpia por tarjeta fuente para evitar colisiones
+          }
+        }
+      }
+
+      if (pairs.length >= 3) return pairs;
+
+      return CLEAN_FALLBACKS[mode].slice(0, 6).map(f => ({
+        word1: f.word1,
+        word2: f.word2,
+        type: mode
+      }));
+    },
+    [words, category, level]
+  );
+
+  function startGame(overrideMode?: LinkMode) {
+    const activeMode = overrideMode || linkMode;
+    const chosenPairs = buildDynamicPairs(activeMode);
     const list: PairItem[] = [];
-    INITIAL_PAIRS.forEach((p, idx) => {
+    chosenPairs.forEach((p, idx) => {
       const pairKey = `pair-${idx}`;
-      list.push({ id: `${pairKey}-a`, word: p.word1, pairId: pairKey, relationType: p.type, matched: false });
-      list.push({ id: `${pairKey}-b`, word: p.word2, pairId: pairKey, relationType: p.type, matched: false });
+      list.push({
+        id: `${pairKey}-a`,
+        word: p.word1,
+        pairId: pairKey,
+        relationType: p.type,
+        matched: false
+      });
+      list.push({
+        id: `${pairKey}-b`,
+        word: p.word2,
+        pairId: pairKey,
+        relationType: p.type,
+        matched: false
+      });
     });
 
-    // Barajar
     setCards(list.sort(() => Math.random() - 0.5));
     setTimeLeft(45);
     setScore(0);
     setCombo(0);
     setSelectedFirst(null);
+    setErrorPairIds([]);
     setIsPlaying(true);
   }
+
+  function handleModeSwitch(nextMode: LinkMode) {
+    if (nextMode === linkMode) return;
+    setLinkMode(nextMode);
+    setIsPlaying(false);
+    setCards([]);
+    setSelectedFirst(null);
+    setErrorPairIds([]);
+    setScore(0);
+    setCombo(0);
+    setTimeLeft(45);
+  }
+
+  useEffect(() => {
+    setIsPlaying(false);
+    setCards([]);
+    setSelectedFirst(null);
+    setErrorPairIds([]);
+  }, [words]);
 
   useEffect(() => {
     if (!isPlaying) return;
@@ -67,6 +185,7 @@ export const SpeedLinker: React.FC<Props> = ({ words }) => {
     if (!isPlaying || item.matched) return;
 
     if (!selectedFirst) {
+      setErrorPairIds([]);
       setSelectedFirst(item);
       return;
     }
@@ -76,56 +195,137 @@ export const SpeedLinker: React.FC<Props> = ({ words }) => {
       return;
     }
 
-    // Comprobar coincidencia
     if (selectedFirst.pairId === item.pairId) {
-      // Correcto
-      setCards(prev => prev.map(c => c.pairId === item.pairId ? { ...c, matched: true } : c));
+      soundEngine.playRewardChime();
+      setCards(prev => prev.map(c => (c.pairId === item.pairId ? { ...c, matched: true } : c)));
       setScore(s => s + 10 + combo * 2);
       setCombo(c => c + 1);
       setSelectedFirst(null);
+      setErrorPairIds([]);
     } else {
-      // Fallo
       setCombo(0);
+      setErrorPairIds([selectedFirst.id, item.id]);
       setSelectedFirst(null);
+      setTimeout(() => setErrorPairIds([]), 420);
     }
   }
 
   const allMatched = cards.length > 0 && cards.every(c => c.matched);
+  const modeAccent = linkMode === 'synonym' ? 'var(--brand-cyan, #1AC1E7)' : 'var(--brand-pink, #FF5076)';
 
   return (
     <div className={styles.triviaCard}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '1rem',
+          marginBottom: '1.25rem'
+        }}
+      >
         <div>
-          <h3 style={{ fontSize: '1.4rem', fontWeight: 800, margin: 0, color: '#f4f4f5' }}>
-            ⚡ Speed Linker (Conector del Grafo)
+          <h3 style={{ fontSize: '1.3rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)' }}>
+            ⚡ Conector Semántico
           </h3>
-          <span style={{ fontSize: '0.8rem', color: '#a1a1aa' }}>
-            Conecta pares válidos de sinónimos y antónimos a contrarreloj.
+          <span style={{ fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
+            {linkMode === 'synonym'
+              ? 'Encuentra cada palabra con su sinónimo equivalente sin pistas.'
+              : 'Encuentra cada palabra con su antónimo u opuesto directo.'}
           </span>
         </div>
 
-        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          <div style={{ fontSize: '1.2rem', fontWeight: 800, color: timeLeft < 10 ? '#ef4444' : '#fbbf24' }}>
+        <div style={{ display: 'flex', gap: '0.85rem', alignItems: 'center', flexWrap: 'wrap' }}>
+          {/* Switch exclusivo Sinónimos / Antónimos */}
+          <div
+            role="group"
+            aria-label="Modo de conexión"
+            style={{
+              display: 'inline-flex',
+              padding: '4px',
+              borderRadius: '12px',
+              background: 'var(--bg-secondary)',
+              border: '1px solid var(--surface-border)',
+              gap: '4px'
+            }}
+          >
+            <button
+              type="button"
+              onClick={() => handleModeSwitch('synonym')}
+              style={{
+                padding: '0.4rem 0.85rem',
+                borderRadius: '9px',
+                border: 'none',
+                fontSize: '0.8rem',
+                fontWeight: 700,
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                background: linkMode === 'synonym' ? 'var(--brand-cyan, #1AC1E7)' : 'transparent',
+                color: linkMode === 'synonym' ? '#090C10' : 'var(--text-secondary)'
+              }}
+            >
+              🔗 Sinónimos
+            </button>
+            <button
+              type="button"
+              onClick={() => handleModeSwitch('antonym')}
+              style={{
+                padding: '0.4rem 0.85rem',
+                borderRadius: '9px',
+                border: 'none',
+                fontSize: '0.8rem',
+                fontWeight: 700,
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                background: linkMode === 'antonym' ? 'var(--brand-pink, #FF5076)' : 'transparent',
+                color: linkMode === 'antonym' ? '#ffffff' : 'var(--text-secondary)'
+              }}
+            >
+              ⚡ Antónimos
+            </button>
+          </div>
+
+          <div
+            style={{
+              fontSize: '1.05rem',
+              fontWeight: 800,
+              color: timeLeft < 10 ? 'var(--brand-pink, #FF5076)' : 'var(--brand-yellow, #FDBA3B)'
+            }}
+          >
             ⏱ {timeLeft}s
           </div>
-          <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#34d399' }}>
+          <div style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--accent-green, #34D399)' }}>
             ★ {score} pts
           </div>
         </div>
       </div>
 
       {!isPlaying && !allMatched && (
-        <div style={{ textAlign: 'center', padding: '3rem 1rem' }}>
-          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🕸️</div>
-          <p style={{ color: '#d4d4d8', maxWidth: '420px', margin: '0 auto 1.5rem', lineHeight: 1.5 }}>
-            Empareja las palabras con sus sinónimos y antónimos directos en el menor tiempo posible para activar tu red semántica.
+        <div style={{ textAlign: 'center', padding: '2.5rem 1rem' }}>
+          <div style={{ fontSize: '2.6rem', marginBottom: '0.75rem' }}>
+            {linkMode === 'synonym' ? '🔗' : '⚖️'}
+          </div>
+          <p style={{ color: 'var(--text-secondary)', maxWidth: '450px', margin: '0 auto 1.35rem', lineHeight: 1.55, fontSize: '0.94rem' }}>
+            {linkMode === 'synonym'
+              ? 'Modo Sinónimos activo: conecta pares con significado equivalente sin pistas entre paréntesis.'
+              : 'Modo Antónimos activo: conecta cada término con su significado opuesto antes de que termine el tiempo.'}
           </p>
           <button
-            onClick={startGame}
+            type="button"
+            onClick={() => startGame(linkMode)}
             className={styles.tabBtn}
-            style={{ margin: '0 auto', background: '#7c3aed', color: '#fff', fontSize: '1rem', padding: '0.75rem 1.8rem' }}
+            style={{
+              margin: '0 auto',
+              background: modeAccent,
+              color: linkMode === 'synonym' ? '#090C10' : '#ffffff',
+              borderColor: 'transparent',
+              fontSize: '0.95rem',
+              fontWeight: 800,
+              padding: '0.75rem 1.8rem'
+            }}
           >
-            ▶ Comenzar Ronda (45s)
+            ▶ Comenzar ({linkMode === 'synonym' ? 'Sinónimos' : 'Antónimos'} • 45s)
           </button>
         </div>
       )}
@@ -134,55 +334,65 @@ export const SpeedLinker: React.FC<Props> = ({ words }) => {
         <>
           {allMatched ? (
             <div style={{ textAlign: 'center', padding: '2rem' }}>
-              <div style={{ fontSize: '3rem', marginBottom: '0.5rem' }}>🌟</div>
-              <h4 style={{ fontSize: '1.3rem', color: '#34d399', fontWeight: 800 }}>
-                ¡Excelente! Despejaste toda la red de conexiones
+              <div style={{ fontSize: '2.8rem', marginBottom: '0.5rem' }}>🌟</div>
+              <h4 style={{ fontSize: '1.25rem', color: 'var(--accent-green, #34D399)', fontWeight: 800 }}>
+                ¡Excelente! Despejaste toda la red de {linkMode === 'synonym' ? 'sinónimos' : 'antónimos'}
               </h4>
-              <p style={{ color: '#a1a1aa', marginBottom: '1.5rem' }}>
-                Puntaje obtenido: {score} puntos
+              <p style={{ color: 'var(--text-secondary)', marginBottom: '1.35rem' }}>
+                Puntaje obtenido: <strong style={{ color: 'var(--text-primary)' }}>{score} puntos</strong>
               </p>
-              <button onClick={startGame} className={styles.tabBtn} style={{ margin: '0 auto' }}>
-                🔄 Jugar de nuevo
+              <button type="button" onClick={() => startGame(linkMode)} className={styles.tabBtn} style={{ margin: '0 auto' }}>
+                🔄 Jugar otra ronda
               </button>
             </div>
           ) : (
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))',
-              gap: '0.75rem'
-            }}>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))',
+                gap: '0.75rem'
+              }}
+            >
               {cards.map(item => {
                 const isSelected = selectedFirst?.id === item.id;
-                let bg = 'rgba(255, 255, 255, 0.04)';
-                let border = 'rgba(255, 255, 255, 0.1)';
+                const isWrong = errorPairIds.includes(item.id);
+                let bg = 'var(--surface-elevated, var(--bg-card))';
+                let border = 'var(--surface-border)';
+                let textColor = 'var(--text-primary)';
                 let opacity = 1;
 
                 if (item.matched) {
-                  bg = 'rgba(16, 185, 129, 0.15)';
-                  border = '#10b981';
-                  opacity = 0.35;
+                  bg = 'rgba(52, 211, 153, 0.16)';
+                  border = 'var(--accent-green, #34D399)';
+                  textColor = 'var(--accent-green, #34D399)';
+                  opacity = 0.42;
+                } else if (isWrong) {
+                  bg = 'rgba(255, 80, 118, 0.18)';
+                  border = 'var(--brand-pink, #FF5076)';
                 } else if (isSelected) {
-                  bg = 'rgba(124, 58, 237, 0.3)';
-                  border = '#a78bfa';
+                  bg = linkMode === 'synonym' ? 'rgba(26, 193, 231, 0.2)' : 'rgba(255, 80, 118, 0.2)';
+                  border = modeAccent;
                 }
 
                 return (
                   <button
                     key={item.id}
+                    type="button"
                     disabled={item.matched}
                     onClick={() => handleCardClick(item)}
                     style={{
                       background: bg,
-                      border: `1px solid ${border}`,
-                      borderRadius: '12px',
-                      padding: '1rem 0.5rem',
-                      color: item.matched ? '#34d399' : '#fff',
-                      fontSize: '0.88rem',
-                      fontWeight: 600,
+                      border: `1.5px solid ${border}`,
+                      borderRadius: '14px',
+                      padding: '1rem 0.65rem',
+                      color: textColor,
+                      fontSize: '0.92rem',
+                      fontWeight: 700,
                       cursor: item.matched ? 'default' : 'pointer',
                       transition: 'all 0.15s ease',
                       opacity,
-                      transform: isSelected ? 'scale(1.04)' : 'none'
+                      transform: isSelected ? 'scale(1.03)' : 'none',
+                      boxShadow: isSelected ? '0 0 0 2px rgba(26, 193, 231, 0.2)' : 'none'
                     }}
                   >
                     {item.word}

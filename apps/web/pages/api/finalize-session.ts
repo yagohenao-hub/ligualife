@@ -1,22 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { fetchAirtableRecord, patchAirtableRecord, findAirtableRecords } from '@/lib/airtable'
+import { fetchAirtableRecord, patchAirtableRecord, findAirtableRecords, createAirtableRecord } from '@/lib/airtable'
 import { EvolutionAPI } from '@/lib/evolution'
-
-const BASE_ID = process.env.AIRTABLE_BASE_ID ?? 'app9ZtojlxX5FoZ7y'
-const API_KEY = process.env.AIRTABLE_API_KEY
-
-async function createAirtableRecord(table: string, fields: any) {
-  const res = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(table)}`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${API_KEY}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ records: [{ fields }], typecast: true })
-  })
-  if (!res.ok) throw new Error(`Airtable POST error on ${table}`)
-  return res.json()
-}
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
@@ -33,21 +17,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       Status: 'Seen'
     })
 
-    // 2. Deduct 1 credit from ClassesRemaining
+    // 2. Deduct 1 credit from Classes Remaining safely
     const student = await fetchAirtableRecord('Students', studentId)
     if (student) {
-      const currentRemaining = (student.fields['ClassesRemaining'] as number) || 0
+      const rawRem = student.fields['Classes Remaining'] ?? student.fields['ClassesRemaining'] ?? 0
+      const currentRemaining = parseInt(String(rawRem), 10) || 0
       const newRemaining = Math.max(0, currentRemaining - 1)
       await patchAirtableRecord('Students', studentId, {
-        ClassesRemaining: newRemaining
+        'Classes Remaining': newRemaining
       })
 
       // Avanzar el puntero de Current Topic al siguiente tema (Order + 1)
       const currentTopicId = ((student.fields['Current Topic'] as string[]) ?? [])[0]
+        || (student.fields['Current Topic (Bot)'] as string | undefined)
       if (currentTopicId) {
         const currentTopicRec = await fetchAirtableRecord('Curriculum Topics', currentTopicId)
         if (currentTopicRec) {
-          const currentOrder = (currentTopicRec.fields['Order'] as number) || 1
+          const currentOrder = parseInt(String(currentTopicRec.fields['Order'] ?? '1'), 10) || 1
           const nextTopics = await findAirtableRecords('Curriculum Topics', `{Order} = ${currentOrder + 1}`)
           if (nextTopics.length > 0) {
             await patchAirtableRecord('Students', studentId, {
@@ -60,7 +46,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       // Enviar alerta de clases bajas
       if (newRemaining <= 2 && student.fields['Phone']) {
         const phone = student.fields['Phone'] as string
-        const msg = `⚠️ ¡Hola ${student.fields['FullName'] || 'Estudiante'}! Te quedan ${newRemaining} clases en tu paquete de LinguaLife. Recuerda renovar pronto para no perder el ritmo. Comunícate con nosotros para más detalles.`
+        const msg = `⚠️ ¡Hola ${student.fields['Full Name'] || student.fields['FullName'] || 'Estudiante'}! Te quedan ${newRemaining} clases en tu paquete de LinguaLife. Recuerda renovar pronto para no perder el ritmo. Comunícate con nosotros para más detalles.`
         await EvolutionAPI.sendText(phone, msg).catch(err => console.error('Error enviando alerta de clases bajas:', err))
       }
     }
@@ -72,14 +58,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       })
     }
 
-    // 4. Register Error Patterns
+    // 4. Register Error Patterns in Supabase
     if (errorTags && Array.isArray(errorTags) && errorTags.length > 0) {
       for (const tag of errorTags) {
         await createAirtableRecord('Error Patterns', {
-          'Pattern Name': tag,
-          'Student': [studentId],
-          'Session': [sessionId],
-          'Date': new Date().toISOString()
+          'Error Pattern': tag,
+          'Category': 'Class Observation',
+          'Active?': 'true',
+          'Session Participants': participantId || '',
+          'Description': `Student: ${studentId} | Session: ${sessionId} | ${new Date().toISOString()}`
         }).catch(err => console.error('Failed to create Error Pattern:', err))
       }
     }

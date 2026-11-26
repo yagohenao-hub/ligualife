@@ -24,6 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     grammarFocus = '',
     vocabCategory = 'time_words',
     cefrLevel = 'A1',
+    targetWords = [],
     studentName = 'Estudiante',
     studentInterests = 'Tecnología, negocios, viajes, cultura',
     vertical = '',
@@ -39,6 +40,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     grammarFocus?: string
     vocabCategory?: VocabCategory
     cefrLevel?: CefrLevel
+    targetWords?: string[]
     studentName?: string
     studentInterests?: string
     vertical?: string
@@ -61,8 +63,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   let contextBlock = ''
   if (contextType === 'vocabulary') {
-    const vocabWords = getVocabularyByCategory(vocabCategory, cefrLevel, false)
-    const wordsDigest = vocabWords
+    const rawVocabWords = getVocabularyByCategory(vocabCategory, cefrLevel, false)
+    const filteredWords =
+      Array.isArray(targetWords) && targetWords.length > 0
+        ? rawVocabWords.filter(w => targetWords.includes(w.word.toLowerCase()) || targetWords.includes(w.id))
+        : rawVocabWords
+    const activeVocab = filteredWords.length > 0 ? filteredWords : rawVocabWords
+    // Barajar las palabras para que la IA nunca empiece siempre por el mismo bloque ("can", "run", etc.)
+    const shuffledVocab = [...activeVocab].sort(() => Math.random() - 0.5)
+    const wordsDigest = shuffledVocab
       .slice(0, 8)
       .map(
         w =>
@@ -75,8 +84,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     contextBlock = `
 CONTEXTO DE GIMNASIO DE VOCABULARIO Y POLISEMIA:
 - Categoría: "${vocabCategory}" | Nivel MCER: "${cefrLevel}"
-- Palabras y Acepciones Objetivo:
+- Palabras y Acepciones Objetivo (orden variado):
 ${wordsDigest}
+- REGLA ANTI-REPETICIÓN ESTRICTA: Distribuye las 5 preguntas entre DISTINTAS palabras de la lista anterior; NUNCA hagas 2 preguntas seguidas sobre la misma palabra ni repitas la misma oración de ejemplo.
 `
   } else {
     const examplesDigest = summary.examples
@@ -234,10 +244,19 @@ RESPONDE EXCLUSIVAMENTE CON UN OBJETO JSON VÁLIDO:
     }
   }
 
-  // Fallback determinístico rico (10-20 preguntas dinámicas por tema o por categoría de vocabulario)
+  // Fallback determinístico rico (con rotación Round-Robin y filtro opcional de targetWords)
+  let fallbackVocabWords =
+    contextType === 'vocabulary' ? getVocabularyByCategory(vocabCategory, cefrLevel, false) : undefined
+  if (fallbackVocabWords && Array.isArray(targetWords) && targetWords.length > 0) {
+    const matched = fallbackVocabWords.filter(
+      w => targetWords.includes(w.word.toLowerCase()) || targetWords.includes(w.id)
+    )
+    if (matched.length > 0) fallbackVocabWords = matched
+  }
+
   const seeds =
     contextType === 'vocabulary'
-      ? getSeedQuestionsForVocabulary(vocabCategory, cefrLevel)
+      ? getSeedQuestionsForVocabulary(vocabCategory, cefrLevel, fallbackVocabWords)
       : getSeedQuestionsForTopic(topicOrder, cleanTopicName, effectiveFormula, effectiveMistake, grammarFocus)
 
   const excludeSet = new Set(excludeContexts.map(c => c.trim().toLowerCase()))

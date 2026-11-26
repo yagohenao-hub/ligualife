@@ -1,5 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { fetchFromAirtable, patchAirtableRecord, fetchAirtableRecord } from '@/lib/airtable'
+import { patchAirtableRecord, fetchAirtableRecord } from '@/lib/airtable'
+import { supabase } from '@/lib/supabaseClient'
+
+const parseBool = (val: any): boolean => val === true || String(val).toLowerCase() === 'true'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
@@ -23,13 +26,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           return res.status(403).json({ error: 'No autorizado: no eres el profesor de esta sesión' })
         }
       } else {
-        // student: check via Session Participants junction table
-        const participantIds = (session.fields['Session Participants'] as string[]) ?? []
-        let isParticipant = false
-        for (const pId of participantIds) {
-          const p = await fetchAirtableRecord('Session Participants', pId)
-          const sIds = (p?.fields['Student'] as string[]) ?? []
-          if (sIds.includes(userId)) { isParticipant = true; break }
+        // student: check directly via Supabase session_participants table first
+        const { data: spMatches } = await supabase
+          .from('session_participants')
+          .select('id')
+          .eq('Session', sessionId)
+          .ilike('Student', `%${userId}%`)
+          .limit(1)
+
+        let isParticipant = (spMatches?.length ?? 0) > 0
+        if (!isParticipant) {
+          const participantIds = (session.fields['Session Participants'] as string[]) ?? []
+          for (const pId of participantIds) {
+            const p = await fetchAirtableRecord('Session Participants', pId)
+            const sIds = (p?.fields['Student'] as string[]) ?? []
+            if (sIds.includes(userId)) { isParticipant = true; break }
+          }
         }
         if (!isParticipant) {
           return res.status(403).json({ error: 'No autorizado: no eres participante de esta sesión' })
@@ -40,17 +52,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const update: any = {}
     if (role === 'teacher') {
-      update['Holiday Confirmed (Teacher)'] = true
+      update['Holiday Confirmed (Teacher)'] = 'true'
     } else {
-      update['Holiday Confirmed (Student)'] = true
+      update['Holiday Confirmed (Student)'] = 'true'
     }
 
-    // Determine current states after update
-    const teacherConfirmed = role === 'teacher' ? true : !!session.fields['Holiday Confirmed (Teacher)']
-    const studentConfirmed = role === 'student' ? true : !!session.fields['Holiday Confirmed (Student)']
+    // Determine current states after update safely using parseBool
+    const teacherConfirmed = role === 'teacher' ? true : parseBool(session.fields['Holiday Confirmed (Teacher)'])
+    const studentConfirmed = role === 'student' ? true : parseBool(session.fields['Holiday Confirmed (Student)'])
 
     // If both have confirmed and session is a holiday, reactivate it to Scheduled
-    if (teacherConfirmed && studentConfirmed && !!session.fields['Is Holiday']) {
+    if (teacherConfirmed && studentConfirmed && parseBool(session.fields['Is Holiday'])) {
       update['Status'] = 'Scheduled'
     }
 

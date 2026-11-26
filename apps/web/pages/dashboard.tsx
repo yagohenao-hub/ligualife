@@ -3,6 +3,8 @@ import { useRouter } from 'next/router'
 import { useRequireAuth } from '@/hooks/useRequireAuth'
 import { useAppContext } from '@/context/AppContext'
 import { SessionCard } from '@/components/SessionCard'
+import { LinguaLifeLogo } from '@/components/LinguaLifeLogo'
+import { ThemeToggle } from '@/components/ThemeToggle'
 import type { Session } from '@/types'
 import type { StudioData, StudioStudent } from './api/studio'
 import styles from '@/styles/Dashboard.module.css'
@@ -267,8 +269,14 @@ export default function DashboardPage() {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1 className={styles.greeting}>Bienvenido, {session.name?.split(' ')[0] ?? 'Profesor'}</h1>
-        <button className={styles.logoutBtn} onClick={handleLogout}>Salir ↗</button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+          <LinguaLifeLogo size="sm" />
+          <h1 className={styles.greeting}>Bienvenido, {session.name?.split(' ')[0] ?? 'Profesor'}</h1>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <ThemeToggle />
+          <button className={styles.logoutBtn} onClick={handleLogout}>Salir ↗</button>
+        </div>
       </div>
 
       {/* Tabs */}

@@ -703,16 +703,23 @@ export function getSeedQuestionsForVocabulary(
   }
 
   const topicName = categoryLabels[category]
-  const questions: TriviaQuestion[] = []
   let seedIdx = 1
 
-  // Recorremos cada palabra y sus acepciones para construir retos de los 5 arquetipos
-  words.forEach((wordItem, wIdx) => {
+  interface BucketItem {
+    q: TriviaQuestion
+    wordId: string
+    sentenceKey: string
+  }
+
+  // Agrupamos por palabra para repartir en Round-Robin estricto (cero repetición consecutiva de palabra ni oración)
+  const wordBuckets: BucketItem[][] = words.map((wordItem, wIdx) => {
     const senses = wordItem.senses
     const otherWords = words.filter(w => w.id !== wordItem.id)
+    const perSenseQueues: BucketItem[][] = senses.map((sense, sIdx) => {
+      const candidates: BucketItem[] = []
+      const sentenceKey = sense.exampleSentenceEn.trim().toLowerCase()
 
-    senses.forEach((sense, sIdx) => {
-      // 1. Arquetipo CLOZE: Completar la oración en inglés con la palabra exacta
+      // A. Arquetipo CLOZE
       const regex = new RegExp(`\\b${sense.word}(s|ed|ing)?\\b`, 'i')
       if (regex.test(sense.exampleSentenceEn)) {
         const matchedForm = sense.exampleSentenceEn.match(regex)?.[0] || sense.word
@@ -727,24 +734,28 @@ export function getSeedQuestionsForVocabulary(
           seedIdx++
         )
 
-        questions.push({
-          id: `vocab-${category}-${level}-${sense.id}-cloze`,
-          topicOrder: 100 + wIdx,
-          topicName,
-          question: `Completa la frase con la palabra precisa: "${clozeSentence}"`,
-          contextScenario: `Pista en español: "${sense.exampleSentenceEs}"`,
-          options,
-          correctIndex,
-          explanation: `"${matchedForm}" (${sense.partOfSpeech}) significa aquí: ${sense.definitionEs}. Oración completa: "${sense.exampleSentenceEn}".`,
-          ldsFormula: sense.collocations?.join(' • ') || `${sense.word} (${sense.partOfSpeech})`,
-          trapExplanation: sense.notes || `Recuerda asociar "${sense.word}" con el contexto: ${sense.definitionEs}.`,
-          archetype: 'cloze',
-          difficulty: sIdx === 0 ? 'basic' : 'intermediate',
-          contextSource: 'vocabulary'
+        candidates.push({
+          wordId: wordItem.id,
+          sentenceKey,
+          q: {
+            id: `vocab-${category}-${level}-${sense.id}-cloze`,
+            topicOrder: 100 + wIdx,
+            topicName,
+            question: `Completa la frase con la palabra precisa: "${clozeSentence}"`,
+            contextScenario: `Pista en español: "${sense.exampleSentenceEs}"`,
+            options,
+            correctIndex,
+            explanation: `"${matchedForm}" (${sense.partOfSpeech}) significa aquí: ${sense.definitionEs}. Oración completa: "${sense.exampleSentenceEn}".`,
+            ldsFormula: sense.collocations?.join(' • ') || `${sense.word} (${sense.partOfSpeech})`,
+            trapExplanation: sense.notes || `Recuerda asociar "${sense.word}" con el contexto: ${sense.definitionEs}.`,
+            archetype: 'cloze',
+            difficulty: sIdx === 0 ? 'basic' : 'intermediate',
+            contextSource: 'vocabulary'
+          }
         })
       }
 
-      // 2. Arquetipo SITUATION / TRANSFORM: Contraste de Acepción Polisémica
+      // B. Arquetipo SITUATION / TRANSFORM: Contraste de Acepción Polisémica
       const otherSenseDefs = [
         ...senses.filter(s => s.id !== sense.id).map(s => s.definitionEs),
         ...otherWords.flatMap(ow => ow.senses.map(s => s.definitionEs))
@@ -756,26 +767,30 @@ export function getSeedQuestionsForVocabulary(
         seedIdx++
       )
 
-      questions.push({
-        id: `vocab-${category}-${level}-${sense.id}-sense`,
-        topicOrder: 100 + wIdx,
-        topicName,
-        question: `En la oración "${sense.exampleSentenceEn}", ¿qué significa exactamente "${sense.word.toUpperCase()}" (${sense.partOfSpeech})?`,
-        contextScenario: `Acepción #${sense.senseIndex} • Nivel ${sense.cefrLevelTarget}`,
-        options: defOptions,
-        correctIndex: defCorrectIdx,
-        explanation: `En este contexto (${sense.partOfSpeech}), "${sense.word}" significa: "${sense.definitionEs}". (${sense.exampleSentenceEs})`,
-        ldsFormula: sense.collocations?.join(' • ') || `${sense.word} — ${sense.partOfSpeech}`,
-        trapExplanation:
-          senses.length > 1
-            ? `¡Ojo con la polisemia! "${wordItem.word}" tiene ${senses.length} usos distintos (${senses.map(s => `#${s.senseIndex}: ${s.definitionEs}`).join(' vs. ')}).`
-            : sense.notes || 'Observa siempre la función de la palabra dentro de la oración.',
-        archetype: sIdx === 0 ? 'situation' : 'transform',
-        difficulty: sIdx === 0 ? 'basic' : 'advanced',
-        contextSource: 'vocabulary'
+      candidates.push({
+        wordId: wordItem.id,
+        sentenceKey,
+        q: {
+          id: `vocab-${category}-${level}-${sense.id}-sense`,
+          topicOrder: 100 + wIdx,
+          topicName,
+          question: `En la oración "${sense.exampleSentenceEn}", ¿qué significa exactamente "${sense.word.toUpperCase()}" (${sense.partOfSpeech})?`,
+          contextScenario: `Acepción #${sense.senseIndex} • Nivel ${sense.cefrLevelTarget}`,
+          options: defOptions,
+          correctIndex: defCorrectIdx,
+          explanation: `En este contexto (${sense.partOfSpeech}), "${sense.word}" significa: "${sense.definitionEs}". (${sense.exampleSentenceEs})`,
+          ldsFormula: sense.collocations?.join(' • ') || `${sense.word} — ${sense.partOfSpeech}`,
+          trapExplanation:
+            senses.length > 1
+              ? `¡Ojo con la polisemia! "${wordItem.word}" tiene ${senses.length} usos distintos (${senses.map(s => `#${s.senseIndex}: ${s.definitionEs}`).join(' vs. ')}).`
+              : sense.notes || 'Observa siempre la función de la palabra dentro de la oración.',
+          archetype: sIdx === 0 ? 'situation' : 'transform',
+          difficulty: sIdx === 0 ? 'basic' : 'advanced',
+          contextSource: 'vocabulary'
+        }
       })
 
-      // 3. Arquetipo DETECTIVE / SPOT_TRAP: Producción inversa desde el español
+      // C. Arquetipo DETECTIVE: Producción inversa desde el español
       const englishDistractors = synthesizeEnglishDistractors(sense.exampleSentenceEn)
       const otherEnglishSentences = otherWords
         .map(ow => ow.senses[0]?.exampleSentenceEn)
@@ -787,30 +802,84 @@ export function getSeedQuestionsForVocabulary(
         seedIdx++
       )
 
-      questions.push({
-        id: `vocab-${category}-${level}-${sense.id}-reverse`,
-        topicOrder: 100 + wIdx,
-        topicName,
-        question: `¿Cómo expresas en inglés natural: "${sense.exampleSentenceEs}" usando "${sense.word}"?`,
-        contextScenario: sense.notes ? `Nota clave: ${sense.notes}` : `Colocación: ${sense.collocations?.[0] || sense.word}`,
-        options: revOptions,
-        correctIndex: revCorrectIdx,
-        explanation: `La estructura correcta es: "${sense.exampleSentenceEn}".`,
-        ldsFormula: sense.collocations?.join(' • ') || sense.word,
-        trapExplanation: sense.notes || `Evita traducir literalmente palabra por palabra desde el español.`,
-        archetype: 'detective',
-        difficulty: sIdx === 0 ? 'intermediate' : 'advanced',
-        contextSource: 'vocabulary'
+      candidates.push({
+        wordId: wordItem.id,
+        sentenceKey,
+        q: {
+          id: `vocab-${category}-${level}-${sense.id}-reverse`,
+          topicOrder: 100 + wIdx,
+          topicName,
+          question: `¿Cómo expresas en inglés natural: "${sense.exampleSentenceEs}" usando "${sense.word}"?`,
+          contextScenario: sense.notes ? `Nota clave: ${sense.notes}` : `Colocación: ${sense.collocations?.[0] || sense.word}`,
+          options: revOptions,
+          correctIndex: revCorrectIdx,
+          explanation: `La estructura correcta es: "${sense.exampleSentenceEn}".`,
+          ldsFormula: sense.collocations?.join(' • ') || sense.word,
+          trapExplanation: sense.notes || `Evita traducir literalmente palabra por palabra desde el español.`,
+          archetype: 'detective',
+          difficulty: sIdx === 0 ? 'intermediate' : 'advanced',
+          contextSource: 'vocabulary'
+        }
       })
+
+      // Rotamos el punto de partida de arquetipos según palabra/acepción para variar el formato desde la #1
+      const rot = (wIdx + sIdx) % candidates.length
+      return [...candidates.slice(rot), ...candidates.slice(0, rot)]
     })
+
+    // Intercalamos entre acepciones (sense1, sense2, sense1, sense2...) dentro de esta palabra
+    const interleavedWordItems: BucketItem[] = []
+    let kept = true
+    let depth = 0
+    while (kept) {
+      kept = false
+      for (const sq of perSenseQueues) {
+        if (depth < sq.length) {
+          interleavedWordItems.push(sq[depth])
+          kept = true
+        }
+      }
+      depth++
+    }
+    return interleavedWordItems
   })
 
-  // Eliminamos posibles duplicados y retornamos el banco rico
+  // Rotación determinística mezclada + Round-Robin entre palabras para máxima variedad inicial
+  const orderedBuckets = [...wordBuckets]
+  for (let i = orderedBuckets.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[orderedBuckets[i], orderedBuckets[j]] = [orderedBuckets[j], orderedBuckets[i]]
+  }
+
+  const questions: TriviaQuestion[] = []
   const seen = new Set<string>()
-  return questions.filter(q => {
-    const key = q.question.trim().toLowerCase()
-    if (seen.has(key)) return false
-    seen.add(key)
-    return true
-  })
+  let lastWordId = ''
+  let lastSentence = ''
+
+  let round = 0
+  let hadItems = true
+  while (hadItems) {
+    hadItems = false
+    for (const bucket of orderedBuckets) {
+      if (round < bucket.length) {
+        hadItems = true
+        const item = bucket[round]
+        const qKey = item.q.question.trim().toLowerCase()
+        if (seen.has(qKey)) continue
+        // Evitar repetir palabra o frase de ejemplo consecutiva si hay múltiples palabras
+        if (orderedBuckets.length > 1 && (item.wordId === lastWordId || item.sentenceKey === lastSentence)) {
+          bucket.push(item) // Diferimos al final del ciclo de esa palabra
+          continue
+        }
+        seen.add(qKey)
+        questions.push(item.q)
+        lastWordId = item.wordId
+        lastSentence = item.sentenceKey
+      }
+    }
+    round++
+    if (round > 40) break
+  }
+
+  return questions
 }

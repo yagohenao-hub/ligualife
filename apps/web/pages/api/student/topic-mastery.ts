@@ -39,10 +39,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     let masteryMap: Record<number, { tier: number; tierName?: string; streak?: number; lastTrainedAt: string }> = {};
 
     const marker = '=== MASTERY_PROGRESS_JSON ===';
+    let tailSections = '';
     if (notes.includes(marker)) {
-      const parts = notes.split(marker);
+      const after = notes.split(marker)[1] || '';
+      const nextMarkerIdx = after.indexOf('\n=== ');
+      const jsonRaw = (nextMarkerIdx >= 0 ? after.slice(0, nextMarkerIdx) : after).trim();
+      tailSections = nextMarkerIdx >= 0 ? after.slice(nextMarkerIdx) : '';
       try {
-        masteryMap = JSON.parse(parts[1].trim());
+        masteryMap = JSON.parse(jsonRaw);
       } catch (e) {
         masteryMap = {};
       }
@@ -79,9 +83,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       lastTrainedAt: now.toISOString()
     };
 
-    // 1. Dual-write to students.Notes for backward compatibility
+    // 1. Dual-write to students.Notes preserving other marker sections
     const baseNotes = notes.includes(marker) ? notes.split(marker)[0].trim() : notes.trim();
-    const updatedNotes = baseNotes ? `${baseNotes}\n\n${marker}\n${JSON.stringify(masteryMap)}` : `${marker}\n${JSON.stringify(masteryMap)}`;
+    const updatedNotes = (baseNotes ? `${baseNotes}\n\n${marker}\n${JSON.stringify(masteryMap)}` : `${marker}\n${JSON.stringify(masteryMap)}`) + tailSections;
     await supabase.from('students').update({ Notes: updatedNotes }).eq('id', studentId);
 
     // 2. Dual-write to normalized public.student_topic_progress sin duplicados

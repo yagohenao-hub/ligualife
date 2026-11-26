@@ -89,8 +89,43 @@ STRICT RULES FOR ALL HTML SLIDES:
 Output ONLY the marked blocks. No introduction or follow-up text.
 `
 
+  const fallbackSlides = () => ({
+    slides: [
+      {
+        title: 'Logic Decoder',
+        content: `<div style="padding:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;color:#e2e8f0;"><p><strong style="color:#f59e0b;">${topicName}</strong></p><p>${ldsFormula || aiContext || 'Construcción intuitiva por bloques: Protagonista + Tiempo + Acción.'}</p></div>`
+      },
+      {
+        title: 'Colombian Filter',
+        content: `<div style="padding:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;color:#e2e8f0;"><p><strong style="color:#f59e0b;">Evita traducción literal</strong></p><p>Enfócate en decir la idea como un hablante nativo sin calcar el orden del español.</p></div>`
+      },
+      {
+        title: 'Real-Life Chunks',
+        content: `<div style="padding:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;color:#e2e8f0;"><p>${aiContext || `Frases útiles aplicando ${topicName} en tu contexto (${vertical || 'General'}).`}</p></div>`
+      },
+      {
+        title: 'Conversation & News',
+        content: `<div style="padding:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;color:#e2e8f0;"><p>Pregunta guía: ¿Cómo aplicarías <strong>${topicName}</strong> en una situación real de ${vertical || 'tu trabajo o día a día'}?</p></div>`
+      }
+    ],
+    warmup: {
+      icebreaker: `How has your week been going regarding ${interests || vertical || 'work and daily life'}?`,
+      spanglishPhrases: previousTopic ? [`Ayer practiqué *${previousTopic}* en mi trabajo.`] : [],
+      bridgePhrase: `Notice how we naturally frame ideas around "${topicName}".`
+    },
+    cooldown: {
+      idioms: ['Get the hang of it', 'Hit the nail on the head'],
+      tinyAction: `Record or write 2 natural sentences using ${topicName} in your Pocket Coach.`,
+      tongueTwister: 'She sells seashells by the seashore cleanly and clearly.'
+    }
+  })
+
+  if (!GEMINI_API_KEY) {
+    return res.status(200).json({ ...fallbackSlides(), fromFallback: true })
+  }
+
   try {
-    const models = ['gemini-3.1-flash-lite', 'gemini-3.5-flash-lite']
+    const models = ['gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-2.0-flash']
     let geminiRes: any = null
 
     for (const model of models) {
@@ -111,7 +146,7 @@ Output ONLY the marked blocks. No introduction or follow-up text.
     }
 
     if (!geminiRes || !geminiRes.ok) {
-      return res.status(502).json({ error: 'Gemini error al generar diapositivas' })
+      return res.status(200).json({ ...fallbackSlides(), fromFallback: true })
     }
 
     const geminiData = await geminiRes.json()
@@ -121,9 +156,13 @@ Output ONLY the marked blocks. No introduction or follow-up text.
     const warmup = parseJsonSection(rawText, 'WARMUP_ASSETS')
     const cooldown = parseJsonSection(rawText, 'COOLDOWN_ASSETS')
 
+    if (!slides || slides.length === 0) {
+      return res.status(200).json({ ...fallbackSlides(), fromFallback: true })
+    }
+
     return res.status(200).json({ slides, warmup, cooldown, rawText })
   } catch (err: any) {
-    return res.status(500).json({ error: 'Error generando slides', detail: err.message })
+    return res.status(200).json({ ...fallbackSlides(), fromFallback: true })
   }
 }
 

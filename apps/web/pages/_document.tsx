@@ -19,15 +19,11 @@ export default function Document() {
               (function() {
                 try {
                   var saved = localStorage.getItem('lingua_theme');
-                  var prefDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                  var theme = saved || (prefDark ? 'dark' : 'light');
+                  var theme = (saved === 'light' || saved === 'dark') ? saved : 'dark';
                   document.documentElement.setAttribute('data-theme', theme);
-                  if (theme === 'dark') {
-                    document.documentElement.classList.add('dark');
-                  } else {
-                    document.documentElement.classList.remove('dark');
-                  }
-                } catch(e) {}
+                  if (theme === 'dark') document.documentElement.classList.add('dark');
+                  else document.documentElement.classList.remove('dark');
+                } catch (e) {}
               })();
             `,
           }}

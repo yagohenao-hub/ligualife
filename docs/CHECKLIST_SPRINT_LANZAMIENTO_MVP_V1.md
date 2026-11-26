@@ -73,7 +73,7 @@
 ### 2.4 Panel de Administración (`/admin`)
 - [ ] Probar el alta completa de un alumno nuevo (nombre, WhatsApp, PIN, profesor asignado, horario fijo, paquete de clases).
 - [ ] Probar la generación automática de clases del mes (`/api/admin/generate-classes`) y la gestión de días festivos (`/api/confirm-holiday`).
-- [ ] Verificar que las métricas de `/admin` (`/api/admin/metrics`) muestren conteo real de clases dictadas por profesor (clave para liquidar los $300.000 COP / mes por alumno sin errores).
+- [ ] Verificar que las métricas de `/admin` (`/api/admin/metrics`) muestren conteo real de clases dictadas por profesor (clave para liquidar los $240.000 COP / mes [$30.000/h × 8 clases] por alumno sin errores).
 
 ### 2.5 WhatsApp Pocket Coach (`Evolution API` + `Railway` + `Gemini`)
 - [ ] Configurar el **celular dedicado** con la SIM corporativa fija (WhatsApp Business instalado, cargador permanente, Wi-Fi estable, ahorro de batería desactivado).
@@ -174,10 +174,10 @@
 ### 5.4 Finanzas, Pagos & Legal Lean
 - [ ] Activar cuenta y links de cobro en **Wompi** (PSE, Nequi, tarjetas COP) y/o **Stripe/PayPal** (para clientes en el exterior en USD).
 - [ ] Crear una **hoja de control financiero mensual** que separe automáticamente por cada alumno pagado:
-  - `$300.000 COP` → Reserva fija de honorarios del profesor (intocable).
+  - `$240.000 COP` → Reserva fija de honorarios del profesor ($30.000/h × 8 clases, intocable).
   - `$25.000 COP` → Fondo de reinversión en pauta/marketing.
   - `$15.000 COP` → Fondo de software/comisiones.
-  - `$110.000 COP` → Utilidad neta libre de la sociedad.
+  - `$170.000 COP` → Utilidad neta libre de la sociedad (~$195.000 COP al renovar Mes 2+ sin CAC).
 - [ ] Publicar textos definitivos en `/terms` y `/privacy` cubriendo:
   - Autorización de **Habeas Data** (tratamiento de teléfono, mensajes de WhatsApp y notas de voz).
   - Política clara de **reagendamiento con 24h previas vía tokens** y **no reembolso** una vez iniciado el periodo.

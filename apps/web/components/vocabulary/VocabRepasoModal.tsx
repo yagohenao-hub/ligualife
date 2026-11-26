@@ -91,13 +91,13 @@ export const VocabRepasoModal: React.FC<Props> = ({
         </div>
 
         {/* Progress Bar */}
-        <div style={{ padding: '0.75rem 1.25rem', background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: '#cbd5e1', marginBottom: '0.4rem' }}>
+        <div style={{ padding: '0.75rem 1.25rem', background: 'var(--bg-secondary)', borderBottom: '1px solid var(--surface-border)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '0.4rem' }}>
             <span>Progreso de verificación: {answeredCount} de {exercises.length} resueltos</span>
-            <span style={{ fontWeight: 700, color: '#38bdf8' }}>{correctCount} Aciertos</span>
+            <span style={{ fontWeight: 700, color: 'var(--brand-cyan, #1AC1E7)' }}>{correctCount} Aciertos</span>
           </div>
-          <div style={{ height: '6px', background: 'rgba(255,255,255,0.08)', borderRadius: '999px', overflow: 'hidden' }}>
-            <div style={{ width: `${progressPercent}%`, height: '100%', background: '#10b981', transition: 'width 0.3s ease' }} />
+          <div style={{ height: '6px', background: 'var(--surface-border)', borderRadius: '999px', overflow: 'hidden' }}>
+            <div style={{ width: `${progressPercent}%`, height: '100%', background: 'var(--accent-green, #34D399)', transition: 'width 0.3s ease' }} />
           </div>
         </div>
 
@@ -111,19 +111,19 @@ export const VocabRepasoModal: React.FC<Props> = ({
             return (
               <div key={ex.id} className={styles.repasoItemBox}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
-                  <span style={{ fontSize: '0.75rem', fontWeight: 800, color: ex.type === 'fill' ? '#38bdf8' : ex.type === 'trap' ? '#f43f5e' : '#a855f7', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 800, color: ex.type === 'fill' ? 'var(--brand-cyan, #1AC1E7)' : ex.type === 'trap' ? 'var(--brand-pink, #FF5076)' : 'var(--brand-purple, #8C31C5)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                     #{idx + 1} • {ex.type === 'fill' ? 'Fill the Pattern' : ex.type === 'trap' ? 'Spot the Trap' : 'Reverse Sprint'}
                   </span>
-                  <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
                     Pista: {ex.hint}
                   </span>
                 </div>
 
-                <p style={{ margin: '0 0 0.5rem', fontSize: '0.85rem', color: '#94a3b8' }}>
+                <p style={{ margin: '0 0 0.5rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
                   {ex.instruction}
                 </p>
 
-                <p style={{ margin: '0 0 0.75rem', fontSize: '1rem', fontWeight: 600, color: '#f8fafc', background: 'rgba(0,0,0,0.25)', padding: '0.6rem 0.8rem', borderRadius: '8px', borderLeft: '3px solid #38bdf8' }}>
+                <p style={{ margin: '0 0 0.75rem', fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)', background: 'var(--surface-1)', padding: '0.6rem 0.8rem', borderRadius: '8px', borderLeft: '3px solid var(--brand-cyan, #1AC1E7)' }}>
                   {ex.promptText}
                 </p>
 
@@ -151,12 +151,12 @@ export const VocabRepasoModal: React.FC<Props> = ({
 
                 {/* Feedback Box */}
                 {isChecked && (
-                  <div style={{ marginTop: '0.65rem', padding: '0.6rem 0.8rem', borderRadius: '8px', background: isCorrect ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)', border: `1px solid ${isCorrect ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'}` }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: isCorrect ? '#34d399' : '#f87171', fontWeight: 700, fontSize: '0.85rem' }}>
+                  <div style={{ marginTop: '0.65rem', padding: '0.6rem 0.8rem', borderRadius: '8px', background: isCorrect ? 'rgba(52, 211, 153, 0.12)' : 'rgba(255, 80, 118, 0.12)', border: `1px solid ${isCorrect ? 'rgba(52, 211, 153, 0.35)' : 'rgba(255, 80, 118, 0.35)'}` }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: isCorrect ? 'var(--accent-green, #34D399)' : 'var(--brand-pink, #FF5076)', fontWeight: 700, fontSize: '0.85rem' }}>
                       {isCorrect ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}
                       <span>{isCorrect ? '¡Excelente acierto!' : `Solución esperada: "${ex.solution}"`}</span>
                     </div>
-                    <p style={{ margin: '0.25rem 0 0', fontSize: '0.8rem', color: '#cbd5e1' }}>
+                    <p style={{ margin: '0.25rem 0 0', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
                       💡 {ex.explanation}
                     </p>
                   </div>
@@ -171,10 +171,10 @@ export const VocabRepasoModal: React.FC<Props> = ({
           <button onClick={handleReset} className={styles.modalNavBtn} style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
             <RefreshCw size={14} /> Reiniciar sesión
           </button>
-          <span style={{ fontSize: '0.85rem', color: '#94a3b8' }}>
+          <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
             Aciertos: {correctCount} / {exercises.length}
           </span>
-          <button onClick={onClose} className={styles.modalNavBtn} style={{ background: '#10b981', color: '#022c22', fontWeight: 800 }}>
+          <button onClick={onClose} className={styles.modalNavBtn} style={{ background: 'var(--brand-cyan, #1AC1E7)', color: '#090C10', borderColor: 'transparent', fontWeight: 800 }}>
             Completar Repaso
           </button>
         </div>

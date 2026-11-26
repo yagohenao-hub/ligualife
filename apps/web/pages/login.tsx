@@ -3,6 +3,8 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { PinInput } from '@/components/PinInput'
+import { LinguaLifeLogo } from '@/components/LinguaLifeLogo'
+import { ThemeToggle } from '@/components/ThemeToggle'
 import { useAppContext } from '@/context/AppContext'
 import styles from '@/styles/Home.module.css'
 
@@ -50,9 +52,14 @@ export default function DirectLoginPage() {
       <Head>
         <title>Acceso por PIN | LinguaLife</title>
       </Head>
-      <div className={styles.container}>
+      <div className={styles.container} style={{ position: 'relative' }}>
+        <div style={{ position: 'absolute', top: '1.25rem', right: '1.25rem', zIndex: 10 }}>
+          <ThemeToggle />
+        </div>
         <div className={`glass ${styles.card}`}>
-          <h1 className={styles.logo}>LinguaLife</h1>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '0.85rem' }}>
+            <LinguaLifeLogo size="md" />
+          </div>
           <p className={styles.subtitle}>Introduce tu PIN para acceder al portal</p>
           {error && <div className={styles.errorMessage}>{error}</div>}
           <PinInput onSubmit={handlePin} loading={loading} />
@@ -61,7 +68,7 @@ export default function DirectLoginPage() {
             <Link 
               href="/"
               style={{
-                color: '#94a3b8',
+                color: 'var(--text-secondary)',
                 fontSize: '0.85rem',
                 textDecoration: 'none',
                 display: 'inline-flex',
@@ -76,10 +83,10 @@ export default function DirectLoginPage() {
             <Link 
               href="/register/student"
               style={{
-                color: '#a78bfa',
+                color: 'var(--brand-cyan, #1AC1E7)',
                 fontSize: '0.85rem',
                 textDecoration: 'none',
-                fontWeight: 600
+                fontWeight: 700
               }}
             >
               ¿Aún no tienes cuenta? Regístrate aquí

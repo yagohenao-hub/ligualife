@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { fetchFromAirtable, fetchAirtableRecord, patchAirtableRecord, createAirtableRecord } from '@/lib/airtable'
+import { fetchAirtableRecord, patchAirtableRecord, createAirtableRecord } from '@/lib/airtable'
+import { supabase } from '@/lib/supabaseClient'
 
-const DAYS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom']
 const HOURS_START = 6 // 6am
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -20,24 +20,34 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    // 1. Fetch student data and check for group partners
+    // 1. Fetch student data and check tokens + group partners
     const student = await fetchAirtableRecord('Students', studentId)
-    const tokens = (student?.fields?.['Tokens de Reposición'] as number) ?? (student?.fields?.['Tokens'] as number) ?? 0
+    if (!student) return res.status(404).json({ error: 'Estudiante no encontrado' })
+
+    const tokens = parseInt(String(student?.fields?.['Tokens de Reposición'] ?? student?.fields?.['Tokens'] ?? 0), 10) || 0
     if (tokens <= 0) return res.status(400).json({ error: 'No tienes tokens de reposición disponibles' })
 
-    // Check if student belongs to a "Conocidos" group (Student-Teacher table with multiple students)
-    const stFilter = encodeURIComponent(`FIND('${studentId}', ARRAYJOIN({Student}, ',')) > 0`)
-    const stRes = await fetchFromAirtable('Student-Teacher', `filterByFormula=${stFilter}`)
-    const stRecord = stRes.records?.[0]
-    const allStudentIds = (stRecord?.fields?.['Student'] as string[]) || [studentId]
+    const { data: stRows } = await supabase
+      .from('student_teacher')
+      .select('*')
+      .ilike('Student', `%${studentId}%`)
+      .eq('Status', 'Active')
+      .order('created_at', { ascending: false })
+      .limit(1)
+
+    const stRecord = stRows?.[0]
+    const rawStudents = stRecord?.Student
+    const allStudentIds: string[] = rawStudents
+      ? (Array.isArray(rawStudents) ? rawStudents : String(rawStudents).split(',').map((s: string) => s.trim()).filter(Boolean))
+      : [studentId]
     const isGroup = allStudentIds.length > 1
 
-    // If group, verify ALL have tokens (per User: "se les cobra a ambos")
     if (isGroup) {
       for (const sid of allStudentIds) {
         const s = await fetchAirtableRecord('Students', sid)
-        if (((s?.fields?.['Tokens de Reposición'] as number) ?? (s?.fields?.['Tokens'] as number) ?? 0) <= 0) {
-          return res.status(400).json({ error: `El compañero ${s?.fields?.['Full Name'] ?? s?.fields?.['FullName']} no tiene tokens suficientes` })
+        const sTokens = parseInt(String(s?.fields?.['Tokens de Reposición'] ?? s?.fields?.['Tokens'] ?? 0), 10) || 0
+        if (sTokens <= 0) {
+          return res.status(400).json({ error: `El compañero ${s?.fields?.['Full Name'] ?? s?.fields?.['FullName'] ?? sid} no tiene tokens suficientes` })
         }
       }
     }
@@ -47,7 +57,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (exactDate) {
       sessionDate = new Date(exactDate)
       const minTime = new Date(Date.now() + 24 * 60 * 60 * 1000)
-      if (sessionDate < minTime) {
+      if (isNaN(sessionDate.getTime()) || sessionDate < minTime) {
         return res.status(400).json({ error: 'La clase debe agendarse con al menos 24 horas de anticipación' })
       }
     } else {
@@ -60,64 +70,110 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       sessionDate.setHours(HOURS_START + hourIndex, 0, 0, 0)
     }
 
-    // 3. Verify slot is available
+    // 3. Verify teacher slot is enabled AND not already booked
     const teacher = await fetchAirtableRecord('Teachers', teacherId)
-    const rawAvail = (teacher?.fields?.['Availability'] ?? teacher?.fields?.['fld7vSUdd69zdl6yQ']) as string | null
+    if (!teacher) return res.status(404).json({ error: 'Profesor no encontrado' })
+
+    const rawAvail = teacher?.fields?.['Availability'] as string | null
     let availability: boolean[][] = []
-    if (rawAvail) { try { availability = JSON.parse(rawAvail) } catch { } }
+    if (rawAvail) { try { availability = JSON.parse(rawAvail) } catch {} }
     if (!availability?.[hourIndex]?.[dayIndex]) {
-      return res.status(400).json({ error: 'Ese horario no está disponible' })
+      return res.status(400).json({ error: 'Ese horario no está disponible en la agenda del profesor' })
     }
 
-    // 4. Determine topic
-    const futureFilter = encodeURIComponent(
-      `AND(FIND('${studentId}', ARRAYJOIN({Participants (link)}, ',')) > 0, {Status}='Scheduled')`
-    )
-    const futureSessions = await fetchFromAirtable(
-      'Sessions',
-      `filterByFormula=${futureFilter}&sort[0][field]=Scheduled%20Date%2FTime&sort[0][direction]=asc&maxRecords=1`
-    )
+    const { data: teacherSessions } = await supabase
+      .from('sessions')
+      .select('id, "Scheduled Date/Time", "Is Holiday"')
+      .eq('Teacher', teacherId)
+      .eq('Status', 'Scheduled')
 
+    const conflict = (teacherSessions || []).some((s: any) => {
+      const isHol = s['Is Holiday'] === true || String(s['Is Holiday']).toLowerCase() === 'true'
+      if (isHol) return false
+      const diffMs = Math.abs(new Date(s['Scheduled Date/Time'] || 0).getTime() - sessionDate.getTime())
+      return diffMs < 50 * 60 * 1000
+    })
+    if (conflict) {
+      return res.status(409).json({ error: 'Ese horario ya está ocupado. Elige otro bloque disponible.' })
+    }
+
+    // 4. Determine next Curriculum Topic based on this student's existing sessions
     let topicId: string | null = null
-    const lastFuture = futureSessions.records?.[futureSessions.records.length - 1]
-    if (lastFuture) {
-      const lastTopicId = ((lastFuture.fields['Curriculum Topic'] as string[]) ?? [])[0]
-      if (lastTopicId) {
-        const lastTopic = await fetchAirtableRecord('Curriculum Topics', lastTopicId)
-        const curriculumIds = (lastTopic?.fields?.['Curriculum'] as string[]) ?? []
-        const order = lastTopic?.fields?.['Order'] as number
-        if (curriculumIds[0] && order != null) {
-          const nextTopicsRes = await fetchFromAirtable(
-            'Curriculum Topics',
-            `filterByFormula=${encodeURIComponent(`AND(FIND('${curriculumIds[0]}', ARRAYJOIN({Curriculum}, ',')), {Order} > ${order})`)}&sort[0][field]=Order&sort[0][direction]=asc&maxRecords=1`
-          )
-          topicId = nextTopicsRes.records?.[0]?.id ?? null
+    let topicLabel = 'Sesión Extra (Token)'
+
+    const { data: studentLinks } = await supabase
+      .from('session_participants')
+      .select('Session')
+      .ilike('Student', `%${studentId}%`)
+
+    const studentSessIds = (studentLinks || []).map((r: any) => r.Session).filter(Boolean)
+    if (studentSessIds.length > 0) {
+      const { data: studentSessions } = await supabase
+        .from('sessions')
+        .select('id, "Curriculum Topic", "Status", "Scheduled Date/Time"')
+        .in('id', studentSessIds)
+        .in('Status', ['Scheduled', 'Seen'])
+
+      const { data: allTopics } = await supabase
+        .from('curriculum_topics')
+        .select('id, "Topic Name", "Order", "Curriculum"')
+
+      const generalTopics = (allTopics || [])
+        .filter((t: any) => String(t.Curriculum || '').includes('General English Course') || !t.Curriculum)
+        .sort((a: any, b: any) => parseInt(String(a.Order || '0'), 10) - parseInt(String(b.Order || '0'), 10))
+
+      const topicById = new Map<string, any>(generalTopics.map((t: any) => [t.id, t]))
+      let maxOrderSeenOrScheduled = 0
+
+      for (const sess of (studentSessions || [])) {
+        const rawCt = sess['Curriculum Topic']
+        const ctId = Array.isArray(rawCt) ? rawCt[0] : rawCt
+        if (!ctId) continue
+        const found = topicById.get(ctId)
+        if (found) {
+          const ord = parseInt(String(found.Order || '0'), 10)
+          if (ord > maxOrderSeenOrScheduled) maxOrderSeenOrScheduled = ord
+        } else {
+          const numMatch = String(ctId).match(/(\d+)$/)
+          if (numMatch) {
+            const ord = parseInt(numMatch[1], 10)
+            if (ord > maxOrderSeenOrScheduled) maxOrderSeenOrScheduled = ord
+          }
         }
+      }
+
+      const nextTopic = generalTopics.find((t: any) => parseInt(String(t.Order || '0'), 10) > maxOrderSeenOrScheduled)
+      if (nextTopic) {
+        topicId = nextTopic.id
+        topicLabel = nextTopic['Topic Name'] || topicLabel
       }
     }
 
     // 5. Create new session
+    const studentFirstName = String(student.fields['Full Name'] || student.fields['FullName'] || 'Estudiante').split(' ')[0]
     const newSession = await createAirtableRecord('Sessions', {
+      'Session Name': `Reposición — ${studentFirstName} (${topicLabel})`,
       'Teacher': [teacherId],
       'Scheduled Date/Time': sessionDate.toISOString(),
+      'Duration (minutes)': '60',
+      'Location/Link': (teacher.fields['Meeting Link'] as string) || '',
       'Status': 'Scheduled',
       'Extraordinary Session (Token)': true,
-      ...(topicId ? { 'Curriculum Topic': [topicId] } : {}),
-      ...(isGroup ? { 'Student-Teacher': [stRecord.id] } : {}) // Link to the enrollment unit
+      ...(topicId ? { 'Curriculum Topic': [topicId] } : {})
     })
 
-    // 6. Create Session Participant junctions for ALL students
+    // 6. Create Session Participant junctions & deduct 1 token per participant
     for (const sid of allStudentIds) {
       await createAirtableRecord('Session Participants', {
         'Session': [newSession.id],
         'Student': [sid],
+        'Attendance': 'Scheduled'
       })
 
-      // 7. Deduct token from each student
       const s = await fetchAirtableRecord('Students', sid)
-      const current = (s?.fields?.['Tokens de Reposición'] as number) || 0
+      const current = parseInt(String(s?.fields?.['Tokens de Reposición'] ?? s?.fields?.['Tokens'] ?? 0), 10) || 0
       await patchAirtableRecord('Students', sid, {
-        'Tokens de Reposición': current - 1,
+        'Tokens de Reposición': Math.max(0, current - 1),
       })
     }
 
@@ -125,6 +181,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       ok: true,
       sessionId: newSession.id,
       date: sessionDate.toISOString(),
+      remainingTokens: Math.max(0, tokens - 1)
     })
   } catch (err: any) {
     return res.status(500).json({ error: 'Error al redimir token', detail: err.message })

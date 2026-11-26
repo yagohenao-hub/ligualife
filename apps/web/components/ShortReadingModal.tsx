@@ -13,11 +13,13 @@ import {
   Award
 } from 'lucide-react'
 import { ShortReadingItem } from '@/lib/short-reading-seed'
+import { soundEngine } from '@/lib/sound-effects'
 import styles from '@/styles/ShortReadingModal.module.css'
 
 interface ShortReadingModalProps {
   topicOrder: number
   topicName: string
+  level?: string
   studentName?: string
   onClose: () => void
   onGenerateCustom?: () => Promise<void>
@@ -26,6 +28,7 @@ interface ShortReadingModalProps {
 export function ShortReadingModal({
   topicOrder,
   topicName,
+  level,
   studentName,
   onClose
 }: ShortReadingModalProps) {
@@ -65,6 +68,7 @@ export function ShortReadingModal({
           body: JSON.stringify({
             topicOrder,
             topicName,
+            level,
             studentName,
             forceNew: false
           })
@@ -187,6 +191,7 @@ export function ShortReadingModal({
         body: JSON.stringify({
           topicOrder,
           topicName,
+          level,
           studentName,
           forceNew: true
         })
@@ -204,7 +209,7 @@ export function ShortReadingModal({
         } catch {}
       }
     } catch (err) {
-      alert('Hubo un inconveniente al generar la nueva lectura con IA. Inténtalo de nuevo en unos momentos.')
+      setLimitNotice('Hubo un inconveniente al generar la nueva lectura con IA. Inténtalo de nuevo en unos momentos.')
     } finally {
       setGeneratingAi(false)
     }
@@ -358,6 +363,9 @@ export function ShortReadingModal({
                           onClick={() => {
                             setSelectedAnswer(idx)
                             setShowAnswerResult(true)
+                            if (idx === reading.quickQuestion.correctIndex) {
+                              soundEngine.playRewardChime()
+                            }
                           }}
                         >
                           <span className={styles.optionLetter}>{String.fromCharCode(65 + idx)}</span>

@@ -72,7 +72,7 @@ ENTREGA TU RESPUESTA EXCLUSIVAMENTE EN FORMATO JSON VÁLIDO (sin markdown ni tex
 `
 
   try {
-    const models = ['gemini-2.5-flash-lite', 'gemini-2.0-flash', 'gemini-1.5-flash']
+    const models = ['gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-2.0-flash']
     let rawText = ''
 
     for (const model of models) {
@@ -107,10 +107,10 @@ ENTREGA TU RESPUESTA EXCLUSIVAMENTE EN FORMATO JSON VÁLIDO (sin markdown ni tex
       return res.status(200).json({ reading: fallback, fromInventory: true, fallback: true })
     }
 
-    const cleanJson = rawText
-      .replace(/```json/gi, '')
-      .replace(/```/g, '')
-      .trim()
+    const jsonMatch = rawText.match(/\{[\s\S]*\}/)
+    const cleanJson = jsonMatch
+      ? jsonMatch[0]
+      : rawText.replace(/```json/gi, '').replace(/```/g, '').trim()
 
     const parsed: ShortReadingItem = JSON.parse(cleanJson)
 

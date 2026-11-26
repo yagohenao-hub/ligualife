@@ -1,55 +1,92 @@
 /*
   Celadon Design System & Claymorphism Engine (tm-633-celadon)
-  Integrated into LinguaLife with full Light Mode & Dark Mode
+  Integrated into LinguaLife Brand Manual v2.0 (Obsidian Dark Default + Soft Celadon Light)
 */
 
-/* ── Saleva Pure Dark Tokens directly on :root (Light Mode Removed) ── */
-:root {
-  --canvas: var(--bg-primary, #0a0e17);
-  --plate: var(--surface-1, #141b2d);
-  --plate-2: var(--surface-2, #1b243b);
-  --sunk: #0b0f19;
-  --ink: #f8fafc;
-  --ink-2: #94a3b8;
-  --jade: #10b981;
-  --jade-ink: #34d399;
-  --coral: #f43f5e;
-  --sky: #38bdf8;
-  --amber: #f59e0b;
-  --line: rgba(255, 255, 255, 0.08);
+/* ── Dark Obsidian Tokens (Default) ── */
+:root,
+[data-theme="dark"] {
+  --canvas: var(--bg-primary, #090C10);
+  --plate: var(--bg-card, #131822);
+  --plate-2: #1A2130;
+  --sunk: #0C1018;
+  --ink: #F8FAFC;
+  --ink-2: #94A3B8;
+  --jade: #34D399;
+  --jade-ink: #34D399;
+  --coral: #FF5076;
+  --sky: #1AC1E7;
+  --amber: #FDBA3B;
+  --line: rgba(255, 255, 255, 0.10);
   --bar: 84px;
   --r: 24px;
   --r-sm: 16px;
   --shell: 1180px;
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
 
-  /* Clay & Depth Physics (Saleva Dark Glass) */
-  --clay: 0 16px 36px -12px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  /* Clay & Depth Physics (Obsidian Glass) */
+  --clay: 0 16px 36px -12px rgba(0, 0, 0, 0.62), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   --clay-sm: 0 8px 20px -8px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  --well: inset 0 2px 6px rgba(0, 0, 0, 0.5);
+  --well: inset 0 2px 6px rgba(0, 0, 0, 0.52);
 
   /* Flat Gloss Lighting */
   --gloss: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
-  --gloss-plate: linear-gradient(180deg, #161f33 0%, #121828 100%);
+  --gloss-plate: linear-gradient(180deg, #171E2C 0%, #121722 100%);
   --gloss-down: linear-gradient(180deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.2) 100%);
-  --gloss-jade: linear-gradient(135deg, #10b981 0%, #047857 100%);
-  --gloss-jade-down: linear-gradient(135deg, #047857 0%, #064e3b 100%);
-  --gloss-purple: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
-  --gloss-purple-down: linear-gradient(135deg, #6d28d9 0%, #5b21b6 100%);
-  --gloss-amber: linear-gradient(135deg, #10b981 0%, #047857 100%);
-  --gloss-amber-down: linear-gradient(135deg, #047857 0%, #064e3b 100%);
+  --gloss-jade: linear-gradient(135deg, #1AC1E7 0%, #0EA5C6 100%);
+  --gloss-jade-down: linear-gradient(135deg, #0EA5C6 0%, #0369A1 100%);
+  --gloss-purple: linear-gradient(135deg, #8C31C5 0%, #6D28D9 100%);
+  --gloss-purple-down: linear-gradient(135deg, #6D28D9 0%, #5B21B6 100%);
+  --gloss-amber: linear-gradient(135deg, #FDBA3B 0%, #F59E0B 100%);
+  --gloss-amber-down: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
 
   /* Lips & Lifts */
   --lip: inset 0 1px 0 0 rgba(255, 255, 255, 0.1), inset 0 -1px 0 0 rgba(0, 0, 0, 0.5);
-  --lip-jade: inset 0 1px 0 0 rgba(255, 255, 255, 0.3), inset 0 -1px 0 0 rgba(0, 0, 0, 0.5);
+  --lip-jade: inset 0 1px 0 0 rgba(255, 255, 255, 0.3), inset 0 -1px 0 0 rgba(0, 0, 0, 0.45);
   --lip-purple: inset 0 1px 0 0 rgba(255, 255, 255, 0.3), inset 0 -1px 0 0 rgba(0, 0, 0, 0.5);
-  --lip-amber: inset 0 1px 0 0 rgba(255, 255, 255, 0.3), inset 0 -1px 0 0 rgba(0, 0, 0, 0.5);
+  --lip-amber: inset 0 1px 0 0 rgba(255, 255, 255, 0.35), inset 0 -1px 0 0 rgba(0, 0, 0, 0.4);
   --lift: 0 4px 16px rgba(0, 0, 0, 0.4);
   --lift-hi: 0 8px 24px rgba(0, 0, 0, 0.5);
-  --lift-jade: 0 4px 18px rgba(16, 185, 129, 0.4);
-  --lift-jade-hi: 0 8px 26px rgba(16, 185, 129, 0.5);
-  --lift-purple: 0 4px 18px rgba(139, 92, 246, 0.4);
-  --lift-purple-hi: 0 8px 26px rgba(139, 92, 246, 0.5);
+  --lift-jade: 0 4px 18px rgba(26, 193, 231, 0.36);
+  --lift-jade-hi: 0 8px 26px rgba(26, 193, 231, 0.48);
+  --lift-purple: 0 4px 18px rgba(140, 49, 197, 0.38);
+  --lift-purple-hi: 0 8px 26px rgba(140, 49, 197, 0.48);
+}
+
+/* ── Light Mode Celadon Soft Clay Tokens ── */
+[data-theme="light"] {
+  --canvas: #E8EDF7;
+  --plate: #F3F6FD;
+  --plate-2: #EAF0FA;
+  --sunk: #DDE5F3;
+  --ink: #0F172A;
+  --ink-2: #475569;
+  --jade: #7CCFB0;
+  --jade-ink: #047857;
+  --coral: #FF5076;
+  --sky: #1AC1E7;
+  --amber: #FDBA3B;
+  --line: rgba(20, 32, 56, 0.10);
+
+  --clay: 0 16px 34px -14px rgba(35, 45, 70, 0.14), inset 0 2px 0 rgba(255, 255, 255, 0.92);
+  --clay-sm: 0 8px 18px -8px rgba(35, 45, 70, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  --well: inset 0 2px 6px rgba(35, 45, 70, 0.12);
+
+  --gloss: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(238, 243, 252, 0.8) 100%);
+  --gloss-plate: linear-gradient(180deg, #FFFFFF 0%, #F1F5FC 100%);
+  --gloss-down: linear-gradient(180deg, #DDE5F3 0%, #EAF0FA 100%);
+  --gloss-jade: linear-gradient(135deg, #1AC1E7 0%, #0EA5C6 100%);
+
+  --lip: inset 0 1px 0 0 rgba(255, 255, 255, 0.95), inset 0 -1px 0 0 rgba(35, 45, 70, 0.08);
+  --lift: 0 6px 16px -4px rgba(35, 45, 70, 0.10);
+  --lift-hi: 0 12px 24px -6px rgba(35, 45, 70, 0.15);
+  --lift-jade: 0 6px 18px rgba(26, 193, 231, 0.28);
+  --lift-jade-hi: 0 10px 24px rgba(26, 193, 231, 0.36);
+  --lift-purple: 0 6px 18px rgba(140, 49, 197, 0.26);
+  --lift-purple-hi: 0 10px 24px rgba(140, 49, 197, 0.34);
+}
+
+:root {
 
   /* Specular Sweeps */
   --sheen: linear-gradient(100deg, rgba(255, 255, 255, 0) 36%, rgba(255, 255, 255, 0.18) 48%, rgba(255, 255, 255, 0) 61%);

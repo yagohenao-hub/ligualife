@@ -1,14 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { isColombianHoliday } from '@/lib/holidays'
-import { fetchFromAirtable, createAirtableRecord, patchAirtableRecord } from '@/lib/airtable'
-
-const BASE_ID = process.env.AIRTABLE_BASE_ID ?? 'app9ZtojlxX5FoZ7y'
-const STUDENTS_TABLE = 'tblqzaBBn18txOyLu'
-const TEACHERS_TABLE = 'tblqGY8vCmsFeld7G'
-const SESSIONS_TABLE = 'tbliWEtFm3aJf8NQp'
-const SESSION_PARTICIPANTS_TABLE = 'tblnSKiIdbb3gZxCu'
-const STUDY_GROUPS_TABLE = 'tbloyDVuP8kDiPykS'
-const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY
+import { fetchFromAirtable, fetchAirtableRecord, createAirtableRecord, patchAirtableRecord } from '@/lib/airtable'
 
 const DAYS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom']
 const HOURS = ['6am', '7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', '3pm', '4pm', '5pm', '6pm', '7pm', '8pm']
@@ -29,44 +21,47 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const reqOpts = { headers: { 'Authorization': `Bearer ${AIRTABLE_API_KEY}` } }
-    
-    let targetTeacherId = teacherId;
-    let studentIds = studentId ? [studentId] : [];
-    let availabilityGrid: boolean[][] | null = customAvailability || null;
+    let targetTeacherId = teacherId
+    let studentIds: string[] = studentId ? [studentId] : []
+    let availabilityGrid: boolean[][] | null = customAvailability || null
+    let groupType: string | null = null
 
-    // 1. Fetch Group Info (if applicable)
+    // 1. Fetch Group Info from Supabase (if applicable)
     if (groupId) {
-      const groupRes = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${STUDY_GROUPS_TABLE}/${groupId}`, reqOpts)
-      const group = await groupRes.json()
-      if (!group.fields) throw new Error('Grupo no encontrado')
-      
-      studentIds = group.fields['Students'] || []
+      const group = await fetchAirtableRecord('Study Groups', groupId)
+      if (!group?.fields) throw new Error('Grupo no encontrado en Supabase')
+
+      const rawStudents = group.fields['Students']
+      studentIds = Array.isArray(rawStudents)
+        ? rawStudents
+        : String(rawStudents || '').split(',').map((s: string) => s.trim()).filter(Boolean)
+
       if (!targetTeacherId && group.fields['Primary Teacher']) {
-        targetTeacherId = group.fields['Primary Teacher'][0]
+        targetTeacherId = Array.isArray(group.fields['Primary Teacher'])
+          ? group.fields['Primary Teacher'][0]
+          : String(group.fields['Primary Teacher']).split(',')[0].trim()
       }
+      groupType = (group.fields['Group Type'] as string) || null
     }
 
     if (!targetTeacherId) {
       return res.status(400).json({ error: 'No se definió teacherId ni en la solicitud ni en el grupo.' })
     }
 
-    // 2. Fetch Teacher info
-    const teacherRes = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${TEACHERS_TABLE}/${targetTeacherId}`, reqOpts)
-    const teacher = await teacherRes.json()
-    if (!teacher.fields) throw new Error('Profesor no encontrado en Airtable')
+    // 2. Fetch Teacher info from Supabase
+    const teacher = await fetchAirtableRecord('Teachers', targetTeacherId)
+    if (!teacher?.fields) throw new Error('Profesor no encontrado en Supabase')
 
     // 3. Fallback to first student's availability if none provided
     if (!availabilityGrid && studentIds.length > 0) {
-      const firstStudentRes = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${STUDENTS_TABLE}/${studentIds[0]}`, reqOpts)
-      const firstStudent = await firstStudentRes.json()
-      let availabilityStr = firstStudent.fields['Availability']
-      
+      const firstStudent = await fetchAirtableRecord('Students', studentIds[0])
+      const availabilityStr = firstStudent?.fields?.['Availability']
+
       if (!availabilityStr) {
         return res.status(400).json({ error: 'El estudiante principal no tiene horarios de Availability configurados.' })
       }
       try {
-        availabilityGrid = JSON.parse(availabilityStr)
+        availabilityGrid = typeof availabilityStr === 'string' ? JSON.parse(availabilityStr) : availabilityStr
       } catch {
         return res.status(400).json({ error: 'El formato de Availability del estudiante es inválido.' })
       }
@@ -102,14 +97,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     today.setUTCHours(0, 0, 0, 0)
 
     const generatedDates: { date: Date, isHoliday: boolean }[] = []
-    
-    // Fetch group type for special holiday handling
-    let groupType: string | null = null
-    if (groupId) {
-      const groupRes = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${STUDY_GROUPS_TABLE}/${groupId}`, reqOpts)
-      const groupData = await groupRes.json()
-      groupType = groupData?.fields?.['Group Type']
-    }
 
     for (let w = 0; w < weeksToGenerate; w++) {
       for (const slot of scheduledSlots) {
@@ -139,46 +126,38 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     }
 
-    // 6. Insert into 'Sessions'
-    const newSessions = generatedDates.map(item => {
+    // 6. Sort Curriculum Topics numerically (General English Course) BEFORE assigning
+    const topicsData = await fetchFromAirtable('Curriculum Topics', '')
+    const allTopics: any[] = topicsData.records || []
+    const topics = allTopics
+      .filter((t: any) => String(t.fields?.['Curriculum'] || '').includes('General English Course') || !t.fields?.['Curriculum'])
+      .sort((a: any, b: any) => parseInt(String(a.fields?.['Order'] || '9999'), 10) - parseInt(String(b.fields?.['Order'] || '9999'), 10))
+
+    // Sort generatedDates chronologically so Topic 1 -> Class 1, Topic 2 -> Class 2, etc.
+    generatedDates.sort((a, b) => a.date.getTime() - b.date.getTime())
+
+    // Batch insert sessions
+    let createdSessions: any[] = []
+    let topicIdx = 0
+    for (const item of generatedDates) {
+      const assignedTopic = !item.isHoliday && topicIdx < topics.length ? topics[topicIdx++] : null
       const fields: any = {
+        "Session Name": assignedTopic ? `Tema ${assignedTopic.fields?.['Order'] || topicIdx}: ${assignedTopic.fields?.['Topic Name'] || 'Clase'}` : 'Sesión LinguaLife',
         "Teacher": [targetTeacherId],
         "Scheduled Date/Time": item.date.toISOString(),
-        "Duration (minutes)": 45,
+        "Duration (minutes)": 60,
         "Status": item.isHoliday ? "Canceled" : "Scheduled",
         "Location/Link": teacher.fields['Meeting Link'] || "Link Pendiente",
         "Is Holiday": item.isHoliday
       }
+      if (assignedTopic) fields["Curriculum Topic"] = [assignedTopic.id]
       if (groupId) fields["Study Group"] = [groupId]
-      return { fields }
-    })
 
-    // Batch insert sessions
-    let createdSessions: any[] = []
-    for (const s of newSessions) {
       try {
-        const record = await createAirtableRecord('Sessions', s.fields)
+        const record = await createAirtableRecord('Sessions', fields)
         createdSessions.push(record)
       } catch (e) {
         console.error('Error creating session record:', e)
-      }
-    }
-
-    // 6b. Assign Curriculum Topics to sessions sequentially
-    const topicsData = await fetchFromAirtable('Curriculum Topics', '1=1')
-    const topics: { id: string }[] = topicsData.records || []
-
-    if (topics.length > 0) {
-      const sortedSessions = [...createdSessions].sort((a, b) => {
-        const dateA = new Date(a.fields['Scheduled Date/Time']).getTime()
-        const dateB = new Date(b.fields['Scheduled Date/Time']).getTime()
-        return dateA - dateB
-      })
-
-      for (let i = 0; i < sortedSessions.length && i < topics.length; i++) {
-        await patchAirtableRecord('Sessions', sortedSessions[i].id, {
-          'Curriculum Topic': [topics[i].id]
-        })
       }
     }
 

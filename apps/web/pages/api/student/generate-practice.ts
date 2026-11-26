@@ -1,12 +1,150 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { getTopicSummary } from '@/lib/curriculum-summary';
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+
+function buildTopicPracticeFallback(topicOrder: number | undefined, topicName: string, ldsFormula?: string, commonMistake?: string) {
+  const orderNum = Number(topicOrder) || 1;
+  const cleanTopic = (topicName || 'Gramática & Fluidez').replace(/\s*\([^)]*\)/g, '').trim();
+  const summary = getTopicSummary(orderNum, cleanTopic);
+  const examples = summary.examples && summary.examples.length > 0 ? summary.examples : [];
+  const mistake = summary.commonMistake;
+
+  const maskExample = (sentence: string, idx: number) => {
+    const words = sentence.trim().split(/\s+/);
+    const candidates = words
+      .map((w, i) => ({ raw: w, clean: w.replace(/[.,!?;:'"()]/g, ''), i }))
+      .filter(c => c.i > 0 && c.clean.length >= 3);
+    const pick = candidates[Math.min(candidates.length - 1, idx % Math.max(1, candidates.length))] || { raw: words[0] || 'it', clean: words[0] || 'it', i: 0 };
+    const maskedWords = words.map((w, i) => (i === pick.i ? w.replace(pick.clean, '[___]') : w));
+    return {
+      prompt: maskedWords.join(' '),
+      solution: pick.clean,
+      hint: `Palabra clave (${pick.clean.length} letras)`,
+      explanation: `Patrón de "${cleanTopic}": ${summary.correctMethod}`
+    };
+  };
+
+  const baseSentences = [
+    ...examples.map(e => e.en),
+    ...(ldsFormula ? [`Notice how "${summary.structureBlocks?.[0] || cleanTopic}" shapes natural English flow.`] : []),
+    `In everyday conversations, mastering ${cleanTopic} helps you express ideas accurately.`,
+    `Try building your own real-life sentence following: ${summary.correctMethod}.`
+  ];
+
+  const fillItems = Array.from({ length: 5 }, (_, idx) => {
+    const src = baseSentences[idx % baseSentences.length];
+    const masked = maskExample(src, idx + 1);
+    return {
+      id: `1-${idx + 1}`,
+      prompt: masked.prompt,
+      hint: masked.hint,
+      solution: masked.solution,
+      explanation: masked.explanation
+    };
+  });
+
+  const trapWrong = mistake?.wrong && !mistake.wrong.includes('Traducir literalmente')
+    ? mistake.wrong
+    : `Literal Spanish structure when applying ${cleanTopic}`;
+  const trapCorrect = mistake?.correct && !mistake.correct.includes('Usar la estructura nativa')
+    ? mistake.correct
+    : (examples[0]?.en || summary.correctMethod);
+
+  const trapItems = [
+    {
+      id: '2-1',
+      prompt: `"${trapWrong}"`,
+      hint: 'Aplica el filtro del tema actual',
+      solution: trapCorrect,
+      explanation: mistake?.explanation || commonMistake || `Recuerda: ${summary.concept}`
+    },
+    ...(examples[0] ? [{
+      id: '2-2',
+      prompt: `¿Cómo evitas sonar literal al expresar "${examples[0].es}"?`,
+      hint: summary.structureBlocks?.[0] || 'Orden natural',
+      solution: examples[0].en,
+      explanation: summary.concept
+    }] : []),
+    ...(examples[1] ? [{
+      id: '2-3',
+      prompt: `Corrige la tendencia de traducir palabra por palabra: "${examples[1].es}"`,
+      hint: summary.structureBlocks?.[1] || 'Bloque correcto',
+      solution: examples[1].en,
+      explanation: summary.correctMethod
+    }] : []),
+    {
+      id: '2-4',
+      prompt: `"I am agree to practice ${cleanTopic} every day."`,
+      hint: 'Sin verbo to be con agree',
+      solution: `I agree to practice ${cleanTopic} every day.`,
+      explanation: 'En inglés "agree" es verbo directo, nunca va acompañado de "am/is/are".'
+    },
+    {
+      id: '2-5',
+      prompt: `"Explain me how ${cleanTopic} works in conversation."`,
+      hint: '"Explain" exige preposición "to"',
+      solution: `Explain to me how ${cleanTopic} works in conversation.`,
+      explanation: 'Siempre di "explain to me", nunca "explain me".'
+    }
+  ].slice(0, 5);
+
+  const sprintItems = [
+    ...examples.slice(0, 3).map((ex, i) => ({
+      id: `3-${i + 1}`,
+      prompt: ex.es,
+      hint: `Aplica ${summary.structureBlocks?.[0] || cleanTopic}`,
+      solution: ex.en,
+      explanation: `${summary.concept}`
+    })),
+    {
+      id: '3-4',
+      prompt: `Quiero usar ${cleanTopic} con más seguridad en mis reuniones.`,
+      hint: 'Usa "more confidently"',
+      solution: `I want to use ${cleanTopic} more confidently in my meetings.`,
+      explanation: `Práctica enfocada en ${cleanTopic} (${summary.level}).`
+    },
+    {
+      id: '3-5',
+      prompt: 'Avísame si podemos repasar este patrón otra vez mañana.',
+      hint: 'Usa "Let me know if..."',
+      solution: 'Let me know if we can review this pattern again tomorrow.',
+      explanation: 'Fórmula natural para coordinar seguimiento en inglés.'
+    }
+  ].slice(0, 5);
+
+  return {
+    documentTitle: `Guía de Maestría #${orderNum}: ${cleanTopic}`,
+    topicName: cleanTopic,
+    activities: [
+      {
+        id: 1,
+        title: `Actividad 1: Fill the Pattern (${cleanTopic})`,
+        instruction: 'Completa el espacio [___] con la palabra precisa que mantiene el patrón natural.',
+        items: fillItems
+      },
+      {
+        id: 2,
+        title: 'Actividad 2: Spot the Colombian Trap',
+        instruction: 'Detecta la trampa de traducción literal y transfórmala al inglés nativo.',
+        items: trapItems
+      },
+      {
+        id: 3,
+        title: 'Actividad 3: Reverse Sprint',
+        instruction: `Traduce del español al inglés aplicando: ${summary.correctMethod}`,
+        items: sprintItems
+      }
+    ]
+  };
+}
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { studentName, topicName, ldsFormula, level, commonMistake } = req.body as {
+  const { studentName, topicOrder, topicName, ldsFormula, level, commonMistake } = req.body as {
     studentName?: string;
+    topicOrder?: number;
     topicName?: string;
     ldsFormula?: string;
     level?: string;
@@ -237,156 +375,11 @@ ENTREGA TU RESPUESTA EXCLUSIVAMENTE EN FORMATO JSON VÁLIDO (sin bloques de cód
       }
     }
 
-    // Respaldo pedagógico garantizado de alta calidad si la API externa no responde
-    const cleanTopic = (topicName || 'Gramática & Fluidez').replace(/\s*\([^)]*\)/g, '').trim();
-    const fallbackDoc = {
-      documentTitle: `Guía Pedagógica: ${cleanTopic}`,
-      topicName: cleanTopic,
-      activities: [
-        {
-          id: 1,
-          title: 'Actividad 1: Fill the Pattern (Completar la Estructura)',
-          instruction: 'Completa el espacio [___] aplicando la forma correcta del patrón estudiado.',
-          items: [
-            {
-              id: '1-1',
-              prompt: `When communicating clearly in English, you [___] remember the core subject.`,
-              hint: 'Verbo modal de recomendación (deberías)',
-              solution: 'should',
-              explanation: 'Uso de "should" para expresar recomendación natural.'
-            },
-            {
-              id: '1-2',
-              prompt: `She [___] to improve her daily speaking confidence since last month.`,
-              hint: 'Presente perfecto continuo con She',
-              solution: 'has been trying',
-              explanation: 'Acción que comenzó en el pasado y sigue vigente hoy.'
-            },
-            {
-              id: '1-3',
-              prompt: `Did you [___] about the main takeaway in our last session?`,
-              hint: 'Forma base del verbo tras el auxiliar Did',
-              solution: 'think',
-              explanation: 'Con el auxiliar en pasado "Did", el verbo principal se mantiene en forma base.'
-            },
-            {
-              id: '1-4',
-              prompt: `If we practice consistently every day, we [___] achieve native flow.`,
-              hint: 'Primer condicional (futuro)',
-              solution: 'will',
-              explanation: 'Cláusula condicional presente + resultado futuro con will.'
-            },
-            {
-              id: '1-5',
-              prompt: `They [___] ready for the presentation before the call started.`,
-              hint: 'Pasado del verbo To Be en plural',
-              solution: 'were',
-              explanation: 'Concordancia en pasado para They (were).'
-            }
-          ]
-        },
-        {
-          id: 2,
-          title: 'Actividad 2: Spot the Latin Trap (Corregir Vicios de Traducción)',
-          instruction: 'Identifica el error típico de traducir palabra por palabra y cámbialo por inglés nativo.',
-          items: [
-            {
-              id: '2-1',
-              prompt: `"I am agree with your perspective."`,
-              hint: '"Agree" ya es un verbo de acción.',
-              solution: 'I agree with your perspective.',
-              explanation: 'En inglés nunca se dice "am agree", se conjuga directamente "I agree".'
-            },
-            {
-              id: '2-2',
-              prompt: `"I have 28 years old."`,
-              hint: 'En inglés no "tienes" la edad, sino que la "eres".',
-              solution: 'I am 28 years old.',
-              explanation: 'La edad siempre se formula con el verbo To Be.'
-            },
-            {
-              id: '2-3',
-              prompt: `"Explain me how this works."`,
-              hint: 'El verbo "explain" requiere preposición "to" ante la persona.',
-              solution: 'Explain to me how this works. / Explain how this works to me.',
-              explanation: '"Explain" no acepta objeto indirecto pegado sin preposición.'
-            },
-            {
-              id: '2-4',
-              prompt: `"People is very supportive here."`,
-              hint: '"People" es un sustantivo plural.',
-              solution: 'People are very supportive here.',
-              explanation: 'Requiere verbo en plural "are".'
-            },
-            {
-              id: '2-5',
-              prompt: `"I look forward to hear your thoughts."`,
-              hint: 'Tras la preposición de "look forward to", el verbo va en -ing.',
-              solution: 'I look forward to hearing your thoughts.',
-              explanation: '"To" actúa como preposición fija, exigiendo forma gerundio -ing.'
-            }
-          ]
-        },
-        {
-          id: 3,
-          title: 'Actividad 3: Reverse Sprint (Traducción Ágil & Natural)',
-          instruction: 'Pasa la idea del español al inglés más fluido sin rodeos literales.',
-          items: [
-            {
-              id: '3-1',
-              prompt: 'Te confirmo los detalles en cuanto me confirmen a mí.',
-              hint: 'Usa "as soon as"',
-              solution: "I'll confirm the details as soon as they confirm with me.",
-              explanation: 'Futuro principal + presente en la oración subordinada con "as soon as".'
-            },
-            {
-              id: '3-2',
-              prompt: 'Llevamos semanas trabajando en este objetivo.',
-              hint: 'Present Perfect Continuous con "for"',
-              solution: "We've been working on this goal for weeks.",
-              explanation: 'Uso de "for" para expresar duración acumulada.'
-            },
-            {
-              id: '3-3',
-              prompt: 'Deberías haberme avisado antes.',
-              hint: 'Modal de arrepentimiento "should have"',
-              solution: 'You should have let me know earlier.',
-              explanation: '"Should have + participio" expresa reproche o acción no realizada.'
-            },
-            {
-              id: '3-4',
-              prompt: 'No vale la pena preocuparse por pequeñeces.',
-              hint: 'Expresión idiomática con "worth"',
-              solution: "It's not worth worrying about small details.",
-              explanation: '"Worth + -ing" es la expresión idiomática nativa.'
-            },
-            {
-              id: '3-5',
-              prompt: 'Avísame si necesitas cualquier cosa adicional.',
-              hint: 'Phrasal idiomático con "let me know"',
-              solution: 'Let me know if you need anything else.',
-              explanation: 'Fórmula de cierre estándar y profesional en conversaciones reales.'
-            }
-          ]
-        }
-      ]
-    };
-
+    // Respaldo pedagógico específico del tema si la API externa no responde
+    const fallbackDoc = buildTopicPracticeFallback(topicOrder, topicName, ldsFormula, commonMistake);
     return res.status(200).json(fallbackDoc);
   } catch (err: any) {
-    return res.status(200).json({
-      documentTitle: `Guía de Maestría: ${topicName || 'Tema'}`,
-      topicName: topicName || 'Tema',
-      activities: [
-        {
-          id: 1,
-          title: 'Actividad 1: Fill the Pattern',
-          instruction: 'Completa con la forma adecuada.',
-          items: [
-            { id: '1-1', prompt: 'I [___] ready for the test.', hint: 'Verbo to be', solution: 'am', explanation: 'Concordancia con I.' }
-          ]
-        }
-      ]
-    });
+    const safeDoc = buildTopicPracticeFallback(topicOrder, topicName || 'Tema', ldsFormula, commonMistake);
+    return res.status(200).json(safeDoc);
   }
 }

@@ -1571,9 +1571,9 @@ export const CURRICULUM_SUMMARY_CATALOG: Record<number, TopicSummaryData> = {
     "phase": "Negotiator",
     "level": "B2 - Upper Intermediate",
     "concept": "Triunfa en entrevistas internacionales: domina la metodología STAR para responder preguntas complejas con impacto ejecutivo.",
-    "correctMethod": "Método STAR: Situation (Pasado) $\rightarrow$ Task (Objetivo) $\rightarrow$ Action (Decisiones) $\rightarrow$ Result (Métricas) — Estructura ejecutiva para responder preguntas conductuales difíciles en entrevistas laborales en inglés.",
+    "correctMethod": "Método STAR: Situation (Pasado) → Task (Objetivo) → Action (Decisiones) → Result (Métricas) — Estructura ejecutiva para responder preguntas conductuales difíciles en entrevistas laborales en inglés.",
     "structureBlocks": [
-      "Método STAR: Situation (Pasado) $\rightarrow$ Task (Objetivo) $\rightarrow$ Action (Decisiones) $\rightarrow$ Result (Métricas)"
+      "Método STAR: Situation (Pasado) → Task (Objetivo) → Action (Decisiones) → Result (Métricas)"
     ],
     "examples": [
       {
@@ -1625,24 +1625,24 @@ export const CURRICULUM_SUMMARY_CATALOG: Record<number, TopicSummaryData> = {
     "phase": "Negotiator",
     "level": "B2 - Upper Intermediate",
     "concept": "Aprende a hablar sin red de seguridad: la técnica PREP para estructurar intervenciones improvisadas con total soltura.",
-    "correctMethod": "Estructura PREP: Point (Tesis) $\rightarrow$ Reason (Por qué) $\rightarrow$ Example (Caso) $\rightarrow$ Point (Conclusión) — Improvisación estructurada: Cómo hablar con seguridad cuando te piden tu opinión sin aviso previo.",
+    "correctMethod": "Estructura PREP: Point (Tesis) → Reason (Por qué) → Example (Caso) → Point (Conclusión) — Improvisación estructurada: Cómo hablar con seguridad cuando te piden tu opinión sin aviso previo.",
     "structureBlocks": [
-      "Estructura PREP: Point (Tesis) $\rightarrow$ Reason (Por qué) $\rightarrow$ Example (Caso) $\rightarrow$ Point (Conclusión)"
+      "Estructura PREP: Point (Tesis) → Reason (Por qué) → Example (Caso) → Point (Conclusión)"
     ],
     "examples": [
       {
-        "en": "Natural phrasing for Impromptu Speaking (Speaking on the Spot).",
-        "es": "Expresión natural para comunicar Impromptu Speaking (Speaking on the Spot) con confianza."
+        "en": "The main point I'd highlight is scalability; because demand peaks fast, our cloud setup adapts automatically.",
+        "es": "El punto principal que destacaría es la escalabilidad; porque la demanda sube rápido, nuestro sistema se adapta solo."
       },
       {
-        "en": "Practice building your own thought using this structure.",
-        "es": "Practica creando tu propia oración con esta estructura comunicativa."
+        "en": "For instance, last quarter we cut response times in half — which brings me back to why simplicity wins.",
+        "es": "Por ejemplo, el trimestre pasado redujimos los tiempos a la mitad, lo cual refuerza por qué lo simple gana."
       }
     ],
     "commonMistake": {
-      "explanation": "Rellenar silencios con titubeos en español (\"ehhh\", \"cómo se dice\") en lugar de usar conectores puente.",
-      "wrong": "ehhh",
-      "correct": "cómo se dice"
+      "explanation": "Rellenar silencios con titubeos en español (\"ehhh\", \"cómo se dice\") en lugar de usar conectores puente en inglés.",
+      "wrong": "Ehhh... cómo se dice... I think it is good.",
+      "correct": "That's a great point — the way I see it, the key advantage is..."
     }
   },
   "59": {
@@ -1651,9 +1651,9 @@ export const CURRICULUM_SUMMARY_CATALOG: Record<number, TopicSummaryData> = {
     "phase": "Negotiator",
     "level": "B2 - Upper Intermediate",
     "concept": "Ensayo general antes de la graduación: pule cada detalle de tu presentación ejecutiva final con tu profesor.",
-    "correctMethod": "Estructura de Presentación Ejecutiva: Hook $\rightarrow$ Problem $\rightarrow$ Solution $\rightarrow$ Call to Action — Ensayo general de la presentación final: Pulido milimétrico de pronunciación, ritmo y lenguaje corporal.",
+    "correctMethod": "Estructura de Presentación Ejecutiva: Hook → Problem → Solution → Call to Action — Ensayo general de la presentación final: Pulido milimétrico de pronunciación, ritmo y lenguaje corporal.",
     "structureBlocks": [
-      "Estructura de Presentación Ejecutiva: Hook $\rightarrow$ Problem $\rightarrow$ Solution $\rightarrow$ Call to Action"
+      "Estructura de Presentación Ejecutiva: Hook → Problem → Solution → Call to Action"
     ],
     "examples": [
       {
@@ -1692,9 +1692,9 @@ export const CURRICULUM_SUMMARY_CATALOG: Record<number, TopicSummaryData> = {
       }
     ],
     "commonMistake": {
-      "explanation": "N/A (Foco en celebración, fluidez espontánea y autoevaluación de progreso).",
-      "wrong": "Traducir literalmente desde el español",
-      "correct": "Usar la estructura nativa en inglés"
+      "explanation": "Quedarse en respuestas memorizadas o traducciones rígidas durante un debate abierto, olvidando conectar ideas con fluidez espontánea.",
+      "wrong": "For me, the project is very good because yes.",
+      "correct": "From my perspective, this milestone reflects steady progress across every stage."
     }
   }
 }

@@ -1,7 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-
-const BASE_ID = process.env.AIRTABLE_BASE_ID!
-const API_KEY = process.env.AIRTABLE_API_KEY!
+import { patchAirtableRecord } from '@/lib/airtable'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
@@ -16,23 +14,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const url = `https://api.airtable.com/v0/${BASE_ID}/Teachers/${teacherId}`
-    const patchRes = await fetch(url, {
-      method: 'PATCH',
-      headers: {
-        Authorization: `Bearer ${API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        fields: {
-          Availability: availability,
-        },
-      }),
+    const serialized = typeof availability === 'string' ? availability : JSON.stringify(availability)
+    const updated = await patchAirtableRecord('Teachers', teacherId, {
+      Availability: serialized,
     })
 
-    if (!patchRes.ok) {
-      const err = await patchRes.json()
-      return res.status(patchRes.status).json({ error: 'Airtable error', detail: err })
+    if (!updated) {
+      return res.status(404).json({ error: 'Profesor no encontrado' })
     }
 
     return res.status(200).json({ ok: true })

@@ -114,12 +114,12 @@ export const VocabReadingModal: React.FC<Props> = ({
         {/* Header */}
         <div className={styles.modalHeader}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-            <div style={{ background: 'rgba(16, 185, 129, 0.15)', padding: '0.45rem', borderRadius: '10px', color: '#34d399' }}>
+            <div style={{ background: 'rgba(52, 211, 153, 0.16)', padding: '0.45rem', borderRadius: '10px', color: 'var(--accent-green, #34D399)' }}>
               <Volume2 size={20} />
             </div>
             <div>
-              <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>Short Reading en Contexto</h2>
-              <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
+              <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)' }}>Short Reading en Contexto</h2>
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
                 {categoryTitle} • {reading.wordCount} palabras
               </span>
             </div>
@@ -132,26 +132,26 @@ export const VocabReadingModal: React.FC<Props> = ({
         {/* Content */}
         <div style={{ padding: '1.25rem', overflowY: 'auto', maxHeight: '72vh' }}>
           {/* Audio Controls Bar */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', background: 'rgba(255,255,255,0.03)', padding: '0.65rem 1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', background: 'var(--bg-secondary)', padding: '0.65rem 1rem', borderRadius: '12px', border: '1px solid var(--surface-border)' }}>
             <div>
-              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#f8fafc' }}>
+              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-primary)' }}>
                 {reading.title}
               </h3>
-              <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
                 Micro-lectura de fijación natural
               </span>
             </div>
 
             <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
-              <div style={{ display: 'inline-flex', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', padding: '0.15rem', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <div style={{ display: 'inline-flex', background: 'var(--surface-1)', borderRadius: '8px', padding: '0.15rem', border: '1px solid var(--surface-border)' }}>
                 {([0.5, 0.75, 1.0] as const).map(spd => (
                   <button
                     key={spd}
                     type="button"
                     onClick={() => handleSpeedChange(spd)}
                     style={{
-                      background: playbackSpeed === spd ? '#38bdf8' : 'transparent',
-                      color: playbackSpeed === spd ? '#0f172a' : '#cbd5e1',
+                      background: playbackSpeed === spd ? 'var(--brand-cyan, #1AC1E7)' : 'transparent',
+                      color: playbackSpeed === spd ? '#090C10' : 'var(--text-secondary)',
                       border: 'none',
                       borderRadius: '6px',
                       padding: '0.2rem 0.5rem',
@@ -183,12 +183,12 @@ export const VocabReadingModal: React.FC<Props> = ({
 
           {/* Reading Paragraph */}
           <div className={styles.readingStoryBox}>
-            <p style={{ margin: 0, fontSize: '1.1rem', lineHeight: 1.7, color: '#f1f5f9', fontWeight: 400 }}>
+            <p style={{ margin: 0, fontSize: '1.1rem', lineHeight: 1.7, color: 'var(--text-primary)', fontWeight: 400 }}>
               {renderHighlightedText(reading.storyEn, reading.highlightWords)}
             </p>
 
             {showSpanish && (
-              <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px dashed rgba(255,255,255,0.1)', color: '#94a3b8', fontSize: '0.95rem', lineHeight: 1.6, fontStyle: 'italic' }}>
+              <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px dashed var(--surface-border)', color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: 1.6, fontStyle: 'italic' }}>
                 {reading.storyEs}
               </div>
             )}
@@ -196,22 +196,22 @@ export const VocabReadingModal: React.FC<Props> = ({
 
           {/* Target Words Badges */}
           <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
-            <span style={{ fontSize: '0.75rem', color: '#a1a1aa', fontWeight: 700 }}>Palabras integradas:</span>
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 700 }}>Palabras integradas:</span>
             {reading.highlightWords.map((w, idx) => (
-              <span key={idx} style={{ fontSize: '0.75rem', background: 'rgba(56, 189, 248, 0.1)', color: '#38bdf8', padding: '0.2rem 0.5rem', borderRadius: '6px', border: '1px solid rgba(56, 189, 248, 0.2)', fontWeight: 700 }}>
+              <span key={idx} style={{ fontSize: '0.75rem', background: 'rgba(26, 193, 231, 0.14)', color: 'var(--brand-cyan, #1AC1E7)', padding: '0.2rem 0.5rem', borderRadius: '6px', border: '1px solid rgba(26, 193, 231, 0.25)', fontWeight: 700 }}>
                 {w}
               </span>
             ))}
           </div>
 
           {/* Interactive Comprehension Question */}
-          <div style={{ marginTop: '1.5rem', background: 'rgba(255,255,255,0.02)', padding: '1.1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#fbbf24', fontSize: '0.85rem', fontWeight: 700, marginBottom: '0.5rem' }}>
+          <div style={{ marginTop: '1.5rem', background: 'var(--bg-secondary)', padding: '1.1rem', borderRadius: '12px', border: '1px solid var(--surface-border)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--brand-yellow, #FDBA3B)', fontSize: '0.85rem', fontWeight: 700, marginBottom: '0.5rem' }}>
               <HelpCircle size={16} />
               <span>Pregunta de Comprensión y Uso en Contexto</span>
             </div>
 
-            <p style={{ fontSize: '0.95rem', fontWeight: 600, color: '#ffffff', margin: '0 0 0.85rem' }}>
+            <p style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 0.85rem' }}>
               {reading.comprehensionQuestion.question}
             </p>
 
@@ -234,19 +234,19 @@ export const VocabReadingModal: React.FC<Props> = ({
                     disabled={showResult}
                   >
                     <span>{opt}</span>
-                    {showResult && isCorrectOption && <CheckCircle2 size={16} color="#34d399" />}
-                    {showResult && isSelected && !isCorrectOption && <AlertCircle size={16} color="#f87171" />}
+                    {showResult && isCorrectOption && <CheckCircle2 size={16} color="var(--accent-green, #34D399)" />}
+                    {showResult && isSelected && !isCorrectOption && <AlertCircle size={16} color="var(--brand-pink, #FF5076)" />}
                   </button>
                 );
               })}
             </div>
 
             {showResult && (
-              <div style={{ marginTop: '0.85rem', padding: '0.7rem 0.9rem', borderRadius: '8px', background: isCorrect ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)', border: `1px solid ${isCorrect ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'}` }}>
-                <p style={{ margin: 0, fontSize: '0.88rem', color: isCorrect ? '#34d399' : '#f87171', fontWeight: 700 }}>
+              <div style={{ marginTop: '0.85rem', padding: '0.7rem 0.9rem', borderRadius: '8px', background: isCorrect ? 'rgba(52, 211, 153, 0.12)' : 'rgba(255, 80, 118, 0.12)', border: `1px solid ${isCorrect ? 'rgba(52, 211, 153, 0.35)' : 'rgba(255, 80, 118, 0.35)'}` }}>
+                <p style={{ margin: 0, fontSize: '0.88rem', color: isCorrect ? 'var(--accent-green, #34D399)' : 'var(--brand-pink, #FF5076)', fontWeight: 700 }}>
                   {isCorrect ? '¡Correcto!' : 'Respuesta a reforzar:'}
                 </p>
-                <p style={{ margin: '0.2rem 0 0', fontSize: '0.82rem', color: '#cbd5e1' }}>
+                <p style={{ margin: '0.2rem 0 0', fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
                   {reading.comprehensionQuestion.explanation}
                 </p>
               </div>
@@ -256,7 +256,7 @@ export const VocabReadingModal: React.FC<Props> = ({
 
         {/* Footer */}
         <div className={styles.modalFooter}>
-          <button onClick={onClose} className={styles.modalNavBtn} style={{ background: '#3b82f6', color: '#ffffff', fontWeight: 800 }}>
+          <button onClick={onClose} className={styles.modalNavBtn} style={{ background: 'var(--brand-cyan, #1AC1E7)', color: '#090C10', borderColor: 'transparent', fontWeight: 800 }}>
             Cerrar Lectura
           </button>
         </div>

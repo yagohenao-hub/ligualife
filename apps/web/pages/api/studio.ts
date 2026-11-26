@@ -50,21 +50,30 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const weekEnd = new Date(weekStart)
     weekEnd.setDate(weekStart.getDate() + 7)
 
-    const teacherFilter = `FIND('${teacherName}', ARRAYJOIN({Teacher}, ',')) > 0`
-    
-    // Month stats filter
-    const monthFormula = `AND(${teacherFilter}, IS_AFTER({Scheduled Date/Time}, '${monthStart}'), IS_BEFORE({Scheduled Date/Time}, '${monthEnd}'))`
-    
-    // Week sessions filter for the calendar
-    const weekFormula = `AND(${teacherFilter}, IS_AFTER({Scheduled Date/Time}, '${weekStart.toISOString()}'), IS_BEFORE({Scheduled Date/Time}, '${weekEnd.toISOString()}'))`
+    const teacherFilter = `OR(FIND('${teacherId}', ARRAYJOIN({Teacher}, ',')) > 0, FIND('${teacherName}', ARRAYJOIN({Teacher}, ',')) > 0)`
 
-    const [monthData, weekData] = await Promise.all([
-      fetchFromAirtable('Sessions', `filterByFormula=${encodeURIComponent(monthFormula)}&maxRecords=100`),
-      fetchFromAirtable('Sessions', `filterByFormula=${encodeURIComponent(weekFormula)}&maxRecords=100`)
-    ])
+    const allTeacherSessionsRes = await fetchFromAirtable('Sessions', `filterByFormula=${encodeURIComponent(`FIND('${teacherId}', ARRAYJOIN({Teacher}, ',')) > 0`)}`)
+    let teacherRecords = allTeacherSessionsRes.records || []
+    if (teacherRecords.length === 0 && teacherName) {
+      const byName = await fetchFromAirtable('Sessions', `filterByFormula=${encodeURIComponent(`FIND('${teacherName}', ARRAYJOIN({Teacher}, ',')) > 0`)}`)
+      teacherRecords = byName.records || []
+    }
 
-    const monthRecords = monthData.records || []
-    const weekRecords = weekData.records || []
+    const monthStartMs = new Date(`${monthStart}T00:00:00Z`).getTime()
+    const monthEndMs = new Date(`${monthEnd}T00:00:00Z`).getTime()
+    const weekStartMs = weekStart.getTime()
+    const weekEndMs = weekEnd.getTime()
+
+    const monthRecords = teacherRecords.filter((r: any) => {
+      const t = new Date(r.fields['Scheduled Date/Time'] || 0).getTime()
+      return t >= monthStartMs && t < monthEndMs
+    })
+    const weekRecords = teacherRecords.filter((r: any) => {
+      const t = new Date(r.fields['Scheduled Date/Time'] || 0).getTime()
+      return t >= weekStartMs && t < weekEndMs
+    })
+
+    const parseBool = (val: any) => val === true || String(val).toLowerCase() === 'true'
 
     let earnedCOP = 0
     let projectedCOP = 0
@@ -96,11 +105,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const sessionDetails = weekRecords.map((r: any) => ({
       id: r.id,
       date: r.fields['Scheduled Date/Time'],
-      isExtra: !!r.fields['Extraordinary Session (Token)'],
+      isExtra: parseBool(r.fields['Extraordinary Session (Token)']),
       status: r.fields['Status'],
-      isHoliday: !!r.fields['Is Holiday'],
-      holidayConfirmedTeacher: !!r.fields['Holiday Confirmed (Teacher)'],
-      holidayConfirmedStudent: !!r.fields['Holiday Confirmed (Student)']
+      isHoliday: parseBool(r.fields['Is Holiday']),
+      holidayConfirmedTeacher: parseBool(r.fields['Holiday Confirmed (Teacher)']),
+      holidayConfirmedStudent: parseBool(r.fields['Holiday Confirmed (Student)'])
     }))
 
     // Unique participant junction IDs for Mis Alumnos

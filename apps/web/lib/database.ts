@@ -46,14 +46,38 @@ function formatRecord(row: any): any {
   // Aliases for frontend compatibility
   if (row['Full Name']) { fields['FullName'] = row['Full Name']; fields['Name'] = row['Full Name']; }
   if (row['Name']) { fields['FullName'] = row['Name']; fields['Full Name'] = row['Name']; }
-  if (row['Tokens de Reposición']) { fields['Tokens'] = row['Tokens de Reposición']; }
+  if (row['Error Pattern'] && !fields['Pattern Name']) { fields['Pattern Name'] = row['Error Pattern']; }
+  if (row['Tokens de Reposición'] !== undefined && row['Tokens de Reposición'] !== null && row['Tokens de Reposición'] !== '') {
+    const parsedTok = parseInt(String(row['Tokens de Reposición']), 10)
+    const tokNum = isNaN(parsedTok) ? 0 : parsedTok
+    fields['Tokens'] = tokNum
+    fields['Tokens de Reposición'] = tokNum
+  }
+  const rawClasses = row['Classes Remaining'] ?? row['ClassesRemaining']
+  if (rawClasses !== undefined && rawClasses !== null && rawClasses !== '') {
+    const parsedClasses = parseInt(String(rawClasses), 10)
+    if (!isNaN(parsedClasses)) {
+      fields['Classes Remaining'] = parsedClasses
+      fields['ClassesRemaining'] = parsedClasses
+    }
+  }
+  if (row['Is Holiday'] !== undefined && row['Is Holiday'] !== null) {
+    fields['Is Holiday'] = row['Is Holiday'] === true || String(row['Is Holiday']).toLowerCase() === 'true'
+  }
+  if (row['Order'] !== undefined && row['Order'] !== null && /^\d+$/.test(String(row['Order']).trim())) {
+    fields['Order'] = parseInt(String(row['Order']).trim(), 10)
+  }
 
   // Array formatting for relational fields to support frontend assumptions
   if (row['Teacher'] && !Array.isArray(row['Teacher'])) {
-    fields['Teacher'] = typeof row['Teacher'] === 'string' && row['Teacher'].includes(',') ? row['Teacher'].split(',') : [row['Teacher']]
+    fields['Teacher'] = typeof row['Teacher'] === 'string' && row['Teacher'].includes(',')
+      ? row['Teacher'].split(',').map((s: string) => s.trim()).filter(Boolean)
+      : [row['Teacher']]
   }
   if (row['Student'] && !Array.isArray(row['Student'])) {
-    fields['Student'] = typeof row['Student'] === 'string' && row['Student'].includes(',') ? row['Student'].split(',') : [row['Student']]
+    fields['Student'] = typeof row['Student'] === 'string' && row['Student'].includes(',')
+      ? row['Student'].split(',').map((s: string) => s.trim()).filter(Boolean)
+      : [row['Student']]
   }
   if (row['Session'] && !Array.isArray(row['Session'])) fields['Session'] = [row['Session']]
   if (row['Curriculum Topic']) {
@@ -71,63 +95,112 @@ function formatRecord(row: any): any {
   }
 }
 
+function compareNumeric(val: any, op: string, target: number): boolean {
+  const num = parseFloat(String(val ?? ''))
+  if (isNaN(num)) return false
+  if (op === '=') return num === target
+  if (op === '!=') return num !== target
+  if (op === '>') return num > target
+  if (op === '>=') return num >= target
+  if (op === '<') return num < target
+  if (op === '<=') return num <= target
+  return false
+}
+
 export async function fetchFromDB(table: string, params = ''): Promise<any> {
   const dbTable = getTableName(table)
   try {
     let query = supabase.from(dbTable).select('*')
 
-    const decoded = decodeURIComponent(params)
+    let formula = ''
+    let sortField = ''
+    let sortDir: 'asc' | 'desc' = 'asc'
+    let maxRecords = 0
+
+    const trimmedParams = (params || '').replace(/^\?/, '')
+    if (trimmedParams.includes('filterByFormula=') || trimmedParams.includes('sort[') || trimmedParams.includes('maxRecords=')) {
+      const sp = new URLSearchParams(trimmedParams)
+      formula = sp.get('filterByFormula') || ''
+      sortField = sp.get('sort[0][field]') || ''
+      sortDir = (sp.get('sort[0][direction]') || 'asc').toLowerCase() === 'desc' ? 'desc' : 'asc'
+      const mr = parseInt(sp.get('maxRecords') || '0', 10)
+      if (!isNaN(mr) && mr > 0) maxRecords = mr
+    } else {
+      formula = decodeURIComponent(trimmedParams)
+    }
 
     // Formula parsing for query parameters
-    const statusMatch = decoded.match(/\{Status\}\s*=\s*'([^']*)'/) || decoded.match(/\{Status\}\s*=\s*"([^"]*)"/)
+    const statusMatch = formula.match(/\{Status\}\s*=\s*'([^']*)'/) || formula.match(/\{Status\}\s*=\s*"([^"]*)"/)
     if (statusMatch) {
       query = query.eq('Status', statusMatch[1])
     }
 
-    const pcStatusMatch = decoded.match(/\{Pocket Coach Status\}\s*=\s*'([^']*)'/) || decoded.match(/\{Pocket Coach Status\}\s*=\s*"([^"]*)"/)
+    const statusNeqMatch = formula.match(/\{Status\}\s*!=\s*'([^']*)'/) || formula.match(/\{Status\}\s*!=\s*"([^"]*)"/)
+    if (statusNeqMatch) {
+      query = query.neq('Status', statusNeqMatch[1])
+    }
+
+    const pcStatusMatch = formula.match(/\{Pocket Coach Status\}\s*=\s*'([^']*)'/) || formula.match(/\{Pocket Coach Status\}\s*=\s*"([^"]*)"/)
     if (pcStatusMatch) {
       query = query.eq('Pocket Coach Status', pcStatusMatch[1])
     }
 
-    const pinMatch = decoded.match(/\{PIN\}\s*=\s*'([^']*)'/) || decoded.match(/\{PIN\}\s*=\s*"([^"]*)"/)
+    const pinMatch = formula.match(/\{PIN\}\s*=\s*'([^']*)'/) || formula.match(/\{PIN\}\s*=\s*"([^"]*)"/)
     if (pinMatch) {
       query = query.ilike('PIN', pinMatch[1])
     }
 
-    const emailMatch = decoded.match(/\{Email\}\s*=\s*'([^']*)'/)
+    const emailMatch = formula.match(/\{Email\}\s*=\s*'([^']*)'/) || formula.match(/\{Email\}\s*=\s*"([^"]*)"/)
     if (emailMatch) {
-      query = query.eq('Email', emailMatch[1])
+      query = query.ilike('Email', emailMatch[1].trim())
     }
 
-    const phoneMatch = decoded.match(/\{Phone\}\s*=\s*'([^']*)'/) || decoded.match(/\{Phone\}\s*=\s*"([^"]*)"/)
+    const phoneMatch = formula.match(/\{Phone\}\s*=\s*'([^']*)'/) || formula.match(/\{Phone\}\s*=\s*"([^"]*)"/)
     if (phoneMatch) {
       query = query.eq('Phone', phoneMatch[1])
     }
 
-    const findMatch = decoded.match(/FIND\(\s*'([^']+)'\s*,\s*\{([^}]+)\}\s*\)/);
-    if (findMatch) {
-      const targetVal = findMatch[1];
-      const targetCol = findMatch[2];
-      query = query.ilike(targetCol, `%${targetVal}%`);
+    for (const eqColMatch of formula.matchAll(/\{(Teacher|Student|Session|Primary Teacher)\}\s*=\s*'([^']+)'/g)) {
+      query = query.ilike(eqColMatch[1], `%${eqColMatch[2]}%`)
+    }
+
+    const findMatches = Array.from(formula.matchAll(/FIND\(\s*'([^']+)'\s*,\s*(?:ARRAYJOIN\(\s*)?\{([^}]+)\}(?:\s*,\s*'[^']*'\s*\))?\s*\)/g))
+    if (findMatches.length > 0) {
+      for (const fm of findMatches) {
+        const targetVal = fm[1]
+        const targetCol = fm[2]
+        query = query.ilike(targetCol, `%${targetVal}%`)
+      }
     } else {
-      const simpleFind = decoded.match(/FIND\(\s*'([^']+)'/);
+      const simpleFind = formula.match(/FIND\(\s*'([^']+)'/)
       if (simpleFind) {
-        const targetId = simpleFind[1];
+        const targetId = simpleFind[1]
         if (dbTable === 'session_participants') {
-          query = query.eq('Student', targetId)
+          query = query.ilike('Student', `%${targetId}%`)
         } else if (dbTable === 'student_teacher') {
-          query = query.eq('Student', targetId)
+          query = query.ilike('Student', `%${targetId}%`)
         } else if (dbTable === 'students') {
           query = query.ilike('Phone', `%${targetId}%`)
         }
       }
     }
 
-    if (decoded.includes('RECORD_ID()')) {
-      const ids = Array.from(decoded.matchAll(/RECORD_ID\(\)\s*=\s*'([^']*)'/g)).map(m => m[1])
-      if (ids.length > 0) {
-        query = query.in('id', ids)
+    if (formula.includes('RECORD_ID()')) {
+      const eqIds = Array.from(formula.matchAll(/(?<!NOT\()RECORD_ID\(\)\s*=\s*'([^']*)'/g)).map(m => m[1])
+      if (eqIds.length > 0) {
+        query = query.in('id', eqIds)
       }
+      const neqIds = Array.from(formula.matchAll(/RECORD_ID\(\)\s*!=\s*'([^']*)'/g)).map(m => m[1])
+      for (const nid of neqIds) {
+        query = query.neq('id', nid)
+      }
+    }
+
+    for (const afterMatch of formula.matchAll(/IS_AFTER\(\s*\{([^}]+)\}\s*,\s*'([^']+)'\s*\)/g)) {
+      query = query.gt(afterMatch[1], afterMatch[2])
+    }
+    for (const beforeMatch of formula.matchAll(/IS_BEFORE\(\s*\{([^}]+)\}\s*,\s*'([^']+)'\s*\)/g)) {
+      query = query.lt(beforeMatch[1], beforeMatch[2])
     }
 
     const { data, error } = await query
@@ -138,7 +211,40 @@ export async function fetchFromDB(table: string, params = ''): Promise<any> {
       return { records: Object.values(store[table] || {}).map(formatRecord) }
     }
 
-    return { records: data.map(formatRecord) }
+    let records = data.map(formatRecord)
+
+    // Numeric post-filters for TEXT columns in Postgres (prevents '9' > '10' lexicographic bugs)
+    for (const numMatch of formula.matchAll(/\{(Order|Tokens de Reposición)\}\s*(=|!=|>=|<=|>|<)\s*(\d+)/g)) {
+      const col = numMatch[1]
+      const op = numMatch[2]
+      const target = parseInt(numMatch[3], 10)
+      records = records.filter(r => compareNumeric(r.fields?.[col], op, target))
+    }
+
+    if (sortField) {
+      records.sort((a, b) => {
+        const va = a.fields?.[sortField]
+        const vb = b.fields?.[sortField]
+        if (va === vb) return 0
+        if (va === undefined || va === null) return sortDir === 'asc' ? 1 : -1
+        if (vb === undefined || vb === null) return sortDir === 'asc' ? -1 : 1
+        const na = Number(va)
+        const nb = Number(vb)
+        let cmp = 0
+        if (!isNaN(na) && !isNaN(nb) && va !== '' && vb !== '') {
+          cmp = na - nb
+        } else {
+          cmp = String(va).localeCompare(String(vb))
+        }
+        return sortDir === 'asc' ? cmp : -cmp
+      })
+    }
+
+    if (maxRecords > 0) {
+      records = records.slice(0, maxRecords)
+    }
+
+    return { records }
   } catch (err) {
     const store = readMockStore()
     return { records: Object.values(store[table] || {}).map(formatRecord) }
@@ -202,11 +308,20 @@ export async function createDBRecord(table: string, fields: Record<string, any>)
       "Session Name": fields['Session Name'],
       "Curriculum Topic": Array.isArray(fields['Curriculum Topic']) ? fields['Curriculum Topic'][0] : fields['Curriculum Topic']
     }
+    if (fields['Duration (minutes)'] !== undefined) row['Duration (minutes)'] = String(fields['Duration (minutes)'])
+    if (fields['Location/Link'] !== undefined) row['Location/Link'] = fields['Location/Link']
+    if (fields['Extraordinary Session (Token)'] !== undefined) row['Extraordinary Session (Token)'] = String(Boolean(fields['Extraordinary Session (Token)']))
+    if (fields['Study Group'] !== undefined) row['Study Group'] = Array.isArray(fields['Study Group']) ? fields['Study Group'][0] : fields['Study Group']
+    if (fields['Is Holiday'] !== undefined) row['Is Holiday'] = String(Boolean(fields['Is Holiday']))
+    if (fields['Notes (internal)'] !== undefined) row['Notes (internal)'] = fields['Notes (internal)']
+    if (fields['Rescheduled From'] !== undefined) row['Rescheduled From'] = fields['Rescheduled From']
   } else if (dbTable === 'session_participants') {
     row = {
       "Session": Array.isArray(fields.Session) ? fields.Session[0] : fields.Session,
       "Student": Array.isArray(fields.Student) ? fields.Student[0] : fields.Student
     }
+    if (fields['Attendance'] !== undefined) row['Attendance'] = fields['Attendance']
+    if (fields['Curriculum Topic'] !== undefined) row['Curriculum Topic'] = Array.isArray(fields['Curriculum Topic']) ? fields['Curriculum Topic'][0] : fields['Curriculum Topic']
   } else if (dbTable === 'student_teacher') {
     row = {
       "Student": Array.isArray(fields.Student) ? fields.Student.join(',') : fields.Student,
@@ -216,6 +331,12 @@ export async function createDBRecord(table: string, fields: Record<string, any>)
       "Notes": fields.Notes || '',
       "Recurrence Day": Array.isArray(fields['Recurrence Day']) ? fields['Recurrence Day'].join(',') : (fields['Recurrence Day'] || ''),
       "Recurrence Time": fields['Recurrence Time'] || ''
+    }
+  } else if (dbTable === 'error_patterns') {
+    row = { ...fields }
+    if ('Pattern Name' in row) {
+      row['Error Pattern'] = row['Pattern Name']
+      delete row['Pattern Name']
     }
   } else {
     row = { ...fields }
@@ -235,18 +356,57 @@ export async function createDBRecord(table: string, fields: Record<string, any>)
 
 export async function patchDBRecord(table: string, recordId: string, fields: Record<string, any>): Promise<any> {
   const dbTable = getTableName(table)
-  let updateData: Record<string, any> = { ...fields }
-  if (fields['Current Topic']) {
-    updateData['Current Topic (Bot)'] = Array.isArray(fields['Current Topic']) ? fields['Current Topic'][0] : fields['Current Topic']
+  const updateData: Record<string, any> = { ...fields }
+
+  if ('Current Topic' in updateData) {
+    updateData['Current Topic (Bot)'] = Array.isArray(updateData['Current Topic']) ? updateData['Current Topic'][0] : updateData['Current Topic']
+    delete updateData['Current Topic']
   }
-  if (fields['Tokens'] !== undefined) updateData['Tokens de Reposición'] = fields['Tokens']
-  if (fields['Status'] !== undefined) updateData['Status'] = fields['Status']
-  if (fields['Pocket Coach Status'] !== undefined) updateData['Pocket Coach Status'] = fields['Pocket Coach Status']
-  if (fields['Teacher'] !== undefined) updateData['Teacher'] = Array.isArray(fields.Teacher) ? fields.Teacher[0] : fields.Teacher
-  if (fields['Notes'] !== undefined) updateData['Notes'] = fields['Notes']
+  if ('Tokens' in updateData) {
+    updateData['Tokens de Reposición'] = String(updateData['Tokens'])
+    delete updateData['Tokens']
+  }
+  if ('Tokens de Reposición' in updateData && typeof updateData['Tokens de Reposición'] === 'number') {
+    updateData['Tokens de Reposición'] = String(updateData['Tokens de Reposición'])
+  }
+  if ('ClassesRemaining' in updateData) {
+    updateData['Classes Remaining'] = updateData['ClassesRemaining']
+    delete updateData['ClassesRemaining']
+  }
+  if ('Classes Remaining' in updateData && typeof updateData['Classes Remaining'] === 'number') {
+    updateData['Classes Remaining'] = String(updateData['Classes Remaining'])
+  }
+  if ('MeetingLink' in updateData) {
+    updateData['Meeting Link'] = updateData['MeetingLink']
+    delete updateData['MeetingLink']
+  }
+  if ('Status' in updateData && updateData['Status'] !== undefined) {
+    updateData['Status'] = updateData['Status']
+  }
+  if ('Pocket Coach Status' in updateData && updateData['Pocket Coach Status'] !== undefined) {
+    updateData['Pocket Coach Status'] = updateData['Pocket Coach Status']
+  }
+  if ('Teacher' in updateData && updateData['Teacher'] !== undefined) {
+    updateData['Teacher'] = Array.isArray(updateData.Teacher) ? updateData.Teacher[0] : updateData.Teacher
+  }
+  if ('Curriculum Topic' in updateData && updateData['Curriculum Topic'] !== undefined) {
+    updateData['Curriculum Topic'] = Array.isArray(updateData['Curriculum Topic']) ? updateData['Curriculum Topic'][0] : updateData['Curriculum Topic']
+  }
+  if ('Is Holiday' in updateData && typeof updateData['Is Holiday'] === 'boolean') {
+    updateData['Is Holiday'] = String(updateData['Is Holiday'])
+  }
 
   try {
-    const { data, error } = await supabase.from(dbTable).update(updateData).eq('id', recordId).select().single()
+    let { data, error } = await supabase.from(dbTable).update(updateData).eq('id', recordId).select().single()
+    if (error && error.message?.includes('Classes Remaining') && 'Classes Remaining' in updateData) {
+      const retryData = { ...updateData }
+      delete retryData['Classes Remaining']
+      if (Object.keys(retryData).length > 0) {
+        const retry = await supabase.from(dbTable).update(retryData).eq('id', recordId).select().single()
+        data = retry.data
+        error = retry.error
+      }
+    }
     if (error || !data) {
       return fetchDBRecord(table, recordId)
     }

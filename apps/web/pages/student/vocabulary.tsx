@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { 
-  CefrLevel, 
-  VocabCategory, 
-  VocabularyWordItem, 
+import {
+  CefrLevel,
+  VocabCategory,
+  VocabularyWordItem,
   TriageStatus,
-  getVocabularyByCategory 
+  getVocabularyByCategory
 } from '@/lib/vocabulary';
 import { VocabularyLevelSelector } from '@/components/vocabulary/VocabularyLevelSelector';
 import { VocabularySwiper } from '@/components/vocabulary/VocabularySwiper';
@@ -17,7 +17,9 @@ import { SpeedLinker } from '@/components/vocabulary/SpeedLinker';
 import { VocabResumenModal } from '@/components/vocabulary/VocabResumenModal';
 import { VocabRepasoModal } from '@/components/vocabulary/VocabRepasoModal';
 import { VocabReadingModal } from '@/components/vocabulary/VocabReadingModal';
-import { BookOpen, Zap, Flame, Volume2, Sparkles, Layers } from 'lucide-react';
+import { LinguaLifeLogo } from '@/components/LinguaLifeLogo';
+import { ThemeToggle } from '@/components/ThemeToggle';
+import { BookOpen, Zap, Flame, Volume2, Layers, Link2 } from 'lucide-react';
 import styles from '@/styles/Vocabulary.module.css';
 
 interface CategoryConfig {
@@ -30,27 +32,27 @@ interface CategoryConfig {
 const CATEGORIES: CategoryConfig[] = [
   {
     id: 'time_words',
-    title: '⏱️ Palabras del Tiempo (12)',
-    badge: '12-13 Modales & Auxiliares',
-    description: 'Auxiliares y verbos modales clave (can, could, will, would, should, must, do, did, be, have) con sus funciones básicas y reglas de tiempo.'
+    title: '⏱️ Palabras del Tiempo (13)',
+    badge: '13 Modales & Auxiliares',
+    description: 'Auxiliares y modales esenciales (can, could, will, would, should, must, might, may, do, did, be, have, shall).'
   },
   {
     id: 'prepositions_in_on_at',
     title: '📍 In / On / At',
     badge: 'Preposiciones Clave',
-    description: 'Uso espacial (superficies vs contenedores), temporal (horas, días, meses) y la regla comunicativa de Preposition Stranding.'
+    description: 'Espacio (superficie vs interior), tiempo exacto (horas, días, meses) y Preposition Stranding.'
   },
   {
     id: 'wh_words',
     title: '❓ Preguntas WH',
     badge: 'Preguntas & Conectores',
-    description: 'Palabras interrogativas directas (where, what, who, when, why, how, which) y su uso como conectores afirmativos sin invertir auxiliar.'
+    description: 'Palabras WH (where, what, who, when, why, how, which) para preguntar o conectar frases.'
   },
   {
     id: 'cefr_general',
     title: '🌐 Vocabulario CEFR',
-    badge: 'Niveles A1 a C2',
-    description: 'Modelo en espiral polisémico: palabras cotidianas con al menos 2 acepciones, sinónimos, antónimos y red conceptual.'
+    badge: 'Polisemia A1 – C2',
+    description: 'Modelo en espiral: palabras con múltiples acepciones reales, sinónimos y antónimos.'
   }
 ];
 
@@ -59,32 +61,33 @@ export default function VocabularyHubPage() {
   const [activeCategory, setActiveCategory] = useState<VocabCategory>('time_words');
   const [selectedLevel, setSelectedLevel] = useState<CefrLevel>('A1');
   const [includePreviousPending, setIncludePreviousPending] = useState(false);
-  const [activeTab, setActiveTab] = useState<'grid' | 'swiper' | 'trivia' | 'linker'>('grid');
+
+  // Vista unificada: Explorar (Grid/Swiper toggle interno), Trivia Infinita, o Conector Semántico
+  const [activeView, setActiveView] = useState<'explore' | 'trivia' | 'linker'>('explore');
+  const [exploreLayout, setExploreLayout] = useState<'grid' | 'swiper'>('grid');
+
   const [words, setWords] = useState<VocabularyWordItem[]>([]);
   const [loading, setLoading] = useState(false);
-
-  // Student profile (para persistencia en Supabase)
   const [studentId, setStudentId] = useState<string>('');
 
-  // Estados de Modales de los 4 Botones
+  // Estados de Modales de Repaso / Resumen / Lectura
   const [showResumenModal, setShowResumenModal] = useState(false);
   const [showRepasoModal, setShowRepasoModal] = useState(false);
   const [showReadingModal, setShowReadingModal] = useState(false);
 
-  // Activar automáticamente cualquiera de los 4 botones si se llega desde el Dashboard (?mode=resumen|repaso|trivia|reading)
+  // Deep-link desde /student (?mode=resumen|repaso|trivia|reading)
   useEffect(() => {
     if (!router.isReady) return;
     const mode = router.query.mode;
     if (mode === 'resumen') setShowResumenModal(true);
     else if (mode === 'repaso') setShowRepasoModal(true);
-    else if (mode === 'trivia') setActiveTab('trivia');
+    else if (mode === 'trivia') setActiveView('trivia');
     else if (mode === 'reading') setShowReadingModal(true);
   }, [router.isReady, router.query.mode]);
 
-  // Detectar perfil de estudiante activo en localStorage
   useEffect(() => {
     try {
-      const stored = localStorage.getItem('ll_student_profile');
+      const stored = sessionStorage.getItem('ll_student') || localStorage.getItem('ll_student_profile');
       if (stored) {
         const parsed = JSON.parse(stored);
         if (parsed.id) setStudentId(parsed.id);
@@ -92,17 +95,16 @@ export default function VocabularyHubPage() {
     } catch {}
   }, []);
 
-  // Cargar palabras por categoría (con fallback local instantáneo y fetch a Supabase)
   const loadWords = useCallback(async () => {
     setLoading(true);
-    // 1. Carga inmediata reactiva desde el catálogo maestro
     const initialList = getVocabularyByCategory(activeCategory, selectedLevel, includePreviousPending);
     setWords(initialList);
 
-    // 2. Sincronización asíncrona con el backend si hay studentId
     if (studentId) {
       try {
-        const res = await fetch(`/api/student/vocabulary?category=${activeCategory}&level=${selectedLevel}&studentId=${studentId}&includePreviousPending=${includePreviousPending}`);
+        const res = await fetch(
+          `/api/student/vocabulary?category=${activeCategory}&level=${selectedLevel}&studentId=${studentId}&includePreviousPending=${includePreviousPending}`
+        );
         const data = await res.json();
         if (data.success && data.words) {
           setWords(data.words);
@@ -118,15 +120,14 @@ export default function VocabularyHubPage() {
     loadWords();
   }, [loadWords]);
 
-  // Manejo de cambio de estado de una palabra (persiste a Supabase y actualiza UI)
   const handleWordStatusChanged = async (wordId: string, newStatus: TriageStatus) => {
-    // 1. Actualizar estado local reactivo
-    setWords(prev => prev.map(w => {
-      if (w.id === wordId) return { ...w, triageStatus: newStatus };
-      return w;
-    }));
+    setWords(prev =>
+      prev.map(w => {
+        if (w.id === wordId) return { ...w, triageStatus: newStatus };
+        return w;
+      })
+    );
 
-    // 2. Persistir en la API / Supabase
     const targetWord = words.find(w => w.id === wordId);
     const primarySense = targetWord?.senses[0];
     if (primarySense && studentId) {
@@ -147,210 +148,281 @@ export default function VocabularyHubPage() {
     }
   };
 
+  const progressMap = useMemo(() => {
+    const map: Record<string, TriageStatus> = {};
+    words.forEach(w => {
+      if (w.triageStatus) map[w.id] = w.triageStatus;
+    });
+    return map;
+  }, [words]);
+
   const currentCategoryConfig = CATEGORIES.find(c => c.id === activeCategory) || CATEGORIES[0];
 
   return (
     <>
       <Head>
-        <title>Vocabulario Curado & Red Semántica | LinguaLife</title>
-        <meta name="description" content="Estudio de vocabulario con Palabras del Tiempo, Preposiciones In/On/At, WH-Words y CEFR general con los 4 botones de maestría." />
+        <title>Vocabulario Conceptual &amp; Red Semántica | LinguaLife</title>
+        <meta
+          name="description"
+          content="Practica Palabras del Tiempo, In/On/At, WH-Words y Vocabulario CEFR polisémico con Trivia, Repaso, Lectura y Conector Semántico."
+        />
       </Head>
 
       <div className={styles.container}>
-        {/* Top Navigation */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '1rem' }}>
-          <Link href="/student" style={{ color: '#a1a1aa', textDecoration: 'none', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            ← Portal de Alumno
-          </Link>
-          <span style={{ fontSize: '0.8rem', color: '#10b981', background: 'rgba(16, 185, 129, 0.12)', padding: '0.3rem 0.8rem', borderRadius: '999px', fontWeight: 700, border: '1px solid rgba(16, 185, 129, 0.25)' }}>
-            ✨ Vocabulario LinguaLife Activo
-          </span>
-        </div>
+        {/* ── BARRA SUPERIOR DE MARCA ── */}
+        <header className={styles.topBrandBar}>
+          <div className={styles.topLeftGroup}>
+            <Link href="/student" style={{ textDecoration: 'none' }}>
+              <LinguaLifeLogo size="sm" />
+            </Link>
+            <Link href="/student" className={styles.backLink}>
+              ← Portal del Alumno
+            </Link>
+          </div>
 
-        {/* Title */}
-        <div style={{ marginBottom: '1.25rem' }}>
-          <h1 style={{ fontSize: '2rem', fontWeight: 900, margin: '0 0 0.4rem 0', letterSpacing: '-0.02em' }}>
-            Vocabulario Conceptual & Red Semántica
+          <div className={styles.topRightGroup}>
+            <span
+              style={{
+                fontSize: '0.78rem',
+                color: 'var(--accent-green, #34D399)',
+                background: 'rgba(52, 211, 153, 0.12)',
+                padding: '0.35rem 0.8rem',
+                borderRadius: '999px',
+                fontWeight: 800,
+                border: '1px solid rgba(52, 211, 153, 0.3)'
+              }}
+            >
+              ✨ Banco Semántico Activo
+            </span>
+            <ThemeToggle />
+          </div>
+        </header>
+
+        {/* ── ENCABEZADO COMPACTO ── */}
+        <div style={{ marginBottom: '1rem' }}>
+          <h1
+            style={{
+              fontSize: 'clamp(1.45rem, 3vw, 1.95rem)',
+              fontWeight: 900,
+              margin: '0 0 0.25rem 0',
+              letterSpacing: '-0.025em',
+              fontFamily: 'var(--font-display)',
+              color: 'var(--text-primary)'
+            }}
+          >
+            Gimnasio de Vocabulario
           </h1>
-          <p style={{ color: '#94a3b8', margin: 0, fontSize: '0.95rem', maxWidth: '680px', lineHeight: 1.5 }}>
-            Selecciona la categoría de estudio, domina las palabras con los <strong>4 modos de estudio</strong> y gestiona tu inventario con botones interactivos.
+          <p style={{ color: 'var(--text-secondary)', margin: 0, fontSize: '0.9rem', lineHeight: 1.45 }}>
+            Elige un bloque arriba y comienza a entrenar directamente en un solo clic.
           </p>
         </div>
 
-        {/* ── 1. SELECTOR SUPERIOR DE CATEGORÍAS ── */}
-        <div className={styles.categoryPillsContainer}>
-          {CATEGORIES.map(cat => {
-            const isActive = activeCategory === cat.id;
-            return (
-              <button
-                key={cat.id}
-                onClick={() => setActiveCategory(cat.id)}
-                className={`${styles.categoryPill} ${isActive ? styles.categoryPillActive : ''}`}
-              >
-                <span>{cat.title}</span>
-              </button>
-            );
-          })}
-        </div>
+        {/* ── ETAPA ÚNICA DE CONTEXTO: CATEGORÍA + NIVEL INLINE + RESUMEN RÁPIDO ── */}
+        <section className={styles.contextCard} aria-label="Selección de categoría">
+          <div className={styles.contextTopRow}>
+            <div className={styles.categoryPillsContainer}>
+              {CATEGORIES.map(cat => {
+                const isActive = activeCategory === cat.id;
+                return (
+                  <button
+                    key={cat.id}
+                    type="button"
+                    onClick={() => setActiveCategory(cat.id)}
+                    className={`${styles.categoryPill} ${isActive ? styles.categoryPillActive : ''}`}
+                  >
+                    <span>{cat.title}</span>
+                  </button>
+                );
+              })}
+            </div>
 
-        {/* Category Description Banner */}
-        <div style={{ background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '14px', padding: '0.85rem 1.15rem', marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
-          <div>
-            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#38bdf8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              {currentCategoryConfig.badge}
-            </span>
-            <p style={{ margin: '0.2rem 0 0', fontSize: '0.88rem', color: '#cbd5e1', lineHeight: 1.4 }}>
+            <div className={styles.contextMetaGroup}>
+              <span className={styles.wordCountBadge}>
+                {loading ? 'Sincronizando...' : `${words.length} palabras`}
+              </span>
+              <button
+                type="button"
+                className={styles.resumenPillBtn}
+                onClick={() => setShowResumenModal(true)}
+                title="Abrir fichas conceptuales, acepciones, IPA y ejemplos"
+              >
+                <BookOpen size={14} />
+                <span>Ficha Resumen</span>
+              </button>
+            </div>
+          </div>
+
+          <div className={styles.contextDescRow}>
+            <p style={{ margin: 0, fontSize: '0.84rem', color: 'var(--text-secondary)', lineHeight: 1.45 }}>
+              <span className={styles.contextBadge}>{currentCategoryConfig.badge}</span>
               {currentCategoryConfig.description}
             </p>
           </div>
-          <span style={{ fontSize: '0.82rem', color: '#94a3b8', background: 'rgba(0,0,0,0.3)', padding: '0.3rem 0.65rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.06)', fontWeight: 700 }}>
-            {words.length} Palabras en banco
-          </span>
-        </div>
 
-        {/* Si la categoría es CEFR General, mostrar el selector de niveles A1 - C2 */}
-        {activeCategory === 'cefr_general' && (
-          <div style={{ marginBottom: '1.25rem' }}>
+          {activeCategory === 'cefr_general' && (
             <VocabularyLevelSelector
               selectedLevel={selectedLevel}
               onSelectLevel={setSelectedLevel}
               includePreviousPending={includePreviousPending}
               onTogglePreviousPending={setIncludePreviousPending}
             />
-          </div>
-        )}
+          )}
+        </section>
 
-        {/* ── 2. LOS 4 BOTONES DE ESTUDIO (RESUMEN, REPASO, TRIVIA, LECTURA) ── */}
-        <div style={{ marginBottom: '0.65rem' }}>
-          <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-            Modalidades de Estudio para esta Categoría:
-          </span>
-        </div>
-
-        <div className={styles.studyActionsGrid}>
-          {/* Botón 1: Resumen */}
+        {/* ── FILA ÚNICA UNIFICADA DE 5 MODOS DE PRÁCTICA ── */}
+        <nav className={styles.modeStrip} aria-label="Modos de práctica">
           <button
             type="button"
-            className={`${styles.studyActionBtn} ${styles.btnResumenTheme}`}
-            onClick={() => setShowResumenModal(true)}
-            title="Ver fichas conceptuales con acepciones, fórmulas, IPA y ejemplos"
+            className={`${styles.modeBtn} ${activeView === 'explore' ? styles.modeBtnActive : ''}`}
+            onClick={() => setActiveView('explore')}
           >
-            <BookOpen size={22} color="#60a5fa" />
-            <span style={{ fontWeight: 800, fontSize: '0.92rem' }}>1. Resumen</span>
-            <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>Ficha & Acepciones</span>
+            <span
+              className={styles.modeBtnIcon}
+              style={{ background: 'rgba(26, 193, 231, 0.16)', color: 'var(--brand-cyan, #1AC1E7)' }}
+            >
+              <Layers size={18} />
+            </span>
+            <span>
+              <span className={styles.modeBtnTitle}>Explorar Banco</span>
+              <span className={styles.modeBtnSub}>Cuadrícula &amp; Tarjetas</span>
+            </span>
           </button>
 
-          {/* Botón 2: Repaso */}
           <button
             type="button"
-            className={`${styles.studyActionBtn} ${styles.btnRepasoTheme}`}
+            className={styles.modeBtn}
             onClick={() => setShowRepasoModal(true)}
-            title="Sesión de gimnasio mental con 15 ejercicios intensivos"
           >
-            <Zap size={22} color="#facc15" />
-            <span style={{ fontWeight: 800, fontSize: '0.92rem' }}>2. Repaso</span>
-            <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>Gimnasio Mental 15</span>
+            <span
+              className={styles.modeBtnIcon}
+              style={{ background: 'rgba(253, 186, 59, 0.18)', color: 'var(--brand-yellow, #FDBA3B)' }}
+            >
+              <Zap size={18} />
+            </span>
+            <span>
+              <span className={styles.modeBtnTitle}>Repaso (15)</span>
+              <span className={styles.modeBtnSub}>Gimnasio Mental</span>
+            </span>
           </button>
 
-          {/* Botón 3: Trivia */}
           <button
             type="button"
-            className={`${styles.studyActionBtn} ${styles.btnTriviaTheme}`}
-            onClick={() => setActiveTab('trivia')}
-            title="Entrenar con trivia gamificada de opción múltiple"
+            className={`${styles.modeBtn} ${activeView === 'trivia' ? styles.modeBtnActive : ''}`}
+            onClick={() => setActiveView('trivia')}
           >
-            <Flame size={22} color="#fb923c" />
-            <span style={{ fontWeight: 800, fontSize: '0.92rem' }}>3. Trivia</span>
-            <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>Juego Gamificado</span>
+            <span
+              className={styles.modeBtnIcon}
+              style={{ background: 'rgba(255, 80, 118, 0.16)', color: 'var(--brand-pink, #FF5076)' }}
+            >
+              <Flame size={18} />
+            </span>
+            <span>
+              <span className={styles.modeBtnTitle}>Trivia Infinita</span>
+              <span className={styles.modeBtnSub}>Retos sin repetición</span>
+            </span>
           </button>
 
-          {/* Botón 4: Lectura (Short Reading) */}
           <button
             type="button"
-            className={`${styles.studyActionBtn} ${styles.btnReadingTheme}`}
+            className={styles.modeBtn}
             onClick={() => setShowReadingModal(true)}
-            title="Micro-lectura contextual con audio nativo y pregunta de comprensión"
           >
-            <Volume2 size={22} color="#34d399" />
-            <span style={{ fontWeight: 800, fontSize: '0.92rem' }}>4. Lectura</span>
-            <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>Short Reading + Audio</span>
+            <span
+              className={styles.modeBtnIcon}
+              style={{ background: 'rgba(52, 211, 153, 0.16)', color: 'var(--accent-green, #34D399)' }}
+            >
+              <Volume2 size={18} />
+            </span>
+            <span>
+              <span className={styles.modeBtnTitle}>Lectura + Audio</span>
+              <span className={styles.modeBtnSub}>Short Reading nativo</span>
+            </span>
           </button>
-        </div>
 
-        {/* ── 3. NAVEGACIÓN DE VISTAS (INVENTARIO DE BOTONES, SWIPER, TRIVIA, CONECTOR) ── */}
-        <div className={styles.tabNav}>
           <button
             type="button"
-            className={`${styles.tabBtn} ${activeTab === 'grid' ? styles.tabBtnActive : ''}`}
-            onClick={() => setActiveTab('grid')}
+            className={`${styles.modeBtn} ${activeView === 'linker' ? styles.modeBtnActive : ''}`}
+            onClick={() => setActiveView('linker')}
           >
-            <span style={{ fontSize: '1.15rem' }}>🔲</span>
-            <span>Mi Inventario (Botones)</span>
+            <span
+              className={styles.modeBtnIcon}
+              style={{ background: 'rgba(140, 49, 197, 0.16)', color: 'var(--brand-purple, #8C31C5)' }}
+            >
+              <Link2 size={18} />
+            </span>
+            <span>
+              <span className={styles.modeBtnTitle}>Conector</span>
+              <span className={styles.modeBtnSub}>Sinónimos / Antónimos</span>
+            </span>
           </button>
-          <button
-            type="button"
-            className={`${styles.tabBtn} ${activeTab === 'swiper' ? styles.tabBtnActive : ''}`}
-            onClick={() => setActiveTab('swiper')}
-          >
-            <span style={{ fontSize: '1.15rem' }}>📋</span>
-            <span>Clasificar (Swiper)</span>
-          </button>
-          <button
-            type="button"
-            className={`${styles.tabBtn} ${activeTab === 'trivia' ? styles.tabBtnActive : ''}`}
-            onClick={() => setActiveTab('trivia')}
-          >
-            <span style={{ fontSize: '1.15rem' }}>🎯</span>
-            <span>Trivia Activa</span>
-          </button>
-          <button
-            type="button"
-            className={`${styles.tabBtn} ${activeTab === 'linker' ? styles.tabBtnActive : ''}`}
-            onClick={() => setActiveTab('linker')}
-          >
-            <span style={{ fontSize: '1.15rem' }}>⚡</span>
-            <span>Conector Semántico</span>
-          </button>
-        </div>
+        </nav>
 
-        {/* ── 4. CONTENIDO DE LA PESTAÑA ACTIVA ── */}
-        {activeTab === 'grid' && (
+        {/* ── ÁREA DE PRÁCTICA ACTIVA ── */}
+        {activeView === 'explore' && (
           <div>
-            <div style={{ marginBottom: '0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: '0.82rem', color: '#a1a1aa' }}>
-                Haz clic sobre cualquier palabra para ciclar su estado: <strong>Por aprender</strong> → <strong>Pasiva</strong> → <strong>Dominada</strong>.
+            <div className={styles.subViewBar}>
+              <div className={styles.subViewSegmented} role="group" aria-label="Vista de exploración">
+                <button
+                  type="button"
+                  onClick={() => setExploreLayout('grid')}
+                  className={`${styles.subViewSegBtn} ${exploreLayout === 'grid' ? styles.subViewSegBtnActive : ''}`}
+                >
+                  ⊞ Vista Cuadrícula
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setExploreLayout('swiper')}
+                  className={`${styles.subViewSegBtn} ${exploreLayout === 'swiper' ? styles.subViewSegBtnActive : ''}`}
+                >
+                  🃏 Tarjetas Interactivas
+                </button>
+              </div>
+
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                {exploreLayout === 'grid'
+                  ? 'Marca palabras como Por aprender, Pasiva o Dominada para enfocar tu Trivia.'
+                  : 'Revisa cada palabra paso a paso con audio nativo y acepciones.'}
               </span>
             </div>
-            <VocabularyGridManager
-              words={words}
-              onStatusChanged={handleWordStatusChanged}
-            />
+
+            {exploreLayout === 'grid' ? (
+              <VocabularyGridManager
+                words={words}
+                onStatusChanged={handleWordStatusChanged}
+              />
+            ) : (
+              <VocabularySwiper
+                words={words}
+                onWordClassified={handleWordStatusChanged}
+              />
+            )}
           </div>
         )}
 
-        {activeTab === 'swiper' && (
-          <VocabularySwiper
+        {activeView === 'trivia' && (
+          <VocabularyTrivia
             words={words}
-            onWordClassified={loadWords}
-          />
-        )}
-
-        {activeTab === 'trivia' && (
-          <VocabularyTrivia 
-            words={words} 
+            progressMap={progressMap}
             category={activeCategory}
             level={selectedLevel}
           />
         )}
 
-        {activeTab === 'linker' && (
-          <SpeedLinker words={words} />
+        {activeView === 'linker' && (
+          <SpeedLinker
+            words={words}
+            category={activeCategory}
+            level={selectedLevel}
+          />
         )}
 
-        {/* ── 5. MODALES DE LOS 4 MODOS DE ESTUDIO ── */}
+        {/* ── MODALES COMPLEMENTARIOS ── */}
         <VocabResumenModal
           isOpen={showResumenModal}
-          onClose={() => setShowResumenModal(false)}
+          onClose={() => {
+            setShowResumenModal(false);
+            if (router.query.mode) router.replace('/student/vocabulary', undefined, { shallow: true });
+          }}
           category={activeCategory}
           categoryTitle={currentCategoryConfig.title}
           words={words}
@@ -358,7 +430,10 @@ export default function VocabularyHubPage() {
 
         <VocabRepasoModal
           isOpen={showRepasoModal}
-          onClose={() => setShowRepasoModal(false)}
+          onClose={() => {
+            setShowRepasoModal(false);
+            if (router.query.mode) router.replace('/student/vocabulary', undefined, { shallow: true });
+          }}
           category={activeCategory}
           categoryTitle={currentCategoryConfig.title}
           level={selectedLevel}
@@ -367,7 +442,10 @@ export default function VocabularyHubPage() {
 
         <VocabReadingModal
           isOpen={showReadingModal}
-          onClose={() => setShowReadingModal(false)}
+          onClose={() => {
+            setShowReadingModal(false);
+            if (router.query.mode) router.replace('/student/vocabulary', undefined, { shallow: true });
+          }}
           category={activeCategory}
           categoryTitle={currentCategoryConfig.title}
           level={selectedLevel}

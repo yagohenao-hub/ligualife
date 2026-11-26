@@ -21,9 +21,18 @@ export const VocabularyLevelSelector: React.FC<Props> = ({
     <div className={styles.headerBar}>
       <div className={styles.levelSelectorTop}>
         <div className={styles.levelSelectorLabel}>
-          <span>🎯 Selecciona tu nivel CEFR:</span>
-          <span style={{ fontSize: '0.78rem', color: '#10b981', fontWeight: 700 }}>
-            Nivel activo: {selectedLevel}
+          <span>🎯 Nivel MCER:</span>
+          <span
+            style={{
+              fontSize: '0.76rem',
+              color: 'var(--brand-cyan, #1AC1E7)',
+              fontWeight: 800,
+              background: 'rgba(26, 193, 231, 0.12)',
+              padding: '0.15rem 0.55rem',
+              borderRadius: '999px'
+            }}
+          >
+            {selectedLevel}
           </span>
         </div>
 
@@ -41,25 +50,27 @@ export const VocabularyLevelSelector: React.FC<Props> = ({
         </div>
       </div>
 
-      <div
+      <button
+        type="button"
         className={styles.switchContainer}
         onClick={() => onTogglePreviousPending(!includePreviousPending)}
+        aria-pressed={includePreviousPending}
       >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
-          <span style={{ fontWeight: 600, color: '#f4f4f5' }}>
-            Incluir palabras pendientes de niveles anteriores
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.1rem', textAlign: 'left' }}>
+          <span style={{ fontWeight: 700, fontSize: '0.82rem', color: 'var(--text-primary)' }}>
+            Incluir pendientes previos
           </span>
-          <span style={{ fontSize: '0.74rem', color: '#a1a1aa' }}>
+          <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
             {includePreviousPending
-              ? 'Activado: Estudiarás también lo pendiente de niveles previos'
-              : 'Desactivado: Estudiarás solo palabras exclusivas de este nivel'}
+              ? 'Suma palabras aún pendientes de niveles anteriores'
+              : 'Solo palabras exclusivas del nivel seleccionado'}
           </span>
         </div>
 
         <div className={`${styles.toggleSwitch} ${includePreviousPending ? styles.toggleSwitchActive : ''}`}>
           <div className={styles.toggleHandle} />
         </div>
-      </div>
+      </button>
     </div>
   );
 };

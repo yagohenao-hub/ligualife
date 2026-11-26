@@ -1,8 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { fetchFromAirtable, fetchAirtableRecord, findAirtableRecords } from '@/lib/airtable'
+import { fetchFromAirtable, fetchAirtableRecord } from '@/lib/airtable'
 import { supabase } from '@/lib/supabaseClient'
+import { getTopicSummary } from '@/lib/curriculum-summary'
 
-import { getFriendlyTopicName } from '@/lib/friendly-topics'
+const parseBool = (val: any): boolean => val === true || String(val).toLowerCase() === 'true'
+
+const WEEKDAY_MAP: Record<number, string> = {
+  0: 'Dom', 1: 'Lun', 2: 'Mar', 3: 'Mie', 4: 'Jue', 5: 'Vie', 6: 'Sab'
+}
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' })
@@ -11,48 +16,46 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (!studentId) return res.status(400).json({ error: 'studentId es requerido' })
 
   try {
-    // 1. Get Student record to find linked Session Participant record IDs
+    // 1. Get Student record
     const student = await fetchAirtableRecord('Students', studentId)
     if (!student) return res.status(404).json({ error: 'Estudiante no encontrado' })
 
-    // 2. Extract Session Participant IDs for this student directly
-    let participantRecords = await findAirtableRecords('Session Participants', `FIND('${studentId}')`)
-    if (!participantRecords || participantRecords.length === 0) {
-      const rawParticipants = (student.fields['Session Participants'] as string[]) ?? []
-      const validIds = rawParticipants.filter(id => typeof id === 'string' && !id.includes('|'))
-      if (validIds.length > 0) {
-        const participantsFormula = `OR(${validIds.map(id => `RECORD_ID()='${id}'`).join(',')})`
-        const pRes = await fetchFromAirtable('Session Participants', `filterByFormula=${encodeURIComponent(participantsFormula)}`)
-        participantRecords = pRes.records ?? []
-      }
-    }
+    // 2. Extract Session Participant records directly from Supabase (supports group IDs)
+    const { data: spRows } = await supabase
+      .from('session_participants')
+      .select('id, "Session", "Student"')
+      .ilike('Student', `%${studentId}%`)
 
-    const sessionIds = (participantRecords ?? [])
-      .map((r: any) => ((r.fields['Session'] as string[]) ?? [])[0] ?? (r.fields['SessionId'] as string))
-      .filter(Boolean)
+    const sessionIds = Array.from(
+      new Set((spRows || []).map((r: any) => r.Session).filter(Boolean))
+    ) as string[]
 
-    // Construct studentProfile for caller
-    const rawTokens = student.fields['Tokens de Reposición'] ?? student.fields['Tokens']
-    const rawClasses = student.fields['ClassesRemaining'] ?? student.fields['Classes Remaining']
+    const rawTokens = student.fields['Tokens de Reposición'] ?? student.fields['Tokens'] ?? 0
+    const parsedTokens = parseInt(String(rawTokens), 10)
+    const rawClasses = student.fields['Classes Remaining'] ?? student.fields['ClassesRemaining']
+    const parsedRawClasses = rawClasses !== undefined && rawClasses !== null && rawClasses !== ''
+      ? parseInt(String(rawClasses), 10)
+      : NaN
+
     let teacherId = Array.isArray(student.fields['Teacher']) ? student.fields['Teacher'][0] : (student.fields['Teacher'] as string | null)
     let teacherName: string | null = null
     let recurrenceDay: string | null = null
     let recurrenceTime: string | null = null
 
     try {
-      const { data: stLink } = await supabase
+      const { data: stLinks } = await supabase
         .from('student_teacher')
         .select('*')
-        .eq('Student', student.id)
+        .ilike('Student', `%${student.id}%`)
         .order('created_at', { ascending: false })
-        .limit(1)
 
-      if (stLink && stLink.length > 0) {
-        if (!teacherId && stLink[0].Teacher) {
-          teacherId = stLink[0].Teacher
+      const activeLink = (stLinks || []).find((r: any) => r.Status === 'Active') || stLinks?.[0]
+      if (activeLink) {
+        if (!teacherId && activeLink.Teacher) {
+          teacherId = String(activeLink.Teacher).split(',')[0].trim()
         }
-        recurrenceDay = stLink[0]['Recurrence Day'] || null
-        recurrenceTime = stLink[0]['Recurrence Time'] || null
+        recurrenceDay = activeLink['Recurrence Day'] || null
+        recurrenceTime = activeLink['Recurrence Time'] || null
       }
     } catch (e) {
       console.warn('Error fetching student_teacher:', e)
@@ -67,16 +70,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       } catch {}
     }
 
-    const studentProfile = {
+    const studentProfile: {
+      id: string
+      name: string
+      email: string
+      tokens: number
+      classesRemaining: number
+      teacherId: string | null
+      teacherName: string | null
+      recurrenceDay: string | null
+      recurrenceTime: string | null
+    } = {
       id: student.id,
       name: (student.fields['Full Name'] || student.fields['Name'] || student.fields['FullName'] || 'Estudiante') as string,
       email: (student.fields['Email'] as string) || '',
-      tokens: typeof rawTokens === 'number' ? rawTokens : (parseInt(rawTokens, 10) || 0),
-      classesRemaining: typeof rawClasses === 'number' ? rawClasses : (parseInt(rawClasses, 10) || 2),
+      tokens: isNaN(parsedTokens) ? 0 : parsedTokens,
+      classesRemaining: isNaN(parsedRawClasses) ? 0 : Math.max(0, parsedRawClasses),
       teacherId,
       teacherName,
-      recurrenceDay: recurrenceDay || 'Mie,Vie',
-      recurrenceTime: recurrenceTime || '11:00 AM'
+      recurrenceDay,
+      recurrenceTime
     }
 
     // ── Alumnos Antiguos: Habilitar los 60 temas completados con slides ──────
@@ -120,45 +133,62 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       .filter((s: any) => s.fields['Status'] === 'Scheduled' || (s.fields['Status'] === 'Canceled' && s.fields['Is Holiday']))
       .sort((a: any, b: any) => new Date(a.fields['Scheduled Date/Time'] || 0).getTime() - new Date(b.fields['Scheduled Date/Time'] || 0).getTime())
 
-    // Resolve topic details for sessions
+    // Resolve topic details for sessions (supports DB IDs + 'recTopicN' / numeric Order fallback)
     const resolveTopics = async (records: any[], isUpcoming = false) => {
       return Promise.all(records.map(async (r) => {
         const topicId = ((r.fields['Curriculum Topic'] as string[]) ?? [])[0] ?? null
         let topicName: string | null = null
         let cachedSlides: any[] | null = null
         let topicOrder: number | null = null
-        
+        let topic: any = null
+
         if (topicId) {
-          const topic = await fetchAirtableRecord('Curriculum Topics', topicId)
-          topicOrder = topic?.fields?.['Order'] as number ?? null
-          topicName = (topic?.fields?.['Topic Name'] || topic?.fields?.['Title']) as string ?? null
-
-          if (!isUpcoming) {
-            const rawCache = (topic?.fields?.['Cached Slides'] || topic?.fields?.['fldiMYojT06KFHPBj']) as string | undefined
-            if (rawCache) {
-              try { cachedSlides = JSON.parse(rawCache) } catch (e) {}
+          topic = await fetchAirtableRecord('Curriculum Topics', topicId)
+          if (topic) {
+            const rawOrd = topic.fields?.['Order']
+            const parsedOrd = rawOrd !== undefined && rawOrd !== null ? parseInt(String(rawOrd), 10) : NaN
+            topicOrder = isNaN(parsedOrd) ? null : parsedOrd
+            topicName = (topic.fields?.['Topic Name'] || topic.fields?.['Title']) as string ?? null
+          } else {
+            // Fallback for legacy IDs such as 'recTopic7' or session names like 'Tema 7'
+            const idNumMatch = String(topicId).match(/(\d+)$/)
+            const nameNumMatch = String(r.fields['Session Name'] || '').match(/(?:Tema|Topic)\s*(\d+)/i)
+            const inferredOrder = idNumMatch ? parseInt(idNumMatch[1], 10) : (nameNumMatch ? parseInt(nameNumMatch[1], 10) : null)
+            if (inferredOrder && !isNaN(inferredOrder)) {
+              topicOrder = inferredOrder
             }
-            // Si el tema no tiene diapositivas precargadas en DB, generar slides interactivas estructuradas
-            if (!cachedSlides && topic) {
-              const formula = (topic.fields?.['LDS_Formula'] || topic.fields?.['LDSFormula'] || 'Subject + Time Word + Action') as string
-              const context = (topic.fields?.['AI_Context'] || topic.fields?.['AIContext'] || 'Práctica conversacional y fluidez') as string
-              const title = topicName || `Clase ${topicOrder || ''}`
+          }
+        }
 
-              cachedSlides = [
-                {
-                  title: `🎯 ${title} — Concepto Clave`,
-                  content: `<p>Bienvenido al material de <b>${title}</b>. En esta lección trabajamos la estructura del inglés natural:</p><p style="padding: 10px; background: rgba(124, 58, 237, 0.1); border-left: 4px solid #7c3aed; border-radius: 4px;"><b>Patrón Mental:</b> ${formula}</p>`
-                },
-                {
-                  title: `⚡ Aplicación Práctica`,
-                  content: `<p><b>Enfoque comunicativo:</b> ${context}</p><ul><li>Usa la <i>Palabra de Tiempo</i> correcta para situar el momento de la acción.</li><li>Mantén la estructura limpia sin traducciones literales desde el español.</li></ul>`
-                },
-                {
-                  title: `🚀 Reto de Dominio`,
-                  content: `<p>Practica armando 2 oraciones en voz alta o escríbeselas a tu <b>Pocket Coach</b> en WhatsApp para recibir feedback inmediato.</p>`
-                }
-              ]
-            }
+        const localSummary = topicOrder ? getTopicSummary(topicOrder, topicName || undefined) : null
+        if (!topicName && localSummary) {
+          topicName = localSummary.title
+        }
+
+        if (!isUpcoming && (topic || localSummary)) {
+          const rawCache = (topic?.fields?.['Cached Slides'] || topic?.fields?.['fldiMYojT06KFHPBj']) as string | undefined
+          if (rawCache) {
+            try { cachedSlides = JSON.parse(rawCache) } catch {}
+          }
+          if (!cachedSlides) {
+            const formula = (topic?.fields?.['LDS_Formula'] || topic?.fields?.['LDSFormula'] || localSummary?.correctMethod || 'Subject + Time Word + Action') as string
+            const context = (topic?.fields?.['AI_Context'] || topic?.fields?.['AIContext'] || localSummary?.concept || 'Práctica conversacional y fluidez') as string
+            const title = topicName || `Clase ${topicOrder || ''}`
+
+            cachedSlides = [
+              {
+                title: `🎯 ${title} — Concepto Clave`,
+                content: `<p>Bienvenido al material de <b>${title}</b>. En esta lección trabajamos la estructura del inglés natural:</p><p style="padding: 10px; background: rgba(124, 58, 237, 0.1); border-left: 4px solid #7c3aed; border-radius: 4px;"><b>Patrón Mental:</b> ${formula}</p>`
+              },
+              {
+                title: `⚡ Aplicación Práctica`,
+                content: `<p><b>Enfoque comunicativo:</b> ${context}</p><ul><li>Usa la <i>Palabra de Tiempo</i> correcta para situar el momento de la acción.</li><li>Mantén la estructura limpia sin traducciones literales desde el español.</li></ul>`
+              },
+              {
+                title: `🚀 Reto de Dominio`,
+                content: `<p>Practica armando 2 oraciones en voz alta o escríbeselas a tu <b>Pocket Coach</b> en WhatsApp para recibir feedback inmediato.</p>`
+              }
+            ]
           }
         }
 
@@ -170,9 +200,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           topicOrder: topicOrder,
           topicName: topicName,
           cachedSlides: cachedSlides,
-          isHoliday: !!r.fields['Is Holiday'],
-          holidayConfirmedTeacher: !!r.fields['Holiday Confirmed (Teacher)'],
-          holidayConfirmedStudent: !!r.fields['Holiday Confirmed (Student)']
+          isHoliday: parseBool(r.fields['Is Holiday']),
+          holidayConfirmedTeacher: parseBool(r.fields['Holiday Confirmed (Teacher)']),
+          holidayConfirmedStudent: parseBool(r.fields['Holiday Confirmed (Student)'])
         }
       }))
     }
@@ -182,9 +212,32 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       resolveTopics(completed, false),
     ])
 
-    // Sincronizar classesRemaining con las clases programadas activas del ciclo si no se fijó un valor explícito
-    if (upcomingSessions && upcomingSessions.length > 0) {
-      studentProfile.classesRemaining = upcomingSessions.length
+    // Sync classesRemaining & infer recurrenceDay/Time from active non-holiday scheduled sessions when missing
+    const activeUpcoming = upcomingSessions.filter(s => s.status === 'Scheduled' && !s.isHoliday)
+    if (activeUpcoming.length > 0) {
+      studentProfile.classesRemaining = activeUpcoming.length
+
+      if (!studentProfile.recurrenceDay) {
+        const dayNames: string[] = []
+        for (const s of activeUpcoming) {
+          if (!s.date) continue
+          const d = new Date(s.date)
+          const bogotaStr = d.toLocaleDateString('en-US', { weekday: 'short', timeZone: 'America/Bogota' })
+          const mapEn: Record<string, string> = { Sun: 'Dom', Mon: 'Lun', Tue: 'Mar', Wed: 'Mie', Thu: 'Jue', Fri: 'Vie', Sat: 'Sab' }
+          const esDay = mapEn[bogotaStr] || WEEKDAY_MAP[d.getDay()]
+          if (esDay && !dayNames.includes(esDay)) dayNames.push(esDay)
+        }
+        if (dayNames.length > 0) studentProfile.recurrenceDay = dayNames.slice(0, 3).join(',')
+      }
+
+      if (!studentProfile.recurrenceTime && activeUpcoming[0]?.date) {
+        studentProfile.recurrenceTime = new Date(activeUpcoming[0].date).toLocaleTimeString('en-US', {
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true,
+          timeZone: 'America/Bogota'
+        })
+      }
     }
 
     if (isSeniorStudent) {
@@ -197,10 +250,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }))
 
       try {
-        const allTopics = await findAirtableRecords('Curriculum Topics', "NOT({Order} = '')")
+        const topicsRes = await fetchFromAirtable('Curriculum Topics', '')
+        const allTopics = topicsRes.records || []
         const generalTopics = allTopics
           .filter((t: any) => ((t.fields['Curriculum'] || '') as string).includes('General English Course'))
-          .sort((a: any, b: any) => parseInt(a.fields['Order'] || '0', 10) - parseInt(b.fields['Order'] || '0', 10))
+          .sort((a: any, b: any) => parseInt(String(a.fields['Order'] || '0'), 10) - parseInt(String(b.fields['Order'] || '0'), 10))
 
         if (generalTopics.length > 0) {
           completedSessions = generalTopics.map((t: any) => {
@@ -209,7 +263,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               if (t.fields['Cached Slides']) slides = JSON.parse(t.fields['Cached Slides'])
             } catch {}
 
-            const rawOrder = parseInt(t.fields['Order'] || '0', 10)
+            const rawOrder = parseInt(String(t.fields['Order'] || '0'), 10)
             const rawTitle = t.fields['Topic Name'] || t.fields['Title'] || `Tema ${t.fields['Order']}`
 
             return {
@@ -237,7 +291,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const marker = '=== MASTERY_PROGRESS_JSON ==='
     if (notesStr.includes(marker)) {
       try {
-        masteryMap = JSON.parse(notesStr.split(marker)[1].trim())
+        const afterMarker = notesStr.split(marker)[1]
+        const jsonSegment = afterMarker.split('\n=== ')[0].trim()
+        masteryMap = JSON.parse(jsonSegment)
       } catch {}
     }
 

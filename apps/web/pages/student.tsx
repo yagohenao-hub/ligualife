@@ -4,6 +4,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 import styles from '@/styles/StudentDashboard.module.css'
 import { LinguaLifeLogo } from '@/components/LinguaLifeLogo'
+import { ThemeToggle } from '@/components/ThemeToggle'
 import { InfiniteTriviaModal } from '@/components/InfiniteTriviaModal'
 import { ShortReadingModal } from '@/components/ShortReadingModal'
 import { getTopicSummary } from '@/lib/curriculum-summary'
@@ -194,9 +195,31 @@ export default function StudentDashboardPage() {
   const [showTokenModal, setShowTokenModal] = useState(false)
   const [selectedTopic, setSelectedTopic] = useState<StudentSession | null>(null)
   const [teacherAvail, setTeacherAvail] = useState<boolean[][]>([])
+  const [teacherBookedDates, setTeacherBookedDates] = useState<string[]>([])
   const [redeemMsg, setRedeemMsg] = useState<string | null>(null)
+  const [toastBanner, setToastBanner] = useState<{ text: string; type: 'success' | 'error' } | null>(null)
   const [courseTotal, setCourseTotal] = useState(60)
   const [calSelectedDate, setCalSelectedDate] = useState<Date | null>(null)
+
+  const showToast = useCallback((text: string, type: 'success' | 'error' = 'success') => {
+    setToastBanner({ text, type })
+    setTimeout(() => {
+      setToastBanner(prev => (prev?.text === text ? null : prev))
+    }, 4500)
+  }, [])
+
+  const formatRecurrenceDays = (raw?: string | null) => {
+    if (!raw) return 'Horario por confirmar'
+    const dayMap: Record<string, string> = {
+      Lun: 'Lunes', Mar: 'Martes', Mie: 'Miércoles', Mié: 'Miércoles',
+      Jue: 'Jueves', Vie: 'Viernes', Sab: 'Sábado', Sáb: 'Sábado', Dom: 'Domingo'
+    }
+    const parts = raw.split(',').map(s => dayMap[s.trim()] || s.trim()).filter(Boolean)
+    if (parts.length === 0) return 'Horario por confirmar'
+    if (parts.length === 1) return parts[0]
+    if (parts.length === 2) return `${parts[0]} y ${parts[1]}`
+    return `${parts.slice(0, -1).join(', ')} y ${parts[parts.length - 1]}`
+  }
 
   const [showScheduleModal, setShowScheduleModal] = useState(false)
   const [showRateModal, setShowRateModal] = useState(false)
@@ -527,10 +550,12 @@ export default function StudentDashboardPage() {
 
   async function handleGeneratePractice(topic: StudentSession) {
     const order = topic.topicOrder ?? 0
+    const summary = getTopicSummary(order, topic.topicName)
+    const cacheKey = `ll_practice_v2_${profile?.id || 'anon'}_${order}`
 
     // Si ya existe en caché, cargarla al instante
     try {
-      const cached = sessionStorage.getItem(`ll_practice_${order}`) || localStorage.getItem(`ll_practice_${order}`)
+      const cached = sessionStorage.getItem(cacheKey) || localStorage.getItem(cacheKey)
       if (cached) {
         setPracticeDoc(JSON.parse(cached))
         return
@@ -552,28 +577,31 @@ export default function StudentDashboardPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           studentName: profile?.name,
+          topicOrder: order,
           topicName: topic.topicName,
-          level: 'B1'
+          ldsFormula: summary.correctMethod,
+          level: summary.level,
+          commonMistake: summary.commonMistake?.explanation
         })
       })
       const data = await res.json()
       if (data.activities) {
         setPracticeDoc(data)
         try {
-          sessionStorage.setItem(`ll_practice_${order}`, JSON.stringify(data))
-          localStorage.setItem(`ll_practice_${order}`, JSON.stringify(data))
+          sessionStorage.setItem(cacheKey, JSON.stringify(data))
+          localStorage.setItem(cacheKey, JSON.stringify(data))
         } catch {}
         recordPracticeUsage()
       } else if (data.cards) {
         setPracticeCards(data.cards)
         try {
-          sessionStorage.setItem(`ll_practice_cards_${order}`, JSON.stringify(data.cards))
-          localStorage.setItem(`ll_practice_cards_${order}`, JSON.stringify(data.cards))
+          sessionStorage.setItem(`${cacheKey}_cards`, JSON.stringify(data.cards))
+          localStorage.setItem(`${cacheKey}_cards`, JSON.stringify(data.cards))
         } catch {}
         recordPracticeUsage()
       }
     } catch {
-      console.warn('Error al generar la guía de práctica')
+      showToast('No se pudo cargar la guía de repaso en este momento.', 'error')
     } finally {
       setPracticeLoading(false)
     }
@@ -601,28 +629,43 @@ export default function StudentDashboardPage() {
   async function handleReschedule(session: StudentSession) {
     if (!confirm('¿Seguro que quieres reagendar esta clase? Se te asignará un token de reposición y el temario avanzará a la próxima sesión.')) return
     setRescheduling(session.id)
-    const res = await fetch('/api/student/reschedule', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ sessionId: session.id, studentId: profile?.id, canceledBy: 'student' }),
-    })
-    const data = await res.json()
-    if (!res.ok) { alert(data.error || 'Error al reagendar'); setRescheduling(null); return }
-    const updated: StudentProfile = { ...profile!, tokens: profile!.tokens + 1 }
-    setProfile(updated)
-    sessionStorage.setItem('ll_student', JSON.stringify(updated))
-    loadSessions(profile!.id)
-    setRescheduling(null)
+    try {
+      const res = await fetch('/api/student/reschedule', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId: session.id, studentId: profile?.id, canceledBy: 'student' }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        showToast(data.error || 'Error al reagendar', 'error')
+        setRescheduling(null)
+        return
+      }
+      const nextTokens = typeof data.newTokens === 'number' ? data.newTokens : profile!.tokens + 1
+      const updated: StudentProfile = { ...profile!, tokens: nextTokens }
+      setProfile(updated)
+      sessionStorage.setItem('ll_student', JSON.stringify(updated))
+      loadSessions(profile!.id)
+      showToast('Clase reagendada. Recibiste +1 token de reposición.', 'success')
+    } catch {
+      showToast('Error de conexión al reagendar.', 'error')
+    } finally {
+      setRescheduling(null)
+    }
   }
 
   async function openTokenModal() {
-    if (!profile?.teacherId) { alert('No tienes profesor asignado aún.'); return }
+    if (!profile?.teacherId) {
+      showToast('No tienes profesor asignado aún.', 'error')
+      return
+    }
     setRedeemMsg(null)
     setCalSelectedDate(null)
     const res = await fetch(`/api/student/teacher-availability?teacherId=${profile.teacherId}`)
     if (res.ok) {
       const data = await res.json()
       setTeacherAvail(data.availability ?? [])
+      setTeacherBookedDates(data.bookedDates ?? [])
     }
     setShowTokenModal(true)
   }
@@ -649,22 +692,27 @@ export default function StudentDashboardPage() {
       }),
     })
     const data = await res.json()
-    if (!res.ok) { setRedeemMsg(data.error || 'Error'); return }
-    const updated = { ...profile, tokens: profile.tokens - 1 }
+    if (!res.ok) { setRedeemMsg(data.error || 'Error al agendar clase'); return }
+    const remainingTokens = typeof data.remainingTokens === 'number' ? data.remainingTokens : Math.max(0, profile.tokens - 1)
+    const updated = { ...profile, tokens: remainingTokens }
     setProfile(updated)
     sessionStorage.setItem('ll_student', JSON.stringify(updated))
     setShowTokenModal(false)
     setCalSelectedDate(null)
     loadSessions(profile.id)
-    alert('¡Clase agendada exitosamente!')
+    showToast('¡Clase de reposición agendada exitosamente!', 'success')
   }
 
   async function openScheduleModal() {
-    if (!profile?.teacherId) { alert('No tienes profesor asignado aún.'); return }
+    if (!profile?.teacherId) {
+      showToast('No tienes profesor asignado aún.', 'error')
+      return
+    }
     const res = await fetch(`/api/student/teacher-availability?teacherId=${profile.teacherId}`)
     if (res.ok) {
       const data = await res.json()
       setTeacherAvail(data.availability ?? [])
+      setTeacherBookedDates(data.bookedDates ?? [])
     }
     setShowScheduleModal(true)
   }
@@ -679,12 +727,12 @@ export default function StudentDashboardPage() {
     })
     setRatingLoading(false)
     if (res.ok) {
-        setShowRateModal(false)
-        setTeacherRating(0)
-        setTeacherComment('')
-        alert('Gracias por tu feedback.')
+      setShowRateModal(false)
+      setTeacherRating(0)
+      setTeacherComment('')
+      showToast('¡Gracias! Tu calificación fue guardada.', 'success')
     } else {
-        alert('Error al enviar la calificación.')
+      showToast('Error al enviar la calificación. Intenta de nuevo.', 'error')
     }
   }
 
@@ -730,7 +778,10 @@ export default function StudentDashboardPage() {
         if (!teacherAvail[row]?.[gridCol]) continue
         const slotDate = new Date(d)
         slotDate.setHours(HOURS_START + row, 0, 0, 0)
-        if (slotDate >= minTime) {
+        const isAlreadyBooked = teacherBookedDates.some(
+          bd => Math.abs(new Date(bd).getTime() - slotDate.getTime()) < 45 * 60 * 1000
+        )
+        if (slotDate >= minTime && !isAlreadyBooked) {
           availableHours.push({ hour: HOURS_START + row, label: HOURS[row] })
         }
       }
@@ -803,6 +854,9 @@ export default function StudentDashboardPage() {
         {/* === Header === */}
         <div className={styles.header}>
           <div>
+            <div style={{ marginBottom: '0.45rem' }}>
+              <LinguaLifeLogo size="sm" />
+            </div>
             <h1 className={styles.greeting}>Hola, {profile.name.split(' ')[0]}</h1>
             {profile.teacherId && (
               <div className={styles.headerActions} style={{ marginTop: '0.4rem' }}>
@@ -813,13 +867,46 @@ export default function StudentDashboardPage() {
               </div>
             )}
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+            <ThemeToggle />
             <button className={styles.logoutBtn} onClick={() => { sessionStorage.removeItem('ll_student'); router.replace('/') }} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
               <LogOut size={14} />
               <span>Salir</span>
             </button>
           </div>
         </div>
+
+        {/* === Inline Toast Banner (reemplaza alert()) === */}
+        {toastBanner && (
+          <div
+            role="status"
+            style={{
+              marginBottom: '1rem',
+              padding: '0.75rem 1rem',
+              borderRadius: '12px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '0.75rem',
+              fontSize: '0.9rem',
+              fontWeight: 600,
+              background: toastBanner.type === 'success' ? 'rgba(16, 185, 129, 0.14)' : 'rgba(239, 68, 68, 0.14)',
+              border: toastBanner.type === 'success' ? '1px solid rgba(16, 185, 129, 0.35)' : '1px solid rgba(239, 68, 68, 0.35)',
+              color: toastBanner.type === 'success' ? '#6ee7b7' : '#fca5a5',
+              zIndex: 20,
+              position: 'relative'
+            }}
+          >
+            <span>{toastBanner.text}</span>
+            <button
+              type="button"
+              onClick={() => setToastBanner(null)}
+              style={{ background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', padding: '0 0.25rem' }}
+            >
+              ✕
+            </button>
+          </div>
+        )}
 
         {/* === Cockpit Progress Card (Centered Percentage & Interactive Game Experience Bar) === */}
         <div className={styles.progressCard}>
@@ -928,12 +1015,18 @@ export default function StudentDashboardPage() {
                   <Calendar size={18} color="#38bdf8" />
                   <div>
                     <span style={{ fontWeight: 700 }}>Horario Regular:</span>{' '}
-                    <span>{profile.recurrenceDay === 'Mie,Vie' ? 'Miércoles y Viernes' : (profile.recurrenceDay || 'Miércoles y Viernes')} — {profile.recurrenceTime || '11:00 AM'}</span>
+                    <span>{formatRecurrenceDays(profile.recurrenceDay)} — {profile.recurrenceTime || 'Hora por confirmar'}</span>
                   </div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
                   <span className={styles.scheduleCycleTag}>
-                    {`Mes 1 • ${completed.length} Vistas • ${completed.length + 1}ª Clase ${upcoming.length > 0 && new Date(upcoming[0].date).toDateString() === new Date().toDateString() ? 'Hoy' : 'Próxima'} (Cierre próx. Miércoles)`}
+                    {`Ciclo ${Math.floor(completed.length / 8) + 1} • ${completed.length} Vistas • ${
+                      upcoming.length > 0
+                        ? (new Date(upcoming[0].date).toDateString() === new Date().toDateString()
+                            ? `${completed.length + 1}ª Clase Hoy`
+                            : `Próx: ${new Date(upcoming[0].date).toLocaleDateString('es-CO', { weekday: 'short', day: 'numeric', month: 'short' })}`)
+                        : `${profile.classesRemaining} clases en paquete`
+                    }`}
                   </span>
                   <span style={{ fontSize: '0.82rem', color: '#94a3b8' }}>
                     Profesor: <strong style={{ color: '#f1f5f9' }}>{profile.teacherName}</strong>
@@ -1214,7 +1307,9 @@ export default function StudentDashboardPage() {
                               <span className={styles.topicNum} style={{ borderColor: `${tierCfg.color}77`, color: tierCfg.color }}>
                                 {s.topicOrder ? String(s.topicOrder).padStart(2, '0') : '–'}
                               </span>
-                              <span className={styles.topicName}>{s.topicName ?? 'Clase completada'}</span>
+                              <span className={styles.topicName}>
+                                {s.topicOrder ? getFriendlyTopicName(s.topicOrder, s.topicName) : (s.topicName ?? 'Clase completada')}
+                              </span>
                             </div>
 
                             <div className={styles.topicRowActions}>
@@ -1791,6 +1886,7 @@ export default function StudentDashboardPage() {
         <ShortReadingModal
           topicOrder={activeReadingTopic.order}
           topicName={activeReadingTopic.name}
+          level={getTopicSummary(activeReadingTopic.order, activeReadingTopic.name).level}
           studentName={profile?.name}
           onClose={handleCloseShortReading}
         />

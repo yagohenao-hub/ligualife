@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+import { LinguaLifeLogo } from '@/components/LinguaLifeLogo'
+import { ThemeToggle } from '@/components/ThemeToggle'
 import styles from '@/styles/Register.module.css'
 import { COUNTRIES } from '@/lib/countries'
 
@@ -139,37 +141,46 @@ export default function StudentRegistration() {
         <title>Registro Alumno | LinguaLife</title>
       </Head>
 
-      <div style={{ width: '100%', maxWidth: '580px', marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 0.25rem' }}>
-        <Link 
-          href="/"
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-            color: '#94a3b8',
-            textDecoration: 'none',
-            fontSize: '0.85rem',
-            fontWeight: 500,
-            padding: '0.4rem 0.8rem',
-            borderRadius: '8px',
-            background: 'rgba(255, 255, 255, 0.05)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            transition: 'all 0.2s ease'
-          }}
-        >
-          ← Volver a la Landing Page
-        </Link>
-        <Link 
-          href="/login"
-          style={{
-            color: '#c4b5fd',
-            textDecoration: 'none',
-            fontSize: '0.85rem',
-            fontWeight: 600
-          }}
-        >
-          ¿Ya tienes PIN? Ingresar
-        </Link>
+      <div style={{ width: '100%', maxWidth: '600px', marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem', padding: '0 0.25rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flexWrap: 'wrap' }}>
+          <Link href="/" style={{ textDecoration: 'none' }}>
+            <LinguaLifeLogo size="sm" />
+          </Link>
+          <Link
+            href="/"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              color: 'var(--text-secondary)',
+              textDecoration: 'none',
+              fontSize: '0.82rem',
+              fontWeight: 600,
+              padding: '0.38rem 0.75rem',
+              borderRadius: '8px',
+              background: 'var(--surface-1)',
+              border: '1px solid var(--surface-border)',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            ← Landing
+          </Link>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <Link
+            href="/login"
+            style={{
+              color: 'var(--brand-cyan, #1AC1E7)',
+              textDecoration: 'none',
+              fontSize: '0.84rem',
+              fontWeight: 700
+            }}
+          >
+            ¿Ya tienes PIN? Ingresar
+          </Link>
+          <ThemeToggle />
+        </div>
       </div>
 
       <div className={styles.card}>

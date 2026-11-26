@@ -1085,14 +1085,14 @@
   bottom: 0;
   right: 150%;
   width: 240px;
-  background: #1e1e24;
-  border: 1px solid var(--border-glass);
-  border-radius: 8px;
+  background: var(--surface-elevated, var(--bg-card));
+  border: 1px solid var(--surface-border);
+  border-radius: 10px;
   padding: 0.75rem;
   color: var(--text-primary);
   font-size: 0.75rem;
   line-height: 1.5;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  box-shadow: var(--clay-sm);
   opacity: 0;
   visibility: hidden;
   transition: all 0.2s;
@@ -1587,8 +1587,8 @@
   outline: none;
 }
 .pageSelect option {
-  background: #0f1422;
-  color: #f8fafc;
+  background: var(--surface-elevated, var(--bg-secondary));
+  color: var(--text-primary);
 }
 
 .toggleAllBtn {
@@ -1928,9 +1928,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
-  background: #090d16;
+  border: 1px solid var(--surface-border);
+  box-shadow: var(--clay-sm);
+  background: var(--bg-primary);
 }
 
 .cardImageWrapFeatured {
@@ -3312,8 +3312,8 @@
 .emptyPracticeCard {
   text-align: center;
   padding: 3rem 1.5rem;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--surface-1);
+  border: 1px solid var(--surface-border);
   border-radius: 16px;
   margin-top: 1rem;
   display: flex;
@@ -3325,7 +3325,7 @@
 .emptyPracticeCard h3 {
   font-size: 1.15rem;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--text-primary);
 }
 
 .emptyPracticeCard p {
@@ -3333,5 +3333,10 @@
   color: var(--text-secondary);
   max-width: 440px;
   line-height: 1.5;
+}
+
+:global([data-theme="light"]) .progressCard,
+:global([data-theme="light"]) .modalBox {
+  box-shadow: 0 18px 40px -12px rgba(35, 45, 70, 0.15);
 }
 

@@ -1,6 +1,8 @@
 import { useEffect, useState, useCallback } from 'react'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
+import { LinguaLifeLogo } from '@/components/LinguaLifeLogo'
+import { ThemeToggle } from '@/components/ThemeToggle'
 import styles from '@/styles/Admin.module.css'
 import GroupMatchmaker from '@/components/dashboard/GroupMatchmaker'
 import VideoBankCurator from '@/components/admin/VideoBankCurator'
@@ -672,9 +674,14 @@ export default function AdminPage() {
         <Head>
           <title>LinguaLife — Admin</title>
         </Head>
-        <div className={styles.loginWrap}>
+        <div className={styles.loginWrap} style={{ position: 'relative' }}>
+          <div style={{ position: 'absolute', top: '1.25rem', right: '1.25rem' }}>
+            <ThemeToggle />
+          </div>
           <div className={styles.loginCard}>
-            <div className={styles.loginLogo}>🛡️</div>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '0.85rem' }}>
+              <LinguaLifeLogo size="md" />
+            </div>
             <h1 className={styles.loginTitle}>Panel Administrativo</h1>
             <p className={styles.loginSub}>LinguaLife Academia</p>
             <input
@@ -706,9 +713,12 @@ export default function AdminPage() {
       <div className={styles.adminWrap}>
         {/* ── Sidebar ── */}
         <aside className={styles.sidebar}>
-          <div className={styles.sidebarLogo}>
-            <span className={styles.logoBadge}>LL</span>
-            <span className={styles.logoText}>Admin</span>
+          <div className={styles.sidebarLogo} style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '0.65rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+              <LinguaLifeLogo size="sm" showText={false} />
+              <span className={styles.logoText}>Admin</span>
+            </div>
+            <ThemeToggle />
           </div>
           <nav className={styles.sidebarNav}>
             {/* 1. Visión General */}

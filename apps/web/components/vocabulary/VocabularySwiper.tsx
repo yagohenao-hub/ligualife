@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { VocabularyWordItem, TriageStatus, saveLocalStudentWordState } from '@/lib/vocabulary';
 import styles from '@/styles/Vocabulary.module.css';
 
@@ -12,10 +12,18 @@ export const VocabularySwiper: React.FC<Props> = ({ words, onWordClassified }) =
   const [showDetails, setShowDetails] = useState(false);
   const [history, setHistory] = useState<{ index: number; senseId: string; prevStatus: TriageStatus }[]>([]);
 
+  // Reset swiper index only when changing category/level list (not when updating status on same words)
+  const wordsIdentity = words.map(w => w.id).join(',');
+  useEffect(() => {
+    setCurrentIndex(0);
+    setShowDetails(false);
+    setHistory([]);
+  }, [wordsIdentity]);
+
   if (words.length === 0) {
     return (
       <div className={styles.classifierArea} style={{ textAlign: 'center', padding: '3rem 1rem' }}>
-        <p style={{ color: '#a1a1aa' }}>No hay palabras disponibles para este nivel con los filtros actuales.</p>
+        <p style={{ color: 'var(--text-secondary)' }}>No hay palabras disponibles para este nivel con los filtros actuales.</p>
       </div>
     );
   }
@@ -24,19 +32,20 @@ export const VocabularySwiper: React.FC<Props> = ({ words, onWordClassified }) =
     return (
       <div className={styles.classifierArea} style={{ textAlign: 'center', padding: '3.5rem 1rem' }}>
         <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎉</div>
-        <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#f4f4f5', marginBottom: '0.5rem' }}>
+        <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
           ¡Completaste la clasificación de este nivel!
         </h3>
-        <p style={{ color: '#a1a1aa', maxWidth: '420px', margin: '0 auto 1.5rem', lineHeight: 1.5 }}>
-          Has categorizado todas las palabras disponibles. Ahora puedes afianzar tu memoria en la <strong>Trivia</strong> o consultar tu progreso en <strong>Mi Inventario</strong>.
+        <p style={{ color: 'var(--text-secondary)', maxWidth: '420px', margin: '0 auto 1.5rem', lineHeight: 1.5 }}>
+          Has categorizado todas las palabras disponibles. Ahora puedes afianzar tu memoria en la <strong>Trivia</strong> o consultar tu progreso en <strong>Inventario</strong>.
         </p>
         <button
+          type="button"
           onClick={() => {
             setCurrentIndex(0);
             setShowDetails(false);
           }}
           className={styles.tabBtn}
-          style={{ margin: '0 auto', background: '#10b981', color: '#042f1a', fontWeight: 800 }}
+          style={{ margin: '0 auto', background: 'var(--brand-cyan, #1AC1E7)', color: '#090C10', borderColor: 'transparent', fontWeight: 800 }}
         >
           🔄 Volver a revisar palabras
         </button>
@@ -171,7 +180,7 @@ export const VocabularySwiper: React.FC<Props> = ({ words, onWordClassified }) =
               {primarySense?.exampleSentenceEn && (
                 <div className={styles.exampleBox}>
                   <div style={{ fontWeight: 600 }}>&ldquo;{primarySense.exampleSentenceEn}&rdquo;</div>
-                  <div style={{ color: '#a1a1aa', fontSize: '0.8rem', marginTop: '0.25rem' }}>
+                  <div style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginTop: '0.25rem' }}>
                     {primarySense.exampleSentenceEs}
                   </div>
                 </div>
@@ -191,7 +200,7 @@ export const VocabularySwiper: React.FC<Props> = ({ words, onWordClassified }) =
         >
           <div className={styles.decisionBtnIcon}>✓</div>
           <div className={styles.decisionBtnTextWrap}>
-            <span className={styles.decisionBtnTitle} style={{ color: '#34d399' }}>
+            <span className={styles.decisionBtnTitle} style={{ color: 'var(--accent-green, #34D399)' }}>
               Ya me la sé (Dominada)
             </span>
             <span className={styles.decisionBtnDesc}>
@@ -208,7 +217,7 @@ export const VocabularySwiper: React.FC<Props> = ({ words, onWordClassified }) =
         >
           <div className={styles.decisionBtnIcon}>👁️</div>
           <div className={styles.decisionBtnTextWrap}>
-            <span className={styles.decisionBtnTitle} style={{ color: '#c084fc' }}>
+            <span className={styles.decisionBtnTitle} style={{ color: 'var(--brand-purple, #8C31C5)' }}>
               Vocabulario Pasivo (La reconozco)
             </span>
             <span className={styles.decisionBtnDesc}>
@@ -225,7 +234,7 @@ export const VocabularySwiper: React.FC<Props> = ({ words, onWordClassified }) =
         >
           <div className={styles.decisionBtnIcon}>+</div>
           <div className={styles.decisionBtnTextWrap}>
-            <span className={styles.decisionBtnTitle} style={{ color: '#fbbf24' }}>
+            <span className={styles.decisionBtnTitle} style={{ color: 'var(--brand-yellow, #FDBA3B)' }}>
               Quiero aprenderla (Al mazo de estudio)
             </span>
             <span className={styles.decisionBtnDesc}>

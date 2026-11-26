@@ -1,5 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { fetchAirtableRecord, patchAirtableRecord, createAirtableRecord, fetchFromAirtable } from '@/lib/airtable'
+import { fetchAirtableRecord, patchAirtableRecord } from '@/lib/airtable'
+import { supabase } from '@/lib/supabaseClient'
+
+const REVIEW_MARKER = '=== TEACHER_REVIEWS_JSON ==='
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).end()
@@ -15,42 +18,95 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(400).json({ error: 'Rating debe ser un número entre 1 y 5' })
   }
 
+  const reviewEntry = {
+    studentId,
+    teacherId,
+    rating: numericRating,
+    comment: comment || '',
+    sessionId: sessionId || null,
+    createdAt: new Date().toISOString()
+  }
+
   try {
-    // 1. Persist the review in Airtable (table: "Teacher Reviews")
-    //    Fields: Student (linked), Teacher (linked), Rating (number), Comment (text), Session (linked), Date
-    const reviewFields: Record<string, any> = {
-      'Student': [studentId],
-      'Teacher': [teacherId],
-      'Rating': numericRating,
-      'Comment': comment || '',
-      'Review Date': new Date().toISOString().split('T')[0],
-    }
-    if (sessionId) {
-      reviewFields['Session'] = [sessionId]
-    }
+    // 1. Try dedicated teacher_reviews table if it exists in Postgres
+    const { error: insertErr } = await supabase
+      .from('teacher_reviews')
+      .insert([{
+        Student: studentId,
+        Teacher: teacherId,
+        Rating: numericRating,
+        Comment: comment || '',
+        Session: sessionId || null,
+        'Review Date': reviewEntry.createdAt.split('T')[0]
+      }])
 
-    await createAirtableRecord('Teacher Reviews', reviewFields)
-
-    // 2. Update the rolling average rating on the Teacher record
-    const teacherData = await fetchFromAirtable(
-      'Teacher Reviews',
-      `filterByFormula=${encodeURIComponent(`FIND('${teacherId}', ARRAYJOIN({Teacher}, ',')) > 0`)}&fields[]=Rating`
-    )
-    const allRatings = (teacherData.records ?? [])
-      .map((r: any) => Number(r.fields['Rating']))
-      .filter((n: number) => !isNaN(n))
-
-    if (allRatings.length > 0) {
-      const avg = allRatings.reduce((a: number, b: number) => a + b, 0) / allRatings.length
-      await patchAirtableRecord('Teachers', teacherId, {
-        'Average Rating': Math.round(avg * 10) / 10
-      })
+    if (!insertErr) {
+      return res.status(200).json({ ok: true, message: 'Calificación guardada', storage: 'teacher_reviews' })
     }
 
-    console.log(`[Review] Teacher: ${teacherId}, Student: ${studentId}, Rating: ${numericRating}`)
-    return res.status(200).json({ ok: true, message: 'Calificación guardada' })
+    // 2. Clean fallback in student_teacher.Notes (guaranteed column in schema_17_tables.sql)
+    const { data: stRows } = await supabase
+      .from('student_teacher')
+      .select('id, "Notes"')
+      .ilike('Student', `%${studentId}%`)
+      .ilike('Teacher', `%${teacherId}%`)
+      .order('created_at', { ascending: false })
+      .limit(1)
+
+    if (stRows && stRows.length > 0) {
+      const targetRow = stRows[0]
+      const currentNotes = String(targetRow.Notes || '')
+      let reviewsList: any[] = []
+      let baseText = currentNotes
+
+      if (currentNotes.includes(REVIEW_MARKER)) {
+        const parts = currentNotes.split(REVIEW_MARKER)
+        baseText = parts[0].trim()
+        const jsonPart = parts[1].split('\n=== ')[0].trim()
+        try { reviewsList = JSON.parse(jsonPart) } catch { reviewsList = [] }
+      }
+
+      if (!Array.isArray(reviewsList)) reviewsList = []
+      reviewsList.push(reviewEntry)
+
+      const updatedNotes = baseText
+        ? `${baseText}\n\n${REVIEW_MARKER}\n${JSON.stringify(reviewsList)}`
+        : `${REVIEW_MARKER}\n${JSON.stringify(reviewsList)}`
+
+      await supabase
+        .from('student_teacher')
+        .update({ Notes: updatedNotes })
+        .eq('id', targetRow.id)
+
+      return res.status(200).json({ ok: true, message: 'Calificación guardada', storage: 'student_teacher' })
+    }
+
+    // 3. Secondary fallback in students.Notes without disturbing MASTERY_PROGRESS_JSON
+    const student = await fetchAirtableRecord('Students', studentId)
+    if (student) {
+      const currentNotes = String(student.fields?.['Notes'] || '')
+      let reviewsList: any[] = []
+      let updatedNotes = currentNotes
+
+      if (currentNotes.includes(REVIEW_MARKER)) {
+        const [before, after] = currentNotes.split(REVIEW_MARKER)
+        const nextMarkerIdx = after.indexOf('\n=== ')
+        const jsonRaw = (nextMarkerIdx >= 0 ? after.slice(0, nextMarkerIdx) : after).trim()
+        const tail = nextMarkerIdx >= 0 ? after.slice(nextMarkerIdx) : ''
+        try { reviewsList = JSON.parse(jsonRaw) } catch { reviewsList = [] }
+        if (!Array.isArray(reviewsList)) reviewsList = []
+        reviewsList.push(reviewEntry)
+        updatedNotes = `${before.trim()}\n\n${REVIEW_MARKER}\n${JSON.stringify(reviewsList)}${tail}`
+      } else {
+        reviewsList = [reviewEntry]
+        updatedNotes = `${currentNotes.trim()}\n\n${REVIEW_MARKER}\n${JSON.stringify(reviewsList)}`.trim()
+      }
+
+      await patchAirtableRecord('Students', studentId, { Notes: updatedNotes })
+    }
+
+    return res.status(200).json({ ok: true, message: 'Calificación guardada', storage: 'students' })
   } catch (err: any) {
-    // If the "Teacher Reviews" table doesn't exist yet, log gracefully
     console.error('[rate-teacher] Error saving review:', err.message)
     return res.status(500).json({ error: 'No se pudo guardar la calificación', detail: err.message })
   }
