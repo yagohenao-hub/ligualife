@@ -5,8 +5,7 @@ import styles from '@/styles/Vocabulary.module.css';
 interface Props {
   selectedLevel: CefrLevel;
   onSelectLevel: (lvl: CefrLevel) => void;
-  includePreviousPending: boolean;
-  onTogglePreviousPending: (val: boolean) => void;
+  wordCount?: number;
 }
 
 const CEFR_LEVELS: CefrLevel[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
@@ -14,8 +13,7 @@ const CEFR_LEVELS: CefrLevel[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 export const VocabularyLevelSelector: React.FC<Props> = ({
   selectedLevel,
   onSelectLevel,
-  includePreviousPending,
-  onTogglePreviousPending
+  wordCount
 }) => {
   return (
     <div className={styles.headerBar}>
@@ -33,6 +31,7 @@ export const VocabularyLevelSelector: React.FC<Props> = ({
             }}
           >
             {selectedLevel}
+            {typeof wordCount === 'number' && wordCount > 0 ? ` • ${wordCount} palabras` : ''}
           </span>
         </div>
 
@@ -49,28 +48,6 @@ export const VocabularyLevelSelector: React.FC<Props> = ({
           ))}
         </div>
       </div>
-
-      <button
-        type="button"
-        className={styles.switchContainer}
-        onClick={() => onTogglePreviousPending(!includePreviousPending)}
-        aria-pressed={includePreviousPending}
-      >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.1rem', textAlign: 'left' }}>
-          <span style={{ fontWeight: 700, fontSize: '0.82rem', color: 'var(--text-primary)' }}>
-            Incluir pendientes previos
-          </span>
-          <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
-            {includePreviousPending
-              ? 'Suma palabras aún pendientes de niveles anteriores'
-              : 'Solo palabras exclusivas del nivel seleccionado'}
-          </span>
-        </div>
-
-        <div className={`${styles.toggleSwitch} ${includePreviousPending ? styles.toggleSwitchActive : ''}`}>
-          <div className={styles.toggleHandle} />
-        </div>
-      </button>
     </div>
   );
 };

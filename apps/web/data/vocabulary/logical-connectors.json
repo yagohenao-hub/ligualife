@@ -1,0 +1,2875 @@
+[
+  {
+    "id": "vw-lc-however",
+    "word": "however",
+    "cefrLevel": "B1",
+    "partOfSpeech": "conjunctive adverb",
+    "ipa": "/haʊˈev.ər/",
+    "thematicCluster": "Contraste & Matiz",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-however-1",
+        "wordId": "vw-lc-however",
+        "word": "however",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "conjunctive adverb",
+        "ipa": "/haʊˈev.ər/",
+        "definitionEn": "Used to introduce a statement that contrasts with or seems to contradict something said previously.",
+        "definitionEs": "Sin embargo / No obstante; introduce un contraste directo.",
+        "exampleSentenceEn": "The proposal looks promising; however, the timeline is quite tight.",
+        "exampleSentenceEs": "La propuesta parece prometedora; sin embargo, el cronograma es bastante ajustado.",
+        "collocations": [
+          "however, we must",
+          "that being said"
+        ],
+        "notes": "Cuando une dos oraciones independientes, va después de punto o punto y coma y seguido de coma."
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-however-synonym-0",
+        "sourceSenseId": "vs-lc-however-1",
+        "targetSenseId": "vs-lc-nevertheless-1",
+        "targetWord": "nevertheless",
+        "targetDefinitionEs": "No obstante",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-however-antonym-1",
+        "sourceSenseId": "vs-lc-however-1",
+        "targetSenseId": "vs-lc-therefore-1",
+        "targetWord": "therefore",
+        "targetDefinitionEs": "Por lo tanto (causa-efecto)",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-nevertheless",
+    "word": "nevertheless",
+    "cefrLevel": "B2",
+    "partOfSpeech": "conjunctive adverb",
+    "ipa": "/ˌnev.ər.ðəˈles/",
+    "thematicCluster": "Contraste & Matiz",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-nevertheless-1",
+        "wordId": "vw-lc-nevertheless",
+        "word": "nevertheless",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "conjunctive adverb",
+        "ipa": "/ˌnev.ər.ðəˈles/",
+        "definitionEn": "In spite of what has just been said; nonetheless.",
+        "definitionEs": "No obstante / Aun así / Sin embargo (registro formal).",
+        "exampleSentenceEn": "The market was volatile; nevertheless, our revenue grew by 12%.",
+        "exampleSentenceEs": "El mercado estuvo volátil; no obstante, nuestros ingresos crecieron un 12%.",
+        "collocations": [
+          "nevertheless, the team"
+        ],
+        "notes": "Muy valorado en presentaciones ejecutivas y ensayos B2/C1."
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-nevertheless-synonym-0",
+        "sourceSenseId": "vs-lc-nevertheless-1",
+        "targetSenseId": "vs-lc-nonetheless-1",
+        "targetWord": "nonetheless",
+        "targetDefinitionEs": "Aun así / No obstante",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-nevertheless-antonym-1",
+        "sourceSenseId": "vs-lc-nevertheless-1",
+        "targetSenseId": "vs-lc-consequently-1",
+        "targetWord": "consequently",
+        "targetDefinitionEs": "En consecuencia",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-nonetheless",
+    "word": "nonetheless",
+    "cefrLevel": "C1",
+    "partOfSpeech": "conjunctive adverb",
+    "ipa": "/ˌnʌn.ðəˈles/",
+    "thematicCluster": "Contraste & Matiz",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-nonetheless-1",
+        "wordId": "vw-lc-nonetheless",
+        "word": "nonetheless",
+        "senseIndex": 1,
+        "cefrLevelTarget": "C1",
+        "partOfSpeech": "conjunctive adverb",
+        "ipa": "/ˌnʌn.ðəˈles/",
+        "definitionEn": "In spite of that; nevertheless.",
+        "definitionEs": "Aun así / De todos modos / No obstante.",
+        "exampleSentenceEn": "It was a risky strategy, but it worked wonderfully nonetheless.",
+        "exampleSentenceEs": "Fue una estrategia arriesgada, pero aun así funcionó de maravilla.",
+        "collocations": [
+          "work nonetheless",
+          "nonetheless true"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-nonetheless-synonym-0",
+        "sourceSenseId": "vs-lc-nonetheless-1",
+        "targetSenseId": "vs-lc-nevertheless-1",
+        "targetWord": "nevertheless",
+        "targetDefinitionEs": "No obstante",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-nonetheless-antonym-1",
+        "sourceSenseId": "vs-lc-nonetheless-1",
+        "targetSenseId": "vs-lc-hence-1",
+        "targetWord": "hence",
+        "targetDefinitionEs": "Por consiguiente",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-although",
+    "word": "although",
+    "cefrLevel": "B1",
+    "partOfSpeech": "subordinating conjunction",
+    "ipa": "/ɔːlˈðoʊ/",
+    "thematicCluster": "Contraste & Matiz",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-although-1",
+        "wordId": "vw-lc-although",
+        "word": "although",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "subordinating conjunction",
+        "ipa": "/ɔːlˈðoʊ/",
+        "definitionEn": "In spite of the fact that; even though (followed by a subject and verb).",
+        "definitionEs": "Aunque / A pesar de que (siempre va seguido de sujeto + verbo).",
+        "exampleSentenceEn": "Although she was tired, she finished the client presentation.",
+        "exampleSentenceEs": "Aunque estaba cansada, terminó la presentación para el cliente.",
+        "collocations": [
+          "although it seems",
+          "although we tried"
+        ],
+        "notes": "Regla de oro: nunca pongas \"but\" en la misma frase después de usar \"although\"."
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-although-synonym-0",
+        "sourceSenseId": "vs-lc-although-1",
+        "targetSenseId": "vs-lc-even-though-1",
+        "targetWord": "even though",
+        "targetDefinitionEs": "Aunque / Aun cuando",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-although-antonym-1",
+        "sourceSenseId": "vs-lc-although-1",
+        "targetSenseId": "vs-lc-because-1",
+        "targetWord": "because",
+        "targetDefinitionEs": "Porque (causa directa)",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-even-though",
+    "word": "even though",
+    "cefrLevel": "B1",
+    "partOfSpeech": "conjunction",
+    "ipa": "/ˈiː.vən ðoʊ/",
+    "thematicCluster": "Contraste & Matiz",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-even-though-1",
+        "wordId": "vw-lc-even-though",
+        "word": "even though",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "conjunction",
+        "ipa": "/ˈiː.vən ðoʊ/",
+        "definitionEn": "Used to emphasize a strong contrast despite a clear real fact.",
+        "definitionEs": "Aunque / Aun cuando (enfático sobre un hecho real).",
+        "exampleSentenceEn": "Even though the flight was delayed, we arrived in time for dinner.",
+        "exampleSentenceEs": "Aun cuando el vuelo se retrasó, llegamos a tiempo para cenar.",
+        "collocations": [
+          "even though it rained"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-even-though-synonym-0",
+        "sourceSenseId": "vs-lc-even-though-1",
+        "targetSenseId": "vs-lc-although-1",
+        "targetWord": "although",
+        "targetDefinitionEs": "Aunque",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-even-though-antonym-1",
+        "sourceSenseId": "vs-lc-even-though-1",
+        "targetSenseId": "vs-lc-since-1",
+        "targetWord": "since",
+        "targetDefinitionEs": "Ya que / Puesto que",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-despite",
+    "word": "despite",
+    "cefrLevel": "B1",
+    "partOfSpeech": "preposition",
+    "ipa": "/dɪˈspaɪt/",
+    "thematicCluster": "Contraste & Matiz",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-despite-1",
+        "wordId": "vw-lc-despite",
+        "word": "despite",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "preposition",
+        "ipa": "/dɪˈspaɪt/",
+        "definitionEn": "Without being affected by; in spite of (followed by a noun, pronoun, or -ing gerund).",
+        "definitionEs": "A pesar de (seguido de sustantivo o verbo en -ING, NUNCA lleva \"of\").",
+        "exampleSentenceEn": "Despite working late, he woke up energized for the call.",
+        "exampleSentenceEs": "A pesar de trabajar hasta tarde, se despertó con energía para la llamada.",
+        "collocations": [
+          "despite the fact that",
+          "despite facing"
+        ],
+        "notes": "Trampa clásica: jamás digas \"despite of\" ❌. Es \"despite\" o \"in spite of\"."
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-despite-synonym-0",
+        "sourceSenseId": "vs-lc-despite-1",
+        "targetSenseId": "vs-lc-in-spite-of-1",
+        "targetWord": "in spite of",
+        "targetDefinitionEs": "A pesar de",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-despite-antonym-1",
+        "sourceSenseId": "vs-lc-despite-1",
+        "targetSenseId": "vs-lc-due-to-1",
+        "targetWord": "due to",
+        "targetDefinitionEs": "Debido a (causa)",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-in-spite-of",
+    "word": "in spite of",
+    "cefrLevel": "B1",
+    "partOfSpeech": "prepositional phrase",
+    "ipa": "/ɪn spaɪt əv/",
+    "thematicCluster": "Contraste & Matiz",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-in-spite-of-1",
+        "wordId": "vw-lc-in-spite-of",
+        "word": "in spite of",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "prepositional phrase",
+        "ipa": "/ɪn spaɪt əv/",
+        "definitionEn": "Used to show that something happened or is true regardless of an obstacle.",
+        "definitionEs": "A pesar de (equivalente exacto de \"despite\", pero sí lleva \"of\").",
+        "exampleSentenceEn": "In spite of the heavy rain, the outdoor conference went smoothly.",
+        "exampleSentenceEs": "A pesar de la fuerte lluvia, la conferencia al aire libre transcurrió sin problemas.",
+        "collocations": [
+          "in spite of everything"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-in-spite-of-synonym-0",
+        "sourceSenseId": "vs-lc-in-spite-of-1",
+        "targetSenseId": "vs-lc-despite-1",
+        "targetWord": "despite",
+        "targetDefinitionEs": "A pesar de",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-in-spite-of-antonym-1",
+        "sourceSenseId": "vs-lc-in-spite-of-1",
+        "targetSenseId": "vs-lc-owing-to-1",
+        "targetWord": "owing to",
+        "targetDefinitionEs": "Debido a",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-whereas",
+    "word": "whereas",
+    "cefrLevel": "B2",
+    "partOfSpeech": "conjunction",
+    "ipa": "/werˈæz/",
+    "thematicCluster": "Contraste & Matiz",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-whereas-1",
+        "wordId": "vw-lc-whereas",
+        "word": "whereas",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "conjunction",
+        "ipa": "/werˈæz/",
+        "definitionEn": "In contrast or comparison with the fact that.",
+        "definitionEs": "Mientras que / En tanto que (contraste directo entre dos cosas).",
+        "exampleSentenceEn": "Our European clients prefer email, whereas US clients prefer quick calls.",
+        "exampleSentenceEs": "Nuestros clientes europeos prefieren el correo, mientras que los de EE. UU. prefieren llamadas rápidas.",
+        "collocations": [
+          "whereas others argue"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-whereas-synonym-0",
+        "sourceSenseId": "vs-lc-whereas-1",
+        "targetSenseId": "vs-lc-while-1",
+        "targetWord": "while",
+        "targetDefinitionEs": "Mientras que",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-whereas-antonym-1",
+        "sourceSenseId": "vs-lc-whereas-1",
+        "targetSenseId": "vs-lc-likewise-1",
+        "targetWord": "likewise",
+        "targetDefinitionEs": "De igual manera",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-on-the-other-hand",
+    "word": "on the other hand",
+    "cefrLevel": "B1",
+    "partOfSpeech": "discourse marker",
+    "ipa": "/ɑːn ði ˈʌð.ər hænd/",
+    "thematicCluster": "Contraste & Matiz",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-on-the-other-hand-1",
+        "wordId": "vw-lc-on-the-other-hand",
+        "word": "on the other hand",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "discourse marker",
+        "ipa": "/ɑːn ði ˈʌð.ər hænd/",
+        "definitionEn": "Used to introduce a contrasting point of view or balancing argument.",
+        "definitionEs": "Por otro lado / Por otra parte.",
+        "exampleSentenceEn": "Remote work saves commute time; on the other hand, team bonding takes extra effort.",
+        "exampleSentenceEs": "El trabajo remoto ahorra tiempo de traslado; por otro lado, la integración del equipo requiere esfuerzo extra.",
+        "collocations": [
+          "on the one hand... on the other hand"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-on-the-other-hand-synonym-0",
+        "sourceSenseId": "vs-lc-on-the-other-hand-1",
+        "targetSenseId": "vs-lc-by-contrast-1",
+        "targetWord": "by contrast",
+        "targetDefinitionEs": "En contraste",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-on-the-other-hand-antonym-1",
+        "sourceSenseId": "vs-lc-on-the-other-hand-1",
+        "targetSenseId": "vs-lc-similarly-1",
+        "targetWord": "similarly",
+        "targetDefinitionEs": "De modo similar",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-on-the-contrary",
+    "word": "on the contrary",
+    "cefrLevel": "B2",
+    "partOfSpeech": "discourse marker",
+    "ipa": "/ɑːn ðə ˈkɑːn.trer.i/",
+    "thematicCluster": "Contraste & Matiz",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-on-the-contrary-1",
+        "wordId": "vw-lc-on-the-contrary",
+        "word": "on the contrary",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "discourse marker",
+        "ipa": "/ɑːn ðə ˈkɑːn.trer.i/",
+        "definitionEn": "Used to deny a negative statement and assert the exact opposite is true.",
+        "definitionEs": "Al contrario / Por el contrario (refuta una afirmación previa).",
+        "exampleSentenceEn": "The launch was not delayed; on the contrary, we shipped two days early.",
+        "exampleSentenceEs": "El lanzamiento no se retrasó; al contrario, lanzamos dos días antes.",
+        "collocations": [
+          "quite the contrary"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-on-the-contrary-synonym-0",
+        "sourceSenseId": "vs-lc-on-the-contrary-1",
+        "targetSenseId": "vs-lc-conversely-1",
+        "targetWord": "conversely",
+        "targetDefinitionEs": "Inversamente / Por el contrario",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-on-the-contrary-antonym-1",
+        "sourceSenseId": "vs-lc-on-the-contrary-1",
+        "targetSenseId": "vs-lc-indeed-1",
+        "targetWord": "indeed",
+        "targetDefinitionEs": "En efecto / De hecho",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-conversely",
+    "word": "conversely",
+    "cefrLevel": "C1",
+    "partOfSpeech": "adverb",
+    "ipa": "/kənˈvɜːrs.li/",
+    "thematicCluster": "Contraste & Matiz",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-conversely-1",
+        "wordId": "vw-lc-conversely",
+        "word": "conversely",
+        "senseIndex": 1,
+        "cefrLevelTarget": "C1",
+        "partOfSpeech": "adverb",
+        "ipa": "/kənˈvɜːrs.li/",
+        "definitionEn": "Introducing a statement or idea which reverses one that has just been made.",
+        "definitionEs": "Por el contrario / A la inversa.",
+        "exampleSentenceEn": "Lower prices boost sales volume; conversely, higher prices can raise profit margins.",
+        "exampleSentenceEs": "Precios más bajos impulsan el volumen; a la inversa, precios más altos elevan los márgenes.",
+        "collocations": [
+          "conversely, if we"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-conversely-synonym-0",
+        "sourceSenseId": "vs-lc-conversely-1",
+        "targetSenseId": "vs-lc-on-the-contrary-1",
+        "targetWord": "on the contrary",
+        "targetDefinitionEs": "Por el contrario",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-conversely-antonym-1",
+        "sourceSenseId": "vs-lc-conversely-1",
+        "targetSenseId": "vs-lc-likewise-1",
+        "targetWord": "likewise",
+        "targetDefinitionEs": "Igualmente",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-having-said-that",
+    "word": "having said that",
+    "cefrLevel": "B2",
+    "partOfSpeech": "conversational marker",
+    "ipa": "/ˈhæv.ɪŋ sed ðæt/",
+    "thematicCluster": "Contraste & Matiz",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-having-said-that-1",
+        "wordId": "vw-lc-having-said-that",
+        "word": "having said that",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "conversational marker",
+        "ipa": "/ˈhæv.ɪŋ sed ðæt/",
+        "definitionEn": "Used to introduce an exception or caveat right after agreeing with a previous point.",
+        "definitionEs": "Dicho esto / Con todo y eso / Sin embargo (muy natural al hablar).",
+        "exampleSentenceEn": "The software is very intuitive. Having said that, we still need onboarding training.",
+        "exampleSentenceEs": "El software es muy intuitivo. Dicho esto, aún necesitamos capacitación inicial.",
+        "collocations": [
+          "having said that, I think"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-having-said-that-synonym-0",
+        "sourceSenseId": "vs-lc-having-said-that-1",
+        "targetSenseId": "vs-lc-even-so-1",
+        "targetWord": "even so",
+        "targetDefinitionEs": "Aun así",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-having-said-that-antonym-1",
+        "sourceSenseId": "vs-lc-having-said-that-1",
+        "targetSenseId": "vs-lc-therefore-1",
+        "targetWord": "therefore",
+        "targetDefinitionEs": "Por lo tanto",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-even-so",
+    "word": "even so",
+    "cefrLevel": "B2",
+    "partOfSpeech": "adverbial phrase",
+    "ipa": "/ˈiː.vən soʊ/",
+    "thematicCluster": "Contraste & Matiz",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-even-so-1",
+        "wordId": "vw-lc-even-so",
+        "word": "even so",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "adverbial phrase",
+        "ipa": "/ˈiː.vən soʊ/",
+        "definitionEn": "Despite that fact; nonetheless.",
+        "definitionEs": "Aun así / Incluso así.",
+        "exampleSentenceEn": "We checked the report twice; even so, a minor typo slipped through.",
+        "exampleSentenceEs": "Revisamos el informe dos veces; aun así, se coló un pequeño error de tipeo.",
+        "collocations": [
+          "even so, it works"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-even-so-synonym-0",
+        "sourceSenseId": "vs-lc-even-so-1",
+        "targetSenseId": "vs-lc-nonetheless-1",
+        "targetWord": "nonetheless",
+        "targetDefinitionEs": "No obstante",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-even-so-antonym-1",
+        "sourceSenseId": "vs-lc-even-so-1",
+        "targetSenseId": "vs-lc-thus-1",
+        "targetWord": "thus",
+        "targetDefinitionEs": "Así pues",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-by-contrast",
+    "word": "by contrast",
+    "cefrLevel": "B2",
+    "partOfSpeech": "prepositional phrase",
+    "ipa": "/baɪ ˈkɑːn.træst/",
+    "thematicCluster": "Contraste & Matiz",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-by-contrast-1",
+        "wordId": "vw-lc-by-contrast",
+        "word": "by contrast",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "prepositional phrase",
+        "ipa": "/baɪ ˈkɑːn.træst/",
+        "definitionEn": "When compared with another person, thing, or situation that is clearly different.",
+        "definitionEs": "En contraste / A diferencia de lo anterior.",
+        "exampleSentenceEn": "Q1 growth was modest. By contrast, Q2 doubled our initial forecast.",
+        "exampleSentenceEs": "El crecimiento del Q1 fue modesto. En contraste, el Q2 duplicó nuestro pronóstico inicial.",
+        "collocations": [
+          "by contrast with"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-by-contrast-synonym-0",
+        "sourceSenseId": "vs-lc-by-contrast-1",
+        "targetSenseId": "vs-lc-on-the-other-hand-1",
+        "targetWord": "on the other hand",
+        "targetDefinitionEs": "Por otro lado",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-by-contrast-antonym-1",
+        "sourceSenseId": "vs-lc-by-contrast-1",
+        "targetSenseId": "vs-lc-similarly-1",
+        "targetWord": "similarly",
+        "targetDefinitionEs": "De forma similar",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-instead",
+    "word": "instead",
+    "cefrLevel": "A2",
+    "partOfSpeech": "adverb",
+    "ipa": "/ɪnˈsted/",
+    "thematicCluster": "Contraste & Matiz",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-instead-1",
+        "wordId": "vw-lc-instead",
+        "word": "instead",
+        "senseIndex": 1,
+        "cefrLevelTarget": "A2",
+        "partOfSpeech": "adverb",
+        "ipa": "/ɪnˈsted/",
+        "definitionEn": "As an alternative or substitute for something previously mentioned.",
+        "definitionEs": "En lugar de eso / En su lugar / Mejor.",
+        "exampleSentenceEn": "Let us skip the long deck and jump straight into a live demo instead.",
+        "exampleSentenceEs": "Saltémonos la presentación larga y pasemos directo a una demo en vivo en su lugar.",
+        "collocations": [
+          "instead of",
+          "do this instead"
+        ],
+        "notes": "Usa \"instead\" solo al final/inicio de la frase; usa \"instead of + sustantivo/-ING\" antes de aquello que reemplazas."
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-instead-synonym-0",
+        "sourceSenseId": "vs-lc-instead-1",
+        "targetSenseId": "vs-lc-alternatively-1",
+        "targetWord": "alternatively",
+        "targetDefinitionEs": "Alternativamente",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-instead-antonym-1",
+        "sourceSenseId": "vs-lc-instead-1",
+        "targetSenseId": "vs-lc-as-well-1",
+        "targetWord": "as well",
+        "targetDefinitionEs": "Además / También",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-moreover",
+    "word": "moreover",
+    "cefrLevel": "B2",
+    "partOfSpeech": "conjunctive adverb",
+    "ipa": "/mɔːrˈoʊ.vər/",
+    "thematicCluster": "Adición & Énfasis",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-moreover-1",
+        "wordId": "vw-lc-moreover",
+        "word": "moreover",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "conjunctive adverb",
+        "ipa": "/mɔːrˈoʊ.vər/",
+        "definitionEn": "As a further matter; besides; used to add an even stronger supporting point.",
+        "definitionEs": "Además / Es más (añade un argumento de mayor peso).",
+        "exampleSentenceEn": "The course is flexible; moreover, you receive personalized feedback after every session.",
+        "exampleSentenceEs": "El curso es flexible; además, recibes retroalimentación personalizada tras cada sesión.",
+        "collocations": [
+          "moreover, it helps"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-moreover-synonym-0",
+        "sourceSenseId": "vs-lc-moreover-1",
+        "targetSenseId": "vs-lc-furthermore-1",
+        "targetWord": "furthermore",
+        "targetDefinitionEs": "Asimismo / Además",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-moreover-antonym-1",
+        "sourceSenseId": "vs-lc-moreover-1",
+        "targetSenseId": "vs-lc-however-1",
+        "targetWord": "however",
+        "targetDefinitionEs": "Sin embargo",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-furthermore",
+    "word": "furthermore",
+    "cefrLevel": "B2",
+    "partOfSpeech": "conjunctive adverb",
+    "ipa": "/ˌfɜːr.ðərˈmɔːr/",
+    "thematicCluster": "Adición & Énfasis",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-furthermore-1",
+        "wordId": "vw-lc-furthermore",
+        "word": "furthermore",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "conjunctive adverb",
+        "ipa": "/ˌfɜːr.ðərˈmɔːr/",
+        "definitionEn": "In addition; besides (formal reinforcement of an argument).",
+        "definitionEs": "Es más / Asimismo / Por añadidura.",
+        "exampleSentenceEn": "This plan cuts expenses by 20%. Furthermore, it improves delivery speed.",
+        "exampleSentenceEs": "Este plan reduce los gastos un 20%. Asimismo, mejora la velocidad de entrega.",
+        "collocations": [
+          "furthermore, studies show"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-furthermore-synonym-0",
+        "sourceSenseId": "vs-lc-furthermore-1",
+        "targetSenseId": "vs-lc-moreover-1",
+        "targetWord": "moreover",
+        "targetDefinitionEs": "Además / Es más",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-furthermore-antonym-1",
+        "sourceSenseId": "vs-lc-furthermore-1",
+        "targetSenseId": "vs-lc-nevertheless-1",
+        "targetWord": "nevertheless",
+        "targetDefinitionEs": "No obstante",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-in-addition",
+    "word": "in addition",
+    "cefrLevel": "B1",
+    "partOfSpeech": "prepositional phrase",
+    "ipa": "/ɪn əˈdɪʃ.ən/",
+    "thematicCluster": "Adición & Énfasis",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-in-addition-1",
+        "wordId": "vw-lc-in-addition",
+        "word": "in addition",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "prepositional phrase",
+        "ipa": "/ɪn əˈdɪʃ.ən/",
+        "definitionEn": "Used to add another fact, benefit, or item to a list.",
+        "definitionEs": "Además / Adicionalmente.",
+        "exampleSentenceEn": "In addition to weekly live classes, you get daily conversation prompts.",
+        "exampleSentenceEs": "Además de las clases semanales en vivo, recibes retos diarios de conversación.",
+        "collocations": [
+          "in addition to + noun/-ing"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-in-addition-synonym-0",
+        "sourceSenseId": "vs-lc-in-addition-1",
+        "targetSenseId": "vs-lc-besides-1",
+        "targetWord": "besides",
+        "targetDefinitionEs": "Además / Aparte de",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-in-addition-antonym-1",
+        "sourceSenseId": "vs-lc-in-addition-1",
+        "targetSenseId": "vs-lc-instead-1",
+        "targetWord": "instead",
+        "targetDefinitionEs": "En lugar de eso",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-besides",
+    "word": "besides",
+    "cefrLevel": "B1",
+    "partOfSpeech": "adverb / preposition",
+    "ipa": "/bɪˈsaɪdz/",
+    "thematicCluster": "Adición & Énfasis",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-besides-1",
+        "wordId": "vw-lc-besides",
+        "word": "besides",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "adverb / preposition",
+        "ipa": "/bɪˈsaɪdz/",
+        "definitionEn": "In addition to; apart from; also used to introduce a decisive extra reason.",
+        "definitionEs": "Además / Aparte de eso (y en conversación: \"además de que...\").",
+        "exampleSentenceEn": "I do not want to move abroad right now; besides, my family is settled here.",
+        "exampleSentenceEs": "No quiero mudarme al extranjero ahora mismo; además, mi familia está establecida aquí.",
+        "collocations": [
+          "besides that",
+          "besides being"
+        ],
+        "notes": "No confundir \"beside\" (al lado de, ubicación física) con \"besides\" (además)."
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-besides-synonym-0",
+        "sourceSenseId": "vs-lc-besides-1",
+        "targetSenseId": "vs-lc-in-addition-1",
+        "targetWord": "in addition",
+        "targetDefinitionEs": "Además",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-besides-antonym-1",
+        "sourceSenseId": "vs-lc-besides-1",
+        "targetSenseId": "vs-lc-except-for-1",
+        "targetWord": "except for",
+        "targetDefinitionEs": "Excepto por",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-as-a-matter-of-fact",
+    "word": "as a matter of fact",
+    "cefrLevel": "B2",
+    "partOfSpeech": "conversational marker",
+    "ipa": "/æz ə ˈmæt.ər əv fækt/",
+    "thematicCluster": "Adición & Énfasis",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-as-a-matter-of-fact-1",
+        "wordId": "vw-lc-as-a-matter-of-fact",
+        "word": "as a matter of fact",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "conversational marker",
+        "ipa": "/æz ə ˈmæt.ər əv fækt/",
+        "definitionEn": "Used to emphasize the truth of an assertion or provide a surprising confirming detail.",
+        "definitionEs": "De hecho / En realidad / Es más.",
+        "exampleSentenceEn": "I do know the city well; as a matter of fact, I lived there for five years.",
+        "exampleSentenceEs": "Sí conozco bien la ciudad; de hecho, viví allí durante cinco años.",
+        "collocations": [
+          "as a matter of fact, yes"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-as-a-matter-of-fact-synonym-0",
+        "sourceSenseId": "vs-lc-as-a-matter-of-fact-1",
+        "targetSenseId": "vs-lc-indeed-1",
+        "targetWord": "indeed",
+        "targetDefinitionEs": "En efecto / De hecho",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-as-a-matter-of-fact-antonym-1",
+        "sourceSenseId": "vs-lc-as-a-matter-of-fact-1",
+        "targetSenseId": "vs-lc-on-the-contrary-1",
+        "targetWord": "on the contrary",
+        "targetDefinitionEs": "Por el contrario",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-indeed",
+    "word": "indeed",
+    "cefrLevel": "B2",
+    "partOfSpeech": "adverb",
+    "ipa": "/ɪnˈdiːd/",
+    "thematicCluster": "Adición & Énfasis",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-indeed-1",
+        "wordId": "vw-lc-indeed",
+        "word": "indeed",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "adverb",
+        "ipa": "/ɪnˈdiːd/",
+        "definitionEn": "Used to emphasize a statement or confirm something already suggested.",
+        "definitionEs": "En efecto / Ciertamente / De hecho.",
+        "exampleSentenceEn": "The training was challenging, and very rewarding indeed.",
+        "exampleSentenceEs": "El entrenamiento fue exigente, y ciertamente muy gratificante.",
+        "collocations": [
+          "yes indeed",
+          "indeed, it is"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-indeed-synonym-0",
+        "sourceSenseId": "vs-lc-indeed-1",
+        "targetSenseId": "vs-lc-as-a-matter-of-fact-1",
+        "targetWord": "as a matter of fact",
+        "targetDefinitionEs": "De hecho",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-indeed-antonym-1",
+        "sourceSenseId": "vs-lc-indeed-1",
+        "targetSenseId": "vs-lc-however-1",
+        "targetWord": "however",
+        "targetDefinitionEs": "Sin embargo",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-above-all",
+    "word": "above all",
+    "cefrLevel": "B2",
+    "partOfSpeech": "adverbial phrase",
+    "ipa": "/əˈbʌv ɔːl/",
+    "thematicCluster": "Adición & Énfasis",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-above-all-1",
+        "wordId": "vw-lc-above-all",
+        "word": "above all",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "adverbial phrase",
+        "ipa": "/əˈbʌv ɔːl/",
+        "definitionEn": "More than anything else; as the highest priority.",
+        "definitionEs": "Sobre todo / Por encima de todo.",
+        "exampleSentenceEn": "Stay consistent, practice aloud, and above all, enjoy the process.",
+        "exampleSentenceEs": "Mantén la constancia, practica en voz alta y, sobre todo, disfruta el proceso.",
+        "collocations": [
+          "above all else"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-above-all-synonym-0",
+        "sourceSenseId": "vs-lc-above-all-1",
+        "targetSenseId": "vs-lc-primarily-1",
+        "targetWord": "primarily",
+        "targetDefinitionEs": "Principalmente",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-above-all-antonym-1",
+        "sourceSenseId": "vs-lc-above-all-1",
+        "targetSenseId": "vs-lc-least-of-all-1",
+        "targetWord": "least of all",
+        "targetDefinitionEs": "Menos que nada",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-likewise",
+    "word": "likewise",
+    "cefrLevel": "B2",
+    "partOfSpeech": "adverb",
+    "ipa": "/ˈlaɪk.waɪz/",
+    "thematicCluster": "Adición & Énfasis",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-likewise-1",
+        "wordId": "vw-lc-likewise",
+        "word": "likewise",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "adverb",
+        "ipa": "/ˈlaɪk.waɪz/",
+        "definitionEn": "In the same way; similarly; also used as a polite reply (\"igualmente\").",
+        "definitionEs": "De igual manera / Igualmente / Asimismo.",
+        "exampleSentenceEn": "The marketing budget increased; likewise, engineering hired three specialists.",
+        "exampleSentenceEs": "El presupuesto de marketing subió; asimismo, ingeniería contrató tres especialistas.",
+        "collocations": [
+          "do likewise",
+          "likewise!"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-likewise-synonym-0",
+        "sourceSenseId": "vs-lc-likewise-1",
+        "targetSenseId": "vs-lc-similarly-1",
+        "targetWord": "similarly",
+        "targetDefinitionEs": "De modo similar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-likewise-antonym-1",
+        "sourceSenseId": "vs-lc-likewise-1",
+        "targetSenseId": "vs-lc-conversely-1",
+        "targetWord": "conversely",
+        "targetDefinitionEs": "Por el contrario",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-similarly",
+    "word": "similarly",
+    "cefrLevel": "B2",
+    "partOfSpeech": "adverb",
+    "ipa": "/ˈsɪm.ɪ.lər.li/",
+    "thematicCluster": "Adición & Énfasis",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-similarly-1",
+        "wordId": "vw-lc-similarly",
+        "word": "similarly",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "adverb",
+        "ipa": "/ˈsɪm.ɪ.lər.li/",
+        "definitionEn": "In a similar way; expressing parallel comparison.",
+        "definitionEs": "De manera similar / Parecidamente.",
+        "exampleSentenceEn": "Solar power costs have plunged; similarly, battery storage is far cheaper now.",
+        "exampleSentenceEs": "Los costos de energía solar han caído; de manera similar, las baterías son mucho más baratas hoy.",
+        "collocations": [
+          "similarly, we observed"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-similarly-synonym-0",
+        "sourceSenseId": "vs-lc-similarly-1",
+        "targetSenseId": "vs-lc-likewise-1",
+        "targetWord": "likewise",
+        "targetDefinitionEs": "Igualmente",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-similarly-antonym-1",
+        "sourceSenseId": "vs-lc-similarly-1",
+        "targetSenseId": "vs-lc-by-contrast-1",
+        "targetWord": "by contrast",
+        "targetDefinitionEs": "En contraste",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-what-is-more",
+    "word": "what is more",
+    "cefrLevel": "B2",
+    "partOfSpeech": "discourse marker",
+    "ipa": "/wʌt ɪz mɔːr/",
+    "thematicCluster": "Adición & Énfasis",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-what-is-more-1",
+        "wordId": "vw-lc-what-is-more",
+        "word": "what is more",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "discourse marker",
+        "ipa": "/wʌt ɪz mɔːr/",
+        "definitionEn": "Used to add an extra point that makes an argument even more compelling.",
+        "definitionEs": "Lo que es más / Y aún más importante.",
+        "exampleSentenceEn": "The app is lightweight and, what is more, it works completely offline.",
+        "exampleSentenceEs": "La aplicación es ligera y, lo que es más, funciona completamente sin conexión.",
+        "collocations": [
+          "and what is more"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-what-is-more-synonym-0",
+        "sourceSenseId": "vs-lc-what-is-more-1",
+        "targetSenseId": "vs-lc-moreover-1",
+        "targetWord": "moreover",
+        "targetDefinitionEs": "Además",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-what-is-more-antonym-1",
+        "sourceSenseId": "vs-lc-what-is-more-1",
+        "targetSenseId": "vs-lc-nonetheless-1",
+        "targetWord": "nonetheless",
+        "targetDefinitionEs": "No obstante",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-therefore",
+    "word": "therefore",
+    "cefrLevel": "B1",
+    "partOfSpeech": "conjunctive adverb",
+    "ipa": "/ˈðer.fɔːr/",
+    "thematicCluster": "Causa & Efecto",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-therefore-1",
+        "wordId": "vw-lc-therefore",
+        "word": "therefore",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "conjunctive adverb",
+        "ipa": "/ˈðer.fɔːr/",
+        "definitionEn": "For that reason; as a logical consequence.",
+        "definitionEs": "Por lo tanto / Por consiguiente.",
+        "exampleSentenceEn": "All seats are booked; therefore, we will open a second session on Friday.",
+        "exampleSentenceEs": "Todos los cupos están reservados; por lo tanto, abriremos una segunda sesión el viernes.",
+        "collocations": [
+          "therefore, we decided"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-therefore-synonym-0",
+        "sourceSenseId": "vs-lc-therefore-1",
+        "targetSenseId": "vs-lc-consequently-1",
+        "targetWord": "consequently",
+        "targetDefinitionEs": "En consecuencia",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-therefore-antonym-1",
+        "sourceSenseId": "vs-lc-therefore-1",
+        "targetSenseId": "vs-lc-however-1",
+        "targetWord": "however",
+        "targetDefinitionEs": "Sin embargo",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-consequently",
+    "word": "consequently",
+    "cefrLevel": "B2",
+    "partOfSpeech": "adverb",
+    "ipa": "/ˈkɑːn.sɪ.kwənt.li/",
+    "thematicCluster": "Causa & Efecto",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-consequently-1",
+        "wordId": "vw-lc-consequently",
+        "word": "consequently",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "adverb",
+        "ipa": "/ˈkɑːn.sɪ.kwənt.li/",
+        "definitionEn": "As a direct result or consequence of what was just mentioned.",
+        "definitionEs": "En consecuencia / Por consiguiente.",
+        "exampleSentenceEn": "She practiced speaking daily; consequently, her interview went effortlessly.",
+        "exampleSentenceEs": "Practicó conversación a diario; en consecuencia, su entrevista fluyó sin esfuerzo.",
+        "collocations": [
+          "consequently, sales rose"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-consequently-synonym-0",
+        "sourceSenseId": "vs-lc-consequently-1",
+        "targetSenseId": "vs-lc-as-a-result-1",
+        "targetWord": "as a result",
+        "targetDefinitionEs": "Como resultado",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-consequently-antonym-1",
+        "sourceSenseId": "vs-lc-consequently-1",
+        "targetSenseId": "vs-lc-despite-1",
+        "targetWord": "despite",
+        "targetDefinitionEs": "A pesar de",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-as-a-result",
+    "word": "as a result",
+    "cefrLevel": "B1",
+    "partOfSpeech": "discourse phrase",
+    "ipa": "/æz ə rɪˈzʌlt/",
+    "thematicCluster": "Causa & Efecto",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-as-a-result-1",
+        "wordId": "vw-lc-as-a-result",
+        "word": "as a result",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "discourse phrase",
+        "ipa": "/æz ə rɪˈzʌlt/",
+        "definitionEn": "Because of something that happened previously.",
+        "definitionEs": "Como resultado / Por ese motivo.",
+        "exampleSentenceEn": "We streamlined the onboarding flow; as a result, sign-ups doubled.",
+        "exampleSentenceEs": "Simplificamos el flujo de registro; como resultado, las inscripciones se duplicaron.",
+        "collocations": [
+          "as a result of"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-as-a-result-synonym-0",
+        "sourceSenseId": "vs-lc-as-a-result-1",
+        "targetSenseId": "vs-lc-consequently-1",
+        "targetWord": "consequently",
+        "targetDefinitionEs": "En consecuencia",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-as-a-result-antonym-1",
+        "sourceSenseId": "vs-lc-as-a-result-1",
+        "targetSenseId": "vs-lc-regardless-of-1",
+        "targetWord": "regardless of",
+        "targetDefinitionEs": "Sin importar",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-thus",
+    "word": "thus",
+    "cefrLevel": "C1",
+    "partOfSpeech": "adverb",
+    "ipa": "/ðʌs/",
+    "thematicCluster": "Causa & Efecto",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-thus-1",
+        "wordId": "vw-lc-thus",
+        "word": "thus",
+        "senseIndex": 1,
+        "cefrLevelTarget": "C1",
+        "partOfSpeech": "adverb",
+        "ipa": "/ðʌs/",
+        "definitionEn": "As a result or consequence of this; in this manner.",
+        "definitionEs": "Así / Por lo tanto / De este modo (registro formal/académico).",
+        "exampleSentenceEn": "He missed the morning train, thus delaying the entire workshop.",
+        "exampleSentenceEs": "Perdió el tren de la mañana, retrasando así todo el taller.",
+        "collocations": [
+          "thus far",
+          "thus reducing"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-thus-synonym-0",
+        "sourceSenseId": "vs-lc-thus-1",
+        "targetSenseId": "vs-lc-hence-1",
+        "targetWord": "hence",
+        "targetDefinitionEs": "De ahí / Por ende",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-thus-antonym-1",
+        "sourceSenseId": "vs-lc-thus-1",
+        "targetSenseId": "vs-lc-nonetheless-1",
+        "targetWord": "nonetheless",
+        "targetDefinitionEs": "No obstante",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-hence",
+    "word": "hence",
+    "cefrLevel": "C1",
+    "partOfSpeech": "adverb",
+    "ipa": "/hens/",
+    "thematicCluster": "Causa & Efecto",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-hence-1",
+        "wordId": "vw-lc-hence",
+        "word": "hence",
+        "senseIndex": 1,
+        "cefrLevelTarget": "C1",
+        "partOfSpeech": "adverb",
+        "ipa": "/hens/",
+        "definitionEn": "As a consequence; for this reason (used smoothly before noun phrases or clauses).",
+        "definitionEs": "De ahí que / Por ende / Por eso mismo.",
+        "exampleSentenceEn": "The founder grew up bilingual, hence her passion for language education.",
+        "exampleSentenceEs": "La fundadora creció bilingüe, de ahí su pasión por la enseñanza de idiomas.",
+        "collocations": [
+          "hence the name",
+          "hence why"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-hence-synonym-0",
+        "sourceSenseId": "vs-lc-hence-1",
+        "targetSenseId": "vs-lc-thus-1",
+        "targetWord": "thus",
+        "targetDefinitionEs": "Por lo tanto / Así",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-hence-antonym-1",
+        "sourceSenseId": "vs-lc-hence-1",
+        "targetSenseId": "vs-lc-despite-1",
+        "targetWord": "despite",
+        "targetDefinitionEs": "A pesar de",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-due-to",
+    "word": "due to",
+    "cefrLevel": "B1",
+    "partOfSpeech": "preposition",
+    "ipa": "/djuː tuː/",
+    "thematicCluster": "Causa & Efecto",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-due-to-1",
+        "wordId": "vw-lc-due-to",
+        "word": "due to",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "preposition",
+        "ipa": "/djuː tuː/",
+        "definitionEn": "Caused by or ascribable to (followed by a noun phrase, not a full clause).",
+        "definitionEs": "Debido a / A causa de (va antes de sustantivos).",
+        "exampleSentenceEn": "The match was postponed due to unexpected storms.",
+        "exampleSentenceEs": "El partido fue aplazado debido a tormentas inesperadas.",
+        "collocations": [
+          "due to the fact that"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-due-to-synonym-0",
+        "sourceSenseId": "vs-lc-due-to-1",
+        "targetSenseId": "vs-lc-owing-to-1",
+        "targetWord": "owing to",
+        "targetDefinitionEs": "Debido a",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-due-to-antonym-1",
+        "sourceSenseId": "vs-lc-due-to-1",
+        "targetSenseId": "vs-lc-despite-1",
+        "targetWord": "despite",
+        "targetDefinitionEs": "A pesar de",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-owing-to",
+    "word": "owing to",
+    "cefrLevel": "B2",
+    "partOfSpeech": "preposition",
+    "ipa": "/ˈoʊ.ɪŋ tuː/",
+    "thematicCluster": "Causa & Efecto",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-owing-to-1",
+        "wordId": "vw-lc-owing-to",
+        "word": "owing to",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "preposition",
+        "ipa": "/ˈoʊ.ɪŋ tuː/",
+        "definitionEn": "Because of or on account of (formal alternative to because of / due to).",
+        "definitionEs": "Debido a / Gracias a / A causa de.",
+        "exampleSentenceEn": "Owing to strong demand, we added two new conversation cohorts.",
+        "exampleSentenceEs": "Debido a la fuerte demanda, abrimos dos nuevos grupos de conversación.",
+        "collocations": [
+          "owing to high demand"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-owing-to-synonym-0",
+        "sourceSenseId": "vs-lc-owing-to-1",
+        "targetSenseId": "vs-lc-due-to-1",
+        "targetWord": "due to",
+        "targetDefinitionEs": "Debido a",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-owing-to-antonym-1",
+        "sourceSenseId": "vs-lc-owing-to-1",
+        "targetSenseId": "vs-lc-in-spite-of-1",
+        "targetWord": "in spite of",
+        "targetDefinitionEs": "A pesar de",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-since",
+    "word": "since",
+    "cefrLevel": "A2",
+    "partOfSpeech": "conjunction / preposition",
+    "ipa": "/sɪns/",
+    "thematicCluster": "Causa & Efecto",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-since-1",
+        "wordId": "vw-lc-since",
+        "word": "since",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "conjunction / preposition",
+        "ipa": "/sɪns/",
+        "definitionEn": "For the reason that; because (introducing a known cause).",
+        "definitionEs": "Ya que / Puesto que / Como (causa conocida).",
+        "exampleSentenceEn": "Since everyone is already online, let us begin the review.",
+        "exampleSentenceEs": "Ya que todos están en línea, comencemos la revisión.",
+        "collocations": [
+          "since you asked"
+        ]
+      },
+      {
+        "id": "vs-lc-since-2",
+        "wordId": "vw-lc-since",
+        "word": "since",
+        "senseIndex": 2,
+        "cefrLevelTarget": "A2",
+        "partOfSpeech": "conjunction / preposition",
+        "ipa": "/sɪns/",
+        "definitionEn": "From a particular time in the past until now.",
+        "definitionEs": "Desde (punto de inicio en el tiempo).",
+        "exampleSentenceEn": "She has worked remotely since 2023.",
+        "exampleSentenceEs": "Ella ha trabajado de forma remota desde 2023.",
+        "collocations": [
+          "since then",
+          "ever since"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-since-synonym-0",
+        "sourceSenseId": "vs-lc-since-1",
+        "targetSenseId": "vs-lc-because-1",
+        "targetWord": "because",
+        "targetDefinitionEs": "Porque / Ya que",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-since-antonym-1",
+        "sourceSenseId": "vs-lc-since-1",
+        "targetSenseId": "vs-lc-although-1",
+        "targetWord": "although",
+        "targetDefinitionEs": "Aunque",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-accordingly",
+    "word": "accordingly",
+    "cefrLevel": "C1",
+    "partOfSpeech": "adverb",
+    "ipa": "/əˈkɔːr.dɪŋ.li/",
+    "thematicCluster": "Causa & Efecto",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-accordingly-1",
+        "wordId": "vw-lc-accordingly",
+        "word": "accordingly",
+        "senseIndex": 1,
+        "cefrLevelTarget": "C1",
+        "partOfSpeech": "adverb",
+        "ipa": "/əˈkɔːr.dɪŋ.li/",
+        "definitionEn": "In a way that is appropriate to the particular circumstances; therefore.",
+        "definitionEs": "En consecuencia / Conforme a ello / De acuerdo con eso.",
+        "exampleSentenceEn": "The client updated their budget, and we adjusted our scope accordingly.",
+        "exampleSentenceEs": "El cliente actualizó su presupuesto y ajustamos nuestro alcance en consecuencia.",
+        "collocations": [
+          "act accordingly",
+          "plan accordingly"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-accordingly-synonym-0",
+        "sourceSenseId": "vs-lc-accordingly-1",
+        "targetSenseId": "vs-lc-therefore-1",
+        "targetWord": "therefore",
+        "targetDefinitionEs": "Por lo tanto",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-accordingly-antonym-1",
+        "sourceSenseId": "vs-lc-accordingly-1",
+        "targetSenseId": "vs-lc-regardless-1",
+        "targetWord": "regardless",
+        "targetDefinitionEs": "Sin importar eso",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-meanwhile",
+    "word": "meanwhile",
+    "cefrLevel": "B1",
+    "partOfSpeech": "adverb",
+    "ipa": "/ˈmiːn.waɪl/",
+    "thematicCluster": "Secuencia & Tiempo",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-meanwhile-1",
+        "wordId": "vw-lc-meanwhile",
+        "word": "meanwhile",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "adverb",
+        "ipa": "/ˈmiːn.waɪl/",
+        "definitionEn": "At the same time while something else is happening.",
+        "definitionEs": "Mientras tanto / Entretanto.",
+        "exampleSentenceEn": "The backend team deployed the API; meanwhile, designers polished the dashboard.",
+        "exampleSentenceEs": "El equipo backend desplegó la API; mientras tanto, los diseñadores pulieron el panel.",
+        "collocations": [
+          "meanwhile, back at"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-meanwhile-synonym-0",
+        "sourceSenseId": "vs-lc-meanwhile-1",
+        "targetSenseId": "vs-lc-in-the-meantime-1",
+        "targetWord": "in the meantime",
+        "targetDefinitionEs": "Mientras tanto",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-meanwhile-antonym-1",
+        "sourceSenseId": "vs-lc-meanwhile-1",
+        "targetSenseId": "vs-lc-subsequently-1",
+        "targetWord": "subsequently",
+        "targetDefinitionEs": "Posteriormente",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-in-the-meantime",
+    "word": "in the meantime",
+    "cefrLevel": "B1",
+    "partOfSpeech": "time phrase",
+    "ipa": "/ɪn ðə ˈmiːn.taɪm/",
+    "thematicCluster": "Secuencia & Tiempo",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-in-the-meantime-1",
+        "wordId": "vw-lc-in-the-meantime",
+        "word": "in the meantime",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "time phrase",
+        "ipa": "/ɪn ðə ˈmiːn.taɪm/",
+        "definitionEn": "During the interval of time before a future event happens.",
+        "definitionEs": "Mientras tanto / Por lo pronto (mientras esperas algo).",
+        "exampleSentenceEn": "Your certificate will arrive tomorrow; in the meantime, keep practicing trivia.",
+        "exampleSentenceEs": "Tu certificado llegará mañana; mientras tanto, sigue practicando trivia.",
+        "collocations": [
+          "in the meantime, feel free"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-in-the-meantime-synonym-0",
+        "sourceSenseId": "vs-lc-in-the-meantime-1",
+        "targetSenseId": "vs-lc-meanwhile-1",
+        "targetWord": "meanwhile",
+        "targetDefinitionEs": "Mientras tanto",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-in-the-meantime-antonym-1",
+        "sourceSenseId": "vs-lc-in-the-meantime-1",
+        "targetSenseId": "vs-lc-afterwards-1",
+        "targetWord": "afterwards",
+        "targetDefinitionEs": "Después",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-eventually",
+    "word": "eventually",
+    "cefrLevel": "B1",
+    "partOfSpeech": "adverb",
+    "ipa": "/ɪˈven.tʃu.ə.li/",
+    "thematicCluster": "Secuencia & Tiempo",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-eventually-1",
+        "wordId": "vw-lc-eventually",
+        "word": "eventually",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "adverb",
+        "ipa": "/ɪˈven.tʃu.ə.li/",
+        "definitionEn": "In the end, especially after a long delay, effort, or series of problems.",
+        "definitionEs": "Finalmente / Con el tiempo / A la larga (¡NUNCA significa \"eventualmente\"!).",
+        "exampleSentenceEn": "It took months of practice, but she eventually spoke with total confidence.",
+        "exampleSentenceEs": "Tomó meses de práctica, pero con el tiempo habló con total seguridad.",
+        "collocations": [
+          "eventually led to"
+        ],
+        "notes": "Falso cognado crítico: \"eventualmente\" en español es \"occasionally\" o \"possibly\", NO \"eventually\"."
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-eventually-synonym-0",
+        "sourceSenseId": "vs-lc-eventually-1",
+        "targetSenseId": "vs-lc-ultimately-1",
+        "targetWord": "ultimately",
+        "targetDefinitionEs": "Finalmente / A fin de cuentas",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-eventually-antonym-1",
+        "sourceSenseId": "vs-lc-eventually-1",
+        "targetSenseId": "vs-lc-initially-1",
+        "targetWord": "initially",
+        "targetDefinitionEs": "Inicialmente",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-subsequently",
+    "word": "subsequently",
+    "cefrLevel": "C1",
+    "partOfSpeech": "adverb",
+    "ipa": "/ˈsʌb.sɪ.kwənt.li/",
+    "thematicCluster": "Secuencia & Tiempo",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-subsequently-1",
+        "wordId": "vw-lc-subsequently",
+        "word": "subsequently",
+        "senseIndex": 1,
+        "cefrLevelTarget": "C1",
+        "partOfSpeech": "adverb",
+        "ipa": "/ˈsʌb.sɪ.kwənt.li/",
+        "definitionEn": "After a particular thing has happened; afterward.",
+        "definitionEs": "Posteriormente / A continuación / Más tarde.",
+        "exampleSentenceEn": "The app launched locally and subsequently expanded to twelve countries.",
+        "exampleSentenceEs": "La aplicación se lanzó localmente y posteriormente se expandió a doce países.",
+        "collocations": [
+          "subsequently revised"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-subsequently-synonym-0",
+        "sourceSenseId": "vs-lc-subsequently-1",
+        "targetSenseId": "vs-lc-afterwards-1",
+        "targetWord": "afterwards",
+        "targetDefinitionEs": "Después",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-subsequently-antonym-1",
+        "sourceSenseId": "vs-lc-subsequently-1",
+        "targetSenseId": "vs-lc-previously-1",
+        "targetWord": "previously",
+        "targetDefinitionEs": "Previamente",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-prior-to",
+    "word": "prior to",
+    "cefrLevel": "B2",
+    "partOfSpeech": "preposition",
+    "ipa": "/ˈpraɪ.ər tuː/",
+    "thematicCluster": "Secuencia & Tiempo",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-prior-to-1",
+        "wordId": "vw-lc-prior-to",
+        "word": "prior to",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "preposition",
+        "ipa": "/ˈpraɪ.ər tuː/",
+        "definitionEn": "Before a particular time or event (formal).",
+        "definitionEs": "Antes de / Previo a.",
+        "exampleSentenceEn": "Please review the vocabulary list prior to Friday’s session.",
+        "exampleSentenceEs": "Por favor revisa la lista de vocabulario previo a la sesión del viernes.",
+        "collocations": [
+          "prior to departure",
+          "prior to signing"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-prior-to-synonym-0",
+        "sourceSenseId": "vs-lc-prior-to-1",
+        "targetSenseId": "vs-lc-beforehand-1",
+        "targetWord": "beforehand",
+        "targetDefinitionEs": "De antemano",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-prior-to-antonym-1",
+        "sourceSenseId": "vs-lc-prior-to-1",
+        "targetSenseId": "vs-lc-subsequently-1",
+        "targetWord": "subsequently",
+        "targetDefinitionEs": "Posteriormente",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-afterwards",
+    "word": "afterwards",
+    "cefrLevel": "A2",
+    "partOfSpeech": "adverb",
+    "ipa": "/ˈæf.tər.wərdz/",
+    "thematicCluster": "Secuencia & Tiempo",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-afterwards-1",
+        "wordId": "vw-lc-afterwards",
+        "word": "afterwards",
+        "senseIndex": 1,
+        "cefrLevelTarget": "A2",
+        "partOfSpeech": "adverb",
+        "ipa": "/ˈæf.tər.wərdz/",
+        "definitionEn": "At a later or future time; after an event has happened.",
+        "definitionEs": "Después / Más tarde / Acto seguido.",
+        "exampleSentenceEn": "We will finish the mock interview and discuss feedback afterwards.",
+        "exampleSentenceEs": "Terminaremos la entrevista simulada y discutiremos el feedback después.",
+        "collocations": [
+          "shortly afterwards"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-afterwards-synonym-0",
+        "sourceSenseId": "vs-lc-afterwards-1",
+        "targetSenseId": "vs-lc-subsequently-1",
+        "targetWord": "subsequently",
+        "targetDefinitionEs": "Posteriormente",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-afterwards-antonym-1",
+        "sourceSenseId": "vs-lc-afterwards-1",
+        "targetSenseId": "vs-lc-beforehand-1",
+        "targetWord": "beforehand",
+        "targetDefinitionEs": "De antemano",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-at-first",
+    "word": "at first",
+    "cefrLevel": "A2",
+    "partOfSpeech": "time phrase",
+    "ipa": "/æt fɜːrst/",
+    "thematicCluster": "Secuencia & Tiempo",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-at-first-1",
+        "wordId": "vw-lc-at-first",
+        "word": "at first",
+        "senseIndex": 1,
+        "cefrLevelTarget": "A2",
+        "partOfSpeech": "time phrase",
+        "ipa": "/æt fɜːrst/",
+        "definitionEn": "At the beginning of a situation (often followed by a later change).",
+        "definitionEs": "Al principio / Al comienzo.",
+        "exampleSentenceEn": "At first, English phrasal verbs felt confusing, but now they make sense.",
+        "exampleSentenceEs": "Al principio, los phrasal verbs en inglés parecían confusos, pero ahora tienen sentido.",
+        "collocations": [
+          "at first glance"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-at-first-synonym-0",
+        "sourceSenseId": "vs-lc-at-first-1",
+        "targetSenseId": "vs-lc-initially-1",
+        "targetWord": "initially",
+        "targetDefinitionEs": "Inicialmente",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-at-first-antonym-1",
+        "sourceSenseId": "vs-lc-at-first-1",
+        "targetSenseId": "vs-lc-eventually-1",
+        "targetWord": "eventually",
+        "targetDefinitionEs": "Finalmente",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-unless",
+    "word": "unless",
+    "cefrLevel": "B1",
+    "partOfSpeech": "conjunction",
+    "ipa": "/ənˈles/",
+    "thematicCluster": "Condición & Propósito",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-unless-1",
+        "wordId": "vw-lc-unless",
+        "word": "unless",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "conjunction",
+        "ipa": "/ənˈles/",
+        "definitionEn": "Except if; used to introduce the only condition under which something will not happen.",
+        "definitionEs": "A menos que / Salvo que (equivale a \"if not\").",
+        "exampleSentenceEn": "Do not cancel the reservation unless the client confirms the change.",
+        "exampleSentenceEs": "No canceles la reserva a menos que el cliente confirme el cambio.",
+        "collocations": [
+          "unless otherwise noted"
+        ],
+        "notes": "Como \"unless\" ya es negativo (\"si no\"), el verbo siguiente va en afirmativo."
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-unless-synonym-0",
+        "sourceSenseId": "vs-lc-unless-1",
+        "targetSenseId": "vs-lc-except-if-1",
+        "targetWord": "except if",
+        "targetDefinitionEs": "Salvo que",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-unless-antonym-1",
+        "sourceSenseId": "vs-lc-unless-1",
+        "targetSenseId": "vs-lc-provided-that-1",
+        "targetWord": "provided that",
+        "targetDefinitionEs": "Siempre y cuando",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-provided-that",
+    "word": "provided that",
+    "cefrLevel": "B2",
+    "partOfSpeech": "conjunction",
+    "ipa": "/prəˈvaɪ.dɪd ðæt/",
+    "thematicCluster": "Condición & Propósito",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-provided-that-1",
+        "wordId": "vw-lc-provided-that",
+        "word": "provided that",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "conjunction",
+        "ipa": "/prəˈvaɪ.dɪd ðæt/",
+        "definitionEn": "On the strict condition or understanding that.",
+        "definitionEs": "Siempre y cuando / Con tal de que / A condición de que.",
+        "exampleSentenceEn": "You can reschedule any class free of charge, provided that you notify us 24h earlier.",
+        "exampleSentenceEs": "Puedes reprogramar cualquier clase sin costo, siempre y cuando avises con 24h de antelación.",
+        "collocations": [
+          "provided that everyone agrees"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-provided-that-synonym-0",
+        "sourceSenseId": "vs-lc-provided-that-1",
+        "targetSenseId": "vs-lc-as-long-as-1",
+        "targetWord": "as long as",
+        "targetDefinitionEs": "Siempre que",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-provided-that-antonym-1",
+        "sourceSenseId": "vs-lc-provided-that-1",
+        "targetSenseId": "vs-lc-unless-1",
+        "targetWord": "unless",
+        "targetDefinitionEs": "A menos que",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-as-long-as",
+    "word": "as long as",
+    "cefrLevel": "B1",
+    "partOfSpeech": "conjunction",
+    "ipa": "/æz lɔːŋ æz/",
+    "thematicCluster": "Condición & Propósito",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-as-long-as-1",
+        "wordId": "vw-lc-as-long-as",
+        "word": "as long as",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "conjunction",
+        "ipa": "/æz lɔːŋ æz/",
+        "definitionEn": "If and only if; during the whole time that a condition is met.",
+        "definitionEs": "Siempre y cuando / Mientras que se cumpla la condición.",
+        "exampleSentenceEn": "You will become fluent quickly as long as you speak every week.",
+        "exampleSentenceEs": "Alcanzarás fluidez rápido siempre y cuando hables todas las semanas.",
+        "collocations": [
+          "as long as you try"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-as-long-as-synonym-0",
+        "sourceSenseId": "vs-lc-as-long-as-1",
+        "targetSenseId": "vs-lc-provided-that-1",
+        "targetWord": "provided that",
+        "targetDefinitionEs": "A condición de que",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-as-long-as-antonym-1",
+        "sourceSenseId": "vs-lc-as-long-as-1",
+        "targetSenseId": "vs-lc-regardless-of-1",
+        "targetWord": "regardless of",
+        "targetDefinitionEs": "Sin importar",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-otherwise",
+    "word": "otherwise",
+    "cefrLevel": "B1",
+    "partOfSpeech": "adverb",
+    "ipa": "/ˈʌð.ər.waɪz/",
+    "thematicCluster": "Condición & Propósito",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-otherwise-1",
+        "wordId": "vw-lc-otherwise",
+        "word": "otherwise",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "adverb",
+        "ipa": "/ˈʌð.ər.waɪz/",
+        "definitionEn": "If not; or else (showing the negative consequence of not doing something).",
+        "definitionEs": "De lo contrario / Si no / De otro modo.",
+        "exampleSentenceEn": "Back up your data today; otherwise, you risk losing important notes.",
+        "exampleSentenceEs": "Respalda tus datos hoy; de lo contrario, corres el riesgo de perder notas importantes.",
+        "collocations": [
+          "or otherwise",
+          "otherwise we will"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-otherwise-synonym-0",
+        "sourceSenseId": "vs-lc-otherwise-1",
+        "targetSenseId": "vs-lc-or-else-1",
+        "targetWord": "or else",
+        "targetDefinitionEs": "O si no",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-otherwise-antonym-1",
+        "sourceSenseId": "vs-lc-otherwise-1",
+        "targetSenseId": "vs-lc-therefore-1",
+        "targetWord": "therefore",
+        "targetDefinitionEs": "Por lo tanto",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-in-case",
+    "word": "in case",
+    "cefrLevel": "B1",
+    "partOfSpeech": "conjunction",
+    "ipa": "/ɪn keɪs/",
+    "thematicCluster": "Condición & Propósito",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-in-case-1",
+        "wordId": "vw-lc-in-case",
+        "word": "in case",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "conjunction",
+        "ipa": "/ɪn keɪs/",
+        "definitionEn": "As a precaution against the possibility that something happens.",
+        "definitionEs": "Por si acaso / En caso de que (prevención).",
+        "exampleSentenceEn": "Bring an umbrella in case it rains later this afternoon.",
+        "exampleSentenceEs": "Lleva un paraguas por si llueve más tarde.",
+        "collocations": [
+          "just in case"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-in-case-synonym-0",
+        "sourceSenseId": "vs-lc-in-case-1",
+        "targetSenseId": "vs-lc-just-in-case-1",
+        "targetWord": "just in case",
+        "targetDefinitionEs": "Por si acaso",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-in-case-antonym-1",
+        "sourceSenseId": "vs-lc-in-case-1",
+        "targetSenseId": "vs-lc-regardless-of-1",
+        "targetWord": "regardless of",
+        "targetDefinitionEs": "Pase lo que pase",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-in-order-to",
+    "word": "in order to",
+    "cefrLevel": "B1",
+    "partOfSpeech": "prepositional phrase",
+    "ipa": "/ɪn ˈɔːr.dər tuː/",
+    "thematicCluster": "Condición & Propósito",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-in-order-to-1",
+        "wordId": "vw-lc-in-order-to",
+        "word": "in order to",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "prepositional phrase",
+        "ipa": "/ɪn ˈɔːr.dər tuː/",
+        "definitionEn": "With the aim or purpose of doing something (followed by base verb).",
+        "definitionEs": "Con el fin de / Para (propósito formal + verbo base).",
+        "exampleSentenceEn": "She practiced daily in order to pass the executive English interview.",
+        "exampleSentenceEs": "Practicó a diario con el fin de aprobar la entrevista ejecutiva en inglés.",
+        "collocations": [
+          "in order to achieve"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-in-order-to-synonym-0",
+        "sourceSenseId": "vs-lc-in-order-to-1",
+        "targetSenseId": "vs-lc-so-as-to-1",
+        "targetWord": "so as to",
+        "targetDefinitionEs": "Para / A fin de",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-in-order-to-antonym-1",
+        "sourceSenseId": "vs-lc-in-order-to-1",
+        "targetSenseId": "vs-lc-despite-1",
+        "targetWord": "despite",
+        "targetDefinitionEs": "A pesar de",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-to-be-fair",
+    "word": "to be fair",
+    "cefrLevel": "B2",
+    "partOfSpeech": "conversational marker",
+    "ipa": "/tuː bi fer/",
+    "thematicCluster": "Fluidez Conversacional",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-to-be-fair-1",
+        "wordId": "vw-lc-to-be-fair",
+        "word": "to be fair",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "conversational marker",
+        "ipa": "/tuː bi fer/",
+        "definitionEn": "Used to introduce a balanced, honest point or give fair credit to the other side.",
+        "definitionEs": "Siendo justos... / Para ser honestos...",
+        "exampleSentenceEn": "The interface was dense, though to be fair, it packed a lot of powerful tools.",
+        "exampleSentenceEs": "La interfaz era densa, aunque siendo justos, incluía herramientas muy potentes.",
+        "collocations": [
+          "to be fair to him"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-to-be-fair-synonym-0",
+        "sourceSenseId": "vs-lc-to-be-fair-1",
+        "targetSenseId": "vs-lc-truth-be-told-1",
+        "targetWord": "truth be told",
+        "targetDefinitionEs": "A decir verdad",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-to-be-fair-antonym-1",
+        "sourceSenseId": "vs-lc-to-be-fair-1",
+        "targetSenseId": "vs-lc-unfairly-1",
+        "targetWord": "unfairly",
+        "targetDefinitionEs": "Injustamente",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-at-the-end-of-the-day",
+    "word": "at the end of the day",
+    "cefrLevel": "B2",
+    "partOfSpeech": "conversational marker",
+    "ipa": "/æt ði end əv ðə deɪ/",
+    "thematicCluster": "Fluidez Conversacional",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-at-the-end-of-the-day-1",
+        "wordId": "vw-lc-at-the-end-of-the-day",
+        "word": "at the end of the day",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "conversational marker",
+        "ipa": "/æt ði end əv ðə deɪ/",
+        "definitionEn": "Used to summarize the most fundamental, decisive truth after weighing everything.",
+        "definitionEs": "A fin de cuentas... / Al final del día... / En resumidas cuentas...",
+        "exampleSentenceEn": "At the end of the day, real conversation practice beats memorizing isolated lists.",
+        "exampleSentenceEs": "A fin de cuentas, la práctica real en conversación supera a memorizar listas aisladas.",
+        "collocations": [
+          "at the end of the day, what matters"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-at-the-end-of-the-day-synonym-0",
+        "sourceSenseId": "vs-lc-at-the-end-of-the-day-1",
+        "targetSenseId": "vs-lc-when-all-is-said-and-done-1",
+        "targetWord": "when all is said and done",
+        "targetDefinitionEs": "Cuando todo está dicho",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-at-the-end-of-the-day-antonym-1",
+        "sourceSenseId": "vs-lc-at-the-end-of-the-day-1",
+        "targetSenseId": "vs-lc-at-first-1",
+        "targetWord": "at first",
+        "targetDefinitionEs": "Al principio",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-when-all-is-said-and-done",
+    "word": "when all is said and done",
+    "cefrLevel": "C1",
+    "partOfSpeech": "idiomatic connector",
+    "ipa": "/wen ɔːl ɪz sed ənd dʌn/",
+    "thematicCluster": "Fluidez Conversacional",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-when-all-is-said-and-done-1",
+        "wordId": "vw-lc-when-all-is-said-and-done",
+        "word": "when all is said and done",
+        "senseIndex": 1,
+        "cefrLevelTarget": "C1",
+        "partOfSpeech": "idiomatic connector",
+        "ipa": "/wen ɔːl ɪz sed ənd dʌn/",
+        "definitionEn": "After every factor has been weighed and everything is settled.",
+        "definitionEs": "Cuando todo está dicho y hecho / Al fin y al cabo.",
+        "exampleSentenceEn": "When all is said and done, consistency is what transforms your fluency.",
+        "exampleSentenceEs": "Cuando todo está dicho y hecho, la constancia es lo que transforma tu fluidez.",
+        "collocations": [
+          "when all is said and done"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-when-all-is-said-and-done-synonym-0",
+        "sourceSenseId": "vs-lc-when-all-is-said-and-done-1",
+        "targetSenseId": "vs-lc-at-the-end-of-the-day-1",
+        "targetWord": "at the end of the day",
+        "targetDefinitionEs": "A fin de cuentas",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-when-all-is-said-and-done-antonym-1",
+        "sourceSenseId": "vs-lc-when-all-is-said-and-done-1",
+        "targetSenseId": "vs-lc-initially-1",
+        "targetWord": "initially",
+        "targetDefinitionEs": "Inicialmente",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-speaking-of-which",
+    "word": "speaking of which",
+    "cefrLevel": "B2",
+    "partOfSpeech": "conversational marker",
+    "ipa": "/ˈspiː.kɪŋ əv wɪtʃ/",
+    "thematicCluster": "Fluidez Conversacional",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-speaking-of-which-1",
+        "wordId": "vw-lc-speaking-of-which",
+        "word": "speaking of which",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "conversational marker",
+        "ipa": "/ˈspiː.kɪŋ əv wɪtʃ/",
+        "definitionEn": "Used to pivot naturally to a related topic that was just mentioned.",
+        "definitionEs": "Hablando de eso... / A propósito de lo que mencionas...",
+        "exampleSentenceEn": "We need to book the hotel soon. Speaking of which, did you check the flight prices?",
+        "exampleSentenceEs": "Debemos reservar el hotel pronto. Hablando de eso, ¿revisaste los precios de vuelos?",
+        "collocations": [
+          "speaking of which, have you"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-speaking-of-which-synonym-0",
+        "sourceSenseId": "vs-lc-speaking-of-which-1",
+        "targetSenseId": "vs-lc-by-the-way-1",
+        "targetWord": "by the way",
+        "targetDefinitionEs": "Por cierto",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-speaking-of-which-antonym-1",
+        "sourceSenseId": "vs-lc-speaking-of-which-1",
+        "targetSenseId": "vs-lc-regardless-1",
+        "targetWord": "regardless",
+        "targetDefinitionEs": "Sin relación",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-off-the-top-of-my-head",
+    "word": "off the top of my head",
+    "cefrLevel": "B2",
+    "partOfSpeech": "idiomatic marker",
+    "ipa": "/ɔːf ðə tɑːp əv maɪ hed/",
+    "thematicCluster": "Fluidez Conversacional",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-off-the-top-of-my-head-1",
+        "wordId": "vw-lc-off-the-top-of-my-head",
+        "word": "off the top of my head",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "idiomatic marker",
+        "ipa": "/ɔːf ðə tɑːp əv maɪ hed/",
+        "definitionEn": "From immediate memory without checking notes or exact data.",
+        "definitionEs": "Así de memoria / Sin ver los datos exactos...",
+        "exampleSentenceEn": "Off the top of my head, I think we have around forty students enrolled.",
+        "exampleSentenceEs": "Así de memoria, creo que tenemos alrededor de cuarenta estudiantes inscritos.",
+        "collocations": [
+          "just off the top of my head"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-off-the-top-of-my-head-synonym-0",
+        "sourceSenseId": "vs-lc-off-the-top-of-my-head-1",
+        "targetSenseId": "vs-lc-roughly-speaking-1",
+        "targetWord": "roughly speaking",
+        "targetDefinitionEs": "A grandes rasgos",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-off-the-top-of-my-head-antonym-1",
+        "sourceSenseId": "vs-lc-off-the-top-of-my-head-1",
+        "targetSenseId": "vs-lc-precisely-1",
+        "targetWord": "precisely",
+        "targetDefinitionEs": "Con exactitud",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-in-hindsight",
+    "word": "in hindsight",
+    "cefrLevel": "C1",
+    "partOfSpeech": "discourse marker",
+    "ipa": "/ɪn ˈhaɪnd.saɪt/",
+    "thematicCluster": "Fluidez Conversacional",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-in-hindsight-1",
+        "wordId": "vw-lc-in-hindsight",
+        "word": "in hindsight",
+        "senseIndex": 1,
+        "cefrLevelTarget": "C1",
+        "partOfSpeech": "discourse marker",
+        "ipa": "/ɪn ˈhaɪnd.saɪt/",
+        "definitionEn": "Understanding a past situation clearly only after it has happened.",
+        "definitionEs": "Viéndolo en retrospectiva / Mirando hacia atrás...",
+        "exampleSentenceEn": "In hindsight, launching a simpler beta first saved us weeks of work.",
+        "exampleSentenceEs": "Viéndolo en retrospectiva, lanzar primero una beta más simple nos ahorró semanas.",
+        "collocations": [
+          "in hindsight, it was clear"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-in-hindsight-synonym-0",
+        "sourceSenseId": "vs-lc-in-hindsight-1",
+        "targetSenseId": "vs-lc-looking-back-1",
+        "targetWord": "looking back",
+        "targetDefinitionEs": "Mirando atrás",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-in-hindsight-antonym-1",
+        "sourceSenseId": "vs-lc-in-hindsight-1",
+        "targetSenseId": "vs-lc-beforehand-1",
+        "targetWord": "beforehand",
+        "targetDefinitionEs": "De antemano",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-for-the-time-being",
+    "word": "for the time being",
+    "cefrLevel": "B2",
+    "partOfSpeech": "time connector",
+    "ipa": "/fɔːr ðə taɪm ˈbiː.ɪŋ/",
+    "thematicCluster": "Fluidez Conversacional",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-for-the-time-being-1",
+        "wordId": "vw-lc-for-the-time-being",
+        "word": "for the time being",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "time connector",
+        "ipa": "/fɔːr ðə taɪm ˈbiː.ɪŋ/",
+        "definitionEn": "Temporarily; until a permanent solution is put in place.",
+        "definitionEs": "Por el momento / Por ahora / Provisionalmente.",
+        "exampleSentenceEn": "Let us use the basic plan for the time being and upgrade next quarter.",
+        "exampleSentenceEs": "Usemos el plan básico por el momento y actualicemos el próximo trimestre.",
+        "collocations": [
+          "stay here for the time being"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-for-the-time-being-synonym-0",
+        "sourceSenseId": "vs-lc-for-the-time-being-1",
+        "targetSenseId": "vs-lc-temporarily-1",
+        "targetWord": "temporarily",
+        "targetDefinitionEs": "Temporalmente",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-for-the-time-being-antonym-1",
+        "sourceSenseId": "vs-lc-for-the-time-being-1",
+        "targetSenseId": "vs-lc-permanently-1",
+        "targetWord": "permanently",
+        "targetDefinitionEs": "Permanentemente",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-truth-be-told",
+    "word": "truth be told",
+    "cefrLevel": "C1",
+    "partOfSpeech": "conversational marker",
+    "ipa": "/truːθ bi toʊld/",
+    "thematicCluster": "Fluidez Conversacional",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-truth-be-told-1",
+        "wordId": "vw-lc-truth-be-told",
+        "word": "truth be told",
+        "senseIndex": 1,
+        "cefrLevelTarget": "C1",
+        "partOfSpeech": "conversational marker",
+        "ipa": "/truːθ bi toʊld/",
+        "definitionEn": "To speak candidly and admit an honest, unvarnished opinion.",
+        "definitionEs": "La verdad sea dicha / A decir verdad...",
+        "exampleSentenceEn": "Truth be told, I used to freeze whenever someone asked me a question in English.",
+        "exampleSentenceEs": "La verdad sea dicha, antes me bloqueaba cada vez que alguien me preguntaba algo en inglés.",
+        "collocations": [
+          "truth be told, I prefer"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-truth-be-told-synonym-0",
+        "sourceSenseId": "vs-lc-truth-be-told-1",
+        "targetSenseId": "vs-lc-to-be-fair-1",
+        "targetWord": "to be fair",
+        "targetDefinitionEs": "Para ser honestos",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-truth-be-told-antonym-1",
+        "sourceSenseId": "vs-lc-truth-be-told-1",
+        "targetSenseId": "vs-lc-supposedly-1",
+        "targetWord": "supposedly",
+        "targetDefinitionEs": "Supuestamente",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-needless-to-say",
+    "word": "needless to say",
+    "cefrLevel": "B2",
+    "partOfSpeech": "discourse marker",
+    "ipa": "/ˈniːd.ləs tuː seɪ/",
+    "thematicCluster": "Fluidez Conversacional",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-needless-to-say-1",
+        "wordId": "vw-lc-needless-to-say",
+        "word": "needless to say",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "discourse marker",
+        "ipa": "/ˈniːd.ləs tuː seɪ/",
+        "definitionEn": "Introducing something so obvious that everyone already knows it.",
+        "definitionEs": "Sobra decir que... / Ni qué decir tiene...",
+        "exampleSentenceEn": "Needless to say, daily exposure accelerates your listening skills.",
+        "exampleSentenceEs": "Sobra decir que la exposición diaria acelera tu comprensión auditiva.",
+        "collocations": [
+          "needless to say, we agreed"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-needless-to-say-synonym-0",
+        "sourceSenseId": "vs-lc-needless-to-say-1",
+        "targetSenseId": "vs-lc-obviously-1",
+        "targetWord": "obviously",
+        "targetDefinitionEs": "Obviamente",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-needless-to-say-antonym-1",
+        "sourceSenseId": "vs-lc-needless-to-say-1",
+        "targetSenseId": "vs-lc-surprisingly-1",
+        "targetWord": "surprisingly",
+        "targetDefinitionEs": "Sorpresivamente",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-it-turns-out-that",
+    "word": "it turns out that",
+    "cefrLevel": "B1",
+    "partOfSpeech": "conversational marker",
+    "ipa": "/ɪt tɜːrnz aʊt ðæt/",
+    "thematicCluster": "Fluidez Conversacional",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-it-turns-out-that-1",
+        "wordId": "vw-lc-it-turns-out-that",
+        "word": "it turns out that",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "conversational marker",
+        "ipa": "/ɪt tɜːrnz aʊt ðæt/",
+        "definitionEn": "Used to share an unexpected outcome or surprising discovery.",
+        "definitionEs": "Resulta que... / Al final resultó que...",
+        "exampleSentenceEn": "It turns out that the client speaks fluent Spanish as well.",
+        "exampleSentenceEs": "Resulta que el cliente también habla español con fluidez.",
+        "collocations": [
+          "as it turns out"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-it-turns-out-that-synonym-0",
+        "sourceSenseId": "vs-lc-it-turns-out-that-1",
+        "targetSenseId": "vs-lc-apparently-1",
+        "targetWord": "apparently",
+        "targetDefinitionEs": "Al parecer",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-it-turns-out-that-antonym-1",
+        "sourceSenseId": "vs-lc-it-turns-out-that-1",
+        "targetSenseId": "vs-lc-predictably-1",
+        "targetWord": "predictably",
+        "targetDefinitionEs": "Previsiblemente",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-in-other-words",
+    "word": "in other words",
+    "cefrLevel": "B1",
+    "partOfSpeech": "clarification marker",
+    "ipa": "/ɪn ˈʌð.ər wɜːrdz/",
+    "thematicCluster": "Aclaración & Síntesis",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-in-other-words-1",
+        "wordId": "vw-lc-in-other-words",
+        "word": "in other words",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "clarification marker",
+        "ipa": "/ɪn ˈʌð.ər wɜːrdz/",
+        "definitionEn": "Used to rephrase or explain an idea more simply and clearly.",
+        "definitionEs": "En otras palabras / Dicho de otro modo.",
+        "exampleSentenceEn": "Our retention rate hit 92%; in other words, almost every student stayed.",
+        "exampleSentenceEs": "Nuestra retención llegó al 92%; en otras palabras, casi cada alumno continuó.",
+        "collocations": [
+          "in other words, we need"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-in-other-words-synonym-0",
+        "sourceSenseId": "vs-lc-in-other-words-1",
+        "targetSenseId": "vs-lc-that-is-to-say-1",
+        "targetWord": "that is to say",
+        "targetDefinitionEs": "Es decir",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-in-other-words-antonym-1",
+        "sourceSenseId": "vs-lc-in-other-words-1",
+        "targetSenseId": "vs-lc-nevertheless-1",
+        "targetWord": "nevertheless",
+        "targetDefinitionEs": "No obstante",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-that-is-to-say",
+    "word": "that is to say",
+    "cefrLevel": "B2",
+    "partOfSpeech": "clarification marker",
+    "ipa": "/ðæt ɪz tuː seɪ/",
+    "thematicCluster": "Aclaración & Síntesis",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-that-is-to-say-1",
+        "wordId": "vw-lc-that-is-to-say",
+        "word": "that is to say",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "clarification marker",
+        "ipa": "/ðæt ɪz tuː seɪ/",
+        "definitionEn": "More accurately; in other words (clarifying precision).",
+        "definitionEs": "Es decir / O sea / Más exactamente.",
+        "exampleSentenceEn": "The session is bimonthly—that is to say, twice a month.",
+        "exampleSentenceEs": "La sesión es bimensual; es decir, dos veces al mes.",
+        "collocations": [
+          "that is to say, if"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-that-is-to-say-synonym-0",
+        "sourceSenseId": "vs-lc-that-is-to-say-1",
+        "targetSenseId": "vs-lc-in-other-words-1",
+        "targetWord": "in other words",
+        "targetDefinitionEs": "En otras palabras",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-that-is-to-say-antonym-1",
+        "sourceSenseId": "vs-lc-that-is-to-say-1",
+        "targetSenseId": "vs-lc-on-the-contrary-1",
+        "targetWord": "on the contrary",
+        "targetDefinitionEs": "Por el contrario",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-for-instance",
+    "word": "for instance",
+    "cefrLevel": "B1",
+    "partOfSpeech": "exemplification phrase",
+    "ipa": "/fɔːr ˈɪn.stəns/",
+    "thematicCluster": "Aclaración & Síntesis",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-for-instance-1",
+        "wordId": "vw-lc-for-instance",
+        "word": "for instance",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "exemplification phrase",
+        "ipa": "/fɔːr ˈɪn.stəns/",
+        "definitionEn": "As a specific example illustrating a general idea.",
+        "definitionEs": "Por ejemplo.",
+        "exampleSentenceEn": "Many idioms come from sports; \"hit a home run\", for instance, means great success.",
+        "exampleSentenceEs": "Muchos modismos vienen del deporte; \"hit a home run\", por ejemplo, significa un gran éxito.",
+        "collocations": [
+          "take, for instance"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-for-instance-synonym-0",
+        "sourceSenseId": "vs-lc-for-instance-1",
+        "targetSenseId": "vs-lc-for-example-1",
+        "targetWord": "for example",
+        "targetDefinitionEs": "Por ejemplo",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-for-instance-antonym-1",
+        "sourceSenseId": "vs-lc-for-instance-1",
+        "targetSenseId": "vs-lc-in-short-1",
+        "targetWord": "in short",
+        "targetDefinitionEs": "En resumen",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-in-short",
+    "word": "in short",
+    "cefrLevel": "B1",
+    "partOfSpeech": "summary marker",
+    "ipa": "/ɪn ʃɔːrt/",
+    "thematicCluster": "Aclaración & Síntesis",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-in-short-1",
+        "wordId": "vw-lc-in-short",
+        "word": "in short",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "summary marker",
+        "ipa": "/ɪn ʃɔːrt/",
+        "definitionEn": "Briefly; to sum up the main point concisely.",
+        "definitionEs": "En resumen / En pocas palabras.",
+        "exampleSentenceEn": "In short, practice smart, focus on real patterns, and keep speaking.",
+        "exampleSentenceEs": "En pocas palabras, practica de forma inteligente, enfócate en patrones reales y sigue hablando.",
+        "collocations": [
+          "in short, the plan works"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-in-short-synonym-0",
+        "sourceSenseId": "vs-lc-in-short-1",
+        "targetSenseId": "vs-lc-to-summarize-1",
+        "targetWord": "to summarize",
+        "targetDefinitionEs": "Para resumir",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-in-short-antonym-1",
+        "sourceSenseId": "vs-lc-in-short-1",
+        "targetSenseId": "vs-lc-in-detail-1",
+        "targetWord": "in detail",
+        "targetDefinitionEs": "En detalle",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-out-of-the-blue",
+    "word": "out of the blue",
+    "cefrLevel": "B2",
+    "partOfSpeech": "idiomatic connector",
+    "ipa": "/aʊt əv ðə bluː/",
+    "thematicCluster": "Fluidez Conversacional",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-out-of-the-blue-1",
+        "wordId": "vw-lc-out-of-the-blue",
+        "word": "out of the blue",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "idiomatic connector",
+        "ipa": "/aʊt əv ðə bluː/",
+        "definitionEn": "Completely unexpectedly; without any warning.",
+        "definitionEs": "De la nada / De repente / Sin previo aviso.",
+        "exampleSentenceEn": "Out of the blue, an international recruiter messaged me on LinkedIn.",
+        "exampleSentenceEs": "De la nada, un reclutador internacional me escribió por LinkedIn.",
+        "collocations": [
+          "call out of the blue"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-out-of-the-blue-synonym-0",
+        "sourceSenseId": "vs-lc-out-of-the-blue-1",
+        "targetSenseId": "vs-lc-unexpectedly-1",
+        "targetWord": "unexpectedly",
+        "targetDefinitionEs": "Inesperadamente",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-out-of-the-blue-antonym-1",
+        "sourceSenseId": "vs-lc-out-of-the-blue-1",
+        "targetSenseId": "vs-lc-gradually-1",
+        "targetWord": "gradually",
+        "targetDefinitionEs": "Gradualmente",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-lc-regardless-of",
+    "word": "regardless of",
+    "cefrLevel": "B2",
+    "partOfSpeech": "preposition",
+    "ipa": "/rɪˈɡɑːrd.ləs əv/",
+    "thematicCluster": "Contraste & Matiz",
+    "category": "logical_connectors",
+    "senses": [
+      {
+        "id": "vs-lc-regardless-of-1",
+        "wordId": "vw-lc-regardless-of",
+        "word": "regardless of",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "preposition",
+        "ipa": "/rɪˈɡɑːrd.ləs əv/",
+        "definitionEn": "Without being influenced or stopped by something.",
+        "definitionEs": "Sin importar / Independientemente de.",
+        "exampleSentenceEn": "Regardless of your current level, consistency creates momentum.",
+        "exampleSentenceEs": "Sin importar tu nivel actual, la constancia crea impulso.",
+        "collocations": [
+          "regardless of the cost"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-lc-regardless-of-synonym-0",
+        "sourceSenseId": "vs-lc-regardless-of-1",
+        "targetSenseId": "vs-lc-despite-1",
+        "targetWord": "despite",
+        "targetDefinitionEs": "A pesar de",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-lc-regardless-of-antonym-1",
+        "sourceSenseId": "vs-lc-regardless-of-1",
+        "targetSenseId": "vs-lc-due-to-1",
+        "targetWord": "due to",
+        "targetDefinitionEs": "Debido a",
+        "relationType": "antonym"
+      }
+    ]
+  }
+]

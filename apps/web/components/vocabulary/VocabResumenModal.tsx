@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { X, BookOpen, Volume2, Sparkles, CheckCircle2, ChevronRight, Bookmark } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { X, BookOpen, Volume2, Sparkles, Search, Bookmark } from 'lucide-react';
 import { VocabularyWordItem, VocabCategory } from '@/lib/vocabulary';
 import styles from '@/styles/Vocabulary.module.css';
 
@@ -18,15 +18,29 @@ export const VocabResumenModal: React.FC<Props> = ({
   words
 }) => {
   const [selectedWordIndex, setSelectedWordIndex] = useState(0);
+  const [searchTerm, setSearchTerm] = useState('');
 
-  const wordsKey = words.map(w => w.id).join(',');
+  const wordsKey = `${words.length}-${words[0]?.id || ''}`;
   useEffect(() => {
     setSelectedWordIndex(0);
+    setSearchTerm('');
   }, [isOpen, wordsKey]);
+
+  const filteredWords = useMemo(() => {
+    const q = searchTerm.trim().toLowerCase();
+    if (!q) return words;
+    return words.filter(
+      w =>
+        w.word.toLowerCase().includes(q) ||
+        w.senses.some(s => s.definitionEs.toLowerCase().includes(q))
+    );
+  }, [words, searchTerm]);
 
   if (!isOpen || words.length === 0) return null;
 
-  const currentWord = words[selectedWordIndex] || words[0];
+  const safeIndex = Math.min(selectedWordIndex, Math.max(0, filteredWords.length - 1));
+  const currentWord = filteredWords[safeIndex] || words[0];
+  const visibleChips = filteredWords.slice(0, 60);
 
   function speakWord(text: string) {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
@@ -57,13 +71,40 @@ export const VocabResumenModal: React.FC<Props> = ({
           </button>
         </div>
 
+        {/* Buscador rápido cuando el banco es amplio */}
+        {words.length > 25 && (
+          <div style={{ padding: '0.65rem 1.25rem 0', position: 'relative' }}>
+            <Search size={14} style={{ position: 'absolute', left: '1.95rem', top: '1.22rem', color: 'var(--text-secondary)' }} />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={e => {
+                setSearchTerm(e.target.value);
+                setSelectedWordIndex(0);
+              }}
+              placeholder={`Filtrar entre ${words.length} términos...`}
+              style={{
+                width: '100%',
+                boxSizing: 'border-box',
+                padding: '0.45rem 0.75rem 0.45rem 2.1rem',
+                borderRadius: '10px',
+                background: 'var(--bg-secondary)',
+                border: '1px solid var(--surface-border)',
+                color: 'var(--text-primary)',
+                fontSize: '0.82rem',
+                outline: 'none'
+              }}
+            />
+          </div>
+        )}
+
         {/* Word Chips Selector Horizontal */}
         <div className={styles.wordChipsScroll}>
-          {words.map((w, idx) => (
+          {visibleChips.map((w, idx) => (
             <button
               key={w.id}
               onClick={() => setSelectedWordIndex(idx)}
-              className={`${styles.wordChipBtn} ${idx === selectedWordIndex ? styles.wordChipBtnActive : ''}`}
+              className={`${styles.wordChipBtn} ${idx === safeIndex ? styles.wordChipBtnActive : ''}`}
             >
               {w.word}
             </button>
@@ -185,18 +226,18 @@ export const VocabResumenModal: React.FC<Props> = ({
         {/* Footer Navigation */}
         <div className={styles.modalFooter}>
           <button
-            disabled={selectedWordIndex === 0}
+            disabled={safeIndex === 0}
             onClick={() => setSelectedWordIndex(prev => Math.max(0, prev - 1))}
             className={styles.modalNavBtn}
           >
             ← Anterior
           </button>
           <span style={{ fontSize: '0.85rem', color: '#94a3b8' }}>
-            {selectedWordIndex + 1} de {words.length}
+            {filteredWords.length > 0 ? `${safeIndex + 1} de ${filteredWords.length}` : '0 resultados'}
           </span>
           <button
-            disabled={selectedWordIndex === words.length - 1}
-            onClick={() => setSelectedWordIndex(prev => Math.min(words.length - 1, prev + 1))}
+            disabled={safeIndex >= filteredWords.length - 1}
+            onClick={() => setSelectedWordIndex(prev => Math.min(filteredWords.length - 1, prev + 1))}
             className={styles.modalNavBtn}
           >
             Siguiente →

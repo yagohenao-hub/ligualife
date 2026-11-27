@@ -13,7 +13,7 @@ import {
   Zap,
   History
 } from 'lucide-react';
-import { VocabularyWordItem, VocabCategory, CefrLevel, TriageStatus } from '@/lib/vocabulary';
+import { VocabularyWordItem, VocabCategory, CefrLevel } from '@/lib/vocabulary';
 import {
   TriviaQuestion,
   TriviaDifficulty,
@@ -25,7 +25,6 @@ import styles from '@/styles/Vocabulary.module.css';
 
 interface Props {
   words: VocabularyWordItem[];
-  progressMap?: Record<string, TriageStatus>;
   category?: VocabCategory;
   level?: CefrLevel;
 }
@@ -59,14 +58,10 @@ const spreadQuestionsByFocus = (items: TriviaQuestion[]): TriviaQuestion[] => {
 
 export const VocabularyTrivia: React.FC<Props> = ({
   words,
-  progressMap = {},
   category = 'time_words',
   level = 'A1'
 }) => {
-  const toLearnWords = words.filter(w => progressMap[w.id] === 'to_learn');
-  const [onlyToLearn, setOnlyToLearn] = useState(false);
-  const effectiveOnlyToLearn = onlyToLearn && toLearnWords.length > 0;
-  const activeWords = effectiveOnlyToLearn ? toLearnWords : words;
+  const activeWords = words;
 
   const [queue, setQueue] = useState<TriviaQuestion[]>([]);
   const [currentQuestion, setCurrentQuestion] = useState<TriviaQuestion | null>(null);
@@ -123,7 +118,7 @@ export const VocabularyTrivia: React.FC<Props> = ({
   const buildFullVocabPool = useCallback((): TriviaQuestion[] => {
     const baseSeeds = getSeedQuestionsForVocabulary(category, level, activeWords);
     let cachedAi: TriviaQuestion[] = [];
-    if (typeof window !== 'undefined' && !effectiveOnlyToLearn) {
+    if (typeof window !== 'undefined') {
       try {
         const raw = localStorage.getItem(`ll_trivia_ai_pool_v2_${storageKeySuffix}`);
         if (raw) {
@@ -152,9 +147,9 @@ export const VocabularyTrivia: React.FC<Props> = ({
       }
     }
     return spreadQuestionsByFocus(unique);
-  }, [category, level, activeWords, effectiveOnlyToLearn, storageKeySuffix]);
+  }, [category, level, activeWords, storageKeySuffix]);
 
-  // Inicializar cola de preguntas al cambiar de categoría, nivel o filtro
+  // Inicializar cola de preguntas al cambiar de categoría, nivel o banco activo
   useEffect(() => {
     clearAutoAdvanceTimer();
     try {
@@ -170,8 +165,12 @@ export const VocabularyTrivia: React.FC<Props> = ({
 
     const pool = buildFullVocabPool();
     if (pool.length > 0) {
-      syncCurrentQuestion(pool[0]);
-      syncQueue(pool.slice(1));
+      const firstBasicIdx = pool.findIndex(q => q.difficulty === 'basic');
+      const startIdx = firstBasicIdx !== -1 ? firstBasicIdx : 0;
+      const firstQ = pool[startIdx];
+      const rest = pool.filter((_, idx) => idx !== startIdx);
+      syncCurrentQuestion(firstQ);
+      syncQueue(rest);
     }
 
     setStreak(0);
@@ -180,9 +179,9 @@ export const VocabularyTrivia: React.FC<Props> = ({
     setHistory([]);
     setShowHistory(false);
     setMilestoneNotice(null);
-  }, [category, level, words, effectiveOnlyToLearn, storageKeySuffix, buildFullVocabPool, syncCurrentQuestion, syncQueue, clearAutoAdvanceTimer]);
+  }, [category, level, words, storageKeySuffix, buildFullVocabPool, syncCurrentQuestion, syncQueue, clearAutoAdvanceTimer]);
 
-  // Recarga de preguntas con IA en segundo plano
+  // Recarga de preguntas con IA en segundo plano (escalando dificultad por racha)
   const refillQuestions = useCallback(async () => {
     if (isRefillingRef.current) return;
     const now = Date.now();
@@ -193,9 +192,9 @@ export const VocabularyTrivia: React.FC<Props> = ({
 
     try {
       const difficultyLevel: TriviaDifficulty =
-        masteredCount >= 8 || streak >= 7
+        streak >= 7
           ? 'advanced'
-          : masteredCount >= 4 || streak >= 3
+          : streak >= 3
           ? 'intermediate'
           : 'basic';
 
@@ -206,7 +205,6 @@ export const VocabularyTrivia: React.FC<Props> = ({
           contextType: 'vocabulary',
           vocabCategory: category,
           cefrLevel: level,
-          targetWords: activeWords.map(w => w.word.toLowerCase()),
           topicOrder: 100,
           topicName: `Vocabulario ${category} (${level})`,
           difficultyLevel,
@@ -298,12 +296,24 @@ export const VocabularyTrivia: React.FC<Props> = ({
 
     const currentKey = normalizeKey(currentQuestionRef.current?.question);
     const workingQueue = [...queueRef.current];
+    const desiredDifficulty: TriviaDifficulty =
+      streak >= 7 ? 'advanced' : streak >= 3 ? 'intermediate' : 'basic';
+
     let nextQ: TriviaQuestion | null = null;
 
-    const unseenIdx = workingQueue.findIndex(q => {
+    // 1. Priorizar pregunta no vista que coincida con la dificultad actual de la racha
+    let unseenIdx = workingQueue.findIndex(q => {
       const k = normalizeKey(q.question);
-      return k !== currentKey && !seenQuestionsRef.current.has(k);
+      return k !== currentKey && !seenQuestionsRef.current.has(k) && q.difficulty === desiredDifficulty;
     });
+
+    // 2. Si no hay exacta de ese tier, buscar cualquier pregunta no vista en la cola
+    if (unseenIdx === -1) {
+      unseenIdx = workingQueue.findIndex(q => {
+        const k = normalizeKey(q.question);
+        return k !== currentKey && !seenQuestionsRef.current.has(k);
+      });
+    }
 
     if (unseenIdx !== -1) {
       nextQ = workingQueue[unseenIdx];
@@ -335,7 +345,7 @@ export const VocabularyTrivia: React.FC<Props> = ({
           !workingQueue.some(wq => normalizeKey(wq.question) === pk)
         );
       });
-      workingQueue.push(...refillCandidates.slice(0, 6));
+      workingQueue.push(...refillCandidates.slice(0, 8));
     }
 
     if (nextQ) {
@@ -351,6 +361,7 @@ export const VocabularyTrivia: React.FC<Props> = ({
       refillQuestions();
     }
   }, [
+    streak,
     clearAutoAdvanceTimer,
     getGuaranteedDifferentQuestion,
     buildFullVocabPool,
@@ -459,12 +470,11 @@ export const VocabularyTrivia: React.FC<Props> = ({
 
   const isCurrentCorrect = selectedOption === currentQuestion.correctIndex;
   const activeDifficulty: TriviaDifficulty =
-    currentQuestion.difficulty ||
-    (masteredCount >= 8 || streak >= 7
+    streak >= 7
       ? 'advanced'
-      : masteredCount >= 4 || streak >= 3
+      : streak >= 3
       ? 'intermediate'
-      : 'basic');
+      : 'basic';
 
   const diffBadge =
     activeDifficulty === 'advanced'
@@ -505,34 +515,6 @@ export const VocabularyTrivia: React.FC<Props> = ({
           >
             {diffBadge.label}
           </span>
-
-          {/* Filtro rápido: Todas vs Solo Por Aprender */}
-          {toLearnWords.length > 0 && (
-            <button
-              type="button"
-              onClick={() => setOnlyToLearn(prev => !prev)}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.35rem',
-                fontSize: '0.74rem',
-                fontWeight: 800,
-                padding: '0.25rem 0.65rem',
-                borderRadius: '999px',
-                cursor: 'pointer',
-                background: effectiveOnlyToLearn
-                  ? 'rgba(255, 80, 118, 0.16)'
-                  : 'var(--bg-hover, rgba(255,255,255,0.06))',
-                color: effectiveOnlyToLearn ? 'var(--brand-pink, #FF5076)' : 'var(--text-secondary)',
-                border: effectiveOnlyToLearn
-                  ? '1px solid rgba(255, 80, 118, 0.45)'
-                  : '1px solid var(--surface-border)'
-              }}
-              title="Alterna entre todo el banco actual o solo tus palabras marcadas como Por aprender"
-            >
-              <span>{effectiveOnlyToLearn ? `🎯 Por aprender (${toLearnWords.length})` : `🌐 Todas (${words.length})`}</span>
-            </button>
-          )}
 
           {streak >= 2 && (
             <span

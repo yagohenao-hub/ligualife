@@ -4,9 +4,14 @@
 // =============================================================================
 
 export type CefrLevel = 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
-export type TriageStatus = 'mastered' | 'to_learn' | 'passive' | 'unreviewed';
 export type RelationType = 'synonym' | 'antonym' | 'related';
-export type VocabCategory = 'time_words' | 'prepositions_in_on_at' | 'wh_words' | 'cefr_general';
+export type VocabCategory =
+  | 'time_words'
+  | 'prepositions_in_on_at'
+  | 'wh_words'
+  | 'logical_connectors'
+  | 'phrasal_verbs'
+  | 'cefr_general';
 
 export interface VocabularySense {
   id: string;
@@ -43,7 +48,6 @@ export interface VocabularyWordItem {
   category: VocabCategory;
   senses: VocabularySense[];
   relations: VocabularyRelation[];
-  triageStatus?: TriageStatus;
 }
 
 // -----------------------------------------------------------------------------
@@ -2080,80 +2084,92 @@ export const VOCABULARY_MASTER_DATA: VocabularyWordItem[] = [
 ];
 
 // -----------------------------------------------------------------------------
-// LOCAL STATE STORAGE & HELPERS
+// DYNAMIC BANK CACHE & UNIFIED CATEGORY ACCESSORS (SIN ESTADOS POR ALUMNO)
 // -----------------------------------------------------------------------------
 
-const STORAGE_KEY = 'lingualife_student_vocab_state_v2';
-
-export function getLocalStudentState(): Record<string, TriageStatus> {
-  if (typeof window === 'undefined') return {};
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : {};
-  } catch (e) {
-    return {};
-  }
-}
-
-export function saveLocalStudentWordState(senseId: string, status: TriageStatus) {
-  if (typeof window === 'undefined') return;
-  try {
-    const current = getLocalStudentState();
-    current[senseId] = status;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(current));
-  } catch (e) {
-    console.error('Error saving local vocab state', e);
-  }
-}
+const LOADED_BANKS_CACHE = new Map<string, VocabularyWordItem[]>();
 
 // Compatibilidad con código anterior que llamaba PILOT_VOCABULARY_DATA
 export const PILOT_VOCABULARY_DATA: VocabularyWordItem[] = VOCABULARY_MASTER_DATA;
 
-// Filtrado principal por categoría (conservando todas las acepciones polisémicas de cada palabra)
-export function getVocabularyByCategory(
-  category: VocabCategory,
-  level: CefrLevel = 'A1',
-  includePreviousPending: boolean = false
-): VocabularyWordItem[] {
-  const localStates = getLocalStudentState();
-  const levelOrder: CefrLevel[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
-  const currentIndex = levelOrder.indexOf(level);
-
-  return VOCABULARY_MASTER_DATA.filter(item => {
+function mergeWithCurated(category: VocabCategory, level: CefrLevel, rawItems: VocabularyWordItem[]): VocabularyWordItem[] {
+  const curated = VOCABULARY_MASTER_DATA.filter(item => {
     if (item.category !== category) return false;
     if (category !== 'cefr_general') return true;
-
-    // Para cefr_general, incluir palabras cuyo nivel principal o alguna de sus acepciones coincida con el nivel seleccionado
-    const matchesCurrentLevel = item.cefrLevel === level || item.senses.some(s => s.cefrLevelTarget === level);
-    if (matchesCurrentLevel) return true;
-
-    if (includePreviousPending) {
-      const itemLevelIdx = levelOrder.indexOf(item.cefrLevel);
-      if (itemLevelIdx < currentIndex) {
-        const primarySense = item.senses[0];
-        const state = (primarySense && localStates[primarySense.id]) || 'unreviewed';
-        return state === 'to_learn' || state === 'passive' || state === 'unreviewed';
-      }
-    }
-    return false;
-  }).map(item => {
-    const primarySense = item.senses[0];
-    const triageStatus = (localStates[primarySense?.id] as TriageStatus) || 'unreviewed';
-
-    return {
-      ...item,
-      // Mantenemos todas las acepciones de la palabra para que el Resumen y la Trivia muestren el contraste polisémico completo
-      senses: item.senses,
-      triageStatus
-    };
+    return item.cefrLevel === level || item.senses.some(s => s.cefrLevelTarget === level);
   });
+
+  if (rawItems.length === 0) return curated;
+  const seenWords = new Set(curated.map(c => c.word.toLowerCase()));
+  const merged = [...curated];
+  for (const item of rawItems) {
+    if (!seenWords.has(item.word.toLowerCase())) {
+      seenWords.add(item.word.toLowerCase());
+      merged.push(item);
+    }
+  }
+  return merged;
 }
 
-export function getVocabularyForLevel(
-  level: CefrLevel,
-  includePreviousPending: boolean = false
+/**
+ * Carga asíncrona del banco completo (CEFR A1-C2 desde PDFs, Conectores Lógicos o Phrasal Verbs).
+ * Usa code-splitting por nivel para mantener el bundle inicial ultrarrápido.
+ */
+export async function loadVocabularyByCategoryAsync(
+  category: VocabCategory,
+  level: CefrLevel = 'A1'
+): Promise<VocabularyWordItem[]> {
+  const cacheKey = category === 'cefr_general' ? `cefr_${level}` : category;
+  if (LOADED_BANKS_CACHE.has(cacheKey)) {
+    return LOADED_BANKS_CACHE.get(cacheKey)!;
+  }
+
+  let loaded: VocabularyWordItem[] = [];
+  try {
+    if (category === 'logical_connectors') {
+      const mod = await import('@/data/vocabulary/logical-connectors.json');
+      loaded = (mod.default || mod) as VocabularyWordItem[];
+    } else if (category === 'phrasal_verbs') {
+      const mod = await import('@/data/vocabulary/phrasal-verbs.json');
+      loaded = (mod.default || mod) as VocabularyWordItem[];
+    } else if (category === 'cefr_general') {
+      const mod =
+        level === 'A1'
+          ? await import('@/data/vocabulary/cefr-a1.json')
+          : level === 'A2'
+          ? await import('@/data/vocabulary/cefr-a2.json')
+          : level === 'B1'
+          ? await import('@/data/vocabulary/cefr-b1.json')
+          : level === 'B2'
+          ? await import('@/data/vocabulary/cefr-b2.json')
+          : level === 'C1'
+          ? await import('@/data/vocabulary/cefr-c1.json')
+          : await import('@/data/vocabulary/cefr-c2.json');
+      loaded = (mod.default || mod) as VocabularyWordItem[];
+    }
+  } catch (err) {
+    console.warn(`[vocabulary] Could not load chunk for ${cacheKey}:`, err);
+  }
+
+  const finalItems = mergeWithCurated(category, level, loaded);
+  LOADED_BANKS_CACHE.set(cacheKey, finalItems);
+  return finalItems;
+}
+
+// Acceso síncrono (retorna caché completo si ya cargó, o el núcleo curado inmediato)
+export function getVocabularyByCategory(
+  category: VocabCategory,
+  level: CefrLevel = 'A1'
 ): VocabularyWordItem[] {
-  return getVocabularyByCategory('cefr_general', level, includePreviousPending);
+  const cacheKey = category === 'cefr_general' ? `cefr_${level}` : category;
+  if (LOADED_BANKS_CACHE.has(cacheKey)) {
+    return LOADED_BANKS_CACHE.get(cacheKey)!;
+  }
+  return mergeWithCurated(category, level, []);
+}
+
+export function getVocabularyForLevel(level: CefrLevel): VocabularyWordItem[] {
+  return getVocabularyByCategory('cefr_general', level);
 }
 
 // -----------------------------------------------------------------------------
@@ -2222,6 +2238,37 @@ export const VOCAB_SHORT_READINGS: Record<VocabCategory, VocabShortReading> = {
       ],
       correctIndex: 2,
       explanation: 'En inglés comunicativo natural, la preposición va al final de la pregunta ("Preposition Stranding").'
+    }
+  },
+  logical_connectors: {
+    title: 'Bridging Ideas Like a Native',
+    storyEn: 'At first, presentations felt robotic. However, once Laura learned natural connectors, her delivery transformed. Moreover, when a client raised a tough objection, she responded calmly: "To be fair, the timeline is tight; nevertheless, our engineering team already has a plan." At the end of the day, logical transitions turn isolated facts into persuasive stories.',
+    storyEs: 'Al principio, las presentaciones se sentían robóticas. Sin embargo, una vez que Laura aprendió conectores naturales, su forma de exponer se transformó. Además, cuando un cliente planteó una objeción difícil, respondió con calma: "Siendo justos, el plazo es ajustado; no obstante, nuestro equipo ya tiene un plan." Al fin y al cabo, las transiciones lógicas convierten datos aislados en historias persuasivas.',
+    wordCount: 56,
+    highlightWords: ['At first', 'However', 'Moreover', 'To be fair', 'nevertheless', 'At the end of the day'],
+    comprehensionQuestion: {
+      question: 'Which connector does Laura use to politely acknowledge the client’s concern before pivoting?',
+      options: ['Moreover', 'To be fair', 'At first', 'Therefore'],
+      correctIndex: 1,
+      explanation: '"To be fair" concede un punto válido a la otra persona con honestidad antes de presentar la respuesta o solución ("nevertheless").'
+    }
+  },
+  phrasal_verbs: {
+    title: 'Kicking Off Without Giving Up',
+    storyEn: 'Before we kick off the sprint, let us figure out why the last deployment fell through. We cannot put off this review anymore. Fortunately, the dev team stepped up to look into the root cause, iron out the glitches, and roll out the update smoothly. Consistency always pays off when you never give up.',
+    storyEs: 'Antes de arrancar el sprint, descifremos por qué se cayó el último despliegue. Ya no podemos posponer más esta revisión. Por fortuna, el equipo de desarrollo dio un paso al frente para investigar la causa raíz, pulir los fallos y lanzar la actualización sin tropiezos. La constancia siempre da frutos cuando nunca te rindes.',
+    wordCount: 54,
+    highlightWords: ['kick off', 'figure out', 'fell through', 'put off', 'look into', 'iron out', 'roll out', 'pays off', 'give up'],
+    comprehensionQuestion: {
+      question: 'What does "iron out the glitches" mean in this executive tech story?',
+      options: [
+        'To cancel the entire software launch',
+        'To smoothly fix and resolve remaining minor technical bugs',
+        'To postpone the meeting until next week',
+        'To surrender and quit the project'
+      ],
+      correctIndex: 1,
+      explanation: '"Iron out" significa literalmente "planchar" arrugas, y en inglés profesional se usa para pulir o resolver pequeños inconvenientes o asperezas.'
     }
   },
   cefr_general: {
@@ -2309,6 +2356,40 @@ export const VOCAB_MENTAL_GYM: Record<VocabCategory, VocabMentalGymExercise[]> =
     { id: 13, type: 'reverse', instruction: 'Traduce al inglés con pregunta de manera:', promptText: '¿Cómo funciona esta plataforma?', hint: 'Pregunta en presente', solution: 'How does this platform work?', explanation: 'How + does (auxiliar) + this platform + work?' },
     { id: 14, type: 'reverse', instruction: 'Traduce al inglés con conector relativo de persona:', promptText: 'Conocí a la persona que diseñó el curso.', hint: 'Conector who', solution: 'I met the person who designed the course.', explanation: '"Who" conecta a la persona con la acción que realizó.' },
     { id: 15, type: 'reverse', instruction: 'Traduce al inglés con pregunta de tiempo:', promptText: '¿Cuándo termina nuestra clase?', hint: 'Pregunta de tiempo', solution: 'When does our class end?', explanation: 'When + does + our class + end?' }
+  ],
+  logical_connectors: [
+    { id: 1, type: 'fill', instruction: 'Completa con el conector de contraste formal:', promptText: 'The budget was cut; [___], we delivered the project on time.', hint: 'No obstante / Sin embargo', solution: 'nevertheless', explanation: '"Nevertheless" introduce un contraste fuerte tras un obstáculo.' },
+    { id: 2, type: 'fill', instruction: 'Completa con el conector de causa-efecto:', promptText: 'She practiced speaking daily; [___], her confidence grew fast.', hint: 'En consecuencia / Por lo tanto', solution: 'consequently', explanation: '"Consequently" señala el resultado directo de una acción previa.' },
+    { id: 3, type: 'fill', instruction: 'Completa con la preposición correcta tras "despite":', promptText: '[___] the heavy rain, everyone arrived on schedule.', hint: 'A pesar de (una sola palabra)', solution: 'Despite', explanation: '"Despite" significa "a pesar de" y jamás lleva "of".' },
+    { id: 4, type: 'fill', instruction: 'Completa con el conector conversacional de resumen:', promptText: '[___], real practice beats memorizing lists.', hint: 'Al final del día / A fin de cuentas', solution: 'At the end of the day', explanation: '"At the end of the day" resume la verdad esencial de una discusión.' },
+    { id: 5, type: 'fill', instruction: 'Completa con el conector de adición enfática:', promptText: 'The tool is fast; [___], it saves two hours a week.', hint: 'Además / Es más', solution: 'moreover', explanation: '"Moreover" suma un argumento de aún mayor peso.' },
+    { id: 6, type: 'trap', instruction: 'Corrige la trampa gramatical de "despite of":', promptText: 'Incorrecto: "Despite of being tired, he joined the call."', hint: 'Elimina "of"', solution: 'Despite being tired, he joined the call.', explanation: 'Es "Despite being tired" o "In spite of being tired", nunca "Despite of".' },
+    { id: 7, type: 'trap', instruction: 'Corrige la redundancia con "although":', promptText: 'Incorrecto: "Although it was late, but we kept practicing."', hint: 'Sobran dos conectores juntos', solution: 'Although it was late, we kept practicing.', explanation: 'En inglés nunca se combinan "although" y "but" en la misma oración.' },
+    { id: 8, type: 'trap', instruction: 'Corrige el falso cognado de "eventually":', promptText: 'Incorrecto: "We meet eventually, maybe once a month."', hint: 'De vez en cuando = occasionally', solution: 'We meet occasionally, maybe once a month.', explanation: '"Eventually" significa "finalmente / con el tiempo", no "eventualmente".' },
+    { id: 9, type: 'trap', instruction: 'Corrige el uso tras "unless":', promptText: 'Incorrecto: "Do not call unless it is not urgent."', hint: '"Unless" ya incluye la negación', solution: 'Do not call unless it is urgent.', explanation: '"Unless" equivale a "if not", por eso el verbo va en afirmativo.' },
+    { id: 10, type: 'trap', instruction: 'Corrige la confusión entre beside y besides:', promptText: 'Incorrecto: "Beside being smart, she is very kind."', hint: 'Además = besides (con s)', solution: 'Besides being smart, she is very kind.', explanation: '"Beside" es ubicación física ("al lado de"); "besides" significa "además de".' },
+    { id: 11, type: 'reverse', instruction: 'Traduce usando un conector de contraste conversacional:', promptText: 'Dicho esto, aún debemos revisar los costos.', hint: 'Having said that...', solution: 'Having said that, we still need to review the costs.', explanation: '"Having said that" suaviza el giro hacia un matiz o salvedad.' },
+    { id: 12, type: 'reverse', instruction: 'Traduce usando el conector de transición temática:', promptText: 'Hablando de eso, ¿ya reservaste el vuelo?', hint: 'Speaking of which...', solution: 'Speaking of which, did you book the flight yet?', explanation: '"Speaking of which" enlaza naturalmente con algo recién mencionado.' },
+    { id: 13, type: 'reverse', instruction: 'Traduce usando el conector condicional:', promptText: 'Puedes cambiar la clase siempre y cuando avises antes.', hint: 'as long as / provided that', solution: 'You can reschedule the class as long as you notify beforehand.', explanation: '"As long as" y "provided that" fijan una condición clara.' },
+    { id: 14, type: 'reverse', instruction: 'Traduce aplicando la preposición de causa:', promptText: 'La reunión se retrasó debido al tráfico.', hint: 'due to / owing to', solution: 'The meeting was delayed due to the traffic.', explanation: '"Due to" va seguido de un sustantivo ("the traffic").' },
+    { id: 15, type: 'reverse', instruction: 'Traduce aplicando retrospectiva:', promptText: 'Viéndolo en retrospectiva, fue la mejor decisión.', hint: 'In hindsight...', solution: 'In hindsight, it was the best decision.', explanation: '"In hindsight" expresa comprensión posterior tras los hechos.' }
+  ],
+  phrasal_verbs: [
+    { id: 1, type: 'fill', instruction: 'Completa con el phrasal verb de resolver/descifrar:', promptText: 'Let us [___] why the microphone is muted.', hint: 'Descifrar / Resolver', solution: 'figure out', explanation: '"Figure out" significa descifrar o resolver un problema mediante análisis.' },
+    { id: 2, type: 'fill', instruction: 'Completa con el phrasal verb de posponer:', promptText: 'Do not [___] your speaking practice until Friday.', hint: 'Posponer / Aplazar', solution: 'put off', explanation: '"Put off" equivale a posponer o aplazar algo para más tarde.' },
+    { id: 3, type: 'fill', instruction: 'Completa con el phrasal verb de investigar:', promptText: 'Our engineering team will [___] the bug right away.', hint: 'Investigar un caso', solution: 'look into', explanation: '"Look into" significa examinar o investigar un tema a fondo.' },
+    { id: 4, type: 'fill', instruction: 'Completa con el phrasal verb de cancelar:', promptText: 'They had to [___] the outdoor event because of rain.', hint: 'Cancelar', solution: 'call off', explanation: '"Call off" significa cancelar un evento planificado.' },
+    { id: 5, type: 'fill', instruction: 'Completa con el phrasal verb de representar / explicar:', promptText: 'Enterprise clients [___] 60% of our revenue.', hint: 'Representar porcentaje', solution: 'account for', explanation: '"Account for" indica qué porcentaje representa o explica algo.' },
+    { id: 6, type: 'trap', instruction: 'Corrige la forma verbal tras "look forward to":', promptText: 'Incorrecto: "I look forward to meet you tomorrow."', hint: 'Siempre lleva -ING', solution: 'I look forward to meeting you tomorrow.', explanation: 'Después de "look forward to" el verbo SIEMPRE va en gerundio (-ING).' },
+    { id: 7, type: 'trap', instruction: 'Corrige la preposición omitida en buscar:', promptText: 'Incorrecto: "I am looking my keys everywhere."', hint: 'Buscar = look FOR', solution: 'I am looking for my keys everywhere.', explanation: '"Look" solo significa mirar; "buscar" requiere obligatoriamente "look for".' },
+    { id: 8, type: 'trap', instruction: 'Corrige la confusión entre wake up y get up:', promptText: 'Incorrecto: "I opened my eyes and got up, still lying in bed."', hint: 'Despertar = wake up', solution: 'I woke up and stayed lying in bed for five minutes.', explanation: '"Wake up" es abrir los ojos/despertar; "get up" es levantarse físicamente de la cama.' },
+    { id: 9, type: 'trap', instruction: 'Corrige el uso de run out sin "of":', promptText: 'Incorrecto: "We ran out battery during the video call."', hint: 'Falta preposición OF', solution: 'We ran out of battery during the video call.', explanation: 'Antes del sustantivo agotado se usa "run out OF something".' },
+    { id: 10, type: 'trap', instruction: 'Corrige la confusión entre give up y abandon:', promptText: 'Incorrecto: "Never give down on your goals!"', hint: 'Rendirse = give UP', solution: 'Never give up on your goals!', explanation: 'La partícula correcta de rendirse es "give up".' },
+    { id: 11, type: 'reverse', instruction: 'Traduce al inglés usando el phrasal verb correcto:', promptText: 'Ella asumirá el control del proyecto la próxima semana.', hint: 'take over', solution: 'She will take over the project next week.', explanation: '"Take over" significa asumir el mando o relevo.' },
+    { id: 12, type: 'reverse', instruction: 'Traduce al inglés usando el phrasal verb correcto:', promptText: 'Ayer me topé por casualidad con un viejo amigo.', hint: 'come across / bump into', solution: 'Yesterday I came across an old friend.', explanation: '"Come across" indica encontrar a alguien o algo por casualidad.' },
+    { id: 13, type: 'reverse', instruction: 'Traduce al inglés usando el phrasal verb correcto:', promptText: 'Todo ese esfuerzo finalmente valió la pena.', hint: 'pay off', solution: 'All that hard work finally paid off.', explanation: '"Pay off" significa dar frutos o compensar el esfuerzo realizado.' },
+    { id: 14, type: 'reverse', instruction: 'Traduce al inglés usando el phrasal verb correcto:', promptText: 'Cerremos la reunión repasando los siguientes pasos.', hint: 'wrap up', solution: 'Let us wrap up the meeting by reviewing next steps.', explanation: '"Wrap up" es la forma ejecutiva natural de concluir una reunión.' },
+    { id: 15, type: 'reverse', instruction: 'Traduce al inglés usando el phrasal verb correcto:', promptText: 'Tengo que ponerme al día con mis correos hoy.', hint: 'catch up on', solution: 'I have to catch up on my emails today.', explanation: '"Catch up on" significa ponerse al día con tareas acumuladas.' }
   ],
   cefr_general: [
     { id: 1, type: 'fill', instruction: 'Completa con la acepción A2 de gestionar/administrar:', promptText: 'She [___] a small software company with her brother.', hint: 'Administrar un negocio', solution: 'runs', explanation: 'En A2, "run" significa administrar o dirigir una empresa.' },
@@ -2442,21 +2523,28 @@ export function getVocabMentalGymExercises(
   level: CefrLevel = 'A1',
   words?: VocabularyWordItem[]
 ): VocabMentalGymExercise[] {
-  if (category !== 'cefr_general' || level === 'A1') {
-    return VOCAB_MENTAL_GYM[category];
+  const pool = words && words.length > 0 ? words : getVocabularyByCategory(category, level);
+  const useStaticFirst =
+    (category === 'time_words' || category === 'prepositions_in_on_at' || category === 'wh_words') ||
+    (category === 'cefr_general' && level === 'A1' && pool.length < 15);
+
+  if (useStaticFirst || pool.length < 5) {
+    return VOCAB_MENTAL_GYM[category] || VOCAB_MENTAL_GYM.cefr_general;
   }
 
-  const targetWords = words && words.length > 0 ? words : getVocabularyByCategory('cefr_general', level, false);
-  if (targetWords.length === 0) return VOCAB_MENTAL_GYM.cefr_general;
+  // Mezclamos una muestra variada del banco activo para que cada sesión de Repaso (15) sea fresca
+  const shuffledWords = [...pool].sort(() => Math.random() - 0.5).slice(0, 20);
+  const allSenses = shuffledWords.flatMap(w => w.senses);
+  if (allSenses.length === 0) return VOCAB_MENTAL_GYM[category] || VOCAB_MENTAL_GYM.cefr_general;
 
   const exercises: VocabMentalGymExercise[] = [];
   let idCounter = 1;
 
-  // Bloque 1: 5 ejercicios de completación contextual (fill) basados en las acepciones del nivel
-  const allSenses = targetWords.flatMap(w => w.senses);
+  // Bloque 1: 5 ejercicios de completación contextual (fill) basados en las acepciones del banco
   for (let i = 0; i < 5; i++) {
     const sense = allSenses[i % allSenses.length];
-    const regex = new RegExp(`\\b${sense.word}(s|ed|ing)?\\b`, 'i');
+    const cleanWord = sense.word.split('/')[0].trim();
+    const regex = new RegExp(`\\b${cleanWord.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(s|es|ed|ing)?\\b`, 'i');
     const blankedSentence = regex.test(sense.exampleSentenceEn)
       ? sense.exampleSentenceEn.replace(regex, '[___]')
       : `${sense.exampleSentenceEn} ([___])`;
@@ -2466,31 +2554,47 @@ export function getVocabMentalGymExercises(
       type: 'fill',
       instruction: `Completa con el término exacto (${sense.partOfSpeech} — ${sense.definitionEs}):`,
       promptText: blankedSentence,
-      hint: `${sense.definitionEs} (${sense.collocations?.[0] || sense.word})`,
-      solution: sense.word,
-      explanation: `En este contexto (${sense.cefrLevelTarget}), "${sense.word}" significa: ${sense.definitionEs}. Ejemplo completo: "${sense.exampleSentenceEn}".`
+      hint: `${sense.definitionEs} (${sense.collocations?.[0] || cleanWord})`,
+      solution: cleanWord,
+      explanation: `En este contexto (${sense.cefrLevelTarget}), "${cleanWord}" significa: ${sense.definitionEs}. Ejemplo completo: "${sense.exampleSentenceEn}".`
     });
   }
 
-  // Bloque 2: 5 ejercicios de detección de trampa / contraste polisémico (trap)
+  // Bloque 2: 5 ejercicios de contraste / precisión semántica (trap)
+  const staticTraps = (VOCAB_MENTAL_GYM[category] || VOCAB_MENTAL_GYM.cefr_general).filter(e => e.type === 'trap');
   for (let i = 0; i < 5; i++) {
-    const wordItem = targetWords[i % targetWords.length];
-    const sense1 = wordItem.senses[0];
-    const sense2 = wordItem.senses[1] || wordItem.senses[0];
-    exercises.push({
-      id: idCounter++,
-      type: 'trap',
-      instruction: `Domina la segunda acepción (${sense2.cefrLevelTarget}) de "${wordItem.word.toUpperCase()}":`,
-      promptText: `Acepción 1 (${sense1.cefrLevelTarget}): "${sense1.definitionEs}". ¿Cómo usas "${wordItem.word}" con el sentido de "${sense2.definitionEs}"?`,
-      hint: sense2.collocations?.join(' / ') || sense2.definitionEs,
-      solution: sense2.exampleSentenceEn,
-      explanation: `${sense2.notes || `En nivel ${sense2.cefrLevelTarget}, "${wordItem.word}" (${sense2.partOfSpeech}) significa "${sense2.definitionEs}".`}`
-    });
+    const wordItem = shuffledWords[(i + 5) % shuffledWords.length];
+    if (wordItem.senses.length > 1) {
+      const sense1 = wordItem.senses[0];
+      const sense2 = wordItem.senses[1];
+      exercises.push({
+        id: idCounter++,
+        type: 'trap',
+        instruction: `Domina la segunda acepción (${sense2.cefrLevelTarget}) de "${wordItem.word.toUpperCase()}":`,
+        promptText: `Acepción 1 (${sense1.cefrLevelTarget}): "${sense1.definitionEs}". ¿Cómo usas "${wordItem.word}" con el sentido de "${sense2.definitionEs}"?`,
+        hint: sense2.collocations?.join(' / ') || sense2.definitionEs,
+        solution: sense2.exampleSentenceEn,
+        explanation: `${sense2.notes || `En nivel ${sense2.cefrLevelTarget}, "${wordItem.word}" (${sense2.partOfSpeech}) significa "${sense2.definitionEs}".`}`
+      });
+    } else if (staticTraps[i]) {
+      exercises.push({ ...staticTraps[i], id: idCounter++ });
+    } else {
+      const sense = wordItem.senses[0];
+      exercises.push({
+        id: idCounter++,
+        type: 'trap',
+        instruction: `Aplica "${wordItem.word}" (${sense.partOfSpeech}) con precisión:`,
+        promptText: `¿Cuál es una oración natural usando "${wordItem.word}" para expresar "${sense.definitionEs}"?`,
+        hint: sense.definitionEn,
+        solution: sense.exampleSentenceEn,
+        explanation: `Ejemplo natural (${sense.cefrLevelTarget}): "${sense.exampleSentenceEn}".`
+      });
+    }
   }
 
   // Bloque 3: 5 ejercicios de producción inversa Español -> Inglés (reverse)
   for (let i = 0; i < 5; i++) {
-    const sense = allSenses[(i + 1) % allSenses.length];
+    const sense = allSenses[(i + 10) % allSenses.length];
     exercises.push({
       id: idCounter++,
       type: 'reverse',

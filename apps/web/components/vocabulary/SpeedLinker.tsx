@@ -64,13 +64,13 @@ export const SpeedLinker: React.FC<Props> = ({
       const seenPairKeys = new Set<string>();
       const usedTokens = new Set<string>();
 
-      // Combinar palabras activas + respaldo del mismo módulo/CEFR si un subnivel estricto tiene pocas
+      // Combinar palabras activas si el pool actual es muy pequeño
       const primaryPool = [...words].sort(() => Math.random() - 0.5);
       const extendedPool =
         primaryPool.length < 4
           ? [
             ...primaryPool,
-            ...getVocabularyByCategory(category, level, true)
+            ...getVocabularyByCategory(category, level)
               .filter(ext => !primaryPool.some(p => p.id === ext.id))
               .sort(() => Math.random() - 0.5)
           ]
@@ -106,13 +106,21 @@ export const SpeedLinker: React.FC<Props> = ({
         }
       }
 
-      if (pairs.length >= 3) return pairs;
+      if (pairs.length >= 6) return pairs;
 
-      return CLEAN_FALLBACKS[mode].slice(0, 6).map(f => ({
-        word1: f.word1,
-        word2: f.word2,
-        type: mode
-      }));
+      // Si el módulo tiene entre 1 y 5 pares válidos, completamos el tablero hasta 6 con pares limpios sin colisiones
+      const padded = [...pairs];
+      for (const f of CLEAN_FALLBACKS[mode]) {
+        if (padded.length >= 6) break;
+        const k1 = f.word1.toLowerCase();
+        const k2 = f.word2.toLowerCase();
+        if (!usedTokens.has(k1) && !usedTokens.has(k2)) {
+          usedTokens.add(k1);
+          usedTokens.add(k2);
+          padded.push({ word1: f.word1, word2: f.word2, type: mode });
+        }
+      }
+      return padded;
     },
     [words, category, level]
   );

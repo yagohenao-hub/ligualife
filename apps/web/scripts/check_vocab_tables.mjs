@@ -18,13 +18,13 @@ const key = env.SUPABASE_SERVICE_ROLE_KEY;
 const supabase = createClient(url, key, { auth: { persistSession: false } });
 
 async function main() {
-  const tables = ['vocabulary_words', 'vocabulary_senses', 'vocabulary_relations', 'student_vocabulary_state', 'vocabulary_game_sessions'];
+  const tables = ['vocabulary_words', 'vocabulary_senses', 'vocabulary_relations'];
   for (const t of tables) {
-    const { data, error } = await supabase.from(t).select('count', { count: 'exact', head: true });
+    const { data, error } = await supabase.from(t).select('*').limit(1);
     if (error) {
       console.log(`Table ${t}: NOT FOUND or ERROR (${error.message})`);
     } else {
-      console.log(`Table ${t}: EXISTS!`);
+      console.log(`Table ${t}: EXISTS! (sample rows: ${data?.length || 0})`);
     }
   }
 }

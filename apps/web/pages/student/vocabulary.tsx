@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -6,8 +6,8 @@ import {
   CefrLevel,
   VocabCategory,
   VocabularyWordItem,
-  TriageStatus,
-  getVocabularyByCategory
+  getVocabularyByCategory,
+  loadVocabularyByCategoryAsync
 } from '@/lib/vocabulary';
 import { VocabularyLevelSelector } from '@/components/vocabulary/VocabularyLevelSelector';
 import { VocabularySwiper } from '@/components/vocabulary/VocabularySwiper';
@@ -49,10 +49,22 @@ const CATEGORIES: CategoryConfig[] = [
     description: 'Palabras WH (where, what, who, when, why, how, which) para preguntar o conectar frases.'
   },
   {
+    id: 'logical_connectors',
+    title: '🔗 Conectores Lógicos',
+    badge: 'Discurso & Fluidez',
+    description: 'Conectores de contraste, causa-efecto, adición, secuencia y transiciones conversacionales nativas.'
+  },
+  {
+    id: 'phrasal_verbs',
+    title: '🚀 Phrasal Verbs',
+    badge: 'Verbos Frasales Esenciales',
+    description: 'Los verbos frasales más usados en trabajo, reuniones y conversación real (con múltiples acepciones y opuestos).'
+  },
+  {
     id: 'cefr_general',
     title: '🌐 Vocabulario CEFR',
-    badge: 'Polisemia A1 – C2',
-    description: 'Modelo en espiral: palabras con múltiples acepciones reales, sinónimos y antónimos.'
+    badge: 'Banco Completo A1 – C2',
+    description: 'Listas completas oficiales MCER (A1 a C2) con definiciones, IPA, ejemplos bilingües y red de sinónimos/antónimos.'
   }
 ];
 
@@ -60,15 +72,15 @@ export default function VocabularyHubPage() {
   const router = useRouter();
   const [activeCategory, setActiveCategory] = useState<VocabCategory>('time_words');
   const [selectedLevel, setSelectedLevel] = useState<CefrLevel>('A1');
-  const [includePreviousPending, setIncludePreviousPending] = useState(false);
 
-  // Vista unificada: Explorar (Grid/Swiper toggle interno), Trivia Infinita, o Conector Semántico
+  // Vista unificada: Explorar (Cuadrícula/Tarjetas), Trivia Infinita (escala por racha), o Conector Semántico
   const [activeView, setActiveView] = useState<'explore' | 'trivia' | 'linker'>('explore');
   const [exploreLayout, setExploreLayout] = useState<'grid' | 'swiper'>('grid');
 
-  const [words, setWords] = useState<VocabularyWordItem[]>([]);
+  const [words, setWords] = useState<VocabularyWordItem[]>(() =>
+    getVocabularyByCategory('time_words', 'A1')
+  );
   const [loading, setLoading] = useState(false);
-  const [studentId, setStudentId] = useState<string>('');
 
   // Estados de Modales de Repaso / Resumen / Lectura
   const [showResumenModal, setShowResumenModal] = useState(false);
@@ -85,76 +97,24 @@ export default function VocabularyHubPage() {
     else if (mode === 'reading') setShowReadingModal(true);
   }, [router.isReady, router.query.mode]);
 
-  useEffect(() => {
-    try {
-      const stored = sessionStorage.getItem('ll_student') || localStorage.getItem('ll_student_profile');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (parsed.id) setStudentId(parsed.id);
-      }
-    } catch {}
-  }, []);
-
   const loadWords = useCallback(async () => {
     setLoading(true);
-    const initialList = getVocabularyByCategory(activeCategory, selectedLevel, includePreviousPending);
-    setWords(initialList);
+    const immediate = getVocabularyByCategory(activeCategory, selectedLevel);
+    if (immediate.length > 0) setWords(immediate);
 
-    if (studentId) {
-      try {
-        const res = await fetch(
-          `/api/student/vocabulary?category=${activeCategory}&level=${selectedLevel}&studentId=${studentId}&includePreviousPending=${includePreviousPending}`
-        );
-        const data = await res.json();
-        if (data.success && data.words) {
-          setWords(data.words);
-        }
-      } catch (err) {
-        console.warn('API sync warning:', err);
-      }
+    try {
+      const fullBank = await loadVocabularyByCategoryAsync(activeCategory, selectedLevel);
+      setWords(fullBank);
+    } catch (err) {
+      console.warn('Error cargando banco de vocabulario:', err);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
-  }, [activeCategory, selectedLevel, includePreviousPending, studentId]);
+  }, [activeCategory, selectedLevel]);
 
   useEffect(() => {
     loadWords();
   }, [loadWords]);
-
-  const handleWordStatusChanged = async (wordId: string, newStatus: TriageStatus) => {
-    setWords(prev =>
-      prev.map(w => {
-        if (w.id === wordId) return { ...w, triageStatus: newStatus };
-        return w;
-      })
-    );
-
-    const targetWord = words.find(w => w.id === wordId);
-    const primarySense = targetWord?.senses[0];
-    if (primarySense && studentId) {
-      try {
-        await fetch('/api/student/vocabulary', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            studentId,
-            wordId,
-            senseId: primarySense.id,
-            status: newStatus
-          })
-        });
-      } catch (err) {
-        console.error('Error persisting status to Supabase:', err);
-      }
-    }
-  };
-
-  const progressMap = useMemo(() => {
-    const map: Record<string, TriageStatus> = {};
-    words.forEach(w => {
-      if (w.triageStatus) map[w.id] = w.triageStatus;
-    });
-    return map;
-  }, [words]);
 
   const currentCategoryConfig = CATEGORIES.find(c => c.id === activeCategory) || CATEGORIES[0];
 
@@ -164,7 +124,7 @@ export default function VocabularyHubPage() {
         <title>Vocabulario Conceptual &amp; Red Semántica | LinguaLife</title>
         <meta
           name="description"
-          content="Practica Palabras del Tiempo, In/On/At, WH-Words y Vocabulario CEFR polisémico con Trivia, Repaso, Lectura y Conector Semántico."
+          content="Practica Palabras del Tiempo, In/On/At, WH-Words, Conectores Lógicos, Phrasal Verbs y Vocabulario CEFR A1-C2 completo."
         />
       </Head>
 
@@ -213,11 +173,11 @@ export default function VocabularyHubPage() {
             Gimnasio de Vocabulario
           </h1>
           <p style={{ color: 'var(--text-secondary)', margin: 0, fontSize: '0.9rem', lineHeight: 1.45 }}>
-            Elige un bloque arriba y comienza a entrenar directamente en un solo clic.
+            Elige un banco temático o nivel CEFR y entrena directamente; la dificultad escala automáticamente según tu racha.
           </p>
         </div>
 
-        {/* ── ETAPA ÚNICA DE CONTEXTO: CATEGORÍA + NIVEL INLINE + RESUMEN RÁPIDO ── */}
+        {/* ── ETAPA ÚNICA DE CONTEXTO: CATEGORÍA + NIVEL + RESUMEN RÁPIDO ── */}
         <section className={styles.contextCard} aria-label="Selección de categoría">
           <div className={styles.contextTopRow}>
             <div className={styles.categoryPillsContainer}>
@@ -238,7 +198,7 @@ export default function VocabularyHubPage() {
 
             <div className={styles.contextMetaGroup}>
               <span className={styles.wordCountBadge}>
-                {loading ? 'Sincronizando...' : `${words.length} palabras`}
+                {loading ? 'Cargando banco...' : `${words.length} términos`}
               </span>
               <button
                 type="button"
@@ -263,8 +223,7 @@ export default function VocabularyHubPage() {
             <VocabularyLevelSelector
               selectedLevel={selectedLevel}
               onSelectLevel={setSelectedLevel}
-              includePreviousPending={includePreviousPending}
-              onTogglePreviousPending={setIncludePreviousPending}
+              wordCount={words.length}
             />
           )}
         </section>
@@ -318,7 +277,7 @@ export default function VocabularyHubPage() {
             </span>
             <span>
               <span className={styles.modeBtnTitle}>Trivia Infinita</span>
-              <span className={styles.modeBtnSub}>Retos sin repetición</span>
+              <span className={styles.modeBtnSub}>Escala por racha</span>
             </span>
           </button>
 
@@ -380,21 +339,15 @@ export default function VocabularyHubPage() {
 
               <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
                 {exploreLayout === 'grid'
-                  ? 'Marca palabras como Por aprender, Pasiva o Dominada para enfocar tu Trivia.'
-                  : 'Revisa cada palabra paso a paso con audio nativo y acepciones.'}
+                  ? 'Busca palabras, escucha pronunciación nativa y explora todas sus acepciones.'
+                  : 'Estudia tarjeta por tarjeta con audio nativo y ejemplos reales.'}
               </span>
             </div>
 
             {exploreLayout === 'grid' ? (
-              <VocabularyGridManager
-                words={words}
-                onStatusChanged={handleWordStatusChanged}
-              />
+              <VocabularyGridManager words={words} />
             ) : (
-              <VocabularySwiper
-                words={words}
-                onWordClassified={handleWordStatusChanged}
-              />
+              <VocabularySwiper words={words} />
             )}
           </div>
         )}
@@ -402,7 +355,6 @@ export default function VocabularyHubPage() {
         {activeView === 'trivia' && (
           <VocabularyTrivia
             words={words}
-            progressMap={progressMap}
             category={activeCategory}
             level={selectedLevel}
           />

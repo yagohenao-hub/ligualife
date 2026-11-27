@@ -690,19 +690,27 @@ export function getSeedQuestionsForVocabulary(
   level: CefrLevel = 'A1',
   providedWords?: VocabularyWordItem[]
 ): TriviaQuestion[] {
-  const words =
+  const rawWords =
     providedWords && providedWords.length > 0
       ? providedWords
-      : getVocabularyByCategory(category, level, false)
+      : getVocabularyByCategory(category, level)
+
+  // Si el banco es grande (ej. 800-2000 palabras CEFR), muestreamos 75 aleatorias para latencia <10ms
+  const words =
+    rawWords.length > 75
+      ? [...rawWords].sort(() => Math.random() - 0.5).slice(0, 75)
+      : rawWords
 
   const categoryLabels: Record<VocabCategory, string> = {
     time_words: 'Las 13 Palabras del Tiempo',
     prepositions_in_on_at: 'Preposiciones IN / ON / AT',
     wh_words: 'Palabras WH (Preguntas vs. Conectores)',
+    logical_connectors: 'Conectores Lógicos & Discurso',
+    phrasal_verbs: 'Phrasal Verbs Esenciales',
     cefr_general: `Vocabulario Polisémico MCER (${level})`
   }
 
-  const topicName = categoryLabels[category]
+  const topicName = categoryLabels[category] || 'Vocabulario LinguaLife'
   let seedIdx = 1
 
   interface BucketItem {
@@ -718,14 +726,16 @@ export function getSeedQuestionsForVocabulary(
     const perSenseQueues: BucketItem[][] = senses.map((sense, sIdx) => {
       const candidates: BucketItem[] = []
       const sentenceKey = sense.exampleSentenceEn.trim().toLowerCase()
+      const cleanTerm = sense.word.split('/')[0].trim()
+      const escapedTerm = cleanTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
       // A. Arquetipo CLOZE
-      const regex = new RegExp(`\\b${sense.word}(s|ed|ing)?\\b`, 'i')
+      const regex = new RegExp(`\\b${escapedTerm}(s|es|ed|ing)?\\b`, 'i')
       if (regex.test(sense.exampleSentenceEn)) {
-        const matchedForm = sense.exampleSentenceEn.match(regex)?.[0] || sense.word
+        const matchedForm = sense.exampleSentenceEn.match(regex)?.[0] || cleanTerm
         const clozeSentence = sense.exampleSentenceEn.replace(regex, '[ ___ ]')
         const distractorWords = otherWords
-          .map(ow => ow.word)
+          .map(ow => ow.word.split('/')[0].trim())
           .filter(w => w.toLowerCase() !== matchedForm.toLowerCase())
 
         const { options, correctIndex } = buildBalancedOptions(
@@ -741,13 +751,13 @@ export function getSeedQuestionsForVocabulary(
             id: `vocab-${category}-${level}-${sense.id}-cloze`,
             topicOrder: 100 + wIdx,
             topicName,
-            question: `Completa la frase con la palabra precisa: "${clozeSentence}"`,
+            question: `Completa la frase con la expresión precisa: "${clozeSentence}"`,
             contextScenario: `Pista en español: "${sense.exampleSentenceEs}"`,
             options,
             correctIndex,
             explanation: `"${matchedForm}" (${sense.partOfSpeech}) significa aquí: ${sense.definitionEs}. Oración completa: "${sense.exampleSentenceEn}".`,
-            ldsFormula: sense.collocations?.join(' • ') || `${sense.word} (${sense.partOfSpeech})`,
-            trapExplanation: sense.notes || `Recuerda asociar "${sense.word}" con el contexto: ${sense.definitionEs}.`,
+            ldsFormula: sense.collocations?.join(' • ') || `${cleanTerm} (${sense.partOfSpeech})`,
+            trapExplanation: sense.notes || `Recuerda asociar "${cleanTerm}" con el contexto: ${sense.definitionEs}.`,
             archetype: 'cloze',
             difficulty: sIdx === 0 ? 'basic' : 'intermediate',
             contextSource: 'vocabulary'

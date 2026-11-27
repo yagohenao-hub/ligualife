@@ -1,0 +1,4141 @@
+[
+  {
+    "id": "vw-pv-figure-out",
+    "word": "figure out",
+    "cefrLevel": "B1",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/ˈfɪɡ.jər aʊt/",
+    "thematicCluster": "Resolución & Mente",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-figure-out-1",
+        "wordId": "vw-pv-figure-out",
+        "word": "figure out",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/ˈfɪɡ.jər aʊt/",
+        "definitionEn": "To understand, solve, or discover the answer to something through thought.",
+        "definitionEs": "Descifrar / Resolver / Entender cómo funciona algo.",
+        "exampleSentenceEn": "It took us twenty minutes to figure out why the audio was muted.",
+        "exampleSentenceEs": "Nos tomó veinte minutos descifrar por qué el audio estaba silenciado.",
+        "collocations": [
+          "figure out how to",
+          "figure it out"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-figure-out-synonym-0",
+        "sourceSenseId": "vs-pv-figure-out-1",
+        "targetSenseId": "vs-pv-sort-out-1",
+        "targetWord": "sort out",
+        "targetDefinitionEs": "Resolver / Arreglar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-figure-out-antonym-1",
+        "sourceSenseId": "vs-pv-figure-out-1",
+        "targetSenseId": "vs-pv-give-up-1",
+        "targetWord": "give up",
+        "targetDefinitionEs": "Rendirse",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-give-up",
+    "word": "give up",
+    "cefrLevel": "A2",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/ɡɪv ʌp/",
+    "thematicCluster": "Esfuerzo & Hábitos",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-give-up-1",
+        "wordId": "vw-pv-give-up",
+        "word": "give up",
+        "senseIndex": 1,
+        "cefrLevelTarget": "A2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/ɡɪv ʌp/",
+        "definitionEn": "To stop trying to do something before finishing; surrender.",
+        "definitionEs": "Rendirse / Darse por vencido.",
+        "exampleSentenceEn": "Never give up when pronunciation feels tricky at first.",
+        "exampleSentenceEs": "Nunca te rindas cuando la pronunciación parezca difícil al principio.",
+        "collocations": [
+          "give up easily"
+        ]
+      },
+      {
+        "id": "vs-pv-give-up-2",
+        "wordId": "vw-pv-give-up",
+        "word": "give up",
+        "senseIndex": 2,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/ɡɪv ʌp/",
+        "definitionEn": "To quit a regular habit, food, or activity permanently.",
+        "definitionEs": "Dejar un hábito / Abandonar una costumbre.",
+        "exampleSentenceEn": "He decided to give up drinking coffee after 4 PM.",
+        "exampleSentenceEs": "Decidió dejar de tomar café después de las 4 PM.",
+        "collocations": [
+          "give up smoking"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-give-up-synonym-0",
+        "sourceSenseId": "vs-pv-give-up-1",
+        "targetSenseId": "vs-pv-quit-1",
+        "targetWord": "quit",
+        "targetDefinitionEs": "Dejar / Abandonar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-give-up-antonym-1",
+        "sourceSenseId": "vs-pv-give-up-1",
+        "targetSenseId": "vs-pv-carry-on-1",
+        "targetWord": "carry on",
+        "targetDefinitionEs": "Seguir adelante",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-carry-on",
+    "word": "carry on",
+    "cefrLevel": "B1",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/ˈkær.i ɑːn/",
+    "thematicCluster": "Esfuerzo & Hábitos",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-carry-on-1",
+        "wordId": "vw-pv-carry-on",
+        "word": "carry on",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/ˈkær.i ɑːn/",
+        "definitionEn": "To continue doing an activity or task despite obstacles or interruptions.",
+        "definitionEs": "Seguir adelante / Continuar haciendo algo.",
+        "exampleSentenceEn": "Please carry on with your presentation while I fix the slides.",
+        "exampleSentenceEs": "Por favor continúa con tu presentación mientras arreglo las diapositivas.",
+        "collocations": [
+          "carry on working"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-carry-on-synonym-0",
+        "sourceSenseId": "vs-pv-carry-on-1",
+        "targetSenseId": "vs-pv-go-on-1",
+        "targetWord": "go on",
+        "targetDefinitionEs": "Continuar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-carry-on-antonym-1",
+        "sourceSenseId": "vs-pv-carry-on-1",
+        "targetSenseId": "vs-pv-give-up-1",
+        "targetWord": "give up",
+        "targetDefinitionEs": "Rendirse",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-go-on",
+    "word": "go on",
+    "cefrLevel": "A2",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/ɡoʊ ɑːn/",
+    "thematicCluster": "Acción & Tiempo",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-go-on-1",
+        "wordId": "vw-pv-go-on",
+        "word": "go on",
+        "senseIndex": 1,
+        "cefrLevelTarget": "A2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/ɡoʊ ɑːn/",
+        "definitionEn": "To continue without stopping.",
+        "definitionEs": "Seguir / Continuar.",
+        "exampleSentenceEn": "She went on speaking even after the bell rang.",
+        "exampleSentenceEs": "Ella siguió hablando incluso después de que sonó el timbre.",
+        "collocations": [
+          "go on talking"
+        ]
+      },
+      {
+        "id": "vs-pv-go-on-2",
+        "wordId": "vw-pv-go-on",
+        "word": "go on",
+        "senseIndex": 2,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/ɡoʊ ɑːn/",
+        "definitionEn": "To happen or take place (\"What is going on?\").",
+        "definitionEs": "Ocurrir / Pasar algo.",
+        "exampleSentenceEn": "Tell me what is going on with the new project.",
+        "exampleSentenceEs": "Cuéntame qué está pasando con el nuevo proyecto.",
+        "collocations": [
+          "what is going on?"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-go-on-synonym-0",
+        "sourceSenseId": "vs-pv-go-on-1",
+        "targetSenseId": "vs-pv-carry-on-1",
+        "targetWord": "carry on",
+        "targetDefinitionEs": "Continuar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-go-on-antonym-1",
+        "sourceSenseId": "vs-pv-go-on-1",
+        "targetSenseId": "vs-pv-call-off-1",
+        "targetWord": "call off",
+        "targetDefinitionEs": "Cancelar",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-look-for",
+    "word": "look for",
+    "cefrLevel": "A2",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/lʊk fɔːr/",
+    "thematicCluster": "Búsqueda & Percepción",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-look-for-1",
+        "wordId": "vw-pv-look-for",
+        "word": "look for",
+        "senseIndex": 1,
+        "cefrLevelTarget": "A2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/lʊk fɔːr/",
+        "definitionEn": "To search for someone or something.",
+        "definitionEs": "Buscar algo o a alguien (no se agrega \"for\" aparte, ya viene incluido).",
+        "exampleSentenceEn": "I am looking for a quiet cafe with good Wi-Fi.",
+        "exampleSentenceEs": "Estoy buscando un café tranquilo con buen Wi-Fi.",
+        "collocations": [
+          "look for a job"
+        ],
+        "notes": "Error común: \"look\" solo es mirar; \"buscar\" SIEMPRE es \"look for\"."
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-look-for-synonym-0",
+        "sourceSenseId": "vs-pv-look-for-1",
+        "targetSenseId": "vs-pv-search-for-1",
+        "targetWord": "search for",
+        "targetDefinitionEs": "Buscar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-look-for-antonym-1",
+        "sourceSenseId": "vs-pv-look-for-1",
+        "targetSenseId": "vs-pv-come-across-1",
+        "targetWord": "come across",
+        "targetDefinitionEs": "Encontrar por azar",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-look-after",
+    "word": "look after",
+    "cefrLevel": "A2",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/lʊk ˈæf.tər/",
+    "thematicCluster": "Relaciones & Cuidado",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-look-after-1",
+        "wordId": "vw-pv-look-after",
+        "word": "look after",
+        "senseIndex": 1,
+        "cefrLevelTarget": "A2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/lʊk ˈæf.tər/",
+        "definitionEn": "To take care of or be responsible for someone or something.",
+        "definitionEs": "Cuidar de alguien o de algo; hacerse cargo.",
+        "exampleSentenceEn": "Can you look after my dog while I travel to Bogotá?",
+        "exampleSentenceEs": "¿Puedes cuidar a mi perro mientras viajo a Bogotá?",
+        "collocations": [
+          "look after your health"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-look-after-synonym-0",
+        "sourceSenseId": "vs-pv-look-after-1",
+        "targetSenseId": "vs-pv-take-care-of-1",
+        "targetWord": "take care of",
+        "targetDefinitionEs": "Cuidar de",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-look-after-antonym-1",
+        "sourceSenseId": "vs-pv-look-after-1",
+        "targetSenseId": "vs-pv-neglect-1",
+        "targetWord": "neglect",
+        "targetDefinitionEs": "Descuidar",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-look-forward-to",
+    "word": "look forward to",
+    "cefrLevel": "B1",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/lʊk ˈfɔːr.wərd tuː/",
+    "thematicCluster": "Comunicación & Cortesía",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-look-forward-to-1",
+        "wordId": "vw-pv-look-forward-to",
+        "word": "look forward to",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/lʊk ˈfɔːr.wərd tuː/",
+        "definitionEn": "To feel excited and pleased about something that is going to happen.",
+        "definitionEs": "Esperar con ansias / Tener mucha ilusión por algo.",
+        "exampleSentenceEn": "I look forward to meeting you at Friday’s workshop!",
+        "exampleSentenceEs": "¡Espero con entusiasmo conocerte en el taller del viernes!",
+        "collocations": [
+          "look forward to + -ING"
+        ],
+        "notes": "Regla clave de examen: después de \"look forward to\", cualquier verbo lleva -ING (\"looking forward to seeing you\" ✅)."
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-look-forward-to-synonym-0",
+        "sourceSenseId": "vs-pv-look-forward-to-1",
+        "targetSenseId": "vs-pv-anticipate-1",
+        "targetWord": "anticipate",
+        "targetDefinitionEs": "Anticipar con ilusión",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-look-forward-to-antonym-1",
+        "sourceSenseId": "vs-pv-look-forward-to-1",
+        "targetSenseId": "vs-pv-dread-1",
+        "targetWord": "dread",
+        "targetDefinitionEs": "Temer",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-look-up",
+    "word": "look up",
+    "cefrLevel": "B1",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/lʊk ʌp/",
+    "thematicCluster": "Búsqueda & Percepción",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-look-up-1",
+        "wordId": "vw-pv-look-up",
+        "word": "look up",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/lʊk ʌp/",
+        "definitionEn": "To search for a piece of information in a dictionary, database, or online.",
+        "definitionEs": "Consultar o buscar un dato específico en internet o diccionario.",
+        "exampleSentenceEn": "Let me look up that idiom in the LinguaLife glossary.",
+        "exampleSentenceEs": "Déjame buscar ese modismo en el glosario de LinguaLife.",
+        "collocations": [
+          "look up a word"
+        ]
+      },
+      {
+        "id": "vs-pv-look-up-2",
+        "wordId": "vw-pv-look-up",
+        "word": "look up",
+        "senseIndex": 2,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/lʊk ʌp/",
+        "definitionEn": "For a situation to start improving (\"Things are looking up\").",
+        "definitionEs": "Mejorar una situación.",
+        "exampleSentenceEn": "After two slow months, sales are finally looking up.",
+        "exampleSentenceEs": "Después de dos meses lentos, las ventas por fin están mejorando.",
+        "collocations": [
+          "things are looking up"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-look-up-synonym-0",
+        "sourceSenseId": "vs-pv-look-up-1",
+        "targetSenseId": "vs-pv-check-1",
+        "targetWord": "check",
+        "targetDefinitionEs": "Consultar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-look-up-antonym-1",
+        "sourceSenseId": "vs-pv-look-up-1",
+        "targetSenseId": "vs-pv-overlook-1",
+        "targetWord": "overlook",
+        "targetDefinitionEs": "Pasar por alto",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-look-into",
+    "word": "look into",
+    "cefrLevel": "B2",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/lʊk ˈɪn.tuː/",
+    "thematicCluster": "Resolución & Mente",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-look-into-1",
+        "wordId": "vw-pv-look-into",
+        "word": "look into",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/lʊk ˈɪn.tuː/",
+        "definitionEn": "To investigate, examine, or research a problem or request carefully.",
+        "definitionEs": "Investigar / Revisar a fondo un caso o inconveniente.",
+        "exampleSentenceEn": "Thank you for reporting the bug; our team will look into it right away.",
+        "exampleSentenceEs": "Gracias por reportar el error; nuestro equipo lo investigará de inmediato.",
+        "collocations": [
+          "look into the issue"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-look-into-synonym-0",
+        "sourceSenseId": "vs-pv-look-into-1",
+        "targetSenseId": "vs-pv-investigate-1",
+        "targetWord": "investigate",
+        "targetDefinitionEs": "Investigar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-look-into-antonym-1",
+        "sourceSenseId": "vs-pv-look-into-1",
+        "targetSenseId": "vs-pv-ignore-1",
+        "targetWord": "ignore",
+        "targetDefinitionEs": "Ignorar",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-look-up-to",
+    "word": "look up to",
+    "cefrLevel": "B2",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/lʊk ʌp tuː/",
+    "thematicCluster": "Relaciones & Cuidado",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-look-up-to-1",
+        "wordId": "vw-pv-look-up-to",
+        "word": "look up to",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/lʊk ʌp tuː/",
+        "definitionEn": "To deeply admire and respect someone as a role model.",
+        "definitionEs": "Admirar y respetar a alguien.",
+        "exampleSentenceEn": "Junior engineers really look up to our tech lead.",
+        "exampleSentenceEs": "Los ingenieros junior realmente admiran a nuestra líder técnica.",
+        "collocations": [
+          "look up to a mentor"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-look-up-to-synonym-0",
+        "sourceSenseId": "vs-pv-look-up-to-1",
+        "targetSenseId": "vs-pv-admire-1",
+        "targetWord": "admire",
+        "targetDefinitionEs": "Admirar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-look-up-to-antonym-1",
+        "sourceSenseId": "vs-pv-look-up-to-1",
+        "targetSenseId": "vs-pv-look-down-on-1",
+        "targetWord": "look down on",
+        "targetDefinitionEs": "Menospreciar",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-look-down-on",
+    "word": "look down on",
+    "cefrLevel": "B2",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/lʊk daʊn ɑːn/",
+    "thematicCluster": "Relaciones & Cuidado",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-look-down-on-1",
+        "wordId": "vw-pv-look-down-on",
+        "word": "look down on",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/lʊk daʊn ɑːn/",
+        "definitionEn": "To regard someone or something with superiority or contempt.",
+        "definitionEs": "Menospreciar / Mirar por encima del hombro.",
+        "exampleSentenceEn": "Never look down on beginners; everyone starts somewhere.",
+        "exampleSentenceEs": "Nunca menosprecies a los principiantes; todos empiezan en algún lugar.",
+        "collocations": [
+          "look down on others"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-look-down-on-synonym-0",
+        "sourceSenseId": "vs-pv-look-down-on-1",
+        "targetSenseId": "vs-pv-despise-1",
+        "targetWord": "despise",
+        "targetDefinitionEs": "Despreciar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-look-down-on-antonym-1",
+        "sourceSenseId": "vs-pv-look-down-on-1",
+        "targetSenseId": "vs-pv-look-up-to-1",
+        "targetWord": "look up to",
+        "targetDefinitionEs": "Admirar",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-pick-up",
+    "word": "pick up",
+    "cefrLevel": "A2",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/pɪk ʌp/",
+    "thematicCluster": "Vida Cotidiana & Trabajo",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-pick-up-1",
+        "wordId": "vw-pv-pick-up",
+        "word": "pick up",
+        "senseIndex": 1,
+        "cefrLevelTarget": "A2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/pɪk ʌp/",
+        "definitionEn": "To lift something up, collect someone in a vehicle, or answer a phone call.",
+        "definitionEs": "Recoger algo / Pasar a buscar a alguien / Contestar el teléfono.",
+        "exampleSentenceEn": "I will pick you up at the airport at 6:00 PM.",
+        "exampleSentenceEs": "Pasaré a recogerte al aeropuerto a las 6:00 PM.",
+        "collocations": [
+          "pick up the phone"
+        ]
+      },
+      {
+        "id": "vs-pv-pick-up-2",
+        "wordId": "vw-pv-pick-up",
+        "word": "pick up",
+        "senseIndex": 2,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/pɪk ʌp/",
+        "definitionEn": "To learn a language or skill naturally by exposure without formal study.",
+        "definitionEs": "Aprender o captar un idioma o habilidad de oído / con naturalidad.",
+        "exampleSentenceEn": "She picked up natural expressions just by shadowing podcasts.",
+        "exampleSentenceEs": "Ella captó expresiones naturales simplemente imitando podcasts.",
+        "collocations": [
+          "pick up English fast"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-pick-up-synonym-0",
+        "sourceSenseId": "vs-pv-pick-up-1",
+        "targetSenseId": "vs-pv-collect-1",
+        "targetWord": "collect",
+        "targetDefinitionEs": "Recoger",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-pick-up-antonym-1",
+        "sourceSenseId": "vs-pv-pick-up-1",
+        "targetSenseId": "vs-pv-drop-off-1",
+        "targetWord": "drop off",
+        "targetDefinitionEs": "Dejar / Entregar",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-drop-off",
+    "word": "drop off",
+    "cefrLevel": "B1",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/drɑːp ɔːf/",
+    "thematicCluster": "Vida Cotidiana & Trabajo",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-drop-off-1",
+        "wordId": "vw-pv-drop-off",
+        "word": "drop off",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/drɑːp ɔːf/",
+        "definitionEn": "To take someone or something to a place and leave them there.",
+        "definitionEs": "Dejar a alguien en un lugar / Entregar un paquete.",
+        "exampleSentenceEn": "Can you drop me off near the subway station?",
+        "exampleSentenceEs": "¿Me puedes dejar cerca de la estación del metro?",
+        "collocations": [
+          "drop off a package"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-drop-off-synonym-0",
+        "sourceSenseId": "vs-pv-drop-off-1",
+        "targetSenseId": "vs-pv-deliver-1",
+        "targetWord": "deliver",
+        "targetDefinitionEs": "Entregar / Dejar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-drop-off-antonym-1",
+        "sourceSenseId": "vs-pv-drop-off-1",
+        "targetSenseId": "vs-pv-pick-up-1",
+        "targetWord": "pick up",
+        "targetDefinitionEs": "Recoger",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-turn-on",
+    "word": "turn on",
+    "cefrLevel": "A2",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/tɜːrn ɑːn/",
+    "thematicCluster": "Vida Cotidiana & Tecnología",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-turn-on-1",
+        "wordId": "vw-pv-turn-on",
+        "word": "turn on",
+        "senseIndex": 1,
+        "cefrLevelTarget": "A2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/tɜːrn ɑːn/",
+        "definitionEn": "To start the flow of power, light, water, or an electronic device.",
+        "definitionEs": "Encender / Prender un aparato o luz.",
+        "exampleSentenceEn": "Please turn on your camera so we can greet each other.",
+        "exampleSentenceEs": "Por favor enciende tu cámara para que podamos saludarnos.",
+        "collocations": [
+          "turn on the mic"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-turn-on-synonym-0",
+        "sourceSenseId": "vs-pv-turn-on-1",
+        "targetSenseId": "vs-pv-switch-on-1",
+        "targetWord": "switch on",
+        "targetDefinitionEs": "Encender",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-turn-on-antonym-1",
+        "sourceSenseId": "vs-pv-turn-on-1",
+        "targetSenseId": "vs-pv-turn-off-1",
+        "targetWord": "turn off",
+        "targetDefinitionEs": "Apagar",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-turn-off",
+    "word": "turn off",
+    "cefrLevel": "A2",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/tɜːrn ɔːf/",
+    "thematicCluster": "Vida Cotidiana & Tecnología",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-turn-off-1",
+        "wordId": "vw-pv-turn-off",
+        "word": "turn off",
+        "senseIndex": 1,
+        "cefrLevelTarget": "A2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/tɜːrn ɔːf/",
+        "definitionEn": "To stop a machine, light, or device from working.",
+        "definitionEs": "Apagar / Desactivar un dispositivo.",
+        "exampleSentenceEn": "Do not forget to turn off notifications during deep focus time.",
+        "exampleSentenceEs": "No olvides apagar las notificaciones durante tu tiempo de enfoque profundo.",
+        "collocations": [
+          "turn off the screen"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-turn-off-synonym-0",
+        "sourceSenseId": "vs-pv-turn-off-1",
+        "targetSenseId": "vs-pv-switch-off-1",
+        "targetWord": "switch off",
+        "targetDefinitionEs": "Apagar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-turn-off-antonym-1",
+        "sourceSenseId": "vs-pv-turn-off-1",
+        "targetSenseId": "vs-pv-turn-on-1",
+        "targetWord": "turn on",
+        "targetDefinitionEs": "Encender",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-turn-down",
+    "word": "turn down",
+    "cefrLevel": "B1",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/tɜːrn daʊn/",
+    "thematicCluster": "Comunicación & Decisiones",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-turn-down-1",
+        "wordId": "vw-pv-turn-down",
+        "word": "turn down",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/tɜːrn daʊn/",
+        "definitionEn": "To lower the volume, temperature, or intensity of a device.",
+        "definitionEs": "Bajar el volumen o la intensidad.",
+        "exampleSentenceEn": "Could you turn down the music a bit? I am on a call.",
+        "exampleSentenceEs": "¿Podrías bajar un poco la música? Estoy en una llamada.",
+        "collocations": [
+          "turn down the volume"
+        ]
+      },
+      {
+        "id": "vs-pv-turn-down-2",
+        "wordId": "vw-pv-turn-down",
+        "word": "turn down",
+        "senseIndex": 2,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/tɜːrn daʊn/",
+        "definitionEn": "To reject or refuse an offer, invitation, or application.",
+        "definitionEs": "Rechazar una oferta, propuesta o solicitud.",
+        "exampleSentenceEn": "He turned down the job offer because it required relocating.",
+        "exampleSentenceEs": "Rechazó la oferta laboral porque exigía mudarse de ciudad.",
+        "collocations": [
+          "turn down an offer"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-turn-down-synonym-0",
+        "sourceSenseId": "vs-pv-turn-down-1",
+        "targetSenseId": "vs-pv-reject-1",
+        "targetWord": "reject",
+        "targetDefinitionEs": "Rechazar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-turn-down-antonym-1",
+        "sourceSenseId": "vs-pv-turn-down-1",
+        "targetSenseId": "vs-pv-turn-up-1",
+        "targetWord": "turn up",
+        "targetDefinitionEs": "Subir volumen / Aparecer",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-turn-up",
+    "word": "turn up",
+    "cefrLevel": "B1",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/tɜːrn ʌp/",
+    "thematicCluster": "Comunicación & Decisiones",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-turn-up-1",
+        "wordId": "vw-pv-turn-up",
+        "word": "turn up",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/tɜːrn ʌp/",
+        "definitionEn": "To increase volume, heat, or intensity.",
+        "definitionEs": "Subir el volumen o la temperatura.",
+        "exampleSentenceEn": "Turn up the audio so the whole room can hear the story.",
+        "exampleSentenceEs": "Sube el audio para que toda la sala escuche la historia.",
+        "collocations": [
+          "turn up the volume"
+        ]
+      },
+      {
+        "id": "vs-pv-turn-up-2",
+        "wordId": "vw-pv-turn-up",
+        "word": "turn up",
+        "senseIndex": 2,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/tɜːrn ʌp/",
+        "definitionEn": "To arrive or appear somewhere, often unexpectedly.",
+        "definitionEs": "Aparecer / Llegar a un lugar (a veces sin avisar).",
+        "exampleSentenceEn": "Over fifty guests turned up for the open speaking night.",
+        "exampleSentenceEs": "Más de cincuenta invitados aparecieron para la noche abierta de conversación.",
+        "collocations": [
+          "turn up late"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-turn-up-synonym-0",
+        "sourceSenseId": "vs-pv-turn-up-1",
+        "targetSenseId": "vs-pv-show-up-1",
+        "targetWord": "show up",
+        "targetDefinitionEs": "Presentarse / Aparecer",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-turn-up-antonym-1",
+        "sourceSenseId": "vs-pv-turn-up-1",
+        "targetSenseId": "vs-pv-turn-down-1",
+        "targetWord": "turn down",
+        "targetDefinitionEs": "Bajar / Rechazar",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-turn-out",
+    "word": "turn out",
+    "cefrLevel": "B1",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/tɜːrn aʊt/",
+    "thematicCluster": "Resultados & Desenlace",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-turn-out-1",
+        "wordId": "vw-pv-turn-out",
+        "word": "turn out",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/tɜːrn aʊt/",
+        "definitionEn": "To happen or end in a particular, often surprising way.",
+        "definitionEs": "Resultar ser / Terminar saliendo de cierta manera.",
+        "exampleSentenceEn": "The interview seemed scary, but it turned out great!",
+        "exampleSentenceEs": "La entrevista parecía intimidante, ¡pero terminó saliendo genial!",
+        "collocations": [
+          "turn out well"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-turn-out-synonym-0",
+        "sourceSenseId": "vs-pv-turn-out-1",
+        "targetSenseId": "vs-pv-end-up-1",
+        "targetWord": "end up",
+        "targetDefinitionEs": "Terminar / Resultar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-turn-out-antonym-1",
+        "sourceSenseId": "vs-pv-turn-out-1",
+        "targetSenseId": "vs-pv-fall-through-1",
+        "targetWord": "fall through",
+        "targetDefinitionEs": "Frustrarse / Caerse",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-bring-up",
+    "word": "bring up",
+    "cefrLevel": "B1",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/brɪŋ ʌp/",
+    "thematicCluster": "Comunicación & Decisiones",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-bring-up-1",
+        "wordId": "vw-pv-bring-up",
+        "word": "bring up",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/brɪŋ ʌp/",
+        "definitionEn": "To mention or introduce a subject into a conversation or meeting.",
+        "definitionEs": "Mencionar un tema / Sacar a relucir en una charla.",
+        "exampleSentenceEn": "I am glad you brought up pricing during the meeting.",
+        "exampleSentenceEs": "Me alegra que hayas mencionado el tema de precios durante la reunión.",
+        "collocations": [
+          "bring up a topic"
+        ]
+      },
+      {
+        "id": "vs-pv-bring-up-2",
+        "wordId": "vw-pv-bring-up",
+        "word": "bring up",
+        "senseIndex": 2,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/brɪŋ ʌp/",
+        "definitionEn": "To raise and care for a child until adulthood.",
+        "definitionEs": "Criar y educar a un hijo.",
+        "exampleSentenceEn": "She was brought up in a bilingual household in Medellín.",
+        "exampleSentenceEs": "Ella fue criada en un hogar bilingüe en Medellín.",
+        "collocations": [
+          "be brought up in"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-bring-up-synonym-0",
+        "sourceSenseId": "vs-pv-bring-up-1",
+        "targetSenseId": "vs-pv-mention-1",
+        "targetWord": "mention",
+        "targetDefinitionEs": "Mencionar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-bring-up-antonym-1",
+        "sourceSenseId": "vs-pv-bring-up-1",
+        "targetSenseId": "vs-pv-cover-up-1",
+        "targetWord": "cover up",
+        "targetDefinitionEs": "Ocultar",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-point-out",
+    "word": "point out",
+    "cefrLevel": "B1",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/pɔɪnt aʊt/",
+    "thematicCluster": "Comunicación & Decisiones",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-point-out-1",
+        "wordId": "vw-pv-point-out",
+        "word": "point out",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/pɔɪnt aʊt/",
+        "definitionEn": "To direct someone’s attention to a specific fact, detail, or mistake.",
+        "definitionEs": "Señalar / Indicar / Hacer notar un detalle.",
+        "exampleSentenceEn": "The coach pointed out a small pronunciation nuance that changed everything.",
+        "exampleSentenceEs": "El coach señaló un pequeño matiz de pronunciación que lo cambió todo.",
+        "collocations": [
+          "point out an error"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-point-out-synonym-0",
+        "sourceSenseId": "vs-pv-point-out-1",
+        "targetSenseId": "vs-pv-highlight-1",
+        "targetWord": "highlight",
+        "targetDefinitionEs": "Destacar / Señalar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-point-out-antonym-1",
+        "sourceSenseId": "vs-pv-point-out-1",
+        "targetSenseId": "vs-pv-overlook-1",
+        "targetWord": "overlook",
+        "targetDefinitionEs": "Pasar por alto",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-come-across",
+    "word": "come across",
+    "cefrLevel": "B1",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/kʌm əˈkrɔːs/",
+    "thematicCluster": "Búsqueda & Percepción",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-come-across-1",
+        "wordId": "vw-pv-come-across",
+        "word": "come across",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/kʌm əˈkrɔːs/",
+        "definitionEn": "To find someone or something by chance without actively searching.",
+        "definitionEs": "Toparse con / Encontrar por casualidad.",
+        "exampleSentenceEn": "I came across an amazing article on neuromotor learning yesterday.",
+        "exampleSentenceEs": "Ayer me topé por casualidad con un artículo increíble sobre aprendizaje neuromotor.",
+        "collocations": [
+          "come across an old friend"
+        ]
+      },
+      {
+        "id": "vs-pv-come-across-2",
+        "wordId": "vw-pv-come-across",
+        "word": "come across",
+        "senseIndex": 2,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/kʌm əˈkrɔːs/",
+        "definitionEn": "To create a particular impression on others (\"come across as confident\").",
+        "definitionEs": "Proyectar cierta imagen o impresión al hablar.",
+        "exampleSentenceEn": "Speaking slowly helps you come across as calm and authoritative.",
+        "exampleSentenceEs": "Hablar pausado te ayuda a proyectar calma y autoridad.",
+        "collocations": [
+          "come across as"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-come-across-synonym-0",
+        "sourceSenseId": "vs-pv-come-across-1",
+        "targetSenseId": "vs-pv-bump-into-1",
+        "targetWord": "bump into",
+        "targetDefinitionEs": "Toparse con",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-come-across-antonym-1",
+        "sourceSenseId": "vs-pv-come-across-1",
+        "targetSenseId": "vs-pv-look-for-1",
+        "targetWord": "look for",
+        "targetDefinitionEs": "Buscar intencionalmente",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-come-up-with",
+    "word": "come up with",
+    "cefrLevel": "B2",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/kʌm ʌp wɪð/",
+    "thematicCluster": "Resolución & Mente",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-come-up-with-1",
+        "wordId": "vw-pv-come-up-with",
+        "word": "come up with",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/kʌm ʌp wɪð/",
+        "definitionEn": "To think of or produce an idea, plan, solution, or answer.",
+        "definitionEs": "Idear / Ocurrírsele a alguien una solución o plan.",
+        "exampleSentenceEn": "We need to come up with a creative hook for Monday’s campaign.",
+        "exampleSentenceEs": "Necesitamos idear un gancho creativo para la campaña del lunes.",
+        "collocations": [
+          "come up with a solution"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-come-up-with-synonym-0",
+        "sourceSenseId": "vs-pv-come-up-with-1",
+        "targetSenseId": "vs-pv-devise-1",
+        "targetWord": "devise",
+        "targetDefinitionEs": "Idear / Diseñar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-come-up-with-antonym-1",
+        "sourceSenseId": "vs-pv-come-up-with-1",
+        "targetSenseId": "vs-pv-run-out-of-1",
+        "targetWord": "run out of",
+        "targetDefinitionEs": "Quedarse sin ideas",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-run-out-of",
+    "word": "run out of",
+    "cefrLevel": "B1",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/rʌn aʊt əv/",
+    "thematicCluster": "Recursos & Problemas",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-run-out-of-1",
+        "wordId": "vw-pv-run-out-of",
+        "word": "run out of",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/rʌn aʊt əv/",
+        "definitionEn": "To use up the entire supply of something so none is left.",
+        "definitionEs": "Quedarse sin algo / Agotarse (tiempo, batería, café).",
+        "exampleSentenceEn": "We ran out of time before reaching the final Q&A round.",
+        "exampleSentenceEs": "Nos quedamos sin tiempo antes de llegar a la ronda final de preguntas.",
+        "collocations": [
+          "run out of time",
+          "run out of battery"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-run-out-of-synonym-0",
+        "sourceSenseId": "vs-pv-run-out-of-1",
+        "targetSenseId": "vs-pv-exhaust-1",
+        "targetWord": "exhaust",
+        "targetDefinitionEs": "Agotar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-run-out-of-antonym-1",
+        "sourceSenseId": "vs-pv-run-out-of-1",
+        "targetSenseId": "vs-pv-stock-up-on-1",
+        "targetWord": "stock up on",
+        "targetDefinitionEs": "Abastecerse de",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-put-off",
+    "word": "put off",
+    "cefrLevel": "B1",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/pʊt ɔːf/",
+    "thematicCluster": "Tiempo & Gestión",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-put-off-1",
+        "wordId": "vw-pv-put-off",
+        "word": "put off",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/pʊt ɔːf/",
+        "definitionEn": "To delay or postpone an event or task to a later time.",
+        "definitionEs": "Posponer / Aplazar / Dejar para después.",
+        "exampleSentenceEn": "Do not put off your speaking practice until the weekend.",
+        "exampleSentenceEs": "No aplaces tu práctica oral hasta el fin de semana.",
+        "collocations": [
+          "put off a decision",
+          "put off until tomorrow"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-put-off-synonym-0",
+        "sourceSenseId": "vs-pv-put-off-1",
+        "targetSenseId": "vs-pv-postpone-1",
+        "targetWord": "postpone",
+        "targetDefinitionEs": "Posponer",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-put-off-antonym-1",
+        "sourceSenseId": "vs-pv-put-off-1",
+        "targetSenseId": "vs-pv-bring-forward-1",
+        "targetWord": "bring forward",
+        "targetDefinitionEs": "Adelantar",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-call-off",
+    "word": "call off",
+    "cefrLevel": "B1",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/kɔːl ɔːf/",
+    "thematicCluster": "Tiempo & Gestión",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-call-off-1",
+        "wordId": "vw-pv-call-off",
+        "word": "call off",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/kɔːl ɔːf/",
+        "definitionEn": "To cancel a planned event, match, or meeting permanently.",
+        "definitionEs": "Cancelar / Suspender definitivamente un evento.",
+        "exampleSentenceEn": "They had to call off the outdoor picnic due to heavy rain.",
+        "exampleSentenceEs": "Tuvieron que cancelar el picnic al aire libre por la fuerte lluvia.",
+        "collocations": [
+          "call off the meeting"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-call-off-synonym-0",
+        "sourceSenseId": "vs-pv-call-off-1",
+        "targetSenseId": "vs-pv-cancel-1",
+        "targetWord": "cancel",
+        "targetDefinitionEs": "Cancelar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-call-off-antonym-1",
+        "sourceSenseId": "vs-pv-call-off-1",
+        "targetSenseId": "vs-pv-set-up-1",
+        "targetWord": "set up",
+        "targetDefinitionEs": "Organizar / Montar",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-set-up",
+    "word": "set up",
+    "cefrLevel": "B1",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/set ʌp/",
+    "thematicCluster": "Vida Cotidiana & Trabajo",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-set-up-1",
+        "wordId": "vw-pv-set-up",
+        "word": "set up",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/set ʌp/",
+        "definitionEn": "To arrange, install, configure, or establish a system, meeting, or company.",
+        "definitionEs": "Configurar / Instalar / Agendar / Fundar una empresa.",
+        "exampleSentenceEn": "Let me set up a quick 15-minute call for tomorrow morning.",
+        "exampleSentenceEs": "Déjame agendar una llamada rápida de 15 minutos para mañana en la mañana.",
+        "collocations": [
+          "set up a meeting",
+          "set up a business"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-set-up-synonym-0",
+        "sourceSenseId": "vs-pv-set-up-1",
+        "targetSenseId": "vs-pv-establish-1",
+        "targetWord": "establish",
+        "targetDefinitionEs": "Establecer / Montar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-set-up-antonym-1",
+        "sourceSenseId": "vs-pv-set-up-1",
+        "targetSenseId": "vs-pv-call-off-1",
+        "targetWord": "call off",
+        "targetDefinitionEs": "Cancelar",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-find-out",
+    "word": "find out",
+    "cefrLevel": "A2",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/faɪnd aʊt/",
+    "thematicCluster": "Búsqueda & Percepción",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-find-out-1",
+        "wordId": "vw-pv-find-out",
+        "word": "find out",
+        "senseIndex": 1,
+        "cefrLevelTarget": "A2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/faɪnd aʊt/",
+        "definitionEn": "To discover a fact or piece of information you did not know before.",
+        "definitionEs": "Enterarse de / Descubrir un dato o verdad.",
+        "exampleSentenceEn": "Check the student portal to find out your next live class time.",
+        "exampleSentenceEs": "Revisa el portal del alumno para enterarte de la hora de tu próxima clase.",
+        "collocations": [
+          "find out more",
+          "find out the truth"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-find-out-synonym-0",
+        "sourceSenseId": "vs-pv-find-out-1",
+        "targetSenseId": "vs-pv-discover-1",
+        "targetWord": "discover",
+        "targetDefinitionEs": "Descubrir",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-find-out-antonym-1",
+        "sourceSenseId": "vs-pv-find-out-1",
+        "targetSenseId": "vs-pv-conceal-1",
+        "targetWord": "conceal",
+        "targetDefinitionEs": "Ocultar",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-hold-on",
+    "word": "hold on",
+    "cefrLevel": "A2",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/hoʊld ɑːn/",
+    "thematicCluster": "Comunicación & Cortesía",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-hold-on-1",
+        "wordId": "vw-pv-hold-on",
+        "word": "hold on",
+        "senseIndex": 1,
+        "cefrLevelTarget": "A2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/hoʊld ɑːn/",
+        "definitionEn": "To wait for a short moment; or to grip something tightly.",
+        "definitionEs": "Esperar un momento (\"Un segundo\") / Sujetarse firme.",
+        "exampleSentenceEn": "Hold on a second—let me pull up the shared document.",
+        "exampleSentenceEs": "Espera un segundo; déjame abrir el documento compartido.",
+        "collocations": [
+          "hold on a moment"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-hold-on-synonym-0",
+        "sourceSenseId": "vs-pv-hold-on-1",
+        "targetSenseId": "vs-pv-hang-on-1",
+        "targetWord": "hang on",
+        "targetDefinitionEs": "Esperar un instante",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-hold-on-antonym-1",
+        "sourceSenseId": "vs-pv-hold-on-1",
+        "targetSenseId": "vs-pv-hang-up-1",
+        "targetWord": "hang up",
+        "targetDefinitionEs": "Colgar la llamada",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-break-down",
+    "word": "break down",
+    "cefrLevel": "B1",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/breɪk daʊn/",
+    "thematicCluster": "Trabajo & Sistemas",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-break-down-1",
+        "wordId": "vw-pv-break-down",
+        "word": "break down",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/breɪk daʊn/",
+        "definitionEn": "For a machine, vehicle, or system to stop working.",
+        "definitionEs": "Avariarse / Dañarse / Vararse.",
+        "exampleSentenceEn": "My car broke down on the highway right before the meeting.",
+        "exampleSentenceEs": "Mi carro se varó en la autopista justo antes de la reunión.",
+        "collocations": [
+          "machine broke down"
+        ]
+      },
+      {
+        "id": "vs-pv-break-down-2",
+        "wordId": "vw-pv-break-down",
+        "word": "break down",
+        "senseIndex": 2,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/breɪk daʊn/",
+        "definitionEn": "To divide complex information or costs into smaller, clear parts.",
+        "definitionEs": "Desglosar / Dividir en partes claras.",
+        "exampleSentenceEn": "Let us break down the monthly budget into three clear categories.",
+        "exampleSentenceEs": "Desglosemos el presupuesto mensual en tres categorías claras.",
+        "collocations": [
+          "break down the numbers"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-break-down-synonym-0",
+        "sourceSenseId": "vs-pv-break-down-1",
+        "targetSenseId": "vs-pv-analyze-1",
+        "targetWord": "analyze",
+        "targetDefinitionEs": "Desglosar / Analizar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-break-down-antonym-1",
+        "sourceSenseId": "vs-pv-break-down-1",
+        "targetSenseId": "vs-pv-assemble-1",
+        "targetWord": "assemble",
+        "targetDefinitionEs": "Ensamblar",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-work-out",
+    "word": "work out",
+    "cefrLevel": "A2",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/wɜːrk aʊt/",
+    "thematicCluster": "Esfuerzo & Hábitos",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-work-out-1",
+        "wordId": "vw-pv-work-out",
+        "word": "work out",
+        "senseIndex": 1,
+        "cefrLevelTarget": "A2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/wɜːrk aʊt/",
+        "definitionEn": "To exercise physically at a gym or outdoors to stay fit.",
+        "definitionEs": "Hacer ejercicio / Entrenar.",
+        "exampleSentenceEn": "I like to work out for forty minutes every morning.",
+        "exampleSentenceEs": "Me gusta entrenar cuarenta minutos cada mañana.",
+        "collocations": [
+          "work out at the gym"
+        ]
+      },
+      {
+        "id": "vs-pv-work-out-2",
+        "wordId": "vw-pv-work-out",
+        "word": "work out",
+        "senseIndex": 2,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/wɜːrk aʊt/",
+        "definitionEn": "To turn out successfully or find a solution by calculation/effort.",
+        "definitionEs": "Salir bien / Funcionar / Resolver un problema.",
+        "exampleSentenceEn": "Do not worry—everything will work out smoothly in the end.",
+        "exampleSentenceEs": "No te preocupes; todo saldrá bien al final.",
+        "collocations": [
+          "work out a plan"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-work-out-synonym-0",
+        "sourceSenseId": "vs-pv-work-out-1",
+        "targetSenseId": "vs-pv-exercise-1",
+        "targetWord": "exercise",
+        "targetDefinitionEs": "Entrenar / Resolver",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-work-out-antonym-1",
+        "sourceSenseId": "vs-pv-work-out-1",
+        "targetSenseId": "vs-pv-fail-1",
+        "targetWord": "fail",
+        "targetDefinitionEs": "Fallar",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-make-up",
+    "word": "make up",
+    "cefrLevel": "B1",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/meɪk ʌp/",
+    "thematicCluster": "Comunicación & Decisiones",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-make-up-1",
+        "wordId": "vw-pv-make-up",
+        "word": "make up",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/meɪk ʌp/",
+        "definitionEn": "To invent a story, excuse, or explanation; or to decide (\"make up your mind\").",
+        "definitionEs": "Inventar una historia o excusa / Decidirse.",
+        "exampleSentenceEn": "It is hard to make up your mind when both choices look great.",
+        "exampleSentenceEs": "Es difícil decidirse cuando ambas opciones se ven geniales.",
+        "collocations": [
+          "make up your mind",
+          "make up an excuse"
+        ]
+      },
+      {
+        "id": "vs-pv-make-up-2",
+        "wordId": "vw-pv-make-up",
+        "word": "make up",
+        "senseIndex": 2,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/meɪk ʌp/",
+        "definitionEn": "To reconcile after an argument; or to compensate for missed work (\"make up for\").",
+        "definitionEs": "Reconciliarse / Compensar o reponer algo.",
+        "exampleSentenceEn": "You can use a token to make up for a missed session.",
+        "exampleSentenceEs": "Puedes usar un token para reponer una sesión perdida.",
+        "collocations": [
+          "make up for lost time"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-make-up-synonym-0",
+        "sourceSenseId": "vs-pv-make-up-1",
+        "targetSenseId": "vs-pv-invent-1",
+        "targetWord": "invent",
+        "targetDefinitionEs": "Inventar / Reponer",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-make-up-antonym-1",
+        "sourceSenseId": "vs-pv-make-up-1",
+        "targetSenseId": "vs-pv-fall-out-1",
+        "targetWord": "fall out",
+        "targetDefinitionEs": "Pelearse",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-get-along-with",
+    "word": "get along with",
+    "cefrLevel": "B1",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/ɡet əˈlɔːŋ wɪð/",
+    "thematicCluster": "Relaciones & Cuidado",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-get-along-with-1",
+        "wordId": "vw-pv-get-along-with",
+        "word": "get along with",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/ɡet əˈlɔːŋ wɪð/",
+        "definitionEn": "To have a friendly, harmonious relationship with someone.",
+        "definitionEs": "Llevarse bien con alguien.",
+        "exampleSentenceEn": "She gets along great with her international teammates.",
+        "exampleSentenceEs": "Ella se lleva súper bien con sus compañeros internacionales.",
+        "collocations": [
+          "get along well"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-get-along-with-synonym-0",
+        "sourceSenseId": "vs-pv-get-along-with-1",
+        "targetSenseId": "vs-pv-bond-with-1",
+        "targetWord": "bond with",
+        "targetDefinitionEs": "Conectar bien con",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-get-along-with-antonym-1",
+        "sourceSenseId": "vs-pv-get-along-with-1",
+        "targetSenseId": "vs-pv-clash-with-1",
+        "targetWord": "clash with",
+        "targetDefinitionEs": "Chocar con",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-get-over",
+    "word": "get over",
+    "cefrLevel": "B1",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/ɡet ˈoʊ.vər/",
+    "thematicCluster": "Esfuerzo & Hábitos",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-get-over-1",
+        "wordId": "vw-pv-get-over",
+        "word": "get over",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/ɡet ˈoʊ.vər/",
+        "definitionEn": "To recover from an illness, disappointment, fear, or difficult experience.",
+        "definitionEs": "Superar un miedo, ruptura, obstáculo o enfermedad.",
+        "exampleSentenceEn": "Once you get over the fear of making mistakes, fluency skyrockets.",
+        "exampleSentenceEs": "Una vez superas el miedo a equivocarte, la fluidez se dispara.",
+        "collocations": [
+          "get over a cold",
+          "get over fear"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-get-over-synonym-0",
+        "sourceSenseId": "vs-pv-get-over-1",
+        "targetSenseId": "vs-pv-overcome-1",
+        "targetWord": "overcome",
+        "targetDefinitionEs": "Superar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-get-over-antonym-1",
+        "sourceSenseId": "vs-pv-get-over-1",
+        "targetSenseId": "vs-pv-dwell-on-1",
+        "targetWord": "dwell on",
+        "targetDefinitionEs": "Quedarse rumiando",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-catch-up",
+    "word": "catch up",
+    "cefrLevel": "B1",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/kætʃ ʌp/",
+    "thematicCluster": "Comunicación & Tiempo",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-catch-up-1",
+        "wordId": "vw-pv-catch-up",
+        "word": "catch up",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/kætʃ ʌp/",
+        "definitionEn": "To reach the same standard or level as others, or exchange news with a friend.",
+        "definitionEs": "Ponerse al día (con trabajo o con un amigo).",
+        "exampleSentenceEn": "Let us grab a coffee next week and catch up!",
+        "exampleSentenceEs": "¡Tomémonos un café la próxima semana y pongámonos al día!",
+        "collocations": [
+          "catch up on emails",
+          "catch up with friends"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-catch-up-synonym-0",
+        "sourceSenseId": "vs-pv-catch-up-1",
+        "targetSenseId": "vs-pv-reconnect-1",
+        "targetWord": "reconnect",
+        "targetDefinitionEs": "Ponerse al día",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-catch-up-antonym-1",
+        "sourceSenseId": "vs-pv-catch-up-1",
+        "targetSenseId": "vs-pv-fall-behind-1",
+        "targetWord": "fall behind",
+        "targetDefinitionEs": "Quedarse atrás",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-show-up",
+    "word": "show up",
+    "cefrLevel": "B1",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/ʃoʊ ʌp/",
+    "thematicCluster": "Vida Cotidiana & Trabajo",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-show-up-1",
+        "wordId": "vw-pv-show-up",
+        "word": "show up",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/ʃoʊ ʌp/",
+        "definitionEn": "To arrive or appear at an arranged meeting or place.",
+        "definitionEs": "Presentarse / Llegar / Aparecer.",
+        "exampleSentenceEn": "Showing up consistently to two classes a week transforms your confidence.",
+        "exampleSentenceEs": "Presentarse con constancia a dos clases semanales transforma tu confianza.",
+        "collocations": [
+          "show up on time"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-show-up-synonym-0",
+        "sourceSenseId": "vs-pv-show-up-1",
+        "targetSenseId": "vs-pv-turn-up-1",
+        "targetWord": "turn up",
+        "targetDefinitionEs": "Aparecer",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-show-up-antonym-1",
+        "sourceSenseId": "vs-pv-show-up-1",
+        "targetSenseId": "vs-pv-bail-out-1",
+        "targetWord": "bail out",
+        "targetDefinitionEs": "Faltar / Cancelar",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-cut-down-on",
+    "word": "cut down on",
+    "cefrLevel": "B2",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/kʌt daʊn ɑːn/",
+    "thematicCluster": "Esfuerzo & Hábitos",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-cut-down-on-1",
+        "wordId": "vw-pv-cut-down-on",
+        "word": "cut down on",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/kʌt daʊn ɑːn/",
+        "definitionEn": "To reduce the amount or frequency of consuming or doing something.",
+        "definitionEs": "Reducir el consumo o la frecuencia de algo.",
+        "exampleSentenceEn": "We cut down on unnecessary meetings to focus on building.",
+        "exampleSentenceEs": "Redujimos las reuniones innecesarias para enfocarnos en construir.",
+        "collocations": [
+          "cut down on sugar",
+          "cut down on costs"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-cut-down-on-synonym-0",
+        "sourceSenseId": "vs-pv-cut-down-on-1",
+        "targetSenseId": "vs-pv-reduce-1",
+        "targetWord": "reduce",
+        "targetDefinitionEs": "Reducir",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-cut-down-on-antonym-1",
+        "sourceSenseId": "vs-pv-cut-down-on-1",
+        "targetSenseId": "vs-pv-scale-up-1",
+        "targetWord": "scale up",
+        "targetDefinitionEs": "Ampliar / Escalar",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-take-off",
+    "word": "take off",
+    "cefrLevel": "A2",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/teɪk ɔːf/",
+    "thematicCluster": "Acción & Negocios",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-take-off-1",
+        "wordId": "vw-pv-take-off",
+        "word": "take off",
+        "senseIndex": 1,
+        "cefrLevelTarget": "A2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/teɪk ɔːf/",
+        "definitionEn": "To remove clothing, or for an airplane to leave the ground.",
+        "definitionEs": "Quitarse una prenda / Despegar un avión.",
+        "exampleSentenceEn": "Our flight takes off from Medellín at 7:15 AM.",
+        "exampleSentenceEs": "Nuestro vuelo despega de Medellín a las 7:15 AM.",
+        "collocations": [
+          "take off your jacket"
+        ]
+      },
+      {
+        "id": "vs-pv-take-off-2",
+        "wordId": "vw-pv-take-off",
+        "word": "take off",
+        "senseIndex": 2,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/teɪk ɔːf/",
+        "definitionEn": "To suddenly become very successful or popular.",
+        "definitionEs": "Despegar en éxito / Dispararse un proyecto.",
+        "exampleSentenceEn": "Our coaching cohort really took off after the referral campaign.",
+        "exampleSentenceEs": "Nuestro grupo de coaching realmente despegó tras la campaña de referidos.",
+        "collocations": [
+          "sales took off"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-take-off-synonym-0",
+        "sourceSenseId": "vs-pv-take-off-1",
+        "targetSenseId": "vs-pv-skyrocket-1",
+        "targetWord": "skyrocket",
+        "targetDefinitionEs": "Dispararse",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-take-off-antonym-1",
+        "sourceSenseId": "vs-pv-take-off-1",
+        "targetSenseId": "vs-pv-put-on-1",
+        "targetWord": "put on",
+        "targetDefinitionEs": "Ponerse (ropa)",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-take-over",
+    "word": "take over",
+    "cefrLevel": "B2",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/teɪk ˈoʊ.vər/",
+    "thematicCluster": "Negocios & Liderazgo",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-take-over-1",
+        "wordId": "vw-pv-take-over",
+        "word": "take over",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/teɪk ˈoʊ.vər/",
+        "definitionEn": "To assume control, management, or leadership of a task or company.",
+        "definitionEs": "Asumir el control / Tomar el relevo.",
+        "exampleSentenceEn": "Daniela will take over the afternoon conversation club next week.",
+        "exampleSentenceEs": "Daniela asumirá el mando del club de conversación de la tarde la próxima semana.",
+        "collocations": [
+          "take over the project"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-take-over-synonym-0",
+        "sourceSenseId": "vs-pv-take-over-1",
+        "targetSenseId": "vs-pv-assume-control-1",
+        "targetWord": "assume control",
+        "targetDefinitionEs": "Asumir el mando",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-take-over-antonym-1",
+        "sourceSenseId": "vs-pv-take-over-1",
+        "targetSenseId": "vs-pv-step-down-1",
+        "targetWord": "step down",
+        "targetDefinitionEs": "Renunciar al cargo",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-take-up",
+    "word": "take up",
+    "cefrLevel": "B1",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/teɪk ʌp/",
+    "thematicCluster": "Esfuerzo & Hábitos",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-take-up-1",
+        "wordId": "vw-pv-take-up",
+        "word": "take up",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/teɪk ʌp/",
+        "definitionEn": "To start a new hobby, sport, or skill; or to occupy time or space.",
+        "definitionEs": "Empezar una afición / Ocupar tiempo o espacio.",
+        "exampleSentenceEn": "I recently took up tennis to stay active after work.",
+        "exampleSentenceEs": "Recientemente empecé a jugar tenis para mantenerme activo tras el trabajo.",
+        "collocations": [
+          "take up too much time"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-take-up-synonym-0",
+        "sourceSenseId": "vs-pv-take-up-1",
+        "targetSenseId": "vs-pv-start-1",
+        "targetWord": "start",
+        "targetDefinitionEs": "Empezar una afición",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-take-up-antonym-1",
+        "sourceSenseId": "vs-pv-take-up-1",
+        "targetSenseId": "vs-pv-give-up-1",
+        "targetWord": "give up",
+        "targetDefinitionEs": "Abandonar",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-put-up-with",
+    "word": "put up with",
+    "cefrLevel": "B2",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/pʊt ʌp wɪð/",
+    "thematicCluster": "Relaciones & Cuidado",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-put-up-with-1",
+        "wordId": "vw-pv-put-up-with",
+        "word": "put up with",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/pʊt ʌp wɪð/",
+        "definitionEn": "To tolerate or accept an annoying person or unpleasant situation patiently.",
+        "definitionEs": "Soportar / Aguantar / Tolerar algo molesto.",
+        "exampleSentenceEn": "Why put up with boring grammar drills when you can practice live?",
+        "exampleSentenceEs": "¿Por qué aguantar ejercicios aburridos de gramática cuando puedes practicar en vivo?",
+        "collocations": [
+          "cannot put up with"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-put-up-with-synonym-0",
+        "sourceSenseId": "vs-pv-put-up-with-1",
+        "targetSenseId": "vs-pv-tolerate-1",
+        "targetWord": "tolerate",
+        "targetDefinitionEs": "Tolerar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-put-up-with-antonym-1",
+        "sourceSenseId": "vs-pv-put-up-with-1",
+        "targetSenseId": "vs-pv-reject-1",
+        "targetWord": "reject",
+        "targetDefinitionEs": "Rechazar",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-keep-up-with",
+    "word": "keep up with",
+    "cefrLevel": "B1",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/kiːp ʌp wɪð/",
+    "thematicCluster": "Esfuerzo & Hábitos",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-keep-up-with-1",
+        "wordId": "vw-pv-keep-up-with",
+        "word": "keep up with",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/kiːp ʌp wɪð/",
+        "definitionEn": "To move or progress at the same speed as someone or stay informed.",
+        "definitionEs": "Seguir el ritmo / Mantenerse al tanto de algo.",
+        "exampleSentenceEn": "Listening to short readings helps you keep up with native speakers.",
+        "exampleSentenceEs": "Escuchar lecturas cortas te ayuda a seguir el ritmo de los hablantes nativos.",
+        "collocations": [
+          "keep up with trends"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-keep-up-with-synonym-0",
+        "sourceSenseId": "vs-pv-keep-up-with-1",
+        "targetSenseId": "vs-pv-stay-current-1",
+        "targetWord": "stay current",
+        "targetDefinitionEs": "Mantenerse al día",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-keep-up-with-antonym-1",
+        "sourceSenseId": "vs-pv-keep-up-with-1",
+        "targetSenseId": "vs-pv-fall-behind-1",
+        "targetWord": "fall behind",
+        "targetDefinitionEs": "Quedarse rezagado",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-carry-out",
+    "word": "carry out",
+    "cefrLevel": "B2",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/ˈkær.i aʊt/",
+    "thematicCluster": "Negocios & Liderazgo",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-carry-out-1",
+        "wordId": "vw-pv-carry-out",
+        "word": "carry out",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/ˈkær.i aʊt/",
+        "definitionEn": "To perform, execute, or conduct a task, study, or plan.",
+        "definitionEs": "Llevar a cabo / Ejecutar / Realizar un plan o estudio.",
+        "exampleSentenceEn": "We carried out a pilot study with ten bilingual professionals.",
+        "exampleSentenceEs": "Llevamos a cabo un estudio piloto con diez profesionales bilingües.",
+        "collocations": [
+          "carry out research",
+          "carry out a plan"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-carry-out-synonym-0",
+        "sourceSenseId": "vs-pv-carry-out-1",
+        "targetSenseId": "vs-pv-execute-1",
+        "targetWord": "execute",
+        "targetDefinitionEs": "Ejecutar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-carry-out-antonym-1",
+        "sourceSenseId": "vs-pv-carry-out-1",
+        "targetSenseId": "vs-pv-call-off-1",
+        "targetWord": "call off",
+        "targetDefinitionEs": "Cancelar",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-follow-up",
+    "word": "follow up",
+    "cefrLevel": "B2",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/ˈfɑː.loʊ ʌp/",
+    "thematicCluster": "Negocios & Liderazgo",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-follow-up-1",
+        "wordId": "vw-pv-follow-up",
+        "word": "follow up",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/ˈfɑː.loʊ ʌp/",
+        "definitionEn": "To check on progress or contact someone again after an initial step.",
+        "definitionEs": "Hacer seguimiento / Dar continuidad.",
+        "exampleSentenceEn": "Always send a brief email to follow up after an important client meeting.",
+        "exampleSentenceEs": "Envía siempre un correo breve para hacer seguimiento tras una reunión clave.",
+        "collocations": [
+          "follow up on an email"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-follow-up-synonym-0",
+        "sourceSenseId": "vs-pv-follow-up-1",
+        "targetSenseId": "vs-pv-check-back-1",
+        "targetWord": "check back",
+        "targetDefinitionEs": "Hacer seguimiento",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-follow-up-antonym-1",
+        "sourceSenseId": "vs-pv-follow-up-1",
+        "targetSenseId": "vs-pv-neglect-1",
+        "targetWord": "neglect",
+        "targetDefinitionEs": "Desatender",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-account-for",
+    "word": "account for",
+    "cefrLevel": "B2",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/əˈkaʊnt fɔːr/",
+    "thematicCluster": "Negocios & Análisis",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-account-for-1",
+        "wordId": "vw-pv-account-for",
+        "word": "account for",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/əˈkaʊnt fɔːr/",
+        "definitionEn": "To explain the reason for something, or to represent a specific percentage.",
+        "definitionEs": "Representar un porcentaje / Explicar la causa de algo.",
+        "exampleSentenceEn": "Corporate students currently account for 60% of our active roster.",
+        "exampleSentenceEs": "Los estudiantes corporativos representan actualmente el 60% de nuestra lista activa.",
+        "collocations": [
+          "account for 50%"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-account-for-synonym-0",
+        "sourceSenseId": "vs-pv-account-for-1",
+        "targetSenseId": "vs-pv-represent-1",
+        "targetWord": "represent",
+        "targetDefinitionEs": "Representar / Explicar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-account-for-antonym-1",
+        "sourceSenseId": "vs-pv-account-for-1",
+        "targetSenseId": "vs-pv-exclude-1",
+        "targetWord": "exclude",
+        "targetDefinitionEs": "Excluir",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-bring-about",
+    "word": "bring about",
+    "cefrLevel": "C1",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/brɪŋ əˈbaʊt/",
+    "thematicCluster": "Negocios & Liderazgo",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-bring-about-1",
+        "wordId": "vw-pv-bring-about",
+        "word": "bring about",
+        "senseIndex": 1,
+        "cefrLevelTarget": "C1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/brɪŋ əˈbaʊt/",
+        "definitionEn": "To cause something significant to happen or trigger a major change.",
+        "definitionEs": "Provocar / Generar / Ocasionar un cambio importante.",
+        "exampleSentenceEn": "Direct feedback and live immersion bring about rapid breakthroughs.",
+        "exampleSentenceEs": "La retroalimentación directa y la inmersión en vivo generan avances rápidos.",
+        "collocations": [
+          "bring about change"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-bring-about-synonym-0",
+        "sourceSenseId": "vs-pv-bring-about-1",
+        "targetSenseId": "vs-pv-trigger-1",
+        "targetWord": "trigger",
+        "targetDefinitionEs": "Desencadenar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-bring-about-antonym-1",
+        "sourceSenseId": "vs-pv-bring-about-1",
+        "targetSenseId": "vs-pv-prevent-1",
+        "targetWord": "prevent",
+        "targetDefinitionEs": "Impedir",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-roll-out",
+    "word": "roll out",
+    "cefrLevel": "B2",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/roʊl aʊt/",
+    "thematicCluster": "Negocios & Liderazgo",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-roll-out-1",
+        "wordId": "vw-pv-roll-out",
+        "word": "roll out",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/roʊl aʊt/",
+        "definitionEn": "To officially launch or introduce a new product, feature, or policy.",
+        "definitionEs": "Desplegar / Lanzar gradualmente un producto o función.",
+        "exampleSentenceEn": "We will roll out the upgraded vocabulary hub to all students tonight.",
+        "exampleSentenceEs": "Desplegaremos el gimnasio de vocabulario mejorado para todos los alumnos esta noche.",
+        "collocations": [
+          "roll out an update"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-roll-out-synonym-0",
+        "sourceSenseId": "vs-pv-roll-out-1",
+        "targetSenseId": "vs-pv-launch-1",
+        "targetWord": "launch",
+        "targetDefinitionEs": "Lanzar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-roll-out-antonym-1",
+        "sourceSenseId": "vs-pv-roll-out-1",
+        "targetSenseId": "vs-pv-phase-out-1",
+        "targetWord": "phase out",
+        "targetDefinitionEs": "Retirar gradualmente",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-phase-out",
+    "word": "phase out",
+    "cefrLevel": "C1",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/feɪz aʊt/",
+    "thematicCluster": "Negocios & Liderazgo",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-phase-out-1",
+        "wordId": "vw-pv-phase-out",
+        "word": "phase out",
+        "senseIndex": 1,
+        "cefrLevelTarget": "C1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/feɪz aʊt/",
+        "definitionEn": "To stop using or withdraw a system or product gradually in stages.",
+        "definitionEs": "Retirar o descontinuar de forma gradual.",
+        "exampleSentenceEn": "We decided to phase out manual spreadsheets in favor of real-time sync.",
+        "exampleSentenceEs": "Decidimos descontinuar gradualmente las hojas manuales en favor de la sincronización en tiempo real.",
+        "collocations": [
+          "phase out legacy tools"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-phase-out-synonym-0",
+        "sourceSenseId": "vs-pv-phase-out-1",
+        "targetSenseId": "vs-pv-discontinue-1",
+        "targetWord": "discontinue",
+        "targetDefinitionEs": "Descontinuar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-phase-out-antonym-1",
+        "sourceSenseId": "vs-pv-phase-out-1",
+        "targetSenseId": "vs-pv-roll-out-1",
+        "targetWord": "roll out",
+        "targetDefinitionEs": "Lanzar / Desplegar",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-sort-out",
+    "word": "sort out",
+    "cefrLevel": "B1",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/sɔːrt aʊt/",
+    "thematicCluster": "Resolución & Mente",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-sort-out-1",
+        "wordId": "vw-pv-sort-out",
+        "word": "sort out",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/sɔːrt aʊt/",
+        "definitionEn": "To organize things cleanly or resolve a problem/misunderstanding.",
+        "definitionEs": "Solucionar / Ordenar / Aclarar un problema.",
+        "exampleSentenceEn": "Let us sort out the scheduling conflict before Friday.",
+        "exampleSentenceEs": "Solucionemos el conflicto de horarios antes del viernes.",
+        "collocations": [
+          "sort out the details"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-sort-out-synonym-0",
+        "sourceSenseId": "vs-pv-sort-out-1",
+        "targetSenseId": "vs-pv-figure-out-1",
+        "targetWord": "figure out",
+        "targetDefinitionEs": "Resolver",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-sort-out-antonym-1",
+        "sourceSenseId": "vs-pv-sort-out-1",
+        "targetSenseId": "vs-pv-mess-up-1",
+        "targetWord": "mess up",
+        "targetDefinitionEs": "Arruinar / Enredar",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-iron-out",
+    "word": "iron out",
+    "cefrLevel": "C1",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/ˈaɪ.ərn aʊt/",
+    "thematicCluster": "Negocios & Análisis",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-iron-out-1",
+        "wordId": "vw-pv-iron-out",
+        "word": "iron out",
+        "senseIndex": 1,
+        "cefrLevelTarget": "C1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/ˈaɪ.ərn aʊt/",
+        "definitionEn": "To resolve minor remaining problems, glitches, or disagreements.",
+        "definitionEs": "Pulir / Limar asperezas o pequeños detalles pendientes.",
+        "exampleSentenceEn": "We just need one more call to iron out the final contract terms.",
+        "exampleSentenceEs": "Solo necesitamos una llamada más para pulir los términos finales del contrato.",
+        "collocations": [
+          "iron out bugs",
+          "iron out differences"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-iron-out-synonym-0",
+        "sourceSenseId": "vs-pv-iron-out-1",
+        "targetSenseId": "vs-pv-smooth-over-1",
+        "targetWord": "smooth over",
+        "targetDefinitionEs": "Pulir / Suavizar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-iron-out-antonym-1",
+        "sourceSenseId": "vs-pv-iron-out-1",
+        "targetSenseId": "vs-pv-complicate-1",
+        "targetWord": "complicate",
+        "targetDefinitionEs": "Complicar",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-narrow-down",
+    "word": "narrow down",
+    "cefrLevel": "B2",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/ˈnær.oʊ daʊn/",
+    "thematicCluster": "Negocios & Análisis",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-narrow-down-1",
+        "wordId": "vw-pv-narrow-down",
+        "word": "narrow down",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/ˈnær.oʊ daʊn/",
+        "definitionEn": "To reduce the number of possibilities or choices to the best few.",
+        "definitionEs": "Acotar / Reducir opciones hasta dejar las mejores.",
+        "exampleSentenceEn": "We narrowed down fifty candidates to three top finalists.",
+        "exampleSentenceEs": "Redujimos cincuenta candidatos a tres finalistas principales.",
+        "collocations": [
+          "narrow down the options"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-narrow-down-synonym-0",
+        "sourceSenseId": "vs-pv-narrow-down-1",
+        "targetSenseId": "vs-pv-filter-1",
+        "targetWord": "filter",
+        "targetDefinitionEs": "Acotar / Filtrar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-narrow-down-antonym-1",
+        "sourceSenseId": "vs-pv-narrow-down-1",
+        "targetSenseId": "vs-pv-expand-1",
+        "targetWord": "expand",
+        "targetDefinitionEs": "Ampliar",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-rule-out",
+    "word": "rule out",
+    "cefrLevel": "B2",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/ruːl aʊt/",
+    "thematicCluster": "Negocios & Análisis",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-rule-out-1",
+        "wordId": "vw-pv-rule-out",
+        "word": "rule out",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/ruːl aʊt/",
+        "definitionEn": "To exclude or dismiss something as impossible or unsuitable.",
+        "definitionEs": "Descartar por completo una opción o posibilidad.",
+        "exampleSentenceEn": "Do not rule out international remote roles—your English is ready.",
+        "exampleSentenceEs": "No descartes cargos remotos internacionales; tu inglés está listo.",
+        "collocations": [
+          "rule out the possibility"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-rule-out-synonym-0",
+        "sourceSenseId": "vs-pv-rule-out-1",
+        "targetSenseId": "vs-pv-exclude-1",
+        "targetWord": "exclude",
+        "targetDefinitionEs": "Descartar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-rule-out-antonym-1",
+        "sourceSenseId": "vs-pv-rule-out-1",
+        "targetSenseId": "vs-pv-consider-1",
+        "targetWord": "consider",
+        "targetDefinitionEs": "Considerar",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-back-up",
+    "word": "back up",
+    "cefrLevel": "B1",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/bæk ʌp/",
+    "thematicCluster": "Vida Cotidiana & Tecnología",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-back-up-1",
+        "wordId": "vw-pv-back-up",
+        "word": "back up",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/bæk ʌp/",
+        "definitionEn": "To make a safety copy of files or data.",
+        "definitionEs": "Hacer copia de seguridad / Respaldar archivos.",
+        "exampleSentenceEn": "Always back up your database before deploying a schema change.",
+        "exampleSentenceEs": "Respalda siempre tu base de datos antes de desplegar un cambio de esquema.",
+        "collocations": [
+          "back up files"
+        ]
+      },
+      {
+        "id": "vs-pv-back-up-2",
+        "wordId": "vw-pv-back-up",
+        "word": "back up",
+        "senseIndex": 2,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/bæk ʌp/",
+        "definitionEn": "To support someone’s claim or help a teammate.",
+        "definitionEs": "Respaldar a alguien o apoyar con evidencia.",
+        "exampleSentenceEn": "Use real metrics to back up your proposal in the board meeting.",
+        "exampleSentenceEs": "Usa métricas reales para respaldar tu propuesta en la junta.",
+        "collocations": [
+          "back up a claim"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-back-up-synonym-0",
+        "sourceSenseId": "vs-pv-back-up-1",
+        "targetSenseId": "vs-pv-support-1",
+        "targetWord": "support",
+        "targetDefinitionEs": "Respaldar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-back-up-antonym-1",
+        "sourceSenseId": "vs-pv-back-up-1",
+        "targetSenseId": "vs-pv-undermine-1",
+        "targetWord": "undermine",
+        "targetDefinitionEs": "Socavar",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-step-down",
+    "word": "step down",
+    "cefrLevel": "B2",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/step daʊn/",
+    "thematicCluster": "Negocios & Liderazgo",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-step-down-1",
+        "wordId": "vw-pv-step-down",
+        "word": "step down",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/step daʊn/",
+        "definitionEn": "To resign from an important leadership position or official role.",
+        "definitionEs": "Dimitir / Dejar un cargo directivo.",
+        "exampleSentenceEn": "The director decided to step down after ten successful years.",
+        "exampleSentenceEs": "El director decidió dejar su cargo después de diez años exitosos.",
+        "collocations": [
+          "step down as CEO"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-step-down-synonym-0",
+        "sourceSenseId": "vs-pv-step-down-1",
+        "targetSenseId": "vs-pv-resign-1",
+        "targetWord": "resign",
+        "targetDefinitionEs": "Renunciar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-step-down-antonym-1",
+        "sourceSenseId": "vs-pv-step-down-1",
+        "targetSenseId": "vs-pv-take-over-1",
+        "targetWord": "take over",
+        "targetDefinitionEs": "Asumir el mando",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-brush-up-on",
+    "word": "brush up on",
+    "cefrLevel": "B2",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/brʌʃ ʌp ɑːn/",
+    "thematicCluster": "Esfuerzo & Hábitos",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-brush-up-on-1",
+        "wordId": "vw-pv-brush-up-on",
+        "word": "brush up on",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/brʌʃ ʌp ɑːn/",
+        "definitionEn": "To quickly refresh and improve your knowledge of a skill you previously learned.",
+        "definitionEs": "Repasar / Desempolvar conocimientos previos.",
+        "exampleSentenceEn": "I want to brush up on my phrasal verbs before next month’s conference.",
+        "exampleSentenceEs": "Quiero repasar mis phrasal verbs antes de la conferencia del próximo mes.",
+        "collocations": [
+          "brush up on English"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-brush-up-on-synonym-0",
+        "sourceSenseId": "vs-pv-brush-up-on-1",
+        "targetSenseId": "vs-pv-refresh-1",
+        "targetWord": "refresh",
+        "targetDefinitionEs": "Repasar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-brush-up-on-antonym-1",
+        "sourceSenseId": "vs-pv-brush-up-on-1",
+        "targetSenseId": "vs-pv-forget-1",
+        "targetWord": "forget",
+        "targetDefinitionEs": "Olvidar",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-stand-out",
+    "word": "stand out",
+    "cefrLevel": "B1",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/stænd aʊt/",
+    "thematicCluster": "Negocios & Liderazgo",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-stand-out-1",
+        "wordId": "vw-pv-stand-out",
+        "word": "stand out",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/stænd aʊt/",
+        "definitionEn": "To be noticeably better, clearer, or more distinctive than others.",
+        "definitionEs": "Destacar / Sobresalir entre los demás.",
+        "exampleSentenceEn": "Using natural connectors makes your speaking stand out immediately.",
+        "exampleSentenceEs": "Usar conectores naturales hace que tu forma de hablar destaque de inmediato.",
+        "collocations": [
+          "stand out from the crowd"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-stand-out-synonym-0",
+        "sourceSenseId": "vs-pv-stand-out-1",
+        "targetSenseId": "vs-pv-excel-1",
+        "targetWord": "excel",
+        "targetDefinitionEs": "Sobresalir",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-stand-out-antonym-1",
+        "sourceSenseId": "vs-pv-stand-out-1",
+        "targetSenseId": "vs-pv-blend-in-1",
+        "targetWord": "blend in",
+        "targetDefinitionEs": "Pasar desapercibido",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-live-up-to",
+    "word": "live up to",
+    "cefrLevel": "C1",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/lɪv ʌp tuː/",
+    "thematicCluster": "Resultados & Desenlace",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-live-up-to-1",
+        "wordId": "vw-pv-live-up-to",
+        "word": "live up to",
+        "senseIndex": 1,
+        "cefrLevelTarget": "C1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/lɪv ʌp tuː/",
+        "definitionEn": "To fulfill high expectations, standards, or a reputation.",
+        "definitionEs": "Estar a la altura de las expectativas o promesas.",
+        "exampleSentenceEn": "The live platform truly lived up to the students’ expectations.",
+        "exampleSentenceEs": "La plataforma en vivo realmente estuvo a la altura de las expectativas de los alumnos.",
+        "collocations": [
+          "live up to the hype"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-live-up-to-synonym-0",
+        "sourceSenseId": "vs-pv-live-up-to-1",
+        "targetSenseId": "vs-pv-fulfill-1",
+        "targetWord": "fulfill",
+        "targetDefinitionEs": "Cumplir / Estar a la altura",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-live-up-to-antonym-1",
+        "sourceSenseId": "vs-pv-live-up-to-1",
+        "targetSenseId": "vs-pv-disappoint-1",
+        "targetWord": "disappoint",
+        "targetDefinitionEs": "Decepcionar",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-pay-off",
+    "word": "pay off",
+    "cefrLevel": "B2",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/peɪ ɔːf/",
+    "thematicCluster": "Resultados & Desenlace",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-pay-off-1",
+        "wordId": "vw-pv-pay-off",
+        "word": "pay off",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/peɪ ɔːf/",
+        "definitionEn": "For hard work or a risky effort to finally produce great rewards.",
+        "definitionEs": "Valer la pena / Dar frutos (el esfuerzo).",
+        "exampleSentenceEn": "All those morning practice sessions finally paid off when she got promoted.",
+        "exampleSentenceEs": "Todas esas prácticas matutinas finalmente dieron frutos cuando la ascendieron.",
+        "collocations": [
+          "hard work pays off"
+        ]
+      },
+      {
+        "id": "vs-pv-pay-off-2",
+        "wordId": "vw-pv-pay-off",
+        "word": "pay off",
+        "senseIndex": 2,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/peɪ ɔːf/",
+        "definitionEn": "To finish paying the entire amount of a debt or loan.",
+        "definitionEs": "Liquidar / Pagar por completo una deuda.",
+        "exampleSentenceEn": "They paid off their business loan ahead of schedule.",
+        "exampleSentenceEs": "Liquidaron su préstamo empresarial antes de lo previsto.",
+        "collocations": [
+          "pay off a debt"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-pay-off-synonym-0",
+        "sourceSenseId": "vs-pv-pay-off-1",
+        "targetSenseId": "vs-pv-bear-fruit-1",
+        "targetWord": "bear fruit",
+        "targetDefinitionEs": "Dar frutos",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-pay-off-antonym-1",
+        "sourceSenseId": "vs-pv-pay-off-1",
+        "targetSenseId": "vs-pv-backfire-1",
+        "targetWord": "backfire",
+        "targetDefinitionEs": "Salir mal",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-fall-through",
+    "word": "fall through",
+    "cefrLevel": "C1",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/fɔːl θruː/",
+    "thematicCluster": "Resultados & Desenlace",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-fall-through-1",
+        "wordId": "vw-pv-fall-through",
+        "word": "fall through",
+        "senseIndex": 1,
+        "cefrLevelTarget": "C1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/fɔːl θruː/",
+        "definitionEn": "For a plan, deal, or arrangement to fail to happen before completion.",
+        "definitionEs": "Fracasar / Venirse abajo un acuerdo o plan.",
+        "exampleSentenceEn": "The merger fell through at the last minute due to regulatory issues.",
+        "exampleSentenceEs": "La fusión se vino abajo en el último minuto por temas regulatorios.",
+        "collocations": [
+          "the deal fell through"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-fall-through-synonym-0",
+        "sourceSenseId": "vs-pv-fall-through-1",
+        "targetSenseId": "vs-pv-collapse-1",
+        "targetWord": "collapse",
+        "targetDefinitionEs": "Frustrarse",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-fall-through-antonym-1",
+        "sourceSenseId": "vs-pv-fall-through-1",
+        "targetSenseId": "vs-pv-turn-out-1",
+        "targetWord": "turn out",
+        "targetDefinitionEs": "Resultar bien",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-wrap-up",
+    "word": "wrap up",
+    "cefrLevel": "B2",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/ræp ʌp/",
+    "thematicCluster": "Tiempo & Gestión",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-wrap-up-1",
+        "wordId": "vw-pv-wrap-up",
+        "word": "wrap up",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/ræp ʌp/",
+        "definitionEn": "To bring a meeting, call, or project cleanly to an end.",
+        "definitionEs": "Concluir / Cerrar / Dar por terminada una reunión.",
+        "exampleSentenceEn": "Before we wrap up today’s call, let us review your action items.",
+        "exampleSentenceEs": "Antes de cerrar la llamada de hoy, repasemos tus puntos de acción.",
+        "collocations": [
+          "wrap up the meeting"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-wrap-up-synonym-0",
+        "sourceSenseId": "vs-pv-wrap-up-1",
+        "targetSenseId": "vs-pv-conclude-1",
+        "targetWord": "conclude",
+        "targetDefinitionEs": "Concluir",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-wrap-up-antonym-1",
+        "sourceSenseId": "vs-pv-wrap-up-1",
+        "targetSenseId": "vs-pv-kick-off-1",
+        "targetWord": "kick off",
+        "targetDefinitionEs": "Arrancar / Iniciar",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-kick-off",
+    "word": "kick off",
+    "cefrLevel": "B2",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/kɪk ɔːf/",
+    "thematicCluster": "Tiempo & Gestión",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-kick-off-1",
+        "wordId": "vw-pv-kick-off",
+        "word": "kick off",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/kɪk ɔːf/",
+        "definitionEn": "To begin an event, project, campaign, or meeting with energy.",
+        "definitionEs": "Dar inicio / Arrancar una reunión o proyecto.",
+        "exampleSentenceEn": "We will kick off the onboarding week with a 15-minute diagnostic.",
+        "exampleSentenceEs": "Arrancaremos la semana de inducción con un diagnóstico de 15 minutos.",
+        "collocations": [
+          "kick off the session"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-kick-off-synonym-0",
+        "sourceSenseId": "vs-pv-kick-off-1",
+        "targetSenseId": "vs-pv-launch-1",
+        "targetWord": "launch",
+        "targetDefinitionEs": "Iniciar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-kick-off-antonym-1",
+        "sourceSenseId": "vs-pv-kick-off-1",
+        "targetSenseId": "vs-pv-wrap-up-1",
+        "targetWord": "wrap up",
+        "targetDefinitionEs": "Cerrar / Concluir",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-scale-up",
+    "word": "scale up",
+    "cefrLevel": "C1",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/skeɪl ʌp/",
+    "thematicCluster": "Negocios & Liderazgo",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-scale-up-1",
+        "wordId": "vw-pv-scale-up",
+        "word": "scale up",
+        "senseIndex": 1,
+        "cefrLevelTarget": "C1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/skeɪl ʌp/",
+        "definitionEn": "To increase the size, capacity, or output of a system or operation.",
+        "definitionEs": "Escalar / Ampliar la capacidad o alcance.",
+        "exampleSentenceEn": "Once the pilot succeeded, the team scaled up operations across Latin America.",
+        "exampleSentenceEs": "Una vez tuvo éxito el piloto, el equipo escaló operaciones por toda Latinoamérica.",
+        "collocations": [
+          "scale up rapidly"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-scale-up-synonym-0",
+        "sourceSenseId": "vs-pv-scale-up-1",
+        "targetSenseId": "vs-pv-expand-1",
+        "targetWord": "expand",
+        "targetDefinitionEs": "Expandir",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-scale-up-antonym-1",
+        "sourceSenseId": "vs-pv-scale-up-1",
+        "targetSenseId": "vs-pv-cut-down-on-1",
+        "targetWord": "cut down on",
+        "targetDefinitionEs": "Recortar / Reducir",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-warm-up",
+    "word": "warm up",
+    "cefrLevel": "A2",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/wɔːrm ʌp/",
+    "thematicCluster": "Esfuerzo & Hábitos",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-warm-up-1",
+        "wordId": "vw-pv-warm-up",
+        "word": "warm up",
+        "senseIndex": 1,
+        "cefrLevelTarget": "A2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/wɔːrm ʌp/",
+        "definitionEn": "To prepare your body or voice gently before intense exercise or speaking.",
+        "definitionEs": "Calentar antes de entrenar o hablar.",
+        "exampleSentenceEn": "Always warm up for five minutes before lifting heavy weights.",
+        "exampleSentenceEs": "Calienta siempre durante cinco minutos antes de levantar pesas.",
+        "collocations": [
+          "warm up first"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-warm-up-synonym-0",
+        "sourceSenseId": "vs-pv-warm-up-1",
+        "targetSenseId": "vs-pv-prepare-1",
+        "targetWord": "prepare",
+        "targetDefinitionEs": "Prepararse",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-warm-up-antonym-1",
+        "sourceSenseId": "vs-pv-warm-up-1",
+        "targetSenseId": "vs-pv-cool-down-1",
+        "targetWord": "cool down",
+        "targetDefinitionEs": "Enfriar / Estirar al final",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-cool-down",
+    "word": "cool down",
+    "cefrLevel": "A2",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/kuːl daʊn/",
+    "thematicCluster": "Esfuerzo & Hábitos",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-cool-down-1",
+        "wordId": "vw-pv-cool-down",
+        "word": "cool down",
+        "senseIndex": 1,
+        "cefrLevelTarget": "A2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/kuːl daʊn/",
+        "definitionEn": "To relax and let your body or emotions return to a calm state.",
+        "definitionEs": "Enfriarse / Calmarse tras entrenar o discutir.",
+        "exampleSentenceEn": "Take a short walk to cool down after a tense negotiation.",
+        "exampleSentenceEs": "Da una caminata corta para calmarte tras una negociación tensa.",
+        "collocations": [
+          "cool down slowly"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-cool-down-synonym-0",
+        "sourceSenseId": "vs-pv-cool-down-1",
+        "targetSenseId": "vs-pv-calm-down-1",
+        "targetWord": "calm down",
+        "targetDefinitionEs": "Calmarse",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-cool-down-antonym-1",
+        "sourceSenseId": "vs-pv-cool-down-1",
+        "targetSenseId": "vs-pv-warm-up-1",
+        "targetWord": "warm up",
+        "targetDefinitionEs": "Calentar",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-wake-up",
+    "word": "wake up",
+    "cefrLevel": "A2",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/weɪk ʌp/",
+    "thematicCluster": "Vida Cotidiana & Trabajo",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-wake-up-1",
+        "wordId": "vw-pv-wake-up",
+        "word": "wake up",
+        "senseIndex": 1,
+        "cefrLevelTarget": "A2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/weɪk ʌp/",
+        "definitionEn": "To stop sleeping and become alert.",
+        "definitionEs": "Despertarse (abrir los ojos).",
+        "exampleSentenceEn": "I usually wake up at 6:30 AM and review five flashcards.",
+        "exampleSentenceEs": "Suelo despertarme a las 6:30 AM y repasar cinco tarjetas.",
+        "collocations": [
+          "wake up early"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-wake-up-related-0",
+        "sourceSenseId": "vs-pv-wake-up-1",
+        "targetSenseId": "vs-pv-get-up-1",
+        "targetWord": "get up",
+        "targetDefinitionEs": "Levantarse de la cama",
+        "relationType": "related"
+      },
+      {
+        "id": "vr-vw-pv-wake-up-antonym-1",
+        "sourceSenseId": "vs-pv-wake-up-1",
+        "targetSenseId": "vs-pv-fall-asleep-1",
+        "targetWord": "fall asleep",
+        "targetDefinitionEs": "Quedarse dormido",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-get-up",
+    "word": "get up",
+    "cefrLevel": "A2",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/ɡet ʌp/",
+    "thematicCluster": "Vida Cotidiana & Trabajo",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-get-up-1",
+        "wordId": "vw-pv-get-up",
+        "word": "get up",
+        "senseIndex": 1,
+        "cefrLevelTarget": "A2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/ɡet ʌp/",
+        "definitionEn": "To get out of bed after waking up, or stand up from a chair.",
+        "definitionEs": "Levantarse de la cama o de una silla.",
+        "exampleSentenceEn": "Even if you wake up at seven, try to get up right away.",
+        "exampleSentenceEs": "Aunque te despiertes a las siete, intenta levantarte de inmediato.",
+        "collocations": [
+          "get up early"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-get-up-synonym-0",
+        "sourceSenseId": "vs-pv-get-up-1",
+        "targetSenseId": "vs-pv-arise-1",
+        "targetWord": "arise",
+        "targetDefinitionEs": "Levantarse",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-get-up-antonym-1",
+        "sourceSenseId": "vs-pv-get-up-1",
+        "targetSenseId": "vs-pv-lie-down-1",
+        "targetWord": "lie down",
+        "targetDefinitionEs": "Acostarse",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-check-in",
+    "word": "check in",
+    "cefrLevel": "A2",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/tʃek ɪn/",
+    "thematicCluster": "Viajes & Comunicación",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-check-in-1",
+        "wordId": "vw-pv-check-in",
+        "word": "check in",
+        "senseIndex": 1,
+        "cefrLevelTarget": "A2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/tʃek ɪn/",
+        "definitionEn": "To register at a hotel/airport, or briefly contact someone to see how they are.",
+        "definitionEs": "Registrarse en hotel o vuelo / Reportarse para ver cómo sigue alguien.",
+        "exampleSentenceEn": "I just wanted to check in and see how your English practice is going.",
+        "exampleSentenceEs": "Solo quería saludar y ver cómo va tu práctica de inglés.",
+        "collocations": [
+          "check in online"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-check-in-synonym-0",
+        "sourceSenseId": "vs-pv-check-in-1",
+        "targetSenseId": "vs-pv-register-1",
+        "targetWord": "register",
+        "targetDefinitionEs": "Registrarse",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-check-in-antonym-1",
+        "sourceSenseId": "vs-pv-check-in-1",
+        "targetSenseId": "vs-pv-check-out-1",
+        "targetWord": "check out",
+        "targetDefinitionEs": "Salir del hotel / Revisar",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-check-out",
+    "word": "check out",
+    "cefrLevel": "A2",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/tʃek aʊt/",
+    "thematicCluster": "Viajes & Comunicación",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-check-out-1",
+        "wordId": "vw-pv-check-out",
+        "word": "check out",
+        "senseIndex": 1,
+        "cefrLevelTarget": "A2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/tʃek aʊt/",
+        "definitionEn": "To settle the bill and leave a hotel.",
+        "definitionEs": "Hacer el check-out y salir del hotel.",
+        "exampleSentenceEn": "We need to check out of the hotel before 11:00 AM.",
+        "exampleSentenceEs": "Debemos entregar la habitación del hotel antes de las 11:00 AM.",
+        "collocations": [
+          "check out on time"
+        ]
+      },
+      {
+        "id": "vs-pv-check-out-2",
+        "wordId": "vw-pv-check-out",
+        "word": "check out",
+        "senseIndex": 2,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/tʃek aʊt/",
+        "definitionEn": "To examine or look at something interesting (\"Check this out!\").",
+        "definitionEs": "Echar un vistazo / Revisar algo interesante.",
+        "exampleSentenceEn": "Check out the new Phrasal Verbs bank inside the student portal!",
+        "exampleSentenceEs": "¡Échale un vistazo al nuevo banco de Phrasal Verbs en el portal del alumno!",
+        "collocations": [
+          "check it out"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-check-out-synonym-0",
+        "sourceSenseId": "vs-pv-check-out-1",
+        "targetSenseId": "vs-pv-inspect-1",
+        "targetWord": "inspect",
+        "targetDefinitionEs": "Revisar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-check-out-antonym-1",
+        "sourceSenseId": "vs-pv-check-out-1",
+        "targetSenseId": "vs-pv-check-in-1",
+        "targetWord": "check in",
+        "targetDefinitionEs": "Registrarse",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-slow-down",
+    "word": "slow down",
+    "cefrLevel": "A2",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/sloʊ daʊn/",
+    "thematicCluster": "Acción & Tiempo",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-slow-down-1",
+        "wordId": "vw-pv-slow-down",
+        "word": "slow down",
+        "senseIndex": 1,
+        "cefrLevelTarget": "A2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/sloʊ daʊn/",
+        "definitionEn": "To reduce speed or speak/move more calmly.",
+        "definitionEs": "Bajar la velocidad / Ir más despacio.",
+        "exampleSentenceEn": "When speaking in an interview, slow down slightly to sound clearer.",
+        "exampleSentenceEs": "Al hablar en una entrevista, baja un poco la velocidad para sonar más claro.",
+        "collocations": [
+          "slow down a bit"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-slow-down-synonym-0",
+        "sourceSenseId": "vs-pv-slow-down-1",
+        "targetSenseId": "vs-pv-decelerate-1",
+        "targetWord": "decelerate",
+        "targetDefinitionEs": "Desacelerar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-slow-down-antonym-1",
+        "sourceSenseId": "vs-pv-slow-down-1",
+        "targetSenseId": "vs-pv-speed-up-1",
+        "targetWord": "speed up",
+        "targetDefinitionEs": "Acelerar",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-speed-up",
+    "word": "speed up",
+    "cefrLevel": "B1",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/spiːd ʌp/",
+    "thematicCluster": "Acción & Tiempo",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-speed-up-1",
+        "wordId": "vw-pv-speed-up",
+        "word": "speed up",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/spiːd ʌp/",
+        "definitionEn": "To move or happen faster, or make a process quicker.",
+        "definitionEs": "Acelerar / Agilizar un proceso.",
+        "exampleSentenceEn": "Using spaced patterns will speed up your vocabulary retention.",
+        "exampleSentenceEs": "Usar patrones espaciados acelerará tu retención de vocabulario.",
+        "collocations": [
+          "speed up delivery"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-speed-up-synonym-0",
+        "sourceSenseId": "vs-pv-speed-up-1",
+        "targetSenseId": "vs-pv-accelerate-1",
+        "targetWord": "accelerate",
+        "targetDefinitionEs": "Acelerar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-speed-up-antonym-1",
+        "sourceSenseId": "vs-pv-speed-up-1",
+        "targetSenseId": "vs-pv-slow-down-1",
+        "targetWord": "slow down",
+        "targetDefinitionEs": "Desacelerar",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-calm-down",
+    "word": "calm down",
+    "cefrLevel": "A2",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/kɑːm daʊn/",
+    "thematicCluster": "Relaciones & Cuidado",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-calm-down-1",
+        "wordId": "vw-pv-calm-down",
+        "word": "calm down",
+        "senseIndex": 1,
+        "cefrLevelTarget": "A2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/kɑːm daʊn/",
+        "definitionEn": "To stop feeling nervous, angry, or excited and become peaceful.",
+        "definitionEs": "Calmarse / Tranquilizarse.",
+        "exampleSentenceEn": "Take a deep breath and calm down—you know all these structures.",
+        "exampleSentenceEs": "Respira profundo y tranquilízate; ya conoces todas estas estructuras.",
+        "collocations": [
+          "calm down first"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-calm-down-synonym-0",
+        "sourceSenseId": "vs-pv-calm-down-1",
+        "targetSenseId": "vs-pv-cool-down-1",
+        "targetWord": "cool down",
+        "targetDefinitionEs": "Tranquilizarse",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-calm-down-antonym-1",
+        "sourceSenseId": "vs-pv-calm-down-1",
+        "targetSenseId": "vs-pv-freak-out-1",
+        "targetWord": "freak out",
+        "targetDefinitionEs": "Alterarse / Entrar en pánico",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-stem-from",
+    "word": "stem from",
+    "cefrLevel": "C1",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/stem frʌm/",
+    "thematicCluster": "Negocios & Análisis",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-stem-from-1",
+        "wordId": "vw-pv-stem-from",
+        "word": "stem from",
+        "senseIndex": 1,
+        "cefrLevelTarget": "C1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/stem frʌm/",
+        "definitionEn": "To originate in, develop from, or be caused by something.",
+        "definitionEs": "Originarse en / Derivarse de / Tener su raíz en.",
+        "exampleSentenceEn": "Most fluency blocks stem from translating word-for-word in your head.",
+        "exampleSentenceEs": "La mayoría de los bloqueos de fluidez se derivan de traducir palabra por palabra mentalmente.",
+        "collocations": [
+          "stem from a misunderstanding"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-stem-from-synonym-0",
+        "sourceSenseId": "vs-pv-stem-from-1",
+        "targetSenseId": "vs-pv-originate-from-1",
+        "targetWord": "originate from",
+        "targetDefinitionEs": "Derivarse de",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-stem-from-antonym-1",
+        "sourceSenseId": "vs-pv-stem-from-1",
+        "targetSenseId": "vs-pv-lead-to-1",
+        "targetWord": "lead to",
+        "targetDefinitionEs": "Desembocar en (efecto)",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-dwell-on",
+    "word": "dwell on",
+    "cefrLevel": "C1",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/dwel ɑːn/",
+    "thematicCluster": "Resolución & Mente",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-dwell-on-1",
+        "wordId": "vw-pv-dwell-on",
+        "word": "dwell on",
+        "senseIndex": 1,
+        "cefrLevelTarget": "C1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/dwel ɑːn/",
+        "definitionEn": "To keep thinking or talking endlessly about something negative or past.",
+        "definitionEs": "Darle demasiadas vueltas / Obsesionarse con un error pasado.",
+        "exampleSentenceEn": "Fix the mistake, learn the pattern, and do not dwell on it.",
+        "exampleSentenceEs": "Corrige el error, aprende el patrón y no le des más vueltas.",
+        "collocations": [
+          "dwell on the past"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-dwell-on-synonym-0",
+        "sourceSenseId": "vs-pv-dwell-on-1",
+        "targetSenseId": "vs-pv-obsess-over-1",
+        "targetWord": "obsess over",
+        "targetDefinitionEs": "Obsesionarse con",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-dwell-on-antonym-1",
+        "sourceSenseId": "vs-pv-dwell-on-1",
+        "targetSenseId": "vs-pv-get-over-1",
+        "targetWord": "get over",
+        "targetDefinitionEs": "Superar",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-do-away-with",
+    "word": "do away with",
+    "cefrLevel": "C1",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/duː əˈweɪ wɪð/",
+    "thematicCluster": "Negocios & Liderazgo",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-do-away-with-1",
+        "wordId": "vw-pv-do-away-with",
+        "word": "do away with",
+        "senseIndex": 1,
+        "cefrLevelTarget": "C1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/duː əˈweɪ wɪð/",
+        "definitionEn": "To completely abolish, eliminate, or get rid of an old rule or system.",
+        "definitionEs": "Eliminar por completo / Suprimir un trámite o regla obsoleta.",
+        "exampleSentenceEn": "We did away with unnecessary onboarding steps to make practice instant.",
+        "exampleSentenceEs": "Eliminamos los pasos innecesarios para hacer la práctica instantánea.",
+        "collocations": [
+          "do away with red tape"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-do-away-with-synonym-0",
+        "sourceSenseId": "vs-pv-do-away-with-1",
+        "targetSenseId": "vs-pv-eliminate-1",
+        "targetWord": "eliminate",
+        "targetDefinitionEs": "Eliminar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-do-away-with-antonym-1",
+        "sourceSenseId": "vs-pv-do-away-with-1",
+        "targetSenseId": "vs-pv-set-up-1",
+        "targetWord": "set up",
+        "targetDefinitionEs": "Establecer / Implementar",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-miss-out-on",
+    "word": "miss out on",
+    "cefrLevel": "B2",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/mɪs aʊt ɑːn/",
+    "thematicCluster": "Vida Cotidiana & Trabajo",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-miss-out-on-1",
+        "wordId": "vw-pv-miss-out-on",
+        "word": "miss out on",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/mɪs aʊt ɑːn/",
+        "definitionEn": "To lose a valuable opportunity to enjoy or benefit from something.",
+        "definitionEs": "Perderse algo bueno / Dejar pasar una oportunidad.",
+        "exampleSentenceEn": "Join Friday’s conversation session so you do not miss out on real practice.",
+        "exampleSentenceEs": "Únete a la sesión del viernes para que no te pierdas la práctica real.",
+        "collocations": [
+          "miss out on an opportunity"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-miss-out-on-synonym-0",
+        "sourceSenseId": "vs-pv-miss-out-on-1",
+        "targetSenseId": "vs-pv-forfeit-1",
+        "targetWord": "forfeit",
+        "targetDefinitionEs": "Dejar pasar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-miss-out-on-antonym-1",
+        "sourceSenseId": "vs-pv-miss-out-on-1",
+        "targetSenseId": "vs-pv-capitalize-on-1",
+        "targetWord": "capitalize on",
+        "targetDefinitionEs": "Aprovechar",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-catch-on",
+    "word": "catch on",
+    "cefrLevel": "B2",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/kætʃ ɑːn/",
+    "thematicCluster": "Resolución & Mente",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-catch-on-1",
+        "wordId": "vw-pv-catch-on",
+        "word": "catch on",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/kætʃ ɑːn/",
+        "definitionEn": "To finally understand a concept or joke.",
+        "definitionEs": "Captar la idea / Entender por fin.",
+        "exampleSentenceEn": "Once you see the S+T+A formula, the logic catches on immediately.",
+        "exampleSentenceEs": "Una vez ves la fórmula S+T+A, captas la lógica de inmediato.",
+        "collocations": [
+          "catch on fast"
+        ]
+      },
+      {
+        "id": "vs-pv-catch-on-2",
+        "wordId": "vw-pv-catch-on",
+        "word": "catch on",
+        "senseIndex": 2,
+        "cefrLevelTarget": "C1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/kætʃ ɑːn/",
+        "definitionEn": "For a trend, product, or habit to become popular.",
+        "definitionEs": "Ponerse de moda / Volverse popular.",
+        "exampleSentenceEn": "Interactive trivia games quickly caught on among our adult students.",
+        "exampleSentenceEs": "Los juegos interactivos de trivia rápidamente ganaron popularidad entre alumnos adultos.",
+        "collocations": [
+          "trend caught on"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-catch-on-synonym-0",
+        "sourceSenseId": "vs-pv-catch-on-1",
+        "targetSenseId": "vs-pv-grasp-1",
+        "targetWord": "grasp",
+        "targetDefinitionEs": "Comprender / Popularizarse",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-catch-on-antonym-1",
+        "sourceSenseId": "vs-pv-catch-on-1",
+        "targetSenseId": "vs-pv-fizzle-out-1",
+        "targetWord": "fizzle out",
+        "targetDefinitionEs": "Apagarse / Perder fuerza",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-put-forward",
+    "word": "put forward",
+    "cefrLevel": "B2",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/pʊt ˈfɔːr.wərd/",
+    "thematicCluster": "Comunicación & Decisiones",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-put-forward-1",
+        "wordId": "vw-pv-put-forward",
+        "word": "put forward",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/pʊt ˈfɔːr.wərd/",
+        "definitionEn": "To propose an idea, plan, or candidate for formal consideration.",
+        "definitionEs": "Proponer / Plantear formalmente una idea o candidato.",
+        "exampleSentenceEn": "She put forward a brilliant proposal to restructure the onboarding.",
+        "exampleSentenceEs": "Ella planteó una propuesta brillante para reestructurar la inducción.",
+        "collocations": [
+          "put forward a proposal"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-put-forward-synonym-0",
+        "sourceSenseId": "vs-pv-put-forward-1",
+        "targetSenseId": "vs-pv-propose-1",
+        "targetWord": "propose",
+        "targetDefinitionEs": "Proponer",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-put-forward-antonym-1",
+        "sourceSenseId": "vs-pv-put-forward-1",
+        "targetSenseId": "vs-pv-withdraw-1",
+        "targetWord": "withdraw",
+        "targetDefinitionEs": "Retirar (propuesta)",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-wear-off",
+    "word": "wear off",
+    "cefrLevel": "C1",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/wer ɔːf/",
+    "thematicCluster": "Acción & Tiempo",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-wear-off-1",
+        "wordId": "vw-pv-wear-off",
+        "word": "wear off",
+        "senseIndex": 1,
+        "cefrLevelTarget": "C1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/wer ɔːf/",
+        "definitionEn": "For a feeling, effect, or medicine to gradually fade away.",
+        "definitionEs": "Irse pasando / Desvanecerse poco a poco un efecto.",
+        "exampleSentenceEn": "The initial nervousness always wears off after the first two minutes.",
+        "exampleSentenceEs": "El nerviosismo inicial siempre se va pasando tras los dos primeros minutos.",
+        "collocations": [
+          "the novelty wears off"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-wear-off-synonym-0",
+        "sourceSenseId": "vs-pv-wear-off-1",
+        "targetSenseId": "vs-pv-fade-away-1",
+        "targetWord": "fade away",
+        "targetDefinitionEs": "Desvanecerse",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-wear-off-antonym-1",
+        "sourceSenseId": "vs-pv-wear-off-1",
+        "targetSenseId": "vs-pv-kick-in-1",
+        "targetWord": "kick in",
+        "targetDefinitionEs": "Empezar a hacer efecto",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-kick-in",
+    "word": "kick in",
+    "cefrLevel": "C1",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/kɪk ɪn/",
+    "thematicCluster": "Acción & Tiempo",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-kick-in-1",
+        "wordId": "vw-pv-kick-in",
+        "word": "kick in",
+        "senseIndex": 1,
+        "cefrLevelTarget": "C1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/kɪk ɪn/",
+        "definitionEn": "To start taking effect or functioning actively.",
+        "definitionEs": "Empezar a surtir efecto / Entrar en acción.",
+        "exampleSentenceEn": "After two weeks of daily listening, your language intuition kicks in.",
+        "exampleSentenceEs": "Tras dos semanas de escucha diaria, tu intuición del idioma entra en acción.",
+        "collocations": [
+          "muscle memory kicks in"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-kick-in-synonym-0",
+        "sourceSenseId": "vs-pv-kick-in-1",
+        "targetSenseId": "vs-pv-take-effect-1",
+        "targetWord": "take effect",
+        "targetDefinitionEs": "Hacer efecto",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-kick-in-antonym-1",
+        "sourceSenseId": "vs-pv-kick-in-1",
+        "targetSenseId": "vs-pv-wear-off-1",
+        "targetWord": "wear off",
+        "targetDefinitionEs": "Desvanecerse",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-draw-up",
+    "word": "draw up",
+    "cefrLevel": "B2",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/drɔː ʌp/",
+    "thematicCluster": "Negocios & Liderazgo",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-draw-up-1",
+        "wordId": "vw-pv-draw-up",
+        "word": "draw up",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/drɔː ʌp/",
+        "definitionEn": "To prepare and write an official document, list, or contract.",
+        "definitionEs": "Redactar un contrato, lista o documento formal.",
+        "exampleSentenceEn": "Legal will draw up the partnership agreement this afternoon.",
+        "exampleSentenceEs": "El equipo legal redactará el acuerdo de alianza esta tarde.",
+        "collocations": [
+          "draw up a contract"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-draw-up-synonym-0",
+        "sourceSenseId": "vs-pv-draw-up-1",
+        "targetSenseId": "vs-pv-draft-1",
+        "targetWord": "draft",
+        "targetDefinitionEs": "Redactar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-draw-up-antonym-1",
+        "sourceSenseId": "vs-pv-draw-up-1",
+        "targetSenseId": "vs-pv-tear-up-1",
+        "targetWord": "tear up",
+        "targetDefinitionEs": "Romper / Anular",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-draw-out",
+    "word": "draw out",
+    "cefrLevel": "C1",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/drɔː aʊt/",
+    "thematicCluster": "Comunicación & Decisiones",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-draw-out-1",
+        "wordId": "vw-pv-draw-out",
+        "word": "draw out",
+        "senseIndex": 1,
+        "cefrLevelTarget": "C1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/drɔː aʊt/",
+        "definitionEn": "To make a meeting or story last longer than needed, or help someone express thoughts.",
+        "definitionEs": "Prolongar demasiado / Sacar palabras a alguien con tacto.",
+        "exampleSentenceEn": "Keep slides concise so you do not draw out the review unnecessarily.",
+        "exampleSentenceEs": "Mantén las diapositivas breves para no alargar la revisión innecesariamente.",
+        "collocations": [
+          "draw out a conversation"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-draw-out-synonym-0",
+        "sourceSenseId": "vs-pv-draw-out-1",
+        "targetSenseId": "vs-pv-prolong-1",
+        "targetWord": "prolong",
+        "targetDefinitionEs": "Prolongar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-draw-out-antonym-1",
+        "sourceSenseId": "vs-pv-draw-out-1",
+        "targetSenseId": "vs-pv-wrap-up-1",
+        "targetWord": "wrap up",
+        "targetDefinitionEs": "Acortar / Cerrar",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-break-through",
+    "word": "break through",
+    "cefrLevel": "C1",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/breɪk θruː/",
+    "thematicCluster": "Resultados & Desenlace",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-break-through-1",
+        "wordId": "vw-pv-break-through",
+        "word": "break through",
+        "senseIndex": 1,
+        "cefrLevelTarget": "C1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/breɪk θruː/",
+        "definitionEn": "To overcome a stubborn barrier and achieve sudden major progress.",
+        "definitionEs": "Romper una barrera / Lograr un avance decisivo.",
+        "exampleSentenceEn": "Consistent speaking practice helped her break through the intermediate plateau.",
+        "exampleSentenceEs": "La práctica oral constante la ayudó a superar el estancamiento intermedio.",
+        "collocations": [
+          "break through a plateau"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-break-through-synonym-0",
+        "sourceSenseId": "vs-pv-break-through-1",
+        "targetSenseId": "vs-pv-overcome-1",
+        "targetWord": "overcome",
+        "targetDefinitionEs": "Superar barrera",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-break-through-antonym-1",
+        "sourceSenseId": "vs-pv-break-through-1",
+        "targetSenseId": "vs-pv-stall-1",
+        "targetWord": "stall",
+        "targetDefinitionEs": "Estancarse",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-hand-over",
+    "word": "hand over",
+    "cefrLevel": "B2",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/hænd ˈoʊ.vər/",
+    "thematicCluster": "Negocios & Liderazgo",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-hand-over-1",
+        "wordId": "vw-pv-hand-over",
+        "word": "hand over",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/hænd ˈoʊ.vər/",
+        "definitionEn": "To transfer control, responsibility, or an object to someone else.",
+        "definitionEs": "Entregar / Ceder el control o un archivo a otro.",
+        "exampleSentenceEn": "Before going on vacation, please hand over your active accounts.",
+        "exampleSentenceEs": "Antes de salir de vacaciones, por favor entrega tus cuentas activas.",
+        "collocations": [
+          "hand over the keys"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-hand-over-synonym-0",
+        "sourceSenseId": "vs-pv-hand-over-1",
+        "targetSenseId": "vs-pv-transfer-1",
+        "targetWord": "transfer",
+        "targetDefinitionEs": "Entregar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-hand-over-antonym-1",
+        "sourceSenseId": "vs-pv-hand-over-1",
+        "targetSenseId": "vs-pv-hold-onto-1",
+        "targetWord": "hold onto",
+        "targetDefinitionEs": "Retener",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-fill-out",
+    "word": "fill out",
+    "cefrLevel": "A2",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/fɪl aʊt/",
+    "thematicCluster": "Vida Cotidiana & Trabajo",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-fill-out-1",
+        "wordId": "vw-pv-fill-out",
+        "word": "fill out",
+        "senseIndex": 1,
+        "cefrLevelTarget": "A2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/fɪl aʊt/",
+        "definitionEn": "To complete an official form or questionnaire with required information.",
+        "definitionEs": "Llenar / Diligenciar un formulario.",
+        "exampleSentenceEn": "Please fill out the registration form to schedule your diagnostic session.",
+        "exampleSentenceEs": "Por favor diligencia el formulario de registro para agendar tu sesión diagnóstica.",
+        "collocations": [
+          "fill out a form"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-fill-out-synonym-0",
+        "sourceSenseId": "vs-pv-fill-out-1",
+        "targetSenseId": "vs-pv-complete-1",
+        "targetWord": "complete",
+        "targetDefinitionEs": "Completar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-fill-out-antonym-1",
+        "sourceSenseId": "vs-pv-fill-out-1",
+        "targetSenseId": "vs-pv-leave-blank-1",
+        "targetWord": "leave blank",
+        "targetDefinitionEs": "Dejar en blanco",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-hang-up",
+    "word": "hang up",
+    "cefrLevel": "A2",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/hæŋ ʌp/",
+    "thematicCluster": "Comunicación & Cortesía",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-hang-up-1",
+        "wordId": "vw-pv-hang-up",
+        "word": "hang up",
+        "senseIndex": 1,
+        "cefrLevelTarget": "A2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/hæŋ ʌp/",
+        "definitionEn": "To end a telephone or video call.",
+        "definitionEs": "Colgar una llamada telefónica.",
+        "exampleSentenceEn": "Do not hang up yet—I want to confirm Friday’s time!",
+        "exampleSentenceEs": "¡No cuelgues todavía! Quiero confirmar la hora del viernes.",
+        "collocations": [
+          "hang up the phone"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-hang-up-synonym-0",
+        "sourceSenseId": "vs-pv-hang-up-1",
+        "targetSenseId": "vs-pv-disconnect-1",
+        "targetWord": "disconnect",
+        "targetDefinitionEs": "Colgar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-hang-up-antonym-1",
+        "sourceSenseId": "vs-pv-hang-up-1",
+        "targetSenseId": "vs-pv-hold-on-1",
+        "targetWord": "hold on",
+        "targetDefinitionEs": "Esperar en línea",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-call-back",
+    "word": "call back",
+    "cefrLevel": "A2",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/kɔːl bæk/",
+    "thematicCluster": "Comunicación & Cortesía",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-call-back-1",
+        "wordId": "vw-pv-call-back",
+        "word": "call back",
+        "senseIndex": 1,
+        "cefrLevelTarget": "A2",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/kɔːl bæk/",
+        "definitionEn": "To return someone’s phone call later.",
+        "definitionEs": "Devolver una llamada.",
+        "exampleSentenceEn": "I am in a class right now; can I call you back in twenty minutes?",
+        "exampleSentenceEs": "Estoy en clase ahora mismo; ¿puedo devolverte la llamada en veinte minutos?",
+        "collocations": [
+          "call someone back"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-call-back-synonym-0",
+        "sourceSenseId": "vs-pv-call-back-1",
+        "targetSenseId": "vs-pv-return-a-call-1",
+        "targetWord": "return a call",
+        "targetDefinitionEs": "Devolver llamada",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-call-back-antonym-1",
+        "sourceSenseId": "vs-pv-call-back-1",
+        "targetSenseId": "vs-pv-hang-up-1",
+        "targetWord": "hang up",
+        "targetDefinitionEs": "Colgar",
+        "relationType": "antonym"
+      }
+    ]
+  },
+  {
+    "id": "vw-pv-end-up",
+    "word": "end up",
+    "cefrLevel": "B1",
+    "partOfSpeech": "phrasal verb",
+    "ipa": "/end ʌp/",
+    "thematicCluster": "Resultados & Desenlace",
+    "category": "phrasal_verbs",
+    "senses": [
+      {
+        "id": "vs-pv-end-up-1",
+        "wordId": "vw-pv-end-up",
+        "word": "end up",
+        "senseIndex": 1,
+        "cefrLevelTarget": "B1",
+        "partOfSpeech": "phrasal verb",
+        "ipa": "/end ʌp/",
+        "definitionEn": "To eventually reach a place, state, or outcome, often unexpectedly.",
+        "definitionEs": "Terminar / Acabar haciendo algo o en algún lugar.",
+        "exampleSentenceEn": "We planned a short chat and ended up talking for two hours in English!",
+        "exampleSentenceEs": "Planeamos una charla corta ¡y terminamos hablando dos horas en inglés!",
+        "collocations": [
+          "end up + -ING"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "id": "vr-vw-pv-end-up-synonym-0",
+        "sourceSenseId": "vs-pv-end-up-1",
+        "targetSenseId": "vs-pv-turn-out-1",
+        "targetWord": "turn out",
+        "targetDefinitionEs": "Resultar",
+        "relationType": "synonym"
+      },
+      {
+        "id": "vr-vw-pv-end-up-antonym-1",
+        "sourceSenseId": "vs-pv-end-up-1",
+        "targetSenseId": "vs-pv-start-out-1",
+        "targetWord": "start out",
+        "targetDefinitionEs": "Comenzar",
+        "relationType": "antonym"
+      }
+    ]
+  }
+]

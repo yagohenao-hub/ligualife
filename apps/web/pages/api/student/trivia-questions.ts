@@ -8,7 +8,7 @@ import {
   buildBalancedOptions
 } from '@/lib/trivia-seed'
 import { getTopicSummary } from '@/lib/curriculum-summary'
-import { VocabCategory, CefrLevel, getVocabularyByCategory } from '@/lib/vocabulary'
+import { VocabCategory, CefrLevel, loadVocabularyByCategoryAsync } from '@/lib/vocabulary'
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY
 
@@ -62,15 +62,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       : 'NIVEL DE DIFICULTAD: FUNDAMENTAL / BASE (Nivel 1). Oraciones claras, directas y memorables para automatizar el reflejo comunicativo inicial.'
 
   let contextBlock = ''
+  let activeVocabBank: Awaited<ReturnType<typeof loadVocabularyByCategoryAsync>> = []
   if (contextType === 'vocabulary') {
-    const rawVocabWords = getVocabularyByCategory(vocabCategory, cefrLevel, false)
-    const filteredWords =
-      Array.isArray(targetWords) && targetWords.length > 0
-        ? rawVocabWords.filter(w => targetWords.includes(w.word.toLowerCase()) || targetWords.includes(w.id))
-        : rawVocabWords
-    const activeVocab = filteredWords.length > 0 ? filteredWords : rawVocabWords
+    activeVocabBank = await loadVocabularyByCategoryAsync(vocabCategory, cefrLevel)
     // Barajar las palabras para que la IA nunca empiece siempre por el mismo bloque ("can", "run", etc.)
-    const shuffledVocab = [...activeVocab].sort(() => Math.random() - 0.5)
+    const shuffledVocab = [...activeVocabBank].sort(() => Math.random() - 0.5)
     const wordsDigest = shuffledVocab
       .slice(0, 8)
       .map(
@@ -244,15 +240,11 @@ RESPONDE EXCLUSIVAMENTE CON UN OBJETO JSON VÁLIDO:
     }
   }
 
-  // Fallback determinístico rico (con rotación Round-Robin y filtro opcional de targetWords)
-  let fallbackVocabWords =
-    contextType === 'vocabulary' ? getVocabularyByCategory(vocabCategory, cefrLevel, false) : undefined
-  if (fallbackVocabWords && Array.isArray(targetWords) && targetWords.length > 0) {
-    const matched = fallbackVocabWords.filter(
-      w => targetWords.includes(w.word.toLowerCase()) || targetWords.includes(w.id)
-    )
-    if (matched.length > 0) fallbackVocabWords = matched
-  }
+  // Fallback determinístico rico (con rotación Round-Robin sobre el banco completo)
+  const fallbackVocabWords =
+    contextType === 'vocabulary'
+      ? (activeVocabBank.length > 0 ? activeVocabBank : await loadVocabularyByCategoryAsync(vocabCategory, cefrLevel))
+      : undefined
 
   const seeds =
     contextType === 'vocabulary'

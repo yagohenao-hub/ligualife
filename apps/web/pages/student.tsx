@@ -1427,7 +1427,7 @@ export default function StudentDashboardPage() {
                         Vocabulario Conceptual & Red Semántica
                       </h3>
                       <span style={{ fontSize: '0.78rem', color: '#a1a1aa' }}>
-                        12 Palabras de Tiempo • In/On/At • WH Questions • Niveles CEFR A1 a C2
+                        13 Palabras de Tiempo • In/On/At • WH • Conectores Lógicos • Phrasal Verbs • CEFR A1–C2
                       </span>
                     </div>
                   </div>
